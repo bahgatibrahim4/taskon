@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>عرض المقاولين | سعيد أحمد بالبيد</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #e8f5e9;
+      direction: rtl;
+    }
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #388e3c 60%, #66bb6a 100%);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      box-shadow: 0 2px 12px #0001;
+      letter-spacing: 1px;
+      min-height: 54px;
+      padding: 0 18px;
+    }
+    .navbar-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .navbar-right {
+      justify-content: flex-start;
+    }
+    .navbar-left {
+      justify-content: flex-end;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 6px 16px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-btn:hover {
+      background: #fff2;
+      color: #fff;
+    }
+    #username {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .logout-btn {
+      background: #fff;
+      color: #388e3c;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 14px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .logout-btn:hover {
+      background: #388e3c;
+      color: #fff;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 0 20px #0002;
+      padding: 30px 35px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #388e3c;
+      letter-spacing: 1px;
+    }
+    .back {
+      display: block;
+      margin: 0 auto 15px auto;
+      text-align: center;
+      color: #388e3c;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: bold;
+      transition: color 0.2s;
+    }
+    .back:hover {
+      color: #1b5e20;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #f9fff9;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #c8e6c9;
+      text-align: right;
+      font-size: 1rem;
+    }
+    th {
+      background: #388e3c;
+      color: #fff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .delete-btn {
+      background: linear-gradient(90deg, #e53935 60%, #ffb300 100%);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .delete-btn:hover {
+      background: linear-gradient(90deg, #b71c1c 60%, #ff7043 100%);
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px; }
+      th, td { padding: 8px; font-size: .95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-section navbar-right">
+      <button class="nav-btn" onclick="location.href='index.html'">الرئيسية</button>
+    </div>
+    <div class="navbar-section navbar-left">
+      <span id="username"></span>
+      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    </div>
+  </div>
+  <div class="container">
+    <h2>عرض المقاولين</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الهاتف</th>
+          <th>بند العمل</th>
+          <th>ملاحظات</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody id="contractorsList"></tbody>
+    </table>
+  </div>
+  <script>
+    // عرض اسم المستخدم
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.username) window.location.href = 'login.html';
+    document.getElementById('username').textContent = user.username;
+
+    // تسجيل الخروج
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+
+    async function fetchContractors() {
+      const res = await fetch('/contractors');
+      const contractors = await res.json();
+      const list = document.getElementById('contractorsList');
+      list.innerHTML = '';
+      contractors.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.address || ''}</td>
+          <td>${c.notes || ''}</td>
+          <td><button class="delete-btn" data-id="${c._id}">حذف</button></td>
+        `;
+        list.appendChild(tr);
+      });
+    }
+
+    // حذف مقاول
+    document.addEventListener('click', async function(e) {
+      if (e.target.classList.contains('delete-btn')) {
+        if (confirm('هل أنت متأكد من حذف هذا المقاول؟')) {
+          const id = e.target.getAttribute('data-id');
+          await fetch(`/contractors/${id}`, { method: 'DELETE' });
+          fetchContractors();
+        }
+      }
+    });
+
+    fetchContractors();
+  </script>
+</body>
+</html>

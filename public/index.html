@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>سعيد أحمد بالبيد | الرئيسية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #fff 100%);
+      min-height: 100vh;
+      direction: rtl;
+    }
+    .navbar {
+      background: linear-gradient(90deg, #388e3c 0%, #43a047 100%);
+      color: #fff;
+      padding: 14px 0 10px 0; /* تصغير الشريط */
+      text-align: center;
+      font-size: 1.6rem;      /* تصغير الخط */
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 18px #388e3c22;
+      border-radius: 0 0 24px 24px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 2;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .navbar .user-info {
+      position: absolute;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      background: #2e7d32;
+      padding: 6px 18px;
+      border-radius: 18px;
+      box-shadow: 0 1px 6px #388e3c22;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dashboard {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 0 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #388e3c11, 0 1.5px 8px #e8f5e9cc;
+      min-width: 220px;
+      flex: 1 1 260px;
+      max-width: 320px;
+      padding: 38px 24px 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s, transform 0.18s;
+      border: 1.5px solid #c8e6c9;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .card:hover, .card:focus {
+      box-shadow: 0 8px 32px #388e3c33, 0 2px 12px #e8f5e9cc;
+      transform: translateY(-6px) scale(1.03);
+      border-color: #43a047;
+    }
+    .card-icon {
+      font-size: 2.8rem;
+      margin-bottom: 18px;
+      color: #43a047;
+      background: #e8f5e9;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px #43a04722;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #388e3c;
+      margin-bottom: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .card-desc {
+      color: #666;
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 0;
+      opacity: 0.85;
+    }
+    .footer {
+      text-align: center;
+      color: #388e3c;
+      font-size: 1.1rem;
+      margin-top: 60px;
+      padding-bottom: 18px;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      font-weight: 500;
+      text-shadow: 0 1px 8px #388e3c11;
+    }
+    @media (max-width: 900px) {
+      .dashboard { gap: 18px; max-width: 98vw; }
+      .card { min-width: 90vw; max-width: 98vw; }
+    }
+    @media (max-width: 600px) {
+      .navbar { font-size: 1.1rem; padding: 10px 0 6px 0; border-radius: 0 0 14px 14px; min-height: 36px; }
+      .navbar .user-info { left: 8px; font-size: 0.95rem; padding: 4px 10px; }
+      .dashboard { flex-direction: column; gap: 14px; padding: 18px 0 0 0; }
+      .card { width: 98vw; min-width: unset; padding: 18px 8px 18px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    سعيد أحمد بالبيد
+    <span class="user-info" id="userInfo">
+      <!-- سيتم تعبئة اسم المستخدم هنا -->
+      <span id="logoutBtn" style="display:block; color:#fff; font-size:0.95rem; font-weight:400; margin-top:2px; cursor:pointer; text-decoration:underline;">تسجيل الخروج</span>
+    </span>
+  </div>
+  <div class="dashboard">
+    <div class="card" onclick="location.href='add-contractor.html'">
+      <div class="card-icon">🏗️</div>
+      <div class="card-title">إضافة مقاول</div>
+      <div class="card-desc">إضافة بيانات مقاول جديد للمشروعات</div>
+    </div>
+    <div class="card" onclick="location.href='list-contractors.html'">
+      <div class="card-icon">📋</div>
+      <div class="card-title">عرض المقاولين</div>
+      <div class="card-desc">استعراض وتعديل بيانات جميع المقاولين</div>
+    </div>
+    <div class="card" onclick="location.href='add-extract.html'">
+      <div class="card-icon">➕</div>
+      <div class="card-title">إضافة مستخلص</div>
+      <div class="card-desc">إدخال مستخلص جديد وربطه بالمقاول</div>
+    </div>
+    <div class="card" onclick="location.href='list-extracts.html'">
+      <div class="card-icon">📑</div>
+      <div class="card-title">قائمة المستخلصات</div>
+      <div class="card-desc">عرض جميع المستخلصات المسجلة</div>
+    </div>
+    <div class="card" onclick="location.href='users.html'">
+      <div class="card-icon">👤</div>
+      <div class="card-title">المستخدمين</div>
+      <div class="card-desc">إدارة مستخدمي المنصة وصلاحياتهم</div>
+    </div>
+  </div>
+  <div class="footer">
+    جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
+  </div>
+  <script>
+    // حماية الصفحة
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+    // عرض اسم المستخدم أعلى يمين الشريط
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const username = JSON.parse(user).username || '';
+        document.getElementById('userInfo').childNodes[0].textContent = '👤 ' + username + ' ';
+      } catch {}
+    }
+    // زر تسجيل الخروج
+    document.getElementById('logoutBtn').onclick = function() {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    };
+  </script>
+</body>
+</html>

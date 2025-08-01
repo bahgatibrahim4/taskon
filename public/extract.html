@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تعديل مستخلص | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Tajawal', Arial, sans-serif;
+      background: linear-gradient(120deg, #e8f5e9 0%, #c8e6c9 100%);
+      direction: rtl;
+    }
+    .navbar {
+      background: linear-gradient(90deg,#1b5e20,#388e3c);
+      color: #fff;
+      padding: 2px 0 4px 0;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      box-shadow: 0 2px 12px #0001;
+      letter-spacing: 1px;
+      border-bottom: 3px solid #43a047;
+      position: relative;
+    }
+    .container {
+      max-width: 1300px;
+      margin: 24px auto 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 28px 28px 18px 28px;
+      border: 2px solid #fff !important; /* ← هنا التغيير */
+      position: relative;
+      padding-top: 18px;
+    }
+    h2 {
+      text-align: right;
+      margin-bottom: 14px;
+      color: #1b5e20;
+      font-size: 1.15rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-top: 0;
+      padding-top: 0;
+    }
+    h3 {
+      color: #1b5e20;
+      margin: 24px 0 12px 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-align: right;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      background: #e8f5e9;
+      border-radius: 10px;
+      padding: 7px 7px;
+      box-shadow: 0 2px 8px #1b5e2022;
+      border: 1.5px solid #1b5e20;
+    }
+    .row .form-group {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+    }
+    .row .form-group label {
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+    .form-group input, .form-group select {
+      padding: 6px 8px;
+      font-size: 0.95rem;
+      border-radius: 6px;
+    }
+    .table-section {
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px 8px;
+      box-shadow: 0 2px 8px #1b5e2022;
+      margin-bottom: 14px;
+      border: none; /* <-- عدّل هنا */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-bottom: 8px;
+      border: none !important;
+      border-radius: 0 !important;
+      overflow: visible !important;
+      box-shadow: none !important;
+    }
+    th, td {
+      padding: 4px 1px;
+      border-bottom: 1px solid #c8e6c9;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.89rem;
+      background: transparent;
+      white-space: nowrap;
+      word-break: break-word;
+      min-width: 18px;
+      width: 1%;
+      max-width: 38px;
+    }
+    th {
+      background: #1b5e20 !important;
+      color: #fff !important;
+      font-weight: bold;
+    }
+    th.work-item-col, td.work-item-col,
+    th.work-desc-col, td.work-desc-col {
+      min-width: 55px !important;
+      max-width: 110px !important;
+      white-space: normal !important;
+      word-break: break-word;
+      width: auto !important;
+      font-size: 0.93rem;
+    }
+    tr.group-row {
+      background: #d9f3f2 !important;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #0097a7;
+      border-bottom: 1.5px solid #e0e0e0;
+      cursor: pointer;
+      user-select: none;
+    }
+    tr.subgroup-row {
+      background: #e4f7f6 !important;
+      font-size: 1.04rem;
+      font-weight: bold;
+      color: #607d8b;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+      user-select: none;
+    }
+    tr.work-row {
+      background: #f7fafc;
+      font-size: 0.82rem;
+      color: #222;
+      transition: box-shadow 0.18s, background 0.18s;
+      border-radius: 10px;
+      box-shadow: 0 1px 8px #e0e0e0;
+    }
+    tr.work-row:hover {
+      background: #e0f7fa;
+      box-shadow: 0 2px 16px #b2dfdb;
+    }
+    tr.work-row td {
+      border-bottom: 1px solid #e0e0e0;
+      padding: 0 0;
+      font-size: 0.75rem;
+      height: 22px;
+      background: transparent;
+      transition: background 0.18s;
+      text-align: center !important;
+    }
+    tr.work-row td input {
+      text-align: center;
+    }
+    tr.work-row td:first-child {
+      font-weight: bold;
+      color: #388e3c;
+      background: #e8f5e9;
+      border-radius: 10px 0 0 10px;
+      box-shadow: 0 1px 4px #c8e6c9;
+    }
+    tr.work-row td:last-child {
+      border-radius: 0 10px 10px 0;
+    }
+    tr.work-row input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1.5px solid #c8e6c9;
+      border-radius: 5px;
+      padding: 4px 2px;
+      font-size: 0.75rem;
+      height: 20px;
+      background: #fff;
+      transition: border 0.18s, background 0.18s, box-shadow 0.18s;
+      box-shadow: 0 1px 6px #e0e0e0;
+      text-align: center;
+    }
+    .hidden-row { display: none; }
+    input.total-percent-max {
+      background: #ffe082 !important;
+      color: #1b5e20 !important;
+      font-weight: bold;
+      border: 2px solid #ff9800 !important;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 8px; }
+      .row { flex-direction: column; gap: 10px; padding: 10px 4px; }
+      table { font-size: .92rem; }
+      th, td { padding: 4px; }
+      .summary { padding: 10px 6px; }
+    }
+    tr.work-row:nth-child(even) {
+      background: #f7fafc !important;
+    }
+    tr.work-row:nth-child(odd) {
+      background: #e8f5e9 !important;
+    }
+    .summary {
+      background: #388e3c;
+      border-radius: 14px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      border: 2px solid #1b5e20;
+      color: #fff;
+      font-size: 1.25rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 1.25rem;
+    }
+    .summary-row:last-child {
+      margin-bottom: 0;
+    }
+    .summary-label {
+      font-weight: bold;
+      font-size: 1.18rem;
+      letter-spacing: 0.5px;
+    }
+    .summary-value {
+      font-weight: bold;
+      font-size: 1.5rem;
+      background: #fff;
+      color: #1b5e20;
+      padding: 2px 18px;
+      border-radius: 8px;
+      min-width: 90px;
+      text-align: left;
+      margin-right: 10px;
+      box-shadow: 0 1px 4px #0001;
+      border: 1.5px solid #c8e6c9;
+      display: inline-block;
+    }
+    .back {
+      display: block;
+      margin: 0 auto 20px auto;
+      text-align: center;
+      color: #1b5e20;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .sort-btns {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    #sortMenu {
+      display: none;
+      position: absolute;
+      top: 46px;
+      left: 32px; /* بدلاً من right: 32px; ← الآن تدخل من الجهة اليسرى */
+      right: auto;
+      min-width: 210px;
+      max-width: 260px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px #0003, 0 1.5px 8px #1b5e2022;
+      z-index: 1000;
+      border: none;
+      padding: 0;
+      animation: fadeInSortMenu 0.18s;
+    }
+    #sortMenu button.sort-btn {
+      background: #fff;
+      color: #1b5e20;
+      border: none;
+      text-align: right;
+      padding: 8px 18px;
+      font-size: 0.92rem;
+      border-radius: 0;
+      transition: background 0.18s, color 0.18s;
+      cursor: pointer;
+      width: 100%;
+      outline: none;
+      line-height: 1.7;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-direction: row-reverse;
+      white-space: nowrap; /* لا يكسر الكلام */
+    }
+    #sortMenu button.sort-btn span {
+      margin-left: 8px;
+      font-size: 1.1em;
+      color: #388e3c;
+      display: inline-block;
+      min-width: 18px;
+      text-align: center;
+    }
+    #sortMenu button.sort-btn:first-child {
+      border-radius: 8px 8px 0 0;
+    }
+    #sortMenu button.sort-btn:last-child {
+      border-radius: 0 0 8px 8px;
+    }
+    #sortMenu button.sort-btn:hover, #sortMenu button.sort-btn.active {
+      background: #e8f5e9;
+      color: #388e3c;
+      font-weight: bold;
+    }
+    .sort-menu-arrow {
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #fff;
+      position: absolute;
+      top: -10px;
+      left: 38px; /* بدلاً من right: 38px; */
+      right: auto;
+      z-index: 1001;
+      filter: drop-shadow(0 2px 2px #0001);
+    }
+    @media (max-width: 600px) {
+      #sortMenu {
+        min-width: 120px;
+        max-width: 98vw;
+        left: 8px;
+        right: auto;
+      }
+      .sort-menu-arrow {
+        left: 24px;
+        right: auto;
+      }
+    }
+    @media print {
+      /* لا تغيّر الخلفية */
+      /* body, .container { background: #fff !important; } */
+      h2, /* عنوان تعديل مستخلص */
+      .add-row-btn,
+      .sort-btns,
+      #btnPrint,
+      #btnPdf,
+      .back,
+      button,
+      .navbar {
+        display: none !important;
+      }
+      /* إخفاء عمود زرار الحذف من كل الجداول */
+      th:last-child,
+      td:last-child {
+        display: none !important;
+      }
+      .container {
+        box-shadow: none !important;
+        border: none !important;
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      form, .summary, .table-section, table, h2, h3 {
+        page-break-inside: avoid;
+      }
+      .form-group input, .form-group textarea, .form-group select {
+        border: none !important;
+        background: transparent !important;
+        color: #222 !important;
+        font-weight: bold;
+        font-size: 1.1rem;
+        pointer-events: none;
+      }
+      .form-group label {
+        color: #1b5e20 !important;
+        font-weight: bold;
+      }
+      textarea, input, select {
+        box-shadow: none !important;
+        outline: none !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: auto !important;
+        font-size: 1rem !important;
+        background: #e8f5e9 !important;
+      }
+      th, td {
+        border: 1px solid #1b5e20 !important;
+        padding: 8px 4px !important;
+        font-size: 1rem !important;
+        background: #fff !important;
+        color: #222 !important;
+        min-width: 40px !important;
+        max-width: none !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+      }
+      th {
+        background: #1b5e20 !important;
+        color: #fff !important;
+      }
+      .table-section {
+        background: #e8f5e9 !important;
+        box-shadow: none !important;
+        border-radius: 10px !important;
+        border: 1.5px solid #1b5e20 !important;
+        padding: 18px 10px !important;
+      }
+      .row {
+        background: #e8f5e9 !important;
+        border-radius: 10px !important;
+        border: 1.5px solid #1b5e20 !important;
+        box-shadow: none !important;
+        padding: 7px 7px !important;
+        margin-bottom: 10px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+      }
+      /* إخفاء أي عناصر أخرى غير الجداول والتفاصيل */
+      .not-print, .no-print {
+        display: none !important;
+      }
+      [id^="icon_"] {
+        display: none !important;
+      }
+
+      /* إخفاء الأسهم الخاصة بـ input[type=number] في الطباعة (كروم، إيدج، فايرفوكس) */
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        margin: 0 !important;
+        display: none !important;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield !important;
+        appearance: textfield !important;
+      }
+
+      #workItemsTable th {
+        font-size: 0.78rem !important;
+        padding: 2px 1px !important;
+        white-space: nowrap !important;
+      }
+
+      /* تصغير عمود الفئة وعمود المبنى وتوسيع بيان الأعمال */
+      #workItemsTable th:nth-child(2),
+      #workItemsTable td:nth-child(2) { /* رقم المبني */
+        min-width: 28px !important;
+        max-width: 38px !important;
+        width: 32px !important;
+      }
+      #workItemsTable th:nth-child(7),
+      #workItemsTable td:nth-child(7) { /* الفئة */
+        min-width: 22px !important;
+        max-width: 32px !important;
+        width: 26px !important;
+      }
+      /* تضييق عمود بيان الأعمال */
+      #workItemsTable th.work-desc-col,
+      #workItemsTable td.work-desc-col,
+      #workItemsTable th:nth-child(4),
+      #workItemsTable td:nth-child(4) { /* بيان الأعمال */
+        min-width: 60px !important;
+        max-width: 110px !important;
+        width: 80px !important;
+        white-space: normal !important;
+      }
+
+      /* أعمدة المبالغ أوسع */
+      #workItemsTable th:nth-child(11),
+      #workItemsTable td:nth-child(11), /* السابق $ */
+      #workItemsTable th:nth-child(12),
+      #workItemsTable td:nth-child(12), /* الحالي $ */
+      #workItemsTable th:nth-child(13),
+      #workItemsTable td:nth-child(13)  /* الإجمالي $ */
+      {
+        min-width: 70px !important;
+        max-width: 120px !important;
+        width: 90px !important;
+        font-size: 1.05rem !important;
+        direction: ltr !important;
+        text-align: right !important;
+      }
+
+      /* توسيط الجدول في الصفحة */
+      #workItemsTable {
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+
+      /* تصغير الأعمدة غير الرقمية وتوسيع الأعمدة الرقمية */
+      #workItemsTable th,
+      #workItemsTable td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 4px 2px !important;
+      }
+
+      /* رقم المبني */
+      #workItemsTable th:nth-child(2),
+      #workItemsTable td:nth-child(2) {
+        min-width: 24px !important;
+        max-width: 32px !important;
+        width: 28px !important;
+      }
+      /* بند الأعمال */
+      #workItemsTable th:nth-child(3),
+      #workItemsTable td:nth-child(3) {
+        min-width: 40px !important;
+        max-width: 60px !important;
+        width: 50px !important;
+      }
+      /* بيان الأعمال */
+      #workItemsTable th.work-desc-col,
+      #workItemsTable td.work-desc-col,
+      #workItemsTable th:nth-child(4),
+      #workItemsTable td:nth-child(4) {
+        min-width: 48px !important;
+        max-width: 80px !important;
+        width: 60px !important;
+        white-space: normal !important;
+      }
+      /* الكمية، الوحدة، الفئة */
+      #workItemsTable th:nth-child(5),
+      #workItemsTable td:nth-child(5),
+      #workItemsTable th:nth-child(6),
+      #workItemsTable td:nth-child(6),
+      #workItemsTable th:nth-child(7),
+      #workItemsTable td:nth-child(7) {
+        min-width: 22px !important;
+        max-width: 32px !important;
+        width: 26px !important;
+      }
+      /* أعمدة النسب */
+      #workItemsTable th:nth-child(8),
+      #workItemsTable td:nth-child(8),
+      #workItemsTable th:nth-child(9),
+      #workItemsTable td:nth-child(9),
+      #workItemsTable th:nth-child(10),
+      #workItemsTable td:nth-child(10) {
+        min-width: 32px !important;
+        max-width: 38px !important;
+        width: 34px !important;
+        font-size: 0.95rem !important;
+      }
+      /* أعمدة المبالغ */
+      #workItemsTable th:nth-child(11),
+      #workItemsTable td:nth-child(11),
+      #workItemsTable th:nth-child(12),
+      #workItemsTable td:nth-child(12),
+      #workItemsTable th:nth-child(13),
+      #workItemsTable td:nth-child(13) {
+        min-width: 70px !important;
+        max-width: 120px !important;
+        width: 90px !important;
+        font-size: 1.08rem !important;
+        direction: ltr !important;
+        text-align: right !important;
+        font-weight: bold !important;
+        letter-spacing: 1px !important;
+      }
+
+      /* تمييز أعمدة النسبة في جدول بنود الأعمال */
+      #workItemsTable th:nth-child(8),
+      #workItemsTable th:nth-child(9),
+      #workItemsTable th:nth-child(10),
+      #workItemsTable td:nth-child(8),
+      #workItemsTable td:nth-child(9),
+      #workItemsTable td:nth-child(10) {
+        background: #fffde7 !important;   /* أصفر فاتح */
+        color: #1b5e20 !important;        /* أخضر غامق */
+        font-weight: bold;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar الجديد -->
+  <div class="navbar" style="position:relative; min-height:0; padding:2px 0 4px 0; font-size:1.1rem;">
+    <div style="position:absolute; left:14px; top:4px; display:flex; align-items:center; gap:10px;">
+      <span id="username" style="color:#fff; font-weight:bold;"></span>
+      <button onclick="logout()" style="background:#e53935; color:#fff; border:none; border-radius:6px; padding:2px 10px; font-weight:bold; font-size:0.95rem; cursor:pointer;">تسجيل الخروج</button>
+    </div>
+    <span>سعيد أحمد بالبيد</span>
+    <div style="position:absolute; right:14px; top:4px;">
+      <button onclick="location.href='index.html'" style="background:#fff; color:#1b5e20; border:2px solid #1b5e20; border-radius:7px; font-weight:bold; padding:2px 12px; font-size:0.95rem; cursor:pointer;">
+        <i class="fa fa-arrow-right"></i> الرئيسية
+      </button>
+    </div>
+  </div>
+  <script>
+    // عرض اسم المستخدم
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        // لا تكتب اسم المستخدم هنا، سيكتب من بيانات المستخلص لاحقاً
+        // document.getElementById('username').textContent = user.username || '';
+      } catch {}
+    }
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  </script>
+  <div class="container">
+    <h2>تعديل مستخلص</h2>
+    <!-- أضف الأزرار بعد <h2> أو فوق الفورم مباشرة -->
+    <div style="display: flex; gap: 12px; margin-bottom: 12px; justify-content: flex-end;">
+      <!-- أزل الزرين من هنا -->
+    </div>
+    <form id="extractForm">
+      <div class="row">
+        <div class="form-group">
+          <label>رقم المستخلص</label>
+          <input type="number" id="number" readonly>
+        </div>
+        <div class="form-group">
+          <label>تاريخ المستخلص</label>
+          <input type="date" id="date">
+        </div>
+        <div class="form-group">
+          <label>اسم المقاول</label>
+          <input type="text" id="contractor">
+        </div>
+        <div class="form-group">
+          <label>اسم المستخدم</label>
+          <input type="text" id="usernameInput" readonly style="background:#e8f5e9;">
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px; margin-bottom: 8px;">
+        <h3 style="margin: 0;">بنود الأعمال</h3>
+        <!-- زر أيقونة الترتيب -->
+        <div class="sort-btns" style="margin-bottom: 0; gap: 10px; position: relative;">
+          <button type="button" id="sortMenuBtn" style="background:#1b5e20; color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #0002;">
+            <span style="font-size:1.5rem;">&#9776;</span>
+          </button>
+          <div id="sortMenu" style="display:none;">
+            <div class="sort-menu-arrow"></div>
+            <button type="button" id="sortByBuilding" class="sort-btn">
+              <span class="fa fa-building"></span>
+              ترتيب حسب المبنى
+            </button>
+            <button type="button" id="sortByWorkItem" class="sort-btn">
+              <span class="fa fa-list"></span>
+              ترتيب حسب بند الأعمال
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="table-section">
+        <table id="workItemsTable" style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px #1b5e20;">
+          <thead>
+            <tr style="background: #1b5e20;">
+              <th style="background: #1b5e20; min-width:32px;">م</th>
+              <th style="min-width:38px;">رقم المبني</th>
+              <th class="work-item-col">بند الأعمال</th>
+              <th class="work-desc-col">بيان الأعمال</th>
+              <th style="min-width:38px;">الكمية</th>
+              <th style="min-width:38px;">الوحدة</th>
+              <th style="min-width:38px;">الفئة</th>
+              <th style="min-width:38px;">السابق %</th>
+              <th style="min-width:38px;">الحالي %</th>
+              <th style="min-width:38px;">الإجمالي %</th>
+              <th style="min-width:38px;">السابق $</th>
+              <th style="min-width:38px;">الحالي $</th>
+              <th style="min-width:38px;">الإجمالي $</th>
+              <th style="min-width:38px;">حذف</th>
+            </tr>
+          </thead>
+          <tbody id="workItemsBody"></tbody>
+        </table>
+        <button type="button" class="add-row-btn" id="addWorkItemRowBtn">+ إضافة صف جديد</button>
+      </div>
+      <h3>الخصومات</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>بيان الخصم</th>
+            <th>التاريخ</th>
+            <th>الكمية</th>
+            <th>الفئة</th>
+            <th>الإجمالي</th>
+            <th>اسم المستخدم</th>
+            <th>حذف</th>
+          </tr>
+        </thead>
+        <tbody id="deductionsBody"></tbody>
+      </table>
+      <button type="button" class="add-row-btn" id="addDeductionRowBtn">+ إضافة صف خصم جديد</button>
+      <!-- ملخص المبالغ -->
+      <div class="summary" style="background:#388e3c; border-radius:10px; padding:16px; margin-bottom:18px; border:1.5px solid #1b5e20; display:flex; justify-content:space-between; align-items:center; gap:32px;">
+        <div>
+          <span>إجمالي المستخلص:</span>
+          <span id="totalExtract" class="summary-value">0</span>
+        </div>
+        <div>
+          <span>إجمالي الخصومات:</span>
+          <span id="totalDeductions" class="summary-value">0</span>
+        </div>
+        <div>
+          <span>الإجمالي بعد الخصومات:</span>
+          <span id="afterDeductions" class="summary-value">0</span>
+        </div>
+      </div>
+      <!-- الملاحظات -->
+      <div class="form-group" style="margin-top:10px;">
+        <label>ملاحظات</label>
+        <textarea id="notes"></textarea>
+      </div>
+      <button type="submit" class="btn">تعديل المستخلص</button>
+    </form>
+  </div>
+  <script>
+    // استخراج id من الرابط
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (id) {
+      // جلب بيانات المستخلص من السيرفر
+      fetch(`/extracts/${id}`)
+        .then(res => res.json())
+        .then(async data => {
+          document.getElementById('number').value = data.number || '';
+          document.getElementById('date').value = data.date || '';
+          document.getElementById('usernameInput').value = data.username || ''; // السطر الحالي
+
+          // أضف بعده مباشرة:
+          if (!data.username && (data.userId || data.createdBy)) {
+            fetch('/users')
+              .then(res => res.json())
+              .then(users => {
+                const userId = (data.userId || data.createdBy || '').toString();
+                const user = users.find(u => (u._id || '').toString() === userId);
+                if (user) document.getElementById('usernameInput').value = user.username || '';
+              });
+          }
+
+          // جلب اسم المقاول الحقيقي (لا تضعه في username)
+          let contractorName = data.contractor;
+          if (contractorName) {
+            try {
+              const res = await fetch('/contractors');
+              const contractors = await res.json();
+              const found = contractors.find(c => c._id === data.contractor || c.name === data.contractor);
+              if (found) contractorName = found.name;
+            } catch {}
+          }
+          document.getElementById('contractor').value = contractorName || '';
+          
+          // بنود الأعمال
+          const workBody = document.getElementById('workItemsBody');
+          workBody.innerHTML = '';
+          (data.workItems || []).forEach((item, idx) => {
+            workBody.innerHTML += `
+              <tr>
+                <td><input value="${item.buildingNumber || ''}" data-idx="${idx}" data-field="buildingNumber"></td>
+                <td><input value="${item.workItem || ''}" data-idx="${idx}" data-field="workItem"></td>
+                <td><input value="${item.workDescription || ''}" data-idx="${idx}" data-field="workDescription"></td>
+                <td><input value="${item.quantity || ''}" data-idx="${idx}" data-field="quantity" type="number"></td>
+                <td><input value="${item.unit || ''}" data-idx="${idx}" data-field="unit"></td>
+                <td><input value="${item.category || ''}" data-idx="${idx}" data-field="category" type="number"></td>
+                <td><input value="${item.prevPercent || ''}" data-idx="${idx}" data-field="prevPercent" type="number" readonly style="background:#e8f5e9;"></td>
+                <td><input value="${item.currentPercent || ''}" data-idx="${idx}" data-field="currentPercent" type="number"></td>
+                <td><input value="${item.totalPercent || ''}" data-idx="${idx}" data-field="totalPercent" type="number" readonly style="background:#e8f5e9;"></td>
+                <td><input value="${item.prevAmount || ''}" data-idx="${idx}" data-field="prevAmount" type="number" readonly style="background:#e8f5e9;"></td>
+                <td><input value="${item.currentAmount || ''}" data-idx="${idx}" data-field="currentAmount" type="number"></td>
+                <td><input value="${item.totalAmount || ''}" data-idx="${idx}" data-field="totalAmount" type="number" readonly style="background:#e8f5e9;"></td>
+                <td><button type="button" class="delete-work-row" data-idx="${idx}" style="background:#e53935; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;">حذف</button></td>
+              </tr>
+            `;
+          });
+          // الخصومات
+          const dedBody = document.getElementById('deductionsBody');
+          dedBody.innerHTML = '';
+          (data.deductions || []).forEach((item, idx) => {
+            dedBody.innerHTML += `
+              <tr>
+                <td><input value="${item.deductionStatement || ''}" data-idx="${idx}" data-field="deductionStatement"></td>
+                <td><input value="${item.deductionDate || ''}" data-idx="${idx}" data-field="deductionDate"></td>
+                <td><input value="${item.deductionQuantity || ''}" data-idx="${idx}" data-field="deductionQuantity"></td>
+                <td><input value="${item.deductionCategory || ''}" data-idx="${idx}" data-field="deductionCategory"></td>
+                <td><input value="${item.deductionTotal || ''}" data-idx="${idx}" data-field="deductionTotal"></td>
+                <td><input value="${item.deductionUser || ''}" data-idx="${idx}" data-field="deductionUser"></td>
+                <td><button type="button" class="delete-deduction-row" style="background:#e53935; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;">حذف</button></td>
+              </tr>
+            `;
+          });
+        });
+    }
+
+    // 2. عند تعديل البيانات والضغط على "تعديل المستخلص"
+    document.getElementById('extractForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const updated = {
+        number: document.getElementById('number').value,
+        project: document.getElementById('project').value,
+        date: document.getElementById('date').value,
+        contractor: document.getElementById('contractor').value,
+        username: document.getElementById('username').value,
+        notes: document.getElementById('notes').value,
+        workItems: workItems, // استخدم workItems من الذاكرة
+        deductions: Array.from(document.querySelectorAll('#deductionsBody tr')).map(tr => ({
+          deductionStatement: tr.children[0].firstElementChild.value,
+          deductionDate: tr.children[1].firstElementChild.value,
+          deductionQuantity: tr.children[2].firstElementChild.value,
+          deductionCategory: tr.children[3].firstElementChild.value,
+          deductionTotal: tr.children[4].firstElementChild.value,
+          deductionUser: tr.children[5].firstElementChild.value
+        }))
+      };
+      const res = await fetch('/extracts/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      if (res.ok) {
+        alert('تم تعديل المستخلص بنجاح!');
+        location.href = 'index.html';
+      } else {
+        alert('حدث خطأ أثناء التعديل');
+      }
+    };
+
+    function calculateSummary() {
+      // استخدم workItems مباشرة
+      let totalExtract = 0, totalDeductions = 0;
+
+      // حساب إجمالي المستخلص من workItems
+      workItems.forEach(item => {
+        if (item.currentAmount) totalExtract += parseFloat(item.currentAmount) || 0;
+      });
+
+      // حساب إجمالي الخصومات من جدول الخصومات في الـ DOM
+      document.querySelectorAll('#deductionsBody tr').forEach(tr => {
+        const val = tr.children[4].firstElementChild.value;
+        if (val) totalDeductions += parseFloat(val) || 0;
+      });
+
+      document.getElementById('totalExtract').textContent = totalExtract.toFixed(2);
+      document.getElementById('totalDeductions').textContent = totalDeductions.toFixed(2);
+      document.getElementById('afterDeductions').textContent = (totalExtract - totalDeductions).toFixed(2);
+    }
+
+    // احسب الملخص بعد تحميل البيانات
+    if (id) {
+      fetch(`/extracts/${id}`)
+        .then(res => res.json())
+        .then(async data => {
+          // بعد جلب بيانات المستخلص من السيرفر
+          // لا تكتب اسم المستخدم الحالي هنا، فقط استخدم من الداتا
+          workItems = (data.workItems || []).map(item => ({ ...item }));
+          setTimeout(calculateSummary, 100); // بعد تعبئة الجداول
+        });
+    }
+
+    // احسب الملخص عند أي تغيير في الجداول
+    document.getElementById('workItemsBody').addEventListener('input', calculateSummary);
+    document.getElementById('deductionsBody').addEventListener('input', calculateSummary);
+
+    let sortOrder = [];
+    let groupsCollapsed = {};
+    let workItems = [];
+
+    document.getElementById('sortByBuilding').addEventListener('click', function() {
+      toggleSort('buildingNumber');
+      renderWorkItems();
+    });
+    document.getElementById('sortByWorkItem').addEventListener('click', function() {
+      toggleSort('workItem');
+      renderWorkItems();
+    });
+
+    function toggleSort(field) {
+      const idx = sortOrder.indexOf(field);
+      if (idx === -1) {
+        sortOrder.push(field);
+        document.getElementById(field === 'buildingNumber' ? 'sortByBuilding' : 'sortByWorkItem').classList.add('active');
+      } else {
+        sortOrder.splice(idx, 1);
+        document.getElementById(field === 'buildingNumber' ? 'sortByBuilding' : 'sortByWorkItem').classList.remove('active');
+      }
+      groupsCollapsed = {};
+
+      // إغلاق كل الجروبات افتراضياً عند الترتيب
+      setTimeout(() => {
+        // ابحث عن كل الجروبات الحالية في الجدول وأغلقها
+        document.querySelectorAll('.group-row, .subgroup-row').forEach(row => {
+          const groupKey = row.dataset.group;
+          if (groupKey) groupsCollapsed[groupKey] = true;
+        });
+        renderWorkItems();
+      }, 0);
+    }
+
+    function renderWorkItems() {
+      let items = workItems.length ? [...workItems] : Array.from(document.querySelectorAll('#workItemsBody tr')).map(tr => ({
+        buildingNumber: tr.children[0].firstElementChild.value,
+        workItem: tr.children[1].firstElementChild.value,
+        workDescription: tr.children[2].firstElementChild.value,
+        quantity: tr.children[3].firstElementChild.value,
+        unit: tr.children[4].firstElementChild.value,
+        category: tr.children[5].firstElementChild.value,
+        prevPercent: tr.children[6].firstElementChild.value,
+        currentPercent: tr.children[7].firstElementChild.value,
+        totalPercent: tr.children[8].firstElementChild.value,
+        prevAmount: tr.children[9].firstElementChild.value,
+        currentAmount: tr.children[10].firstElementChild.value,
+        totalAmount: tr.children[11].firstElementChild.value
+      }));
+
+      if (sortOrder.length > 0) {
+        items.sort((a, b) => {
+          for (let field of sortOrder) {
+            if (a[field] < b[field]) return -1;
+            if (a[field] > b[field]) return 1;
+          }
+          return 0;
+        });
+      }
+
+      let finalHtml = '';
+      let rowNum = 1;
+
+      if (sortOrder.length === 2) {
+        // ترتيب حسب المبنى ثم بند الأعمال
+        let groups = {};
+        items.forEach((item, idx) => {
+          let building = item.buildingNumber || 'بدون';
+          let workItem = item.workItem || 'بدون';
+          if (!groups[building]) groups[building] = {};
+          if (!groups[building][workItem]) groups[building][workItem] = [];
+          groups[building][workItem].push({ item, idx });
+        });
+
+        for (let building in groups) {
+          let groupKey1 = `g1_${building}`;
+          let totalInGroup1 = Object.values(groups[building]).reduce((acc, arr) => acc + arr.length, 0);
+
+          // صف رقم المبنى
+          finalHtml += `
+            <tr class="group-row" data-group="${groupKey1}">
+              <td colspan="14" style="text-align:right; cursor:pointer;">
+                <span style="font-weight:bold;">
+                  رقم المبنى: ${building} (${totalInGroup1})
+                  <span id="icon_${groupKey1}">${groupsCollapsed[groupKey1] ? "&#x25BC;" : "&#x25B2;"}</span>
+                </span>
+              </td>
+            </tr>
+          `;
+
+          // البنود داخل المبنى (كل بند أعمال في صف منفصل تحت صف المبنى)
+          for (let workItem in groups[building]) {
+            let groupKey2 = `g2_${building}_${workItem}`;
+            let subgroupHidden = groupsCollapsed[groupKey1] ? "hidden-row" : "";
+            // صف بند الأعمال (تحت صف المبنى مباشرة)
+            finalHtml += `
+              <tr class="subgroup-row ${subgroupHidden}" data-group="${groupKey2}" data-parent="${groupKey1}">
+                <td colspan="14" style="text-align:right; cursor:pointer; padding-right:32px;">
+                  <span style="font-weight:bold;">
+                    بند الأعمال: ${workItem} (${groups[building][workItem].length})
+                    <span id="icon_${groupKey2}">${groupsCollapsed[groupKey2] ? "&#x25BC;" : "&#x25B2;"}</span>
+                  </span>
+                </td>
+              </tr>
+            `;
+            // صفوف الأعمال تحت البند
+            if (!groupsCollapsed[groupKey2] && !groupsCollapsed[groupKey1]) {
+              groups[building][workItem].forEach(({ item, idx }) => {
+                finalHtml += workItemRowHtml(item, rowNum++, idx, groupKey2);
+              });
+            }
+          }
+        }
+      } else if (sortOrder.length === 1) {
+        let field = sortOrder[0];
+        let groups = {};
+        items.forEach((item, idx) => {
+          let key = item[field] || 'بدون';
+          if (!groups[key]) groups[key] = [];
+          groups[key].push({ item, idx });
+        });
+        for (let g in groups) {
+          let groupKey = `g_${g}`;
+          finalHtml += `
+            <tr class="group-row" data-group="${groupKey}">
+              <td colspan="13" style="text-align:right; cursor:pointer;">
+                <span style="font-weight:bold;">
+                  ${field === 'buildingNumber' ? 'رقم المبنى: ' : 'بند الأعمال: '}${g} (${groups[g].length})
+                  <span id="icon_${groupKey}">${groupsCollapsed[groupKey] ? "&#x25BC;" : "&#x25B2;"}</span>
+                </span>
+              </td>
+            </tr>
+          `;
+          if (!groupsCollapsed[groupKey]) {
+            groups[g].forEach(({ item, idx }) => {
+              finalHtml += workItemRowHtml(item, rowNum++, idx, groupKey);
+            });
+          }
+        }
+      } else {
+        items.forEach((item, idx) => {
+          finalHtml += workItemRowHtml(item, idx + 1, idx, null);
+        });
+      }
+
+      document.getElementById('workItemsBody').innerHTML = finalHtml;
+
+      // إظهار/إخفاء رأس الجدول حسب ظهور الصفوف
+      const thead = document.querySelector('#workItemsTable thead');
+      const anyVisibleRow = document.querySelector('#workItemsBody tr:not(.hidden-row)');
+      if (thead) {
+        thead.style.display = anyVisibleRow ? '' : 'none';
+      }
+
+      document.querySelectorAll('.group-row').forEach(el => {
+        let groupKey = el.dataset.group;
+        el.onclick = function() {
+          groupsCollapsed[groupKey] = !groupsCollapsed[groupKey];
+          renderWorkItems();
+        }
+      });
+      document.querySelectorAll('.subgroup-row').forEach(el => {
+        let groupKey = el.dataset.group;
+        el.onclick = function(e) {
+          e.stopPropagation();
+          groupsCollapsed[groupKey] = !groupsCollapsed[groupKey];
+          renderWorkItems();
+        }
+      });
+
+      document.querySelectorAll('.work-item-input').forEach(input => {
+        input.oninput = function(e) {
+          const idx = parseInt(e.target.dataset.idx);
+          const field = e.target.dataset.field;
+          workItems[idx][field] = e.target.value;
+          updateTotalsRow(idx);
+          calculateSummary();
+        };
+      });
+    }
+
+    function workItemRowHtml(item, rowNum, idx, groupKey) {
+      let hiddenClass = groupKey && groupsCollapsed[groupKey] ? "hidden-row" : "";
+      return `
+        <tr class="work-row ${hiddenClass}" ${groupKey ? `data-childof="${groupKey}"` : ""}>
+          <td>${rowNum}</td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="buildingNumber" value="${item.buildingNumber || ''}" required placeholder="رقم المبني"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="workItem" value="${item.workItem || ''}" required placeholder="بند الأعمال"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="workDescription" value="${item.workDescription || ''}" placeholder="بيان الأعمال"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="quantity" value="${item.quantity || ''}" type="number" required placeholder="الكمية"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="unit" value="${item.unit || ''}" placeholder="الوحدة"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="category" value="${item.category || ''}" type="number" placeholder="الفئة"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="prevPercent" value="${item.prevPercent || ''}" type="number" placeholder="السابق نسبة" readonly style="background:#e8f5e9;"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="currentPercent" value="${item.currentPercent || ''}" type="number" placeholder="الحالي نسبة"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="totalPercent" value="${item.totalPercent || ''}" type="number" readonly placeholder="الإجمالي نسبة" style="background:#e8f5e9;"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="prevAmount" value="${item.prevAmount || ''}" type="number" readonly placeholder="السابق مبلغ" style="background:#e8f5e9;"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="currentAmount" value="${item.currentAmount || ''}" type="number" placeholder="الحالي مبلغ"></td>
+          <td><input class="work-item-input" data-idx="${idx}" data-field="totalAmount" value="${item.totalAmount || ''}" type="number" readonly placeholder="الإجمالي مبلغ" style="background:#e8f5e9;"></td>
+          <td><button type="button" class="delete-work-row" data-idx="${idx}" style="background:#e53935; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;">حذف</button></td>
+        </tr>
+      `;
+    }
+
+    document.getElementById('addWorkItemRowBtn').addEventListener('click', function() {
+      workItems.push({
+        buildingNumber: '',
+        workItem: '',
+        workDescription: '',
+        quantity: '',
+        unit: '',
+        category: '',
+        prevPercent: '',
+        currentPercent: '',
+        totalPercent: '',
+        prevAmount: '',
+        currentAmount: '',
+        totalAmount: ''
+      });
+      renderWorkItems();
+    });
+
+    document.getElementById('addDeductionRowBtn').addEventListener('click', function() {
+      const tbody = document.getElementById('deductionsBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input data-field="deductionStatement"></td>
+        <td><input data-field="deductionDate" type="date"></td>
+        <td><input data-field="deductionQuantity" type="number"></td>
+        <td><input data-field="deductionCategory" type="number"></td>
+        <td><input data-field="deductionTotal" type="number"></td>
+        <td><input data-field="deductionUser"></td>
+        <td><button type="button" class="delete-deduction-row" style="background:#e53935; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;">حذف</button></td>
+      `;
+      tbody.appendChild(tr);
+      calculateSummary();
+    });
+
+    // عند تحميل بيانات المستخلص من السيرفر، احفظها في workItems ثم نفذ renderWorkItems
+    if (id) {
+      fetch(`/extracts/${id}`)
+        .then(res => res.json())
+        .then(async data => {
+          workItems = (data.workItems || []).map(item => ({ ...item }));
+          renderWorkItems();
+          setTimeout(calculateSummary, 100);
+        });
+    }
+
+    function updateTotalsRow(idx) {
+      let item = workItems[idx];
+      let prev = parseFloat(item.prevPercent) || 0;
+      let current = parseFloat(item.currentPercent) || 0;
+      let maxCurrent = 100 - prev;
+      if (current > maxCurrent) {
+        current = maxCurrent;
+        item.currentPercent = maxCurrent > 0 ? maxCurrent : 0;
+      }
+      item.totalPercent = prev + current;
+      if (item.totalPercent > 100) item.totalPercent = 100;
+      item.currentAmount =
+        ((parseFloat(item.quantity) || 0) * (parseFloat(item.category) || 0) * ((parseFloat(item.currentPercent) || 0) / 100)).toFixed(2);
+      item.totalAmount =
+        (parseFloat(item.prevAmount) || 0) +
+        (parseFloat(item.currentAmount) || 0);
+
+      let rowInputs = document.querySelectorAll('.work-item-input[data-idx="' + idx + '"]');
+      rowInputs.forEach(input => {
+        let field = input.dataset.field;
+        if (field === 'currentPercent') input.value = item.currentPercent || '';
+        if (field === 'totalPercent') {
+          input.value = item.totalPercent || '';
+          if (parseFloat(item.totalPercent) >= 100) {
+            input.classList.add('total-percent-max');
+          } else {
+            input.classList.remove('total-percent-max');
+          }
+        }
+        if (field === 'currentAmount') input.value = item.currentAmount || '';
+        if (field === 'totalAmount') input.value = item.totalAmount || '';
+      });
+    }
+
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+
+    // مثال في صفحة تعديل المستخلص
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.permissions || !user.permissions.includes('edit-extract')) {
+      // اجعل الحقول للعرض فقط (اقرأ فقط)
+      document.querySelectorAll('input, textarea, select').forEach(el => el.setAttribute('readonly', true));
+      // أو أخفِ زر الحفظ
+      document.querySelector('button[type="submit"]').style.display = 'none';
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('delete-work-row')) {
+        const idx = parseInt(e.target.dataset.idx);
+        workItems.splice(idx, 1);
+        renderWorkItems();
+        calculateSummary();
+      }
+      if (e.target.classList.contains('delete-deduction-row')) {
+        const tr = e.target.closest('tr');
+        if (tr) tr.remove();
+        calculateSummary();
+      }
+    });
+
+    // تفعيل زر الطباعة
+    if (document.getElementById('btnPrint')) {
+      document.getElementById('btnPrint').onclick = function() {
+        hideDeductionsIfEmpty();
+        window.print();
+        setTimeout(showDeductions, 1000); // إعادة إظهار الجدول بعد الطباعة
+      };
+    }
+
+    // تفعيل زر PDF (فتح نافذة الطباعة مع اختيار PDF)
+    if (document.getElementById('btnPdf')) {
+      document.getElementById('btnPdf').onclick = function() {
+        hideDeductionsIfEmpty();
+        window.print();
+        setTimeout(showDeductions, 1000);
+      };
+    }
+
+    function hideDeductionsIfEmpty() {
+      var dedBody = document.getElementById('deductionsBody');
+      var dedTable = dedBody.closest('table');
+      if (dedBody && dedTable && dedBody.children.length === 0) {
+        dedTable.style.display = 'none';
+        // إخفاء عنوان الخصومات إذا كان موجود
+        var h3s = document.querySelectorAll('h3');
+        h3s.forEach(function(h3) {
+          if (h3.textContent.trim().includes('الخصومات')) h3.style.display = 'none';
+        });
+      }
+    }
+
+    function showDeductions() {
+      var dedBody = document.getElementById('deductionsBody');
+      var dedTable = dedBody.closest('table');
+      if (dedTable) dedTable.style.display = '';
+      // إظهار عنوان الخصومات
+      var h3s = document.querySelectorAll('h3');
+      h3s.forEach(function(h3) {
+        if (h3.textContent.trim().includes('الخصومات')) h3.style.display = '';
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // تفعيل إظهار/إخفاء قائمة الترتيب عند الضغط على الأيقونة
+      var sortMenuBtn = document.getElementById('sortMenuBtn');
+      var sortMenu = document.getElementById('sortMenu');
+      if (sortMenuBtn && sortMenu) {
+        sortMenuBtn.onclick = function(e) {
+          e.stopPropagation();
+          // Position menu below the icon, right-aligned
+          sortMenu.style.display = sortMenu.style.display === 'block' ? 'none' : 'block';
+          // Optionally, adjust position if needed
+        };
+        document.addEventListener('click', function() {
+          sortMenu.style.display = 'none';
+        });
+      }
+
+      // jsPDF usage example (optional, remove if not needed)
+      if (window.jspdf && window.jspdf.jsPDF) {
+        // const { jsPDF } = window.jspdf;
+        // const doc = new jsPDF();
+        // doc.text("Hello PDF", 10, 10);
+        // doc.save("extract.pdf");
+      }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

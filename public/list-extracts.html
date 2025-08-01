@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>قائمة المستخلصات | سعيد أحمد بالبيد</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body { margin: 0; font-family: 'Cairo', Arial, sans-serif; background: #f4f7fa; direction: rtl; }
+    .navbar {
+      background: linear-gradient(90deg,#1b5e20,#388e3c);
+      color: #fff;
+      padding: 8px 0 8px 0;      /* تصغير ارتفاع الشريط */
+      text-align: center;
+      font-size: 1.2rem;         /* تصغير الخط */
+      font-weight: bold;
+      box-shadow: 0 2px 12px #0001;
+      letter-spacing: 1px;
+      position: relative;
+      min-height: 0;
+    }
+    #userBox {
+      position: absolute;
+      left: 12px;
+      top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+    #username { color: #fff; font-weight: bold; }
+    #logoutBtn {
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #logoutBtn:hover { background: #b71c1c; }
+    .container {
+      max-width: 950px;
+      margin: 18px auto 0 auto;   /* رفع الصفحة للأعلى */
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 0 18px #0002;
+      padding: 12px 10px 10px 10px; /* تقليل البادينج */
+      border: 2px solid #1b5e20;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;      /* تقليل المسافة السفلية */
+      margin-top: 4px;          /* رفع العنوان للأعلى */
+      color: #1b5e20;
+      font-size: 1rem;          /* تصغير حجم الخط */
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .filters-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .filter-btn, .today-btn {
+      background: #fff;
+      color: #1b5e20;
+      border: 2px solid #1b5e20;
+      border-radius: 8px;
+      font-size: 0.85rem;       /* تصغير حجم الخط */
+      font-weight: bold;
+      padding: 2px 7px;         /* تصغير البادينج */
+      cursor: pointer;
+      box-shadow: 0 2px 10px #0001;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .filter-btn.active, .today-btn.active {
+      background: #1b5e20;
+      color: #fff;
+    }
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #e8f5e9;
+      border-radius: 8px;
+      padding: 6px 12px;
+      border: 1.5px solid #388e3c;
+    }
+    .date-filter label {
+      font-weight: bold;
+      color: #1b5e20;
+      font-size: 0.85rem;
+    }
+    .date-filter input[type="date"] {
+      font-size: 0.85rem;
+      padding: 2px 5px;
+      border: 1px solid #c8e6c9;
+      border-radius: 6px;
+      background: #fff;
+      color: #1b5e20;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #e8f5e9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px #1b5e20;
+      margin-bottom: 6px;
+    }
+    th, td {
+      padding: 4px 2px;         /* تقليل البادينج */
+      border-bottom: 1px solid #c8e6c9;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.85rem;       /* تصغير الخط */
+      background: transparent;
+      white-space: nowrap;
+      word-break: break-word;
+    }
+    th {
+      background: #1b5e20 !important;
+      color: #fff !important;
+      font-weight: bold;
+    }
+    tr:last-child td { border-bottom: none; }
+    .btn {
+      background: #388e3c;
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      border-radius: 5px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: #1b5e20;
+      color: #fff;
+    }
+    tr:hover td {
+      background: #d0f8ce;
+      transition: background 0.2s;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 4px; }
+      th, td { padding: 2px; font-size: .82rem; }
+      .filters-bar { gap: 6px; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 2px; }
+      th, td { padding: 1px; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    سعيد أحمد بالبيد
+    <div style="position:absolute; right:18px; top:12px;">
+      <button onclick="location.href='index.html'" style="background:#fff; color:#1b5e20; border:2px solid #1b5e20; border-radius:7px; font-weight:bold; padding:4px 16px; cursor:pointer; font-size:1rem;">
+        <i class="fa fa-arrow-right"></i> الرجوع للرئيسية
+      </button>
+    </div>
+    <div id="userBox">
+      <span id="username"></span>
+      <button id="logoutBtn" onclick="logout()">تسجيل الخروج</button>
+    </div>
+  </div>
+  <div class="container">
+    <h2>قائمة المستخلصات</h2>
+    <div class="filters-bar">
+      <button class="filter-btn" id="toggleDateFilter"><i class="fa-solid fa-filter"></i> فلترة بالتاريخ</button>
+      <div class="date-filter" id="dateFilterBox" style="display:none;">
+        <label>من:</label>
+        <input type="date" id="fromDate">
+        <label>إلى:</label>
+        <input type="date" id="toDate">
+        <button class="filter-btn" id="applyDateFilter"><i class="fa-solid fa-magnifying-glass"></i>تطبيق</button>
+      </div>
+      <button class="today-btn" id="showTodayBtn"><i class="fa-solid fa-calendar-day"></i> عرض مستخلصات اليوم</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>رقم المستخلص</th>
+          <th>اسم المشروع</th>
+          <th>اسم المقاول</th>
+          <th>التاريخ</th>
+          <th>القيمة</th>
+          <th>اسم المستخدم</th>
+          <th>ملاحظات</th>
+          <th>إجراءات</th>
+          <th>حذف</th> <!-- العمود الجديد -->
+        </tr>
+      </thead>
+      <tbody id="extractsList"></tbody>
+    </table>
+  </div>
+  <script>
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+    // عرض اسم المستخدم
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        document.getElementById('username').textContent = user.username || '';
+      } catch {}
+    }
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  </script>
+  <script>
+    let allExtracts = [];
+    let contractorsMap = {};
+
+    async function fetchExtracts() {
+      // جلب المقاولين أولاً
+      const contractorsRes = await fetch('/contractors');
+      const contractors = await contractorsRes.json();
+      contractorsMap = {};
+      contractors.forEach(c => {
+        contractorsMap[c._id] = c.name;
+      });
+
+      // جلب المستخلصات
+      const res = await fetch('/extracts');
+      const extracts = await res.json();
+      allExtracts = extracts;
+      renderExtracts(extracts);
+    }
+
+    function renderExtracts(extracts) {
+      const list = document.getElementById('extractsList');
+      list.innerHTML = '';
+      extracts.forEach(e => {
+        // اسم المقاول
+        const contractorName = contractorsMap[e.contractor] || e.contractor || '';
+        // حساب قيمة المستخلص (مجموع currentAmount لكل بند)
+        let value = 0;
+        if (Array.isArray(e.workItems)) {
+          value = e.workItems.reduce((sum, item) => sum + (parseFloat(item.currentAmount) || 0), 0);
+        }
+        // اسم المستخدم الذي أنشأ المستخلص
+        const username = e.username || '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${e.number}</td>
+          <td>${e.project || ''}</td>
+          <td>${contractorName}</td>
+          <td>${e.date || ''}</td>
+          <td>${value.toLocaleString('ar-EG', {maximumFractionDigits: 2})}</td>
+          <td>${username}</td>
+          <td>${e.notes || ''}</td>
+          <td>
+            <a href="extract.html?id=${e._id}" class="btn">عرض/تعديل</a>
+          </td>
+          <td>
+            <button class="btn btn-delete" data-id="${e._id}" style="background:#e53935;">حذف</button>
+          </td>
+        `;
+        list.appendChild(tr);
+      });
+    }
+
+    // فلترة بالتاريخ
+    document.getElementById('toggleDateFilter').onclick = function() {
+      const box = document.getElementById('dateFilterBox');
+      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+      this.classList.toggle('active');
+    };
+    document.getElementById('applyDateFilter').onclick = function() {
+      const from = document.getElementById('fromDate').value;
+      const to = document.getElementById('toDate').value;
+      let filtered = allExtracts;
+      if (from) {
+        filtered = filtered.filter(e => e.date && e.date >= from);
+      }
+      if (to) {
+        filtered = filtered.filter(e => e.date && e.date <= to);
+      }
+      renderExtracts(filtered);
+    };
+    // زر عرض مستخلصات اليوم
+    document.getElementById('showTodayBtn').onclick = function() {
+      const today = new Date().toISOString().split('T')[0];
+      const filtered = allExtracts.filter(e => e.date === today);
+      renderExtracts(filtered);
+      this.classList.add('active');
+      setTimeout(() => this.classList.remove('active'), 1200);
+    };
+
+    document.addEventListener('click', async function(e) {
+      if (e.target.classList.contains('btn-delete')) {
+        const id = e.target.getAttribute('data-id');
+        if (confirm('هل أنت متأكد من حذف هذا المستخلص؟')) {
+          const res = await fetch(`/extracts/${id}`, { method: 'DELETE' });
+          if (res.ok) {
+            // حذف من الواجهة مباشرة
+            allExtracts = allExtracts.filter(ex => ex._id !== id);
+            renderExtracts(allExtracts);
+          } else {
+            alert('حدث خطأ أثناء الحذف');
+          }
+        }
+      }
+    });
+
+    fetchExtracts();
+  </script>
+</body>
+</html>
