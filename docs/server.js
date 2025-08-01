@@ -199,7 +199,8 @@ app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await usersCollection.findOne({ email, password });
     if (user) {
-      res.json({ success: true, user: { username: user.username, email: user.email, _id: user._id } });
+      // أرسل كل بيانات المستخدم مع تحويل _id لنص
+      res.json({ success: true, user: { ...user, _id: user._id.toString() } });
     } else {
       res.json({ success: false, message: 'الإيميل أو كلمة المرور غير صحيحة' });
     }
@@ -211,11 +212,21 @@ app.post('/login', async (req, res) => {
 // تحديث صلاحيات مستخدم
 app.put('/users/:id/permissions', async (req, res) => {
   try {
-    await usersCollection.updateOne(
-      { _id: new ObjectId(req.params.id) },
-      { $set: { permissions: req.body.permissions || [] } }
-    );
-    res.json({ success: true });
+    let result;
+    const id = req.params.id;
+    // إذا كان id من نوع ObjectId
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { permissions: req.body.permissions || [] } }
+      );
+    } else {
+      result = await usersCollection.updateOne(
+        { _id: id },
+        { $set: { permissions: req.body.permissions || [] } }
+      );
+    }
+    res.json({ success: true, modifiedCount: result.modifiedCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
