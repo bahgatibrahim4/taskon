@@ -223,7 +223,7 @@ app.put('/users/:id/permissions', async (req, res) => {
 
 // دعم الرجوع للصفحة الرئيسية من المسار /
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+  res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 const PORT = process.env.PORT || 4000;
