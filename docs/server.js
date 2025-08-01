@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // تقديم ملفات الواجهة من فولدر public
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 const uri = "mongodb+srv://admin:Bb100200@db.diskpwp.mongodb.net/?retryWrites=true&w=majority&appName=DB";
 const client = new MongoClient(uri, {
