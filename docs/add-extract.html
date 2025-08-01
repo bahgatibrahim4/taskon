@@ -468,6 +468,31 @@
         </table>
         <button type="button" class="add-row-btn" id="addWorkItemRowBtn">+ إضافة صف جديد</button>
       </div>
+      <!-- جدول أعمال إضافية -->
+      <h3 style="margin-top:24px;">أعمال إضافية</h3>
+      <div class="table-section" style="background: #f1f8e9; border: 1.5px solid #a5d6a7;">
+        <table id="extraWorksTable" style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+          <thead>
+            <tr style="background:#e8f5e9;">
+              <th style="padding:8px; border:1px solid #a5d6a7;">م</th>
+              <th style="padding:8px; border:1px solid #a5d6a7;">بيان الأعمال</th>
+              <th style="padding:8px; border:1px solid #a5d6a7;">الفئة</th>
+              <th style="padding:8px; border:1px solid #a5d6a7;">الكمية</th>
+              <th style="padding:8px; border:1px solid #a5d6a7;">الفئة</th>
+              <th style="padding:8px; border:1px solid #a5d6a7;">المبلغ</th>
+              <th style="padding:8px; border:1px solid #a5d6a7;">حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- الصفوف تضاف ديناميكياً -->
+          </tbody>
+        </table>
+        <button type="button" class="add-row-btn" id="addExtraWorkRowBtn" style="background:#388e3c;">+ إضافة عمل إضافي</button>
+        <div style="margin-top:14px; font-weight:bold; color:#388e3c;">
+          إجمالي الأعمال الإضافية: <span id="extraWorksTotal">0</span> ريال
+        </div>
+      </div>
+      <!-- ...existing code... -->
       <h3>الخصومات والاستحقاقات</h3>
       <div class="table-section" style="background: #e3f2fd; border: 1px solid #90caf9;">
         <table id="deductionsTable" style="border-radius: 10px; overflow: hidden;">
@@ -886,10 +911,100 @@
     addWorkItemRow();
     addDeductionRow();
 
+    // أعمال إضافية
+    let extraWorks = [];
+    function addExtraWorkRow() {
+      extraWorks.push({
+        statement: '',
+        type: 'مقطوعية',
+        quantity: '',
+        category: '',
+        amount: ''
+      });
+      renderExtraWorks();
+    }
+    function renderExtraWorks() {
+      const tbody = document.getElementById('extraWorksTable').getElementsByTagName('tbody')[0];
+      tbody.innerHTML = '';
+      extraWorks.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align:center; border:1px solid #a5d6a7;">${idx + 1}</td>
+          <td style="border:1px solid #a5d6a7;">
+            <input type="text" style="width:100%; box-sizing:border-box;" placeholder="بيان الأعمال" value="${row.statement}" data-idx="${idx}" data-field="statement">
+          </td>
+          <td style="border:1px solid #a5d6a7;">
+            <select style="width:100%;" data-idx="${idx}" data-field="type">
+              <option value="مقطوعية" ${row.type === 'مقطوعية' ? 'selected' : ''}>مقطوعية</option>
+              <option value="يوميات" ${row.type === 'يوميات' ? 'selected' : ''}>يوميات</option>
+              <option value="فاتورة" ${row.type === 'فاتورة' ? 'selected' : ''}>فاتورة</option>
+            </select>
+          </td>
+          <td style="border:1px solid #a5d6a7;">
+            <input type="number" min="0" style="width:80px;" value="${row.quantity}" data-idx="${idx}" data-field="quantity">
+          </td>
+          <td style="border:1px solid #a5d6a7;">
+            <input type="number" min="0" style="width:80px;" value="${row.category}" data-idx="${idx}" data-field="category">
+          </td>
+          <td style="border:1px solid #a5d6a7;">
+            <input type="number" min="0" style="width:100px;" value="${row.amount}" data-idx="${idx}" data-field="amount">
+          </td>
+          <td style="text-align:center; border:1px solid #a5d6a7;">
+            <button type="button" class="delete-extra-work-row" data-idx="${idx}" style="background:#e57373; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">حذف</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      calcExtraWorksTotal();
+    }
+    function calcExtraWorksTotal() {
+      let total = 0;
+      extraWorks.forEach(row => {
+        const qty = Number(row.quantity) || 0;
+        const cat = Number(row.category) || 0;
+        const amt = Number(row.amount) || 0;
+        total += amt > 0 ? amt : qty * cat;
+      });
+      document.getElementById('extraWorksTotal').textContent = total;
+      calculateSummary();
+    }
+    document.getElementById('addExtraWorkRowBtn').addEventListener('click', addExtraWorkRow);
+    document.addEventListener('input', function(e) {
+      if (e.target.closest('#extraWorksTable')) {
+        const idx = Number(e.target.dataset.idx);
+        const field = e.target.dataset.field;
+        extraWorks[idx][field] = e.target.value;
+        calcExtraWorksTotal();
+      }
+    });
+    document.addEventListener('change', function(e) {
+      if (e.target.closest('#extraWorksTable')) {
+        const idx = Number(e.target.dataset.idx);
+        const field = e.target.dataset.field;
+        extraWorks[idx][field] = e.target.value;
+        calcExtraWorksTotal();
+      }
+    });
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('delete-extra-work-row')) {
+        const idx = Number(e.target.dataset.idx);
+        extraWorks.splice(idx, 1);
+        renderExtraWorks();
+        calcExtraWorksTotal();
+      }
+    });
+
     function calculateSummary() {
       let before = 0, deductions = 0;
       workItems.forEach(item => {
         if (item.currentAmount) before += parseFloat(item.currentAmount) || 0;
+      });
+      // أضف إجمالي الأعمال الإضافية
+      extraWorks.forEach(row => {
+        const qty = Number(row.quantity) || 0;
+        const cat = Number(row.category) || 0;
+        const amt = Number(row.amount) || 0;
+        before += amt > 0 ? amt : qty * cat;
       });
       document.querySelectorAll('#deductionsBody tr').forEach(tr => {
         const deductionTotal = tr.querySelector('input[name="deductionTotal"]');
@@ -927,6 +1042,13 @@
           deductionCategory: tr.querySelector('input[name="deductionCategory"]').value === '' ? 0 : round2(tr.querySelector('input[name="deductionCategory"]').value),
           deductionTotal: tr.querySelector('input[name="deductionTotal"]').value === '' ? 0 : round2(tr.querySelector('input[name="deductionTotal"]').value),
           deductionUser: tr.querySelector('input[name="deductionUser"]').value,
+        })),
+        extraWorks: extraWorks.map(row => ({
+          statement: row.statement,
+          type: row.type,
+          quantity: row.quantity === '' ? 0 : Number(row.quantity),
+          category: row.category === '' ? 0 : Number(row.category),
+          amount: row.amount === '' ? 0 : Number(row.amount)
         }))
       };
 
@@ -980,6 +1102,7 @@
         // إخفاء زر إضافة صف جديد
         document.getElementById('addWorkItemRowBtn').style.display = 'none';
       }
+      addExtraWorkRow();
     });
     // حماية الصفحة: السماح فقط لمن لديه صلاحية "add-extract.html"
     if (!localStorage.getItem('user')) {

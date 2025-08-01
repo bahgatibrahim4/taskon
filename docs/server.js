@@ -92,12 +92,12 @@ app.get('/extracts', async (req, res) => {
     const users = await usersCollection.find({}).toArray();
 
     const extractsWithUser = extracts.map(extract => {
-      // تأكد أن المقارنة تتم بين نصوص
-      const extractUserId = (extract.userId || extract.createdBy || '').toString();
-      const user = users.find(u => (u._id || '').toString() === extractUserId);
+      // Ensure both sides are strings for comparison
+      const extractUserId = extract.userId ? extract.userId.toString() : (extract.createdBy ? extract.createdBy.toString() : '');
+      const user = users.find(u => u._id && u._id.toString() === extractUserId);
       return {
         ...extract,
-        username: user ? user.username : ''
+        username: user ? user.username : (extract.username || '')
       };
     });
 
