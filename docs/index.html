@@ -8,19 +8,19 @@
     body {
       margin: 0;
       font-family: 'Cairo', Arial, sans-serif;
-      background: linear-gradient(135deg, #e8f5e9 0%, #fff 100%);
+      background: #c5d6db; /* اللون الفاتح */
       min-height: 100vh;
       direction: rtl;
     }
     .navbar {
-      background: linear-gradient(90deg, #388e3c 0%, #43a047 100%);
+      background: #1a3b50;
       color: #fff;
-      padding: 14px 0 10px 0; /* تصغير الشريط */
+      padding: 14px 0 10px 0;
       text-align: center;
-      font-size: 1.6rem;      /* تصغير الخط */
+      font-size: 1.6rem;
       font-weight: 900;
       letter-spacing: 2px;
-      box-shadow: 0 2px 18px #388e3c22;
+      box-shadow: 0 2px 18px #1a3b5022;
       border-radius: 0 0 24px 24px;
       margin-bottom: 40px;
       position: relative;
@@ -29,6 +29,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      border-bottom: 3px solid #2e8ca3;
     }
     .navbar .user-info {
       position: absolute;
@@ -38,10 +39,10 @@
       color: #fff;
       font-size: 1rem;
       font-weight: 700;
-      background: #2e7d32;
+      background: #2e8ca3;
       padding: 6px 18px;
       border-radius: 18px;
-      box-shadow: 0 1px 6px #388e3c22;
+      box-shadow: 0 1px 6px #2e8ca322;
       letter-spacing: 1px;
       display: flex;
       align-items: center;
@@ -59,7 +60,7 @@
     .card {
       background: #fff;
       border-radius: 18px;
-      box-shadow: 0 4px 24px #388e3c11, 0 1.5px 8px #e8f5e9cc;
+      box-shadow: 0 4px 24px #1a3b5011, 0 1.5px 8px #c5d6dbcc;
       min-width: 220px;
       flex: 1 1 260px;
       max-width: 320px;
@@ -68,33 +69,33 @@
       flex-direction: column;
       align-items: center;
       transition: box-shadow 0.2s, transform 0.18s;
-      border: 1.5px solid #c8e6c9;
+      border: 1.5px solid #8c969a;
       position: relative;
       cursor: pointer;
       overflow: hidden;
     }
     .card:hover, .card:focus {
-      box-shadow: 0 8px 32px #388e3c33, 0 2px 12px #e8f5e9cc;
+      box-shadow: 0 8px 32px #2e8ca333, 0 2px 12px #c5d6dbcc;
       transform: translateY(-6px) scale(1.03);
-      border-color: #43a047;
+      border-color: #2e8ca3;
     }
     .card-icon {
       font-size: 2.8rem;
       margin-bottom: 18px;
-      color: #43a047;
-      background: #e8f5e9;
+      color: #2e8ca3;
+      background: #c5d6db;
       border-radius: 50%;
       width: 64px;
       height: 64px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px #43a04722;
+      box-shadow: 0 2px 8px #2e8ca322;
     }
     .card-title {
       font-size: 1.25rem;
       font-weight: bold;
-      color: #388e3c;
+      color: #1a3b50;
       margin-bottom: 8px;
       text-align: center;
       letter-spacing: 1px;
@@ -108,14 +109,14 @@
     }
     .footer {
       text-align: center;
-      color: #388e3c;
+      color: #2e8ca3;
       font-size: 1.1rem;
       margin-top: 60px;
       padding-bottom: 18px;
       opacity: 0.8;
       letter-spacing: 1px;
       font-weight: 500;
-      text-shadow: 0 1px 8px #388e3c11;
+      text-shadow: 0 1px 8px #2e8ca311;
     }
     @media (max-width: 900px) {
       .dashboard { gap: 18px; max-width: 98vw; }

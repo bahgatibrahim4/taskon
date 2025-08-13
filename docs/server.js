@@ -19,7 +19,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-let extractsCollection, contractorsCollection, usersCollection;
+let extractsCollection, contractorsCollection, usersCollection; // احذف extraWorksCollection
 
 // الاتصال بقاعدة البيانات
 async function connectDB() {
@@ -27,7 +27,8 @@ async function connectDB() {
   const db = client.db('company_db');
   extractsCollection = db.collection('extracts');
   contractorsCollection = db.collection('contractors');
-  usersCollection = db.collection('users'); // إضافة مجموعة المستخدمين
+  usersCollection = db.collection('users');
+  // احذف extraWorksCollection = db.collection('extraWorks');
   console.log("Connected to MongoDB!");
 }
 
@@ -75,10 +76,37 @@ app.delete('/contractors/:id', async (req, res) => {
   }
 });
 
+// تعديل بيانات مقاول
+app.put('/contractors/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    // إذا كان id من نوع ObjectId
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await contractorsCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: req.body }
+      );
+    } else {
+      result = await contractorsCollection.updateOne(
+        { _id: id },
+        { $set: req.body }
+      );
+    }
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على المقاول' });
+    }
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // API المستخلصات
 app.post('/extracts', async (req, res) => {
   try {
     const extract = req.body;
+    // احفظ otherWorksHeaders كما هي إذا أرسلها الكلاينت
     const result = await extractsCollection.insertOne(extract);
     res.status(201).json(result);
   } catch (err) {
@@ -111,15 +139,18 @@ app.get('/extracts', async (req, res) => {
 app.get('/extracts/:id', async (req, res) => {
   try {
     let extract = null;
-    // جرب البحث بـ ObjectId أولاً
     if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) {
       extract = await extractsCollection.findOne({ _id: new ObjectId(req.params.id) });
     }
-    // إذا لم يوجد أو الـ id ليس ObjectId، جرب البحث كنص
     if (!extract) {
       extract = await extractsCollection.findOne({ _id: req.params.id });
     }
     if (!extract) return res.status(404).json({ error: 'Extract not found' });
+
+    // أرسل الحقل otherWorksHeaders كما هو مع الريسبونس
+    extract.otherWorks = extract.otherWorks || [];
+    extract.otherWorksHeaders = extract.otherWorksHeaders || [];
+
     res.json(extract);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -232,6 +263,81 @@ app.put('/users/:id/permissions', async (req, res) => {
   }
 });
 
+// API الأعمال الإضافية
+
+// إضافة عمل إضافي
+// app.post('/extra-works', async (req, res) => { ... });
+// جلب كل الأعمال الإضافية
+// app.get('/extra-works', async (req, res) => { ... });
+// جلب عمل إضافي واحد
+// app.get('/extra-works/:id', async (req, res) => { ... });
+// تعديل عمل إضافي
+// app.put('/extra-works/:id', async (req, res) => { ... });
+// حذف عمل إضافي
+// app.delete('/extra-works/:id', async (req, res) => { ... });
+
+// جلب جدول المقطوعيات لمستخلص معين
+app.get('/extracts/:id/lump-sum', async (req, res) => {
+  try {
+    let extract = null;
+    if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+      extract = await extractsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    }
+    if (!extract) {
+      extract = await extractsCollection.findOne({ _id: req.params.id });
+    }
+    if (!extract) return res.status(404).json({ error: 'Extract not found' });
+    res.json({ lumpSumRows: extract.lumpSumRows || [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب جدول اليوميات لمستخلص معين
+app.get('/extracts/:id/daily', async (req, res) => {
+  try {
+    let extract = null;
+    if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+      extract = await extractsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    }
+    if (!extract) {
+      extract = await extractsCollection.findOne({ _id: req.params.id });
+    }
+    if (!extract) return res.status(404).json({ error: 'Extract not found' });
+    res.json({ dailyRows: extract.dailyRows || [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// تحديث جدول المقطوعيات لمستخلص معين
+app.put('/extracts/:id/lump-sum', async (req, res) => {
+  try {
+    const lumpSumRows = req.body.lumpSumRows || [];
+    let result = await extractsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: { lumpSumRows } }
+    );
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// تحديث جدول اليوميات لمستخلص معين
+app.put('/extracts/:id/daily', async (req, res) => {
+  try {
+    const dailyRows = req.body.dailyRows || [];
+    let result = await extractsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: { dailyRows } }
+    );
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // دعم الرجوع للصفحة الرئيسية من المسار /
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
@@ -239,3 +345,5 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// لا يوجد أي تعديل مطلوب هنا بخصوص منطق إخفاء الجداول عند حذف آخر صف

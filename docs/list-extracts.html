@@ -6,18 +6,19 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { margin: 0; font-family: 'Cairo', Arial, sans-serif; background: #f4f7fa; direction: rtl; }
+    body { margin: 0; font-family: 'Cairo', Arial, sans-serif; background: #c5d6db; direction: rtl; }
     .navbar {
-      background: linear-gradient(90deg,#1b5e20,#388e3c);
+      background: #1a3b50;
       color: #fff;
-      padding: 8px 0 8px 0;      /* تصغير ارتفاع الشريط */
+      padding: 8px 0 8px 0;
       text-align: center;
-      font-size: 1.2rem;         /* تصغير الخط */
+      font-size: 1.2rem;
       font-weight: bold;
       box-shadow: 0 2px 12px #0001;
       letter-spacing: 1px;
       position: relative;
       min-height: 0;
+      border-bottom: 3px solid #2e8ca3;
     }
     #userBox {
       position: absolute;
@@ -30,34 +31,36 @@
     }
     #username { color: #fff; font-weight: bold; }
     #logoutBtn {
-      background: #e53935;
+      background: #7a5230;
       color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 0px;
       padding: 4px 14px;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.2s;
     }
-    #logoutBtn:hover { background: #b71c1c; }
+    #logoutBtn:hover { background: #8c969a; }
     .container {
       max-width: 950px;
-      margin: 18px auto 0 auto;   /* رفع الصفحة للأعلى */
+      margin: 18px auto 0 auto;
       background: #fff;
       border-radius: 14px;
       box-shadow: 0 0 18px #0002;
-      padding: 12px 10px 10px 10px; /* تقليل البادينج */
-      border: 2px solid #1b5e20;
+      padding: 12px 10px 10px 10px;
+      border: 2px solid #8c969a;
       position: relative;
     }
     h2 {
       text-align: center;
-      margin-bottom: 10px;      /* تقليل المسافة السفلية */
-      margin-top: 4px;          /* رفع العنوان للأعلى */
-      color: #1b5e20;
-      font-size: 1rem;          /* تصغير حجم الخط */
+      margin-bottom: 10px;
+      margin-top: 4px;
+      color: #2e8ca3;
+      font-size: 1rem;
       font-weight: 700;
       letter-spacing: 1px;
+      border-bottom: 1px solid #7a5230;
+      padding-bottom: 4px;
     }
     .filters-bar {
       display: flex;
@@ -69,12 +72,12 @@
     }
     .filter-btn, .today-btn {
       background: #fff;
-      color: #1b5e20;
-      border: 2px solid #1b5e20;
-      border-radius: 8px;
-      font-size: 0.85rem;       /* تصغير حجم الخط */
+      color: #2e8ca3;
+      border: 2px solid #2e8ca3;
+      border-radius: 0px;
+      font-size: 0.85rem;
       font-weight: bold;
-      padding: 2px 7px;         /* تصغير البادينج */
+      padding: 2px 7px;
       cursor: pointer;
       box-shadow: 0 2px 10px #0001;
       transition: background 0.2s, color 0.2s, border 0.2s;
@@ -83,75 +86,86 @@
       gap: 7px;
     }
     .filter-btn.active, .today-btn.active {
-      background: #1b5e20;
+      background: #1a3b50;
       color: #fff;
     }
     .date-filter {
       display: flex;
       align-items: center;
       gap: 7px;
-      background: #e8f5e9;
-      border-radius: 8px;
+      background: #c5d6db;
+      border-radius: 0px;
       padding: 6px 12px;
-      border: 1.5px solid #388e3c;
+      border: 1.5px solid #2e8ca3;
     }
     .date-filter label {
       font-weight: bold;
-      color: #1b5e20;
+      color: #2e8ca3;
       font-size: 0.85rem;
     }
     .date-filter input[type="date"] {
       font-size: 0.85rem;
       padding: 2px 5px;
-      border: 1px solid #c8e6c9;
-      border-radius: 6px;
+      border: 1px solid #8c969a;
+      border-radius: 0px;
       background: #fff;
-      color: #1b5e20;
+      color: #2e8ca3;
     }
     table {
       width: 100%;
-      border-collapse: collapse;
-      background: #e8f5e9;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #c5d6db;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 12px #1b5e20;
+      box-shadow: 0 2px 12px #8c969a;
       margin-bottom: 6px;
     }
     th, td {
-      padding: 4px 2px;         /* تقليل البادينج */
-      border-bottom: 1px solid #c8e6c9;
+      padding: 4px 2px;
+      border-bottom: 1px solid #8c969a;
+      border-right: 1px solid #e0e0e0;
       text-align: center;
       vertical-align: middle;
-      font-size: 0.85rem;       /* تصغير الخط */
+      font-size: 0.85rem;
       background: transparent;
       white-space: nowrap;
       word-break: break-word;
     }
+    th:last-child, td:last-child {
+      border-right: none;
+    }
     th {
-      background: #1b5e20 !important;
+      background: #2e8ca3 !important;
       color: #fff !important;
       font-weight: bold;
     }
     tr:last-child td { border-bottom: none; }
     .btn {
-      background: #388e3c;
+      background: #2e8ca3;
       color: #fff;
       border: none;
       padding: 4px 10px;
       font-size: 0.85rem;
-      border-radius: 5px;
+      border-radius: 0px;
       font-weight: bold;
       text-decoration: none;
       transition: background 0.2s;
       display: inline-block;
     }
     .btn:hover {
-      background: #1b5e20;
+      background: #1a3b50;
       color: #fff;
     }
     tr:hover td {
-      background: #d0f8ce;
+      background: #f7fafd;
       transition: background 0.2s;
+    }
+    #contractorTotalBox {
+      background: #c5d6db !important;
+      border-radius: 0px !important;
+      border: 2px solid #2e8ca3 !important;
+      color: #2e8ca3 !important;
     }
     @media (max-width: 900px) {
       .container { padding: 4px; }
@@ -196,6 +210,7 @@
     <table>
       <thead>
         <tr>
+          <th>م</th>
           <th>رقم المستخلص</th>
           <!-- حذف عمود اسم المشروع -->
           <th>اسم المقاول</th>
@@ -258,21 +273,21 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         userPermissions = user.permissions || [];
       } catch {}
-      extracts.forEach(e => {
+      extracts.forEach((e, i) => {
         const contractorName = contractorsMap[e.contractor] || e.contractor || '';
         let value = 0;
         if (Array.isArray(e.workItems)) {
           value = e.workItems.reduce((sum, item) => sum + (parseFloat(item.currentAmount) || 0), 0);
         }
-        // لا تعرض اسم المستخدم
+        // عرض قيمة المستخلص بالإنجليزي مع فواصل
+        const valueStr = Number(value).toLocaleString('en-US', {maximumFractionDigits: 2});
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td>${i + 1}</td>
           <td>${e.number}</td>
-          <!-- حذف عمود اسم المشروع -->
           <td>${contractorName}</td>
           <td>${e.date || ''}</td>
-          <td>${value.toLocaleString('ar-EG', {maximumFractionDigits: 2})}</td>
-          <!-- حذف عمود اسم المستخدم -->
+          <td style="direction:ltr; text-align:center;">${valueStr}</td>
           <td>${e.notes || ''}</td>
           <td>
             <a href="extract.html?id=${e._id}" class="btn">عرض/تعديل</a>
