@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>بيانات المقاول</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      margin: 0;
+      direction: rtl;
+    }
+    .navbar {
+      background: #1a3b50;
+      color: #fff;
+      font-size: 1.18rem;
+      font-weight: bold;
+      box-shadow: 0 2px 12px #0002;
+      letter-spacing: 1px;
+      min-height: 58px;
+      padding: 0 24px;
+      border-bottom: 3px solid #2e8ca3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar .nav-btn {
+      background: #fff;
+      color: #2e8ca3;
+      border: 2px solid #2e8ca3;
+      font-size: 1.08rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 7px 18px;
+      border-radius: 0px;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      box-shadow: 0 2px 10px #0001;
+      margin-left: 10px;
+    }
+    .navbar .nav-btn:hover {
+      background: #1a3b50;
+      color: #fff;
+      border-color: #2e8ca3;
+    }
+    .container {
+      max-width: 600px;
+      margin: 32px auto 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 38px 38px 28px 38px;
+      border: 2px solid #8c969a;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 32px;
+      color: #2e8ca3;
+      letter-spacing: 1px;
+      font-size: 1.35rem;
+      font-weight: bold;
+      border-bottom: 2px solid #7a5230;
+      padding-bottom: 12px;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    .info-table th, .info-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #c5d6db;
+      font-size: 1.05rem;
+      text-align: right;
+    }
+    .info-table th {
+      background: #e8f5e9;
+      color: #2e8ca3;
+      width: 160px;
+      font-weight: bold;
+    }
+    .info-table td {
+      background: #f7fafd;
+      color: #333;
+    }
+    .back-btn {
+      display: inline-block;
+      margin: 0 0 18px 0;
+      color: #2e8ca3;
+      background: #fff;
+      border: 2px solid #2e8ca3;
+      border-radius: 0px;
+      padding: 7px 18px;
+      font-weight: bold;
+      font-size: 1.08rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    .back-btn:hover {
+      background: #1a3b50;
+      color: #fff;
+      border-color: #2e8ca3;
+    }
+    .section-title {
+      color: #7a5230;
+      font-size: 1.08rem;
+      font-weight: bold;
+      margin: 18px 0 8px 0;
+      border-bottom: 1px solid #c5d6db;
+      padding-bottom: 4px;
+    }
+    .extracts-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .extracts-table th, .extracts-table td {
+      padding: 6px 4px;
+      border-bottom: 1px solid #c5d6db;
+      text-align: right;
+      font-size: 0.97rem;
+    }
+    .extracts-table th {
+      background: #2e8ca3;
+      color: #fff;
+      font-weight: bold;
+    }
+    .extracts-table tr:hover td {
+      background: #e8f5e9;
+    }
+    .no-data {
+      text-align: center;
+      color: #888;
+      margin: 18px 0;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 700px) {
+      .container { padding: 10px; }
+      h2 { font-size: 1.1rem; }
+      .info-table th, .info-table td, .extracts-table th, .extracts-table td { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <button class="nav-btn" onclick="window.history.back()">رجوع</button>
+    <span>بيانات المقاول</span>
+    <button class="nav-btn" onclick="location.href='list-contractors.html'">كل المقاولين</button>
+  </div>
+  <div class="container">
+    <h2 id="contractorName">بيانات المقاول</h2>
+    <table class="info-table">
+      <tr>
+        <th>اسم المقاول</th>
+        <td id="name"></td>
+      </tr>
+      <tr>
+        <th>رقم الجوال</th>
+        <td id="phone"></td>
+      </tr>
+      <tr>
+        <th>العنوان</th>
+        <td id="address"></td>
+      </tr>
+      <tr>
+        <th>ملاحظات</th>
+        <td id="notes"></td>
+      </tr>
+    </table>
+
+    <div class="section-title">المستخلصات المرتبطة بهذا المقاول</div>
+    <table class="extracts-table" id="extractsTable">
+      <thead>
+        <tr>
+          <th>م</th>
+          <th>رقم المستخلص</th>
+          <th>تاريخ المستخلص</th>
+          <th>قيمة المستخلص</th>
+          <th>عرض</th>
+        </tr>
+      </thead>
+      <tbody id="extractsBody">
+        <tr><td colspan="5" class="no-data">جاري التحميل...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // استخراج id من الرابط
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+    const contractorId = getQueryParam('id');
+    if (!contractorId) {
+      document.body.innerHTML = '<div style="text-align:center;margin-top:60px;color:#c00;font-size:1.2rem;">لم يتم تحديد المقاول بشكل صحيح.</div>';
+      throw new Error('Contractor id not found');
+    }
+
+    // جلب بيانات المقاول
+    async function fetchContractor() {
+      const res = await fetch(`/contractors/${contractorId}`);
+      if (!res.ok) {
+        document.body.innerHTML = '<div style="text-align:center;margin-top:60px;color:#c00;font-size:1.2rem;">تعذر تحميل بيانات المقاول.</div>';
+        return;
+      }
+      const c = await res.json();
+      document.getElementById('contractorName').textContent = c.name || 'بيانات المقاول';
+      document.getElementById('name').textContent = c.name || '';
+      document.getElementById('phone').textContent = c.phone || '';
+      document.getElementById('address').textContent = c.address || '';
+      document.getElementById('notes').textContent = c.notes || '';
+    }
+
+    // جلب المستخلصات الخاصة بالمقاول
+    async function fetchExtracts() {
+      const res = await fetch(`/extracts?contractorId=${contractorId}`);
+      const tbody = document.getElementById('extractsBody');
+      if (!tbody) return; // حماية من الخطأ
+      if (!res.ok) {
+        tbody.innerHTML = `<tr><td colspan="5" class="no-data">تعذر تحميل المستخلصات.</td></tr>`;
+        return;
+      }
+      const extracts = await res.json();
+      if (!extracts.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="no-data">لا يوجد مستخلصات لهذا المقاول.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = '';
+      extracts.forEach((ex, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${ex.extractNumber || ''}</td>
+          <td>${ex.extractDate ? new Date(ex.extractDate).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${ex.totalAmount ? ex.totalAmount.toLocaleString('ar-EG') : ''}</td>
+          <td>
+            <a href="view-extract.html?id=${ex._id}" style="color:#2e8ca3;font-weight:bold;text-decoration:underline;">عرض</a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchContractor();
+      fetchExtracts();
+    });
+  </script>
+</body>
+</html>

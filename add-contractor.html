@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>إضافة مقاول | سعيد أحمد بالبيد</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      direction: rtl;
+    }
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a3b50;
+      color: #fff;
+      font-size: 1.18rem;
+      font-weight: bold;
+      box-shadow: 0 2px 12px #0002;
+      letter-spacing: 1px;
+      min-height: 58px;
+      padding: 0 24px;
+      border-bottom: 3px solid #2e8ca3;
+    }
+    .container {
+      max-width: 600px;
+      margin: 24px auto 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 38px 38px 28px 38px;
+      border: 2px solid #8c969a;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 32px;
+      color: #2e8ca3;
+      letter-spacing: 1px;
+      font-size: 1.35rem;
+      font-weight: bold;
+      border-bottom: 2px solid #7a5230;
+      padding-bottom: 12px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    input, textarea {
+      padding: 10px;
+      border-radius: 0px;
+      border: 1.5px solid #c5d6db;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #f7fafd;
+    }
+    input:focus, textarea:focus {
+      border-color: #2e8ca3;
+      background: #c5d6db;
+      box-shadow: 0 0 4px #2e8ca3;
+    }
+    button[type="submit"] {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 2px 8px #0001;
+      font-size: 1.08rem;
+      border-radius: 0px;
+      padding: 7px 18px;
+      transition: background 0.2s;
+    }
+    button[type="submit"]:hover {
+      background: #1a3b50;
+    }
+    .back {
+      display: block;
+      margin: 0 auto 15px auto;
+      text-align: center;
+      color: #2e8ca3;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: bold;
+      transition: color 0.2s;
+    }
+    .back:hover {
+      color: #1a3b50;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px; }
+      h2 { font-size: 1.1rem; padding-bottom: 8px; }
+      input, textarea { font-size: .95rem; padding: 8px; }
+      button[type="submit"] { font-size: 1rem; padding: 6px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">سعيد أحمد بالبيد</div>
+  <div class="container">
+    <span class="back" onclick="location.href='index.html'">الرجوع للرئيسية</span>
+    <h2>إضافة مقاول جديد</h2>
+    <form id="contractorForm">
+      <input name="name" placeholder="اسم المقاول" required>
+      <input name="phone" placeholder="رقم الهاتف" required>
+      <input name="address" placeholder="بند العمل">
+      <textarea name="notes" placeholder="ملاحظات"></textarea>
+      <button type="submit">إضافة المقاول</button>
+    </form>
+  </div>
+  <script>
+    // تحقق من تسجيل الدخول
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+    // تحقق من الصلاحية
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.permissions || !user.permissions.includes('add-contractor.html')) {
+      alert('ليس لديك صلاحية الدخول لهذه الصفحة');
+      window.location.href = 'index.html';
+    }
+  </script>
+  <script>
+    document.getElementById('contractorForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      await fetch('/contractors', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      alert('تم إضافة المقاول بنجاح!');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>
