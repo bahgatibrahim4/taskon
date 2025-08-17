@@ -342,6 +342,8 @@
       list.innerHTML = '';
       contractors.forEach((c, i) => {
         const tr = document.createElement('tr');
+        tr.style.cursor = "pointer";
+        tr.setAttribute('data-id', c._id);
         tr.innerHTML = `
           <td>${i + 1}</td>
           <td>${c.name}</td>
@@ -349,12 +351,18 @@
           <td>${c.address || ''}</td>
           <td>${c.notes || ''}</td>
           <td>
-            <button class="edit-btn" data-id="${c._id}">تعديل</button>
+            <button class="edit-btn" data-id="${c._id}" onclick="event.stopPropagation();">تعديل</button>
           </td>
           <td>
-            <button class="delete-btn" data-id="${c._id}">حذف</button>
+            <button class="delete-btn" data-id="${c._id}" onclick="event.stopPropagation();">حذف</button>
           </td>
         `;
+        // عند الضغط على الصف (وليس زر التعديل/الحذف) انتقل لصفحة المقاول
+        tr.addEventListener('click', function(e) {
+          // تجاهل الضغط على زر التعديل أو الحذف
+          if (e.target.classList.contains('edit-btn') || e.target.classList.contains('delete-btn')) return;
+          window.location.href = `contractor.html?id=${c._id}`;
+        });
         list.appendChild(tr);
       });
     }

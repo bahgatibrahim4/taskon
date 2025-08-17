@@ -35,10 +35,12 @@ async function connectDB() {
 connectDB().catch(console.dir);
 
 // API المقاولين
+// إضافة مقاول جديد (يدعم maxTotalPercentPerItem)
 app.post('/contractors', async (req, res) => {
   try {
     const contractor = req.body;
-    console.log('بيانات المقاول المستلمة:', contractor); // لوج
+    // إذا لم يوجد maxTotalPercentPerItem اجعله كائن فارغ
+    if (!contractor.maxTotalPercentPerItem) contractor.maxTotalPercentPerItem = {};
     const result = await contractorsCollection.insertOne(contractor);
     res.status(201).json(result);
   } catch (err) {
@@ -51,6 +53,23 @@ app.get('/contractors', async (req, res) => {
   try {
     const contractors = await contractorsCollection.find({}).toArray();
     res.json(contractors);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب مقاول واحد (يدعم maxTotalPercent)
+app.get('/contractors/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let contractor;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      contractor = await contractorsCollection.findOne({ _id: new ObjectId(id) });
+    } else {
+      contractor = await contractorsCollection.findOne({ _id: id });
+    }
+    if (!contractor) return res.status(404).json({ error: 'Contractor not found' });
+    res.json(contractor);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -76,10 +95,16 @@ app.delete('/contractors/:id', async (req, res) => {
   }
 });
 
-// تعديل بيانات مقاول
+// تعديل بيانات مقاول (يدعم maxTotalPercent)
 app.put('/contractors/:id', async (req, res) => {
   try {
     const id = req.params.id;
+    // إذا لم يوجد maxTotalPercentPerItem اجعله كائن فارغ
+    if (req.body.maxTotalPercentPerItem === undefined) req.body.maxTotalPercentPerItem = {};
+    // إذا لم يوجد maxTotalPercent اجعله 100 (أو لا تعدله إذا لم يُرسل)
+    if (req.body.maxTotalPercent !== undefined) {
+      req.body.maxTotalPercent = parseFloat(req.body.maxTotalPercent) || 100;
+    }
     let result;
     // إذا كان id من نوع ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
@@ -106,7 +131,19 @@ app.put('/contractors/:id', async (req, res) => {
 app.post('/extracts', async (req, res) => {
   try {
     const extract = req.body;
-    // احفظ otherWorksHeaders كما هي إذا أرسلها الكلاينت
+    // تحقق من وجود بنود أعمال حقيقية (ليست فواصل ومعبأة)
+    if (
+      !extract.contractor ||
+      !extract.number ||
+      !Array.isArray(extract.workItems) ||
+      !extract.workItems.some(item =>
+        !item.isSeparator &&
+        item.buildingNumber && item.workItem
+      )
+    ) {
+      return res.status(400).json({ error: 'يجب تعبئة بيانات المقاول ورقم المستخلص وبنود الأعمال.' });
+    }
+    // احفظ كل الحقول كما هي (بدون أي تعديل أو deep copy)
     const result = await extractsCollection.insertOne(extract);
     res.status(201).json(result);
   } catch (err) {
@@ -333,6 +370,21 @@ app.put('/extracts/:id/daily', async (req, res) => {
       { $set: { dailyRows } }
     );
     res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// إضافة مستخلص باستخدام منطق مماثل للنموذج (workItems لا تلمسها!)
+app.post('/extracts/model', async (req, res) => {
+  try {
+    // workItems قد تحتوي على فواصل
+    const extract = {
+      ...req.body,
+      workItems: req.body.workItems // لا تلمسها!
+    };
+    await extractsCollection.insertOne(extract);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
