@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>المخزن | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      direction: rtl;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: #1a3b50;
+      color: #fff;
+      padding: 14px 0 10px 0;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 18px #1a3b5022;
+      border-bottom: 3px solid #2e8ca3;
+      margin-bottom: 32px;
+    }
+    .container {
+      max-width: 1300px;
+      margin: 24px auto;
+      background: #f7fafd;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 28px 24px 18px 24px;
+      border: 2px solid #8c969a;
+    }
+    h2 {
+      color: #2e8ca3;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-align: right;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #f7fafd;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px #8c969a;
+    }
+    th, td {
+      padding: 8px 4px;
+      border-bottom: 1px solid #c5d6db;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.95rem;
+      background: transparent;
+      white-space: nowrap;
+      word-break: break-word;
+    }
+    th {
+      background: #2e8ca3 !important;
+      color: #fff !important;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: #c5d6db;
+      transition: background 0.18s;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 8px; }
+      table { font-size: .92rem; }
+      th, td { padding: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    المخزن | سعيد أحمد بالبيد
+  </div>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <button id="openIssueModalBtn" style="background:#388e3c;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:1.08rem;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px #0001;transition:background 0.2s;">
+        صرف مواد
+      </button>
+      <h2 style="margin-bottom:0;">جدول المخزون (التوريدات)</h2>
+    </div>
+    <!-- نافذة صرف مواد -->
+    <div id="issueModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); z-index:1000; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:14px; box-shadow:0 2px 16px #0003; padding:28px 18px 18px 18px; min-width:320px; max-width:95vw; margin:auto; position:relative; display:flex; flex-direction:column; align-items:center;">
+        <button id="closeIssueModalBtn" style="position:absolute;left:12px;top:8px;background:none;border:none;font-size:1.5rem;color:#e53935;cursor:pointer;">&times;</button>
+        <h3 style="color:#1976d2;margin-top:0;margin-bottom:18px;font-family:'Tajawal','Cairo',Arial,sans-serif;">صرف مواد</h3>
+        <form id="issueForm" style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;">
+          <label style="font-weight:bold;color:#2e8ca3;">اسم المقاول
+            <select name="contractor" id="contractorSelect" required style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+              <option value="">اختر المقاول</option>
+            </select>
+          </label>
+          <label style="font-weight:bold;color:#2e8ca3;">التاريخ
+            <input type="date" name="date" required style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+          </label>
+          <label style="font-weight:bold;color:#2e8ca3;">المادة
+            <select name="item" id="itemSelect" required style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+              <option value="">اختر المادة</option>
+            </select>
+          </label>
+          <label style="font-weight:bold;color:#2e8ca3;">الكمية المتاحة: <span id="availableQty" style="color:#1976d2;">-</span></label>
+          <label style="font-weight:bold;color:#2e8ca3;">الكمية المصروفة
+            <input type="number" name="quantity" id="issueQtyInput" min="1" required style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+          </label>
+          <button type="submit" style="background:#388e3c;color:#fff;border:none;border-radius:7px;font-size:1rem;font-weight:bold;padding:9px 0;margin-top:8px;cursor:pointer;">صرف</button>
+        </form>
+      </div>
+    </div>
+    <table id="storeTable">
+      <thead>
+        <tr>
+          <th>م</th>
+          <th>تاريخ التوريد</th>
+          <th>اسم المورد</th>
+          <th>الصنف</th>
+          <th>الكمية</th>
+          <th>الوحدة</th>
+          <th>السعر للوحدة</th>
+          <th>الإجمالي</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- الصفوف تضاف ديناميكياً -->
+      </tbody>
+    </table>
+  </div>
+  <script>
+    const tableBody = document.querySelector('#storeTable tbody');
+
+    // بيانات التوريدات في المخزن (نحتاجها للمواد والكمية)
+    let suppliesCache = [];
+
+    // جلب التوريدات من قاعدة البيانات
+    async function fetchSupplies() {
+      const res = await fetch('/supplies');
+      const data = await res.json();
+      suppliesCache = data;
+      return data;
+    }
+
+    // جلب المقاولين
+    async function fetchContractors() {
+      const res = await fetch('/contractors');
+      return await res.json();
+    }
+
+    // تعبئة قائمة المقاولين
+    async function fillContractorsSelect() {
+      const contractors = await fetchContractors();
+      const select = document.getElementById('contractorSelect');
+      select.innerHTML = '<option value="">اختر المقاول</option>';
+      contractors.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c._id;
+        opt.textContent = c.name || c.contractorName || '';
+        select.appendChild(opt);
+      });
+    }
+
+    // تعبئة قائمة المواد من التوريدات
+    function fillItemsSelect() {
+      const select = document.getElementById('itemSelect');
+      select.innerHTML = '<option value="">اختر المادة</option>';
+      // استخراج المواد الفريدة
+      const items = [...new Set(suppliesCache.map(s => s.item).filter(Boolean))];
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+    }
+
+    // حساب الكمية المتاحة لمادة معينة
+    function getAvailableQty(itemName) {
+      // مجموع الكميات المضافة (توريدات)
+      let totalIn = suppliesCache.filter(s => s.item === itemName).reduce((sum, s) => sum + Number(s.quantity || 0), 0);
+      // مجموع الكميات المصروفة (من عمليات الصرف)
+      let totalOut = 0;
+      const issued = JSON.parse(localStorage.getItem('issuedMaterials') || '[]');
+      totalOut = issued.filter(i => i.item === itemName).reduce((sum, i) => sum + Number(i.quantity || 0), 0);
+      return totalIn - totalOut;
+    }
+
+    // نافذة صرف مواد
+    const openIssueModalBtn = document.getElementById('openIssueModalBtn');
+    const issueModal = document.getElementById('issueModal');
+    const closeIssueModalBtn = document.getElementById('closeIssueModalBtn');
+    const issueForm = document.getElementById('issueForm');
+    const itemSelect = document.getElementById('itemSelect');
+    const availableQtySpan = document.getElementById('availableQty');
+    const issueQtyInput = document.getElementById('issueQtyInput');
+
+    openIssueModalBtn.onclick = async function() {
+      await fillContractorsSelect();
+      await fetchSupplies();
+      fillItemsSelect();
+      availableQtySpan.textContent = '-';
+      issueQtyInput.value = '';
+      issueQtyInput.max = '';
+      issueModal.style.display = 'flex';
+    };
+    closeIssueModalBtn.onclick = function() {
+      issueModal.style.display = 'none';
+    };
+    issueModal.onclick = function(e) {
+      if (e.target === issueModal) issueModal.style.display = 'none';
+    };
+    document.addEventListener('keydown', function(e) {
+      if (issueModal.style.display === 'flex' && e.key === 'Escape') issueModal.style.display = 'none';
+    });
+
+    // عند اختيار مادة، أظهر الكمية المتاحة وحدد الحد الأقصى
+    itemSelect.onchange = function() {
+      const item = itemSelect.value;
+      if (!item) {
+        availableQtySpan.textContent = '-';
+        issueQtyInput.max = '';
+        return;
+      }
+      const avail = getAvailableQty(item);
+      availableQtySpan.textContent = avail;
+      issueQtyInput.max = avail;
+      if (Number(issueQtyInput.value) > avail) issueQtyInput.value = avail;
+    };
+
+    // منع تجاوز الكمية المتاحة
+    issueQtyInput.oninput = function() {
+      const max = Number(issueQtyInput.max);
+      if (max && Number(issueQtyInput.value) > max) {
+        issueQtyInput.value = max;
+      }
+      if (Number(issueQtyInput.value) < 1) {
+        issueQtyInput.value = 1;
+      }
+    };
+
+    // حفظ عملية الصرف (ترسل للسيرفر وتخصم من المخزون وتضاف للمقاول)
+    issueForm.onsubmit = async function(e) {
+      e.preventDefault();
+      const data = {
+        contractor: issueForm.contractor.value,
+        date: issueForm.date.value,
+        item: issueForm.item.value,
+        quantity: issueForm.quantity.value
+      };
+      // إرسال الطلب للسيرفر
+      const res = await fetch(`/contractors/${data.contractor}/issue-material`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item: data.item,
+          quantity: data.quantity,
+          date: data.date
+        })
+      });
+      if (res.ok) {
+        alert('تم صرف المواد بنجاح');
+        // تحديث عمليات الصرف في localStorage
+        const issued = JSON.parse(localStorage.getItem('issuedMaterials') || '[]');
+        issued.push({
+          contractor: data.contractor,
+          date: data.date,
+          item: data.item,
+          quantity: data.quantity
+        });
+        localStorage.setItem('issuedMaterials', JSON.stringify(issued));
+        issueModal.style.display = 'none';
+        issueForm.reset();
+        await renderTable();
+      } else {
+        let errMsg = 'حدث خطأ أثناء الصرف';
+        try {
+          const err = await res.json();
+          errMsg = err.error || errMsg;
+        } catch {
+          errMsg = 'حدث خطأ غير متوقع من السيرفر';
+        }
+        alert(errMsg);
+      }
+    }
+
+    async function renderTable() {
+      const supplies = await fetchSupplies();
+      // جلب عمليات الصرف من localStorage (أو من السيرفر إذا كانت موجودة هناك)
+      const issued = JSON.parse(localStorage.getItem('issuedMaterials') || '[]');
+      tableBody.innerHTML = '';
+      supplies.forEach((s, idx) => {
+        // حساب مجموع الكميات المصروفة لهذا الصنف
+        const issuedQty = issued
+          .filter(i => i.item === s.item)
+          .reduce((sum, i) => sum + Number(i.quantity || 0), 0);
+        // الكمية المتبقية = الكمية الأصلية - المصروفة
+        const remainingQty = Number(s.quantity || 0) - issuedQty;
+        const displayQty = remainingQty < 0 ? 0 : remainingQty;
+        const qtyStyle = displayQty === 0 ? 'color:#c00;font-weight:bold;' : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${s.date || ''}</td>
+          <td>${s.supplier || ''}</td>
+          <td>${s.item || ''}</td>
+          <td style="${qtyStyle}">${displayQty}</td>
+          <td>${s.unit || ''}</td>
+          <td>${s.unitPrice || ''}</td>
+          <td>${s.total || ''}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+    // عند تحميل الصفحة
+    window.onload = renderTable;
+  </script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>بيانات المورد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      direction: rtl;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: #1a3b50;
+      color: #fff;
+      padding: 14px 0 10px 0;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 18px #1a3b5022;
+      border-bottom: 3px solid #2e8ca3;
+      margin-bottom: 32px;
+    }
+    .container {
+      width: 100vw;
+      max-width: 100vw;
+      margin: 18px 0 0 0;
+      background: #f7fafd;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 18px 24px 18px 24px;
+      border: 3px solid #1976d2;
+      /* أضف حدود بارزة */
+      box-sizing: border-box;
+    }
+    h2 {
+      color: #2e8ca3;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-align: right;
+    }
+    .info-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 1.08rem;
+    }
+    .info-row-horizontal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 12px;
+      margin-bottom: 24px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .info-block {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+      font-size: 1.13rem;
+      min-width: 160px;
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      background: #e3f2fd;
+      border-radius: 8px;
+      padding: 8px 18px;
+      box-shadow: 0 1px 6px #1976d222;
+    }
+    .info-label {
+      color: #2e8ca3;
+      font-weight: bold;
+      min-width: 90px;
+      margin-left: 8px;
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      font-size: 1.08rem;
+    }
+    .info-value {
+      color: #333;
+      font-weight: 500;
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      font-size: 1.08rem;
+    }
+    .back-btn {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 8px 24px;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: background 0.2s;
+      box-shadow: 0 2px 10px #0001;
+      display: inline-block;
+    }
+    .back-btn:hover {
+      background: #1a3b50;
+    }
+    .action-buttons-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      justify-content: center;
+    }
+    .action-btn {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.98rem;
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      font-weight: 700;
+      padding: 7px 18px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 6px #1976d222;
+      letter-spacing: 0.5px;
+      outline: none;
+    }
+    .action-btn:hover {
+      background: #1a3b50;
+    }
+    .supplies-table-container {
+      margin-top: 18px;
+      margin-bottom: 18px;
+      display: none;
+      animation: fadeIn 0.2s;
+    }
+    .supplies-table-container.active {
+      display: block;
+    }
+    table.supplies-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #2e8ca322;
+      margin-bottom: 0;
+    }
+    table.supplies-table th, table.supplies-table td {
+      border: 1px solid #c5d6db;
+      padding: 8px 10px;
+      text-align: right;
+      font-size: 1rem;
+    }
+    table.supplies-table th {
+      background: #2e8ca3;
+      color: #fff;
+      font-weight: bold;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    بيانات المورد
+  </div>
+  <div class="container" id="detailsContainer">
+    <!-- سيتم تعبئة بيانات المورد هنا -->
+  </div>
+  <script>
+    // استخراج id من الرابط
+    function getSupplierId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    async function renderSupplierDetails() {
+      const id = getSupplierId();
+      const container = document.getElementById('detailsContainer');
+      if (!id) {
+        container.innerHTML = '<div style="color:#e53935;font-weight:bold;">لم يتم تحديد المورد</div>';
+        return;
+      }
+      // جلب بيانات المورد من السيرفر
+      let s;
+      try {
+        const res = await fetch(`/suppliers/${id}`);
+        if (!res.ok) throw new Error('المورد غير موجود');
+        s = await res.json();
+      } catch {
+        container.innerHTML = '<div style="color:#e53935;font-weight:bold;">المورد غير موجود</div>';
+        return;
+      }
+      container.innerHTML = `
+        <div class="info-row-horizontal" style="margin-bottom:24px; margin-top:0;">
+          <div class="info-block"><span class="info-label">اسم المورد:</span><span class="info-value">${s.name || ''}</span></div>
+          <div class="info-block"><span class="info-label">اسم الممثل:</span><span class="info-value">${s.representative || ''}</span></div>
+          <div class="info-block"><span class="info-label">رقم الجوال:</span><span class="info-value">${s.phone || ''}</span></div>
+          <div class="info-block"><span class="info-label">ملاحظات:</span><span class="info-value">${s.notes || ''}</span></div>
+        </div>
+        <div class="action-buttons-row">
+          <button class="action-btn" id="showSuppliesBtn">التوريدات</button>
+          <button class="action-btn" id="showAccountsBtn">الحسابات</button>
+          <button class="action-btn" id="addAccountBtn" style="background:#388e3c;display:none;">+ إضافة حساب جديد</button>
+        </div>
+        <!-- نافذة إضافة حساب جديد -->
+        <div id="addAccountModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); z-index:1000; align-items:center; justify-content:center;">
+          <div style="background:#fff; border-radius:14px; box-shadow:0 2px 16px #0003; padding:28px 18px 18px 18px; min-width:320px; max-width:95vw; margin:auto; position:relative; display:flex; flex-direction:column; align-items:center;">
+            <button id="closeAddAccountModalBtn" style="position:absolute;left:12px;top:8px;background:none;border:none;font-size:1.5rem;color:#e53935;cursor:pointer;">&times;</button>
+            <h3 style="color:#1976d2;margin-top:0;margin-bottom:18px;font-family:'Tajawal','Cairo',Arial,sans-serif;">إضافة حساب جديد</h3>
+            <form id="addAccountForm" style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;">
+              <label style="font-weight:bold;color:#2e8ca3;">التاريخ
+                <input type="date" name="date" required style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+              </label>
+              <label style="font-weight:bold;color:#2e8ca3;">نوع العملية
+                <select name="type" required style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+                  <option value="">اختر نوع العملية</option>
+                  <option value="تحويل">تحويل</option>
+                  <option value="كاش">كاش</option>
+                </select>
+              </label>
+              <label style="font-weight:bold;color:#2e8ca3;">القيمة
+                <input type="number" name="value" required placeholder="القيمة" style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;">
+              </label>
+              <label style="font-weight:bold;color:#2e8ca3;">الإيصال PDF
+                <input type="file" name="receiptFile" accept="application/pdf" style="width:100%;padding:7px 8px;border-radius:6px;border:1px solid #c5d6db;background:#fff;">
+              </label>
+              <span id="receiptFileName" style="font-size:0.95rem;color:#1976d2;margin-bottom:2px;"></span>
+              <button type="submit" style="background:#388e3c;color:#fff;border:none;border-radius:7px;font-size:1rem;font-weight:bold;padding:9px 0;margin-top:8px;cursor:pointer;">إضافة</button>
+            </form>
+          </div>
+        </div>
+        <div class="supplies-table-container" id="suppliesTableContainer">
+          <table class="supplies-table">
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>التاريخ</th>
+                <th>بيان التوريد</th>
+                <th>الكمية</th>
+                <th>الوحدة</th>
+                <th>الفئة</th>
+                <th>الإجمالي</th>
+                <th>رقم الفاتورة</th>
+                <th>الفاتورة</th>
+              </tr>
+            </thead>
+            <tbody id="suppliesTableBody">
+              <!-- بيانات التوريدات ستظهر هنا -->
+            </tbody>
+            <tfoot>
+              <tr style="background:#e3f2fd;font-weight:bold;">
+                <td colspan="6" style="text-align:center;">إجمالي الكمية: <span id="suppliesTotalQty"></span></td>
+                <td colspan="3" style="text-align:center;">إجمالي القيمة: <span id="suppliesTotalValue"></span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="supplies-table-container" id="accountsTableContainer" style="display:none;">
+          <table class="supplies-table">
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>التاريخ</th>
+                <th>نوع العملية</th>
+                <th>القيمة</th>
+                <th>الإيصال PDF</th>
+              </tr>
+            </thead>
+            <tbody id="accountsTableBody">
+              <!-- بيانات الحسابات ستظهر هنا -->
+            </tbody>
+            <tfoot>
+              <tr style="background:#e3f2fd;font-weight:bold;">
+                <td colspan="3" style="text-align:center;">إجمالي الحسابات: </td>
+                <td colspan="2" style="text-align:center;"><span id="accountsTotalValue"></span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <button class="back-btn" onclick="window.history.back()">رجوع</button>
+      `;
+
+      // جلب بيانات التوريدات من السيرفر
+      let supplies = [];
+      try {
+        const res = await fetch(`/suppliers/${id}/supplies`);
+        supplies = await res.json();
+      } catch { supplies = []; }
+
+      // جلب بيانات الحسابات من السيرفر
+      let accounts = [];
+      try {
+        const res = await fetch(`/suppliers/${id}/accounts`);
+        accounts = await res.json();
+      } catch { accounts = []; }
+
+      const suppliesTableBody = document.getElementById('suppliesTableBody');
+      function renderSuppliesTable() {
+        suppliesTableBody.innerHTML = supplies.map((row, i) =>
+          `<tr>
+            <td>${i + 1}</td>
+            <td>${row.date || ''}</td>
+            <td>${row.desc || ''}</td>
+            <td>${row.qty || ''}</td>
+            <td>${row.unit || ''}</td>
+            <td>${row.category || ''}</td>
+            <td>${row.total || ''}</td>
+            <td>${row.invoiceNo || ''}</td>
+            <td>${row.invoice ? `<a href="${row.invoice}" target="_blank">عرض</a>` : ''}</td>
+          </tr>`
+        ).join('');
+        // إجماليات
+        const totalQty = supplies.reduce((sum, r) => sum + Number(r.qty || 0), 0);
+        const totalValue = supplies.reduce((sum, r) => sum + Number(r.total || 0), 0);
+        document.getElementById('suppliesTotalQty').textContent = totalQty;
+        document.getElementById('suppliesTotalValue').textContent = totalValue;
+      }
+      renderSuppliesTable();
+
+      const accountsTableBody = document.getElementById('accountsTableBody');
+      function renderAccountsTable() {
+        accountsTableBody.innerHTML = accounts.map((row, i) =>
+          `<tr>
+            <td>${i + 1}</td>
+            <td>${row.date || ''}</td>
+            <td>${row.type || ''}</td>
+            <td>${row.value || ''}</td>
+            <td>${row.receipt ? `<a href="${row.receipt}" target="_blank">عرض</a>` : ''}</td>
+          </tr>`
+        ).join('');
+        // إجمالي الحسابات
+        const totalAccounts = accounts.reduce((sum, r) => sum + Number(r.value || 0), 0);
+        document.getElementById('accountsTotalValue').textContent = totalAccounts;
+      }
+      renderAccountsTable();
+
+      // إظهار/إخفاء الجداول
+      const suppliesTableContainer = document.getElementById('suppliesTableContainer');
+      const accountsTableContainer = document.getElementById('accountsTableContainer');
+      const showSuppliesBtn = document.getElementById('showSuppliesBtn');
+      const showAccountsBtn = document.getElementById('showAccountsBtn');
+      const addAccountBtn = document.getElementById('addAccountBtn');
+      const addAccountModal = document.getElementById('addAccountModal');
+      const closeAddAccountModalBtn = document.getElementById('closeAddAccountModalBtn');
+      const addAccountForm = document.getElementById('addAccountForm');
+      const receiptFileInput = addAccountForm.querySelector('input[name="receiptFile"]');
+      const receiptFileName = document.getElementById('receiptFileName');
+      let uploadedReceiptUrl = '';
+
+      receiptFileInput.onchange = function(e) {
+        const file = receiptFileInput.files[0];
+        if (file) {
+          receiptFileName.textContent = file.name;
+          // قراءة الملف وتحويله إلى رابط مؤقت (blob url)
+          uploadedReceiptUrl = URL.createObjectURL(file);
+        } else {
+          receiptFileName.textContent = '';
+          uploadedReceiptUrl = '';
+        }
+      };
+
+      showSuppliesBtn.onclick = function() {
+        suppliesTableContainer.style.display = suppliesTableContainer.style.display === 'block' ? 'none' : 'block';
+        accountsTableContainer.style.display = 'none';
+        addAccountBtn.style.display = 'none';
+        addAccountModal.style.display = 'none';
+      };
+      showAccountsBtn.onclick = function() {
+        const isVisible = accountsTableContainer.style.display === 'block';
+        accountsTableContainer.style.display = isVisible ? 'none' : 'block';
+        suppliesTableContainer.style.display = 'none';
+        addAccountBtn.style.display = isVisible ? 'none' : 'inline-block';
+        addAccountModal.style.display = 'none';
+      };
+      addAccountBtn.onclick = function() {
+        addAccountModal.style.display = 'flex';
+        setTimeout(() => {
+          addAccountForm.date.focus();
+        }, 100);
+      };
+      closeAddAccountModalBtn.onclick = function() {
+        addAccountModal.style.display = 'none';
+      };
+      addAccountModal.onclick = function(e) {
+        if (e.target === addAccountModal) addAccountModal.style.display = 'none';
+      };
+      addAccountForm.onsubmit = async function(e) {
+        e.preventDefault();
+        const data = {
+          date: addAccountForm.date.value,
+          type: addAccountForm.type.value,
+          value: addAccountForm.value.value,
+          receipt: uploadedReceiptUrl // رابط مؤقت للملف
+        };
+        // أرسل الحساب الجديد إلى كولكشن حسابات المورد في السيرفر
+        await fetch(`/suppliers/${id}/accounts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        // أعد تحميل الحسابات من السيرفر
+        const res = await fetch(`/suppliers/${id}/accounts`);
+        accounts = await res.json();
+        renderAccountsTable();
+        addAccountModal.style.display = 'none';
+        addAccountForm.reset();
+        receiptFileName.textContent = '';
+        uploadedReceiptUrl = '';
+      };
+    }
+    window.addEventListener('DOMContentLoaded', renderSupplierDetails);
+  </script>
+</body>
+</html>

@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>عرض المقاولين | سعيد أحمد بالبيد</title>
+  <!-- إضافة خط Tajawal من Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Cairo', Arial, sans-serif;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
       background: #c5d6db;
       direction: rtl;
     }
@@ -73,7 +75,7 @@
     }
     .container {
       max-width: 800px;
-      margin: 24px auto 0 auto;
+      margin: 8px auto 0 auto; /* تقليل الفراغ العلوي */
       background: #fff;
       border-radius: 18px;
       box-shadow: 0 0 24px #0002;
@@ -83,6 +85,7 @@
     }
     h2 {
       text-align: center;
+      margin-top: 0;         /* رفع العنوان لأعلى */
       margin-bottom: 32px;
       color: #2e8ca3;
       letter-spacing: 1px;
@@ -117,7 +120,7 @@
     th, td {
       padding: 4px 4px;
       border-bottom: 1px solid #8c969a;
-      border-right: 1px solid #8c969a;
+      /* border-right: 1px solid #8c969a; */ /* تم التعليق لإزالة الفواصل بين الأعمدة */
       text-align: right;
       font-size: 0.90rem;
       background: #fff;
@@ -192,13 +195,15 @@
     }
     #editContractorModal .modal-content {
       background: #fff;
-      padding: 32px 24px;
+      padding: 40px 32px;
       border-radius: 16px;
-      max-width: 400px;
-      margin: auto;
+      max-width: 600px;
+      min-height: 340px;
+      margin: 0 auto 0 auto; /* إزالة الهامش العلوي */
       box-shadow: 0 2px 24px #0003;
       border: 2px solid #2e8ca3;
       position: relative;
+      top: 0; /* رفع النافذة لأعلى الصفحة */
     }
     #editContractorModal h3 {
       text-align: center;
@@ -279,6 +284,13 @@
   </div>
   <div class="container">
     <h2>عرض المقاولين</h2>
+    <!-- مربع البحث -->
+    <input
+      type="text"
+      id="searchBox"
+      placeholder="ابحث باسم المقاول أو بند العمل..."
+      style="width: 60%; margin: 0 auto 18px auto; display: block; padding: 5px 12px; font-size: 1.02rem; border: 1.5px solid #2e8ca3; border-radius: 0px; background: #fff; color: #2e8ca3; font-family: inherit; height: 32px;"
+    />
     <table>
       <thead>
         <tr>
@@ -286,7 +298,6 @@
           <th>الاسم</th>
           <th>الهاتف</th>
           <th>بند العمل</th>
-          <th>ملاحظات</th>
           <th>تعديل</th>
           <th>حذف</th>
         </tr>
@@ -311,10 +322,6 @@
             <label>بند العمل:</label>
             <input type="text" name="address">
           </div>
-          <div>
-            <label>ملاحظات:</label>
-            <input type="text" name="notes">
-          </div>
           <div class="modal-actions">
             <button type="submit">حفظ</button>
             <button type="button" id="cancelEditBtn">إلغاء</button>
@@ -335,21 +342,28 @@
       window.location.href = 'login.html';
     }
 
+    let allContractors = [];
+
     async function fetchContractors() {
       const res = await fetch('/contractors');
       const contractors = await res.json();
+      allContractors = contractors; // حفظ جميع المقاولين للبحث
+      renderContractors(contractors);
+    }
+
+    function renderContractors(contractors) {
       const list = document.getElementById('contractorsList');
       list.innerHTML = '';
-      contractors.forEach((c, i) => {
+      let rowNum = 1;
+      contractors.forEach((c) => {
         const tr = document.createElement('tr');
         tr.style.cursor = "pointer";
         tr.setAttribute('data-id', c._id);
         tr.innerHTML = `
-          <td>${i + 1}</td>
+          <td>${rowNum++}</td>
           <td>${c.name}</td>
           <td>${c.phone}</td>
           <td>${c.address || ''}</td>
-          <td>${c.notes || ''}</td>
           <td>
             <button class="edit-btn" data-id="${c._id}" onclick="event.stopPropagation();">تعديل</button>
           </td>
@@ -366,6 +380,20 @@
         list.appendChild(tr);
       });
     }
+
+    // البحث في الاسم أو البند
+    document.getElementById('searchBox').addEventListener('input', function() {
+      const q = this.value.trim().toLowerCase();
+      if (!q) {
+        renderContractors(allContractors);
+        return;
+      }
+      const filtered = allContractors.filter(c =>
+        (c.name && c.name.toLowerCase().includes(q)) ||
+        (c.address && c.address.toLowerCase().includes(q))
+      );
+      renderContractors(filtered);
+    });
 
     // حذف مقاول
     document.addEventListener('click', async function(e) {
@@ -384,15 +412,14 @@
         const id = e.target.getAttribute('data-id');
         const tr = e.target.closest('tr');
         const tds = tr.querySelectorAll('td');
-        // تعبئة النموذج بالبيانات
+        // تعبئة النموذج بالبيانات الصحيحة
         const modal = document.getElementById('editContractorModal');
         modal.style.display = 'flex';
         const form = document.getElementById('editContractorForm');
         form.id.value = id;
-        form.name.value = tds[0].textContent;
-        form.phone.value = tds[1].textContent;
-        form.address.value = tds[2].textContent;
-        form.notes.value = tds[3].textContent;
+        form.name.value = tds[1].textContent;    // اسم المقاول
+        form.phone.value = tds[2].textContent;   // رقم التليفون
+        form.address.value = tds[3].textContent; // بند العمل
       }
     });
 
@@ -404,12 +431,11 @@
       const name = form.name.value;
       const phone = form.phone.value;
       const address = form.address.value;
-      const notes = form.notes.value;
       // تحقق من نجاح التعديل
       const res = await fetch(`/contractors/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, address, notes })
+        body: JSON.stringify({ name, phone, address })
       });
       if (res.ok) {
         document.getElementById('editContractorModal').style.display = 'none';

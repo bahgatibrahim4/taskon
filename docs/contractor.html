@@ -37,6 +37,10 @@
       transition: background 0.2s, color 0.2s, border 0.2s;
       box-shadow: 0 2px 10px #0001;
       margin-left: 10px;
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      letter-spacing: 0.5px;
+      font-size: 1.09rem;
+      font-weight: 700;
     }
     .navbar .nav-btn:hover {
       background: #1a3b50;
@@ -44,7 +48,7 @@
       border-color: #2e8ca3;
     }
     .container {
-      max-width: 600px;
+      max-width: 1400px; /* تم التوسيع أكثر */
       margin: 32px auto 0 auto;
       background: #fff;
       border-radius: 18px;
@@ -130,11 +134,67 @@
     .extracts-table tr:hover td {
       background: #e8f5e9;
     }
+    .deductions-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .deductions-table th, .deductions-table td {
+      padding: 6px 4px;
+      border-bottom: 1px solid #c5d6db;
+      text-align: right;
+      font-size: 0.97rem;
+    }
+    .deductions-table th {
+      background: #7a5230;
+      color: #fff;
+      font-weight: bold;
+    }
+    .deductions-table tr:hover td {
+      background: #fbe9e7;
+    }
     .no-data {
       text-align: center;
       color: #888;
       margin: 18px 0;
       font-size: 1.05rem;
+    }
+    .tables-flex-row {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .table-container {
+      flex: 1 1 0;
+      min-width: 340px;
+      max-width: 100%;
+    }
+    /* أزرار التبديل بين الجداول */
+    .container button#showExtractsBtn,
+    .container button#showDeductionsBtn,
+    .container button#showMaterialsBtn {
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      font-size: 0.93rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      min-width: 60px;
+      height: 28px;
+      line-height: 1.2;
+    }
+    .container button#showExtractsBtn:hover,
+    .container button#showDeductionsBtn:hover,
+    .container button#showMaterialsBtn:hover {
+      background: #1a3b50;
     }
     @media (max-width: 700px) {
       .container { padding: 10px; }
@@ -150,41 +210,74 @@
     <button class="nav-btn" onclick="location.href='list-contractors.html'">كل المقاولين</button>
   </div>
   <div class="container">
-    <h2 id="contractorName">بيانات المقاول</h2>
-    <table class="info-table">
-      <tr>
-        <th>اسم المقاول</th>
-        <td id="name"></td>
-      </tr>
-      <tr>
-        <th>رقم الجوال</th>
-        <td id="phone"></td>
-      </tr>
-      <tr>
-        <th>العنوان</th>
-        <td id="address"></td>
-      </tr>
-      <tr>
-        <th>ملاحظات</th>
-        <td id="notes"></td>
-      </tr>
-    </table>
-
-    <div class="section-title">المستخلصات المرتبطة بهذا المقاول</div>
-    <table class="extracts-table" id="extractsTable">
-      <thead>
-        <tr>
-          <th>م</th>
-          <th>رقم المستخلص</th>
-          <th>تاريخ المستخلص</th>
-          <th>قيمة المستخلص</th>
-          <th>عرض</th>
-        </tr>
-      </thead>
-      <tbody id="extractsBody">
-        <tr><td colspan="5" class="no-data">جاري التحميل...</td></tr>
-      </tbody>
-    </table>
+    <!-- تفاصيل المقاول في سطر واحد -->
+    <div id="contractorDetailsRow" style="display:flex;gap:24px;align-items:center;justify-content:center;margin-bottom:18px;background:#e8f5e9;border-radius:10px;padding:12px 8px;">
+      <div><span style="color:#2e8ca3;font-weight:bold;">اسم المقاول:</span> <span id="name"></span></div>
+      <div><span style="color:#2e8ca3;font-weight:bold;">الجوال:</span> <span id="phone"></span></div>
+      <div><span style="color:#2e8ca3;font-weight:bold;">العنوان:</span> <span id="address"></span></div>
+    </div>
+    <!-- الأزرار تحت التفاصيل -->
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;">
+      <button id="showExtractsBtn">المستخلصات</button>
+      <button id="showDeductionsBtn" style="background:#7a5230;">الخصومات</button>
+      <button id="showMaterialsBtn" style="background:#388e3c;">المواد</button>
+    </div>
+    <div class="tables-flex-row">
+      <div class="table-container" id="extractsContainer">
+        <div class="section-title">المستخلصات المرتبطة بهذا المقاول</div>
+        <table class="extracts-table" id="extractsTable">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>رقم المستخلص</th>
+              <th>تاريخ المستخلص</th>
+              <th>قيمة المستخلص</th>
+              <th>عرض</th>
+            </tr>
+          </thead>
+          <tbody id="extractsBody">
+            <tr><td colspan="5" class="no-data">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-container" id="deductionsContainer" style="display:none;">
+        <div class="section-title">الخصومات الخاصة بهذا المقاول</div>
+        <table class="deductions-table" id="deductionsTable">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>بيان الخصم</th>
+              <th>التاريخ</th>
+              <th>الكمية</th>
+              <th>الفئة</th>
+              <th>الإجمالي</th>
+              <th>اسم المستخدم</th>
+              <th>المستخلص</th>
+            </tr>
+          </thead>
+          <tbody id="deductionsBody">
+            <tr><td colspan="8" class="no-data">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-container" id="materialsContainer" style="display:none;">
+        <div class="section-title">المواد المصروفة لهذا المقاول</div>
+        <table class="extracts-table" id="materialsTable">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>اسم المادة</th>
+              <th>الكمية</th>
+              <th>تاريخ الصرف</th>
+              <th>ملاحظات</th>
+            </tr>
+          </thead>
+          <tbody id="materialsBody">
+            <tr><td colspan="5" class="no-data">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <script>
     // استخراج id من الرابط
@@ -198,7 +291,7 @@
       throw new Error('Contractor id not found');
     }
 
-    // جلب بيانات المقاول
+    // جلب بيانات المقاول (مع المواد)
     async function fetchContractor() {
       const res = await fetch(`/contractors/${contractorId}`);
       if (!res.ok) {
@@ -206,16 +299,41 @@
         return;
       }
       const c = await res.json();
-      document.getElementById('contractorName').textContent = c.name || 'بيانات المقاول';
+      console.log('بيانات المقاول:', c); // تحقق من وجود materials
       document.getElementById('name').textContent = c.name || '';
       document.getElementById('phone').textContent = c.phone || '';
       document.getElementById('address').textContent = c.address || '';
       document.getElementById('notes').textContent = c.notes || '';
+      // document.getElementById('contractorName').textContent = c.name || 'بيانات المقاول'; // هذا السطر ليس له عنصر في الصفحة
+
+      // عرض المواد في جدول المواد
+      renderMaterialsTable(Array.isArray(c.materials) ? c.materials : []);
+    }
+
+    // عرض جدول المواد
+    function renderMaterialsTable(materials) {
+      const tbody = document.getElementById('materialsBody');
+      if (!materials.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="no-data">لا يوجد مواد لهذا المقاول.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = '';
+      materials.forEach((mat, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${mat.name || ''}</td>
+          <td>${mat.quantity || ''}</td>
+          <td>${mat.date ? new Date(mat.date).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${mat.notes || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
     // جلب المستخلصات الخاصة بالمقاول
     async function fetchExtracts() {
-      const res = await fetch(`/extracts?contractorId=${contractorId}`);
+      const res = await fetch(`/extracts`);
       const tbody = document.getElementById('extractsBody');
       if (!tbody) return; // حماية من الخطأ
       if (!res.ok) {
@@ -223,29 +341,106 @@
         return;
       }
       const extracts = await res.json();
-      if (!extracts.length) {
+      // فلترة المستخلصات الخاصة بهذا المقاول فقط
+      const filtered = extracts.filter(ex => ex.contractor == contractorId);
+      if (!filtered.length) {
         tbody.innerHTML = `<tr><td colspan="5" class="no-data">لا يوجد مستخلصات لهذا المقاول.</td></tr>`;
         return;
       }
       tbody.innerHTML = '';
-      extracts.forEach((ex, i) => {
+      filtered.forEach((ex, i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${i + 1}</td>
-          <td>${ex.extractNumber || ''}</td>
-          <td>${ex.extractDate ? new Date(ex.extractDate).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${ex.extractNumber || ex.number || ''}</td>
+          <td>${ex.extractDate ? new Date(ex.extractDate).toLocaleDateString('ar-EG') : (ex.date ? new Date(ex.date).toLocaleDateString('ar-EG') : '')}</td>
           <td>${ex.totalAmount ? ex.totalAmount.toLocaleString('ar-EG') : ''}</td>
           <td>
-            <a href="view-extract.html?id=${ex._id}" style="color:#2e8ca3;font-weight:bold;text-decoration:underline;">عرض</a>
+            <a href="extract.html?id=${ex._id}" style="color:#2e8ca3;font-weight:bold;text-decoration:underline;">عرض</a>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
+    // جلب الخصومات الخاصة بالمقاول
+    async function fetchDeductions() {
+      const res = await fetch(`/extracts`);
+      const tbody = document.getElementById('deductionsBody');
+      if (!tbody) return;
+      if (!res.ok) {
+        tbody.innerHTML = `<tr><td colspan="8" class="no-data">تعذر تحميل الخصومات.</td></tr>`;
+        return;
+      }
+      const extracts = await res.json();
+      // جمع كل الخصومات من مستخلصات هذا المقاول فقط
+      let allDeductions = [];
+      extracts.forEach(extract => {
+        if (extract.contractor == contractorId && Array.isArray(extract.deductions)) {
+          extract.deductions.forEach(ded => {
+            // فقط الخصومات التي لها قيمة (total أو category أو quantity فيها رقم)
+            const hasValue =
+              (ded.total && !isNaN(parseFloat(ded.total)) && parseFloat(ded.total) !== 0) ||
+              (ded.category && !isNaN(parseFloat(ded.category)) && parseFloat(ded.category) !== 0) ||
+              (ded.quantity && !isNaN(parseFloat(ded.quantity)) && parseFloat(ded.quantity) !== 0);
+            if (hasValue) {
+              allDeductions.push({
+                ...ded,
+                extractId: extract._id,
+                extractNumber: extract.extractNumber || extract.number || ''
+              });
+            }
+          });
+        }
+      });
+      if (!allDeductions.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="no-data">لا يوجد خصومات لهذا المقاول.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = '';
+      allDeductions.forEach((ded, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${ded.statement || ''}</td>
+          <td>${ded.date ? new Date(ded.date).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${ded.quantity || ''}</td>
+          <td>${ded.category || ''}</td>
+          <td>${ded.total || ''}</td>
+          <td>${ded.user || ''}</td>
+          <td>
+            ${ded.extractId ? `<a href="extract.html?id=${ded.extractId}" style="color:#2e8ca3;font-weight:bold;text-decoration:underline;">${ded.extractNumber}</a>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // إظهار/إخفاء الجداول حسب الزر
     document.addEventListener('DOMContentLoaded', function() {
+      const extractsContainer = document.getElementById('extractsContainer');
+      const deductionsContainer = document.getElementById('deductionsContainer');
+      const materialsContainer = document.getElementById('materialsContainer');
+      document.getElementById('showExtractsBtn').onclick = function() {
+        extractsContainer.style.display = '';
+        deductionsContainer.style.display = 'none';
+        materialsContainer.style.display = 'none';
+      };
+      document.getElementById('showDeductionsBtn').onclick = function() {
+        extractsContainer.style.display = 'none';
+        deductionsContainer.style.display = '';
+        materialsContainer.style.display = 'none';
+      };
+      document.getElementById('showMaterialsBtn').onclick = function() {
+        extractsContainer.style.display = 'none';
+        deductionsContainer.style.display = 'none';
+        materialsContainer.style.display = '';
+      };
+
+      // استدعاء جميع دوال الجلب بعد التأكد من تحميل الـ DOM
       fetchContractor();
       fetchExtracts();
+      fetchDeductions();
     });
   </script>
 </body>

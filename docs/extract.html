@@ -601,7 +601,7 @@
       <!-- جدول اليوميات -->
       <div id="dailySection" class="table-section" style="display:none;"></div>
       <!-- زر فتح/إغلاق الخصومات -->
-      <h3 style="display:flex; align-items:center; gap:8px;">
+      <h3 id="deductionsTitle" style="display:flex; align-items:center; gap:8px;">
         <span>الخصومات</span>
         <button type="button" id="addDeductionRowBtn" title="إضافة صف خصم جديد"
           style="background:#42a5f5; color:#fff; border:none; border-radius:50%; width:28px; height:28px; font-size:1.2rem; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0;">
@@ -612,7 +612,7 @@
         </button>
       </h3>
       <div id="deductionsSection" style="display:none;">
-        <table>
+        <table id="deductionsTable">
           <thead>
             <tr>
               <th>بيان الخصم</th>
@@ -626,8 +626,6 @@
           </thead>
           <tbody id="deductionsBody"></tbody>
         </table>
-        <!-- احذف زر إضافة صف خصم جديد من هنا -->
-        <!-- <button type="button" class="add-row-btn" id="addDeductionRowBtn" style="background: #42a5f5;">+ إضافة صف خصم جديد</button> -->
       </div>
       <!-- ملخص المبالغ -->
       <div class="summary" style="background:#c5d6db; border-radius:10px; padding:16px; margin-bottom:18px; border:1.5px solid #8c969a; display:flex; justify-content:space-between; align-items:center; gap:32px;">
@@ -749,8 +747,15 @@
     // 3. دالة عرض الخصومات من deductions (تعديل لجعلها تعرض صفوف قابلة للتحرير عند الإضافة)
     function renderDeductions() {
       const tbody = document.getElementById('deductionsBody');
+      const section = document.getElementById('deductionsSection');
+      const title = document.getElementById('deductionsTitle');
+      const table = document.getElementById('deductionsTable');
       tbody.innerHTML = '';
+      // إظهار/إخفاء القسم والعنوان حسب وجود خصومات
       if (deductions && deductions.length > 0) {
+        section.style.display = 'block';
+        title.style.display = 'flex';
+        table.style.display = '';
         deductions.forEach((ded, idx) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -764,8 +769,11 @@
           `;
           tbody.appendChild(tr);
         });
+      } else {
+        section.style.display = 'none';
+        title.style.display = 'none';
+        table.style.display = 'none';
       }
-      // لا تضف صف "لا توجد خصومات" أبداً
       calculateSummary();
     }
 

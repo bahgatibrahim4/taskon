@@ -49,21 +49,22 @@
       gap: 8px;
     }
     .dashboard {
-      max-width: 1100px;
+      max-width: 1400px; /* تم التوسيع */
       margin: 0 auto;
       padding: 32px 0 0 0;
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* زيادة عدد الأعمدة */
       gap: 32px;
-      justify-content: center;
+      justify-content: stretch;
+      align-items: stretch;
+      width: 100%;
     }
     .card {
       background: #fff;
       border-radius: 18px;
       box-shadow: 0 4px 24px #1a3b5011, 0 1.5px 8px #c5d6dbcc;
-      min-width: 220px;
-      flex: 1 1 260px;
-      max-width: 320px;
+      min-width: 0;
+      max-width: 100%;
       padding: 38px 24px 32px 24px;
       display: flex;
       flex-direction: column;
@@ -73,6 +74,8 @@
       position: relative;
       cursor: pointer;
       overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
     }
     .card:hover, .card:focus {
       box-shadow: 0 8px 32px #2e8ca333, 0 2px 12px #c5d6dbcc;
@@ -118,15 +121,46 @@
       font-weight: 500;
       text-shadow: 0 1px 8px #2e8ca311;
     }
-    @media (max-width: 900px) {
-      .dashboard { gap: 18px; max-width: 98vw; }
-      .card { min-width: 90vw; max-width: 98vw; }
+    /* 3 كروت في الصف للشاشات المتوسطة */
+    @media (max-width: 1500px) {
+      .dashboard {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
+    @media (max-width: 1200px) {
+      .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+    }
+    /* 2 كارت في الصف للشاشات الصغيرة */
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        max-width: 98vw;
+      }
+      .card {
+        min-width: 0;
+        max-width: 100%;
+      }
+    }
+    /* كارت واحد في الصف للموبايل */
     @media (max-width: 600px) {
       .navbar { font-size: 1.1rem; padding: 10px 0 6px 0; border-radius: 0 0 14px 14px; min-height: 36px; }
       .navbar .user-info { left: 8px; font-size: 0.95rem; padding: 4px 10px; }
-      .dashboard { flex-direction: column; gap: 14px; padding: 18px 0 0 0; }
-      .card { width: 98vw; min-width: unset; padding: 18px 8px 18px 8px; }
+      .dashboard {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 18px 0 0 0;
+      }
+      .card {
+        width: 98vw;
+        min-width: unset;
+        max-width: 98vw;
+        padding: 18px 8px 18px 8px;
+        flex: 1 1 98vw;
+      }
     }
   </style>
 </head>
@@ -158,6 +192,27 @@
       <div class="card-icon">📑</div>
       <div class="card-title">قائمة المستخلصات</div>
       <div class="card-desc">عرض جميع المستخلصات المسجلة</div>
+    </div>
+    <div class="card" onclick="location.href='store.html'">
+      <div class="card-icon">🏬</div>
+      <div class="card-title">المخزن</div>
+      <div class="card-desc">إدارة بيانات المخزن</div>
+    </div>
+    <div class="card" onclick="location.href='supplies.html'">
+      <div class="card-icon">🚚</div>
+      <div class="card-title">التوريدات</div>
+      <div class="card-desc">إدارة عمليات التوريد</div>
+    </div>
+    <div class="card" onclick="location.href='purchases.html'">
+      <div class="card-icon">🛒</div>
+      <div class="card-title">المشتريات</div>
+      <div class="card-desc">إدارة عمليات الشراء</div>
+    </div>
+    <!-- كارد العمال قبل المستخدمين -->
+    <div class="card" onclick="location.href='workers.html'">
+      <div class="card-icon">🧑‍🔧</div>
+      <div class="card-title">العمال</div>
+      <div class="card-desc">إدارة بيانات العمال ومتابعتهم</div>
     </div>
     <div class="card" onclick="location.href='users.html'">
       <div class="card-icon">👤</div>

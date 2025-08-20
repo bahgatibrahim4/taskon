@@ -19,7 +19,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-let extractsCollection, contractorsCollection, usersCollection; // احذف extraWorksCollection
+let extractsCollection, contractorsCollection, usersCollection, suppliesCollection, suppliersCollection; // أضف suppliersCollection
 
 // الاتصال بقاعدة البيانات
 async function connectDB() {
@@ -28,19 +28,22 @@ async function connectDB() {
   extractsCollection = db.collection('extracts');
   contractorsCollection = db.collection('contractors');
   usersCollection = db.collection('users');
-  // احذف extraWorksCollection = db.collection('extraWorks');
+  suppliesCollection = db.collection('supplies');
+  suppliersCollection = db.collection('suppliers'); // أضف هذا السطر
   console.log("Connected to MongoDB!");
 }
 
 connectDB().catch(console.dir);
 
 // API المقاولين
-// إضافة مقاول جديد (يدعم maxTotalPercentPerItem)
+// إضافة مقاول جديد (يدعم maxTotalPercentPerItem ويدعم المواد)
 app.post('/contractors', async (req, res) => {
   try {
     const contractor = req.body;
     // إذا لم يوجد maxTotalPercentPerItem اجعله كائن فارغ
     if (!contractor.maxTotalPercentPerItem) contractor.maxTotalPercentPerItem = {};
+    // إذا لم يوجد materials اجعله مصفوفة فارغة
+    if (!Array.isArray(contractor.materials)) contractor.materials = [];
     const result = await contractorsCollection.insertOne(contractor);
     res.status(201).json(result);
   } catch (err) {
@@ -58,7 +61,7 @@ app.get('/contractors', async (req, res) => {
   }
 });
 
-// جلب مقاول واحد (يدعم maxTotalPercent)
+// جلب مقاول واحد (يدعم maxTotalPercent ويدعم المواد)
 app.get('/contractors/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -69,6 +72,8 @@ app.get('/contractors/:id', async (req, res) => {
       contractor = await contractorsCollection.findOne({ _id: id });
     }
     if (!contractor) return res.status(404).json({ error: 'Contractor not found' });
+    // إذا لم يوجد materials أعده كمصفوفة فارغة
+    if (!Array.isArray(contractor.materials)) contractor.materials = [];
     res.json(contractor);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -95,18 +100,17 @@ app.delete('/contractors/:id', async (req, res) => {
   }
 });
 
-// تعديل بيانات مقاول (يدعم maxTotalPercent)
+// تعديل بيانات مقاول (يدعم maxTotalPercent ويدعم المواد)
 app.put('/contractors/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    // إذا لم يوجد maxTotalPercentPerItem اجعله كائن فارغ
     if (req.body.maxTotalPercentPerItem === undefined) req.body.maxTotalPercentPerItem = {};
-    // إذا لم يوجد maxTotalPercent اجعله 100 (أو لا تعدله إذا لم يُرسل)
     if (req.body.maxTotalPercent !== undefined) {
       req.body.maxTotalPercent = parseFloat(req.body.maxTotalPercent) || 100;
     }
+    // إذا لم يوجد materials أضفه كمصفوفة فارغة
+    if (!Array.isArray(req.body.materials)) req.body.materials = [];
     let result;
-    // إذا كان id من نوع ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
       result = await contractorsCollection.updateOne(
         { _id: new ObjectId(id) },
@@ -131,6 +135,13 @@ app.put('/contractors/:id', async (req, res) => {
 app.post('/extracts', async (req, res) => {
   try {
     const extract = req.body;
+    // أضف _id لكل بند إذا لم يوجد
+    if (Array.isArray(extract.workItems)) {
+      extract.workItems = extract.workItems.map(item => ({
+        _id: item._id || new ObjectId(),
+        ...item
+      }));
+    }
     // تحقق من وجود بنود أعمال حقيقية (ليست فواصل ومعبأة)
     if (
       !extract.contractor ||
@@ -197,6 +208,22 @@ app.get('/extracts/:id', async (req, res) => {
 // تعديل مستخلص
 app.put('/extracts/:id', async (req, res) => {
   try {
+    const oldExtract = await extractsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    if (!oldExtract) return res.status(404).json({ error: 'Extract not found' });
+
+    // أضف _id لأي بند جديد
+    if (Array.isArray(req.body.workItems)) {
+      req.body.workItems = req.body.workItems.map((item, idx) => {
+        const oldItem = oldExtract.workItems[idx];
+        // إذا كان البند مقفول أعده كما هو
+        if (oldItem && oldItem.locked) return oldItem;
+        return {
+          _id: item._id || new ObjectId(),
+          ...item
+        };
+      });
+    }
+
     await extractsCollection.updateOne(
       { _id: new ObjectId(req.params.id) },
       { $set: req.body }
@@ -384,6 +411,285 @@ app.post('/extracts/model', async (req, res) => {
       workItems: req.body.workItems // لا تلمسها!
     };
     await extractsCollection.insertOne(extract);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// نقل بنود من مقاول إلى آخر وتحديث حالة البنود عند المقاول القديم
+app.post('/contractors/:fromId/transfer-items', async (req, res) => {
+  try {
+    const fromId = req.params.fromId;
+    const { toId, itemIds } = req.body;
+    if (!toId || !Array.isArray(itemIds) || itemIds.length === 0) {
+      return res.status(400).json({ error: 'toId و itemIds مطلوبة' });
+    }
+
+    // تحديث البنود في جميع المستخلصات التي تخص المقاول القديم
+    // نفترض أن البنود موجودة في workItems داخل مستندات extracts
+    // سنبحث عن جميع المستخلصات التي تخص المقاول القديم وتحتوي على البنود المطلوبة
+    const fromContractorId = /^[0-9a-fA-F]{24}$/.test(fromId) ? new ObjectId(fromId) : fromId;
+    const toContractorId = /^[0-9a-fA-F]{24}$/.test(toId) ? new ObjectId(toId) : toId;
+
+    // تحديث البنود: نجعلها غير نشطة (isActive: false) أو نغير مالكها (contractor)
+    // هنا سنجعلها غير نشطة فقط (يمكنك التعديل حسب الحاجة)
+    const updateResult = await extractsCollection.updateMany(
+      {
+        contractor: fromContractorId,
+        "workItems._id": { $in: itemIds.map(id => /^[0-9a-fA-F]{24}$/.test(id) ? new ObjectId(id) : id) }
+      },
+      {
+        $set: { "workItems.$[elem].isActive": false }
+      },
+      {
+        arrayFilters: [{ "elem._id": { $in: itemIds.map(id => /^[0-9a-fA-F]{24}$/.test(id) ? new ObjectId(id) : id) } }]
+      }
+    );
+
+    // يمكنك أيضاً نقل البنود فعلياً إلى المقاول الجديد إذا كان ذلك مطلوباً (مثلاً: نسخها أو نقلها)
+    // هنا نكتفي بتعطيلها عند المقاول القديم
+
+    res.json({
+      success: true,
+      modifiedCount: updateResult.modifiedCount,
+      message: `تم تحديث حالة ${updateResult.modifiedCount} بند عند المقاول القديم`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API التوريدات
+app.post('/supplies', async (req, res) => {
+  try {
+    const supply = req.body;
+    const result = await suppliesCollection.insertOne(supply);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/supplies', async (req, res) => {
+  try {
+    const supplies = await suppliesCollection.find({}).toArray();
+    res.json(supplies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// حذف توريد
+app.delete('/supplies/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await suppliesCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await suppliesCollection.deleteOne({ _id: id });
+    }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على التوريد' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// دالة لجلب كولكشن التوريدات الخاص بمورد
+function getSupplierSuppliesCollection(supplierId) {
+  return client.db('company_db').collection(`supplier_${supplierId}_supplies`);
+}
+
+// دالة لجلب كولكشن الحسابات الخاص بمورد
+function getSupplierAccountsCollection(supplierId) {
+  return client.db('company_db').collection(`supplier_${supplierId}_accounts`);
+}
+
+// إضافة توريد لمورد معين
+app.post('/suppliers/:supplierId/supplies', async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const data = req.body;
+    const collection = getSupplierSuppliesCollection(supplierId);
+    const result = await collection.insertOne(data);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب كل توريدات مورد معين
+app.get('/suppliers/:supplierId/supplies', async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const collection = getSupplierSuppliesCollection(supplierId);
+    const supplies = await collection.find({}).toArray();
+    res.json(supplies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// إضافة حساب لمورد معين
+app.post('/suppliers/:supplierId/accounts', async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const data = req.body;
+    const collection = getSupplierAccountsCollection(supplierId);
+    const result = await collection.insertOne(data);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب كل حسابات مورد معين
+app.get('/suppliers/:supplierId/accounts', async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const collection = getSupplierAccountsCollection(supplierId);
+    const accounts = await collection.find({}).toArray();
+    res.json(accounts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API الموردين
+
+// إضافة مورد جديد
+app.post('/suppliers', async (req, res) => {
+  try {
+    const supplier = req.body;
+    const result = await suppliersCollection.insertOne(supplier);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب جميع الموردين
+app.get('/suppliers', async (req, res) => {
+  try {
+    const suppliers = await suppliersCollection.find({}).toArray();
+    res.json(suppliers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب مورد واحد بالتفاصيل
+app.get('/suppliers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let supplier;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      supplier = await suppliersCollection.findOne({ _id: new ObjectId(id) });
+    } else {
+      supplier = await suppliersCollection.findOne({ _id: id });
+    }
+    if (!supplier) return res.status(404).json({ error: 'Supplier not found' });
+    res.json(supplier);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// تعديل بيانات مورد
+app.put('/suppliers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await suppliersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: req.body }
+      );
+    } else {
+      result = await suppliersCollection.updateOne(
+        { _id: id },
+        { $set: req.body }
+      );
+    }
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على المورد' });
+    }
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// حذف مورد
+app.delete('/suppliers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await suppliersCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await suppliersCollection.deleteOne({ _id: id });
+    }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على المورد' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// صرف مواد لمقاول: POST /contractors/:id/issue-material
+app.post('/contractors/:id/issue-material', async (req, res) => {
+  try {
+    const contractorId = req.params.id;
+    const { item, quantity, date, notes } = req.body;
+    if (!item || !quantity) return res.status(400).json({ error: 'item and quantity required' });
+
+    // خصم الكمية من المخزون (supplies)
+    // اجلب أول توريد متاح فيه الكمية المطلوبة (FIFO)
+    let qtyToIssue = Number(quantity);
+    const supplies = await suppliesCollection.find({ item }).sort({ date: 1 }).toArray();
+    let updates = [];
+    for (const supply of supplies) {
+      if (qtyToIssue <= 0) break;
+      const available = Number(supply.quantity) - Number(supply.issued || 0);
+      if (available <= 0) continue;
+      const deduct = Math.min(available, qtyToIssue);
+      updates.push({
+        id: supply._id,
+        issued: Number(supply.issued || 0) + deduct
+      });
+      qtyToIssue -= deduct;
+    }
+    if (qtyToIssue > 0) return res.status(400).json({ error: 'الكمية غير متوفرة في المخزن' });
+
+    // نفذ الخصم فعلياً
+    for (const u of updates) {
+      await suppliesCollection.updateOne(
+        { _id: u.id },
+        { $set: { issued: u.issued } }
+      );
+    }
+
+    // أضف المادة للمقاول
+    const contractor = await contractorsCollection.findOne({ _id: new ObjectId(contractorId) });
+    if (!contractor) return res.status(404).json({ error: 'Contractor not found' });
+    const matObj = {
+      name: item,
+      quantity: Number(quantity),
+      date: date || new Date(),
+      notes: notes || ''
+    };
+    await contractorsCollection.updateOne(
+      { _id: new ObjectId(contractorId) },
+      { $push: { materials: matObj } }
+    );
+
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
