@@ -48,7 +48,7 @@
       gap: 18px;
       margin-bottom: 24px;
       align-items: center;
-      background: #e8f5e9;
+      background: none; /* إزالة الخلفية الخضراء الفاتحة */
       border-radius: 10px;
       padding: 12px 10px;
       border: 1.5px solid #1b5e20;
@@ -141,12 +141,177 @@
     .delete-btn:hover {
       background: #b71c1c;
     }
+    
+    /* زر الإضافة العائم الجديد */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      z-index: 900;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    .fab:hover {
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* تحسينات على النافذة المنبثقة */
+    #addSupplyModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    #addSupplyModal.show {
+      opacity: 1;
+      display: flex;
+    }
+    
+    #addSupplyModal > div {
+      transform: translateY(30px);
+      transition: transform 0.3s ease;
+    }
+    
+    #addSupplyModal.show > div {
+      transform: translateY(0);
+    }
+    
+    /* تحسينات للشكل العام للنافذة */
+    #addSupplyModal > div {
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px #1976d233, 0 1.5px 0 #2e8ca3;
+      padding: 22px 18px 18px 18px;
+      min-width: 340px;
+      max-width: 480px;
+      width: 98vw;
+      margin: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2.5px solid #2e8ca3;
+      transition: box-shadow 0.2s;
+    }
+    #closeAddSupplyModalBtn {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      background: linear-gradient(135deg,#e53935 60%,#ffb4a2 100%);
+      border: none;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      box-shadow: 0 2px 8px #e5393533;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s;
+    }
+    #closeAddSupplyModalBtn:hover {
+      background: #b71c1c;
+    }
+    #addSupplyModal > div h3 {
+      color: #1976d2;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-family: 'Tajawal','Cairo',Arial,sans-serif;
+      font-size: 1.13rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 0 #fff, 0 2px 8px #1976d222;
+    }
+    #addSupplyModal > div form.supplies-form {
+      background: rgba(46,140,163,0.07);
+      border-radius: 12px;
+      border: 1.5px solid #8c969a;
+      box-shadow: 0 1px 8px #2e8ca322;
+      padding: 10px 4px;
+      margin: 0;
+      gap: 10px;
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #addSupplyModal > div .form-group label {
+      color: #2e8ca3;
+      font-weight: 600;
+      margin-bottom: 3px;
+      font-size: 0.97rem;
+      letter-spacing: 0.5px;
+    }
+    #addSupplyModal > div .form-group input,
+    #addSupplyModal > div .form-group select {
+      padding: 6px 8px;
+      font-size: 0.97rem;
+      border-radius: 6px;
+      border: 1.2px solid #c5d6db;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    #addSupplyModal > div .form-group input:focus,
+    #addSupplyModal > div .form-group select:focus {
+      border-color: #2e8ca3;
+      background: #c5d6db;
+    }
+    #addSupplyModal > div .add-btn {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 8px 24px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+      box-shadow: 0 2px 10px #0001;
+      width: 100%;
+    }
+    #addSupplyModal > div .add-btn:hover {
+      background: #1a3b50;
+    }
+    
+    /* تحسينات على الجوال */
     @media (max-width: 900px) {
       .container { padding: 8px; }
       .supplies-form { flex-direction: column; gap: 10px; padding: 10px 4px; }
       table { font-size: .92rem; }
       th, td { padding: 4px; }
       .add-btn { padding: 8px 12px; font-size: 0.92rem; }
+      
+      .fab {
+        bottom: 16px;
+        left: 16px;
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+      }
     }
   </style>
 </head>
@@ -154,53 +319,91 @@
   <div class="navbar">
     التوريدات | سعيد أحمد بالبيد
   </div>
+  
+  <!-- زر الإضافة العائم الجديد -->
+  <button class="fab" id="floatingAddBtn">+</button>
+  
   <div class="container" style="margin-top:8px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <button id="openAddSupplyModalBtn" style="background:#2e8ca3;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:1rem;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px #0001;transition:background 0.2s;">
-          + إضافة توريد
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button id="openAddSupplyModalBtn" style="background:#2e8ca3;color:#fff;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+          + إضافة
         </button>
-        <button onclick="location.href='suppliers.html'" style="background:#8d5524;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:1rem;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px #0001;transition:background 0.2s;">
+        <button onclick="location.href='suppliers.html'" style="background:#8d5524;color:#fff;border:2px solid #8d5524;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
           الموردين
         </button>
       </div>
-      <h2 style="margin-bottom:0;margin-top:0;">سجل التوريدات</h2>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input id="supplySearchBox" type="text" placeholder="ابحث بالاسم أو الصنف..."
+          style="width:200px;max-width:30vw;padding:3px 8px;font-size:1.02rem;font-family:'Cairo',Arial,sans-serif;font-weight:600;border-radius:0;border:2px solid #2e8ca3;outline:none;box-shadow:none;text-align:center;letter-spacing:0.5px;transition:border-color 0.18s;color:#1a3b50;background:#fafdff;height:24px;">
+        <!-- زر الفلتر بعد مربع البحث -->
+        <div style="position:relative;display:flex;align-items:center;">
+          <!-- نافذة الفلترة داخل الصفحة ومحركة للداخل -->
+          <div id="filterBox" style="display:none;position:absolute;top:40px;right:60px;background:#fff;border:1.5px solid #2e8ca3;border-radius:8px;box-shadow:0 2px 12px #0002;padding:12px 16px;z-index:10;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <label style="font-size:0.95rem;color:#2e8ca3;">من</label>
+              <input type="date" id="filterFrom" style="padding:2px 6px;font-size:0.95rem;border:1px solid #8c969a;border-radius:4px;">
+              <label style="font-size:0.95rem;color:#2e8ca3;">إلى</label>
+              <input type="date" id="filterTo" style="padding:2px 6px;font-size:0.95rem;border:1px solid #8c969a;border-radius:4px;">
+              <button id="filterApplyBtn" style="background:#2e8ca3;color:#fff;border:none;border-radius:4px;padding:3px 12px;font-size:0.95rem;font-family:'Cairo',Arial,sans-serif;font-weight:600;cursor:pointer;">تطبيق</button>
+            </div>
+          </div>
+          <button id="filterToggleBtn" title="فلترة بالتاريخ" style="background:#fff;border:2px solid #2e8ca3;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;">
+            <!-- أيقونة فلتر SVG بخط أنعم وأشيك -->
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5h14M7 10h6M9 15h2" stroke="#1976d2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
     <!-- نافذة إضافة توريد -->
-    <div id="addSupplyModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.18); z-index:1000; align-items:center; justify-content:center;">
-      <div style="background:#fff; border-radius:14px; box-shadow:0 2px 16px #0003; padding:28px 18px 18px 18px; min-width:320px; max-width:95vw; margin:auto; position:relative; display:flex; flex-direction:column; align-items:center;">
-        <button id="closeAddSupplyModalBtn" style="position:absolute;left:12px;top:8px;background:none;border:none;font-size:1.5rem;color:#e53935;cursor:pointer;">&times;</button>
-        <h3 style="color:#1976d2;margin-top:0;margin-bottom:18px;font-family:'Tajawal','Cairo',Arial,sans-serif;">إضافة توريد جديد</h3>
-        <form id="supplyForm" class="supplies-form" style="background:none;border:none;box-shadow:none;padding:0;margin:0;gap:12px;">
-          <div class="form-group">
-            <label>تاريخ التوريد</label>
-            <input type="date" name="date" required>
+    <div id="addSupplyModal">
+      <div>
+        <button id="closeAddSupplyModalBtn">&times;</button>
+        <h3>إضافة توريد جديد</h3>
+        <form id="supplyForm" class="supplies-form">
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>تاريخ التوريد</label>
+              <input type="date" name="date" required>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>اسم المورد</label>
+              <select name="supplier" id="supplierSelect" required>
+                <option value="">اختر المورد</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label>اسم المورد</label>
-            <select name="supplier" id="supplierSelect" required>
-              <option value="">اختر المورد</option>
-            </select>
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>الصنف</label>
+              <input type="text" name="item" required placeholder="اسم الصنف">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>الكمية</label>
+              <input type="number" name="quantity" min="1" step="any" required placeholder="الكمية">
+            </div>
           </div>
-          <div class="form-group">
-            <label>الصنف</label>
-            <input type="text" name="item" required placeholder="اسم الصنف">
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>الوحدة</label>
+              <input type="text" name="unit" required placeholder="الوحدة">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>السعر للوحدة</label>
+              <input type="number" name="unitPrice" min="0" step="any" required placeholder="السعر للوحدة">
+            </div>
           </div>
-          <div class="form-group">
-            <label>الكمية</label>
-            <input type="number" name="quantity" min="1" step="any" required placeholder="الكمية">
-          </div>
-          <div class="form-group">
-            <label>الوحدة</label>
-            <input type="text" name="unit" required placeholder="الوحدة">
-          </div>
-          <div class="form-group">
-            <label>السعر للوحدة</label>
-            <input type="number" name="unitPrice" min="0" step="any" required placeholder="السعر للوحدة">
-          </div>
-          <div class="form-group">
-            <label>الإجمالي</label>
-            <input type="number" name="total" readonly placeholder="الإجمالي">
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>الإجمالي</label>
+              <input type="number" name="total" readonly placeholder="الإجمالي">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>رابط الفاتورة</label>
+              <input type="text" name="invoice" placeholder="رابط الفاتورة (اختياري)">
+            </div>
           </div>
           <button type="submit" class="add-btn">إضافة التوريد</button>
         </form>
@@ -230,23 +433,32 @@
   <script>
     // إظهار/إخفاء نافذة إضافة توريد
     const openAddSupplyModalBtn = document.getElementById('openAddSupplyModalBtn');
+    const floatingAddBtn = document.getElementById('floatingAddBtn');
     const addSupplyModal = document.getElementById('addSupplyModal');
     const closeAddSupplyModalBtn = document.getElementById('closeAddSupplyModalBtn');
     const supplyForm = document.getElementById('supplyForm');
-    openAddSupplyModalBtn.onclick = function() {
-      addSupplyModal.style.display = 'flex';
+    
+    function openModal() {
+      addSupplyModal.classList.add('show');
       setTimeout(() => {
         supplyForm.date.focus();
       }, 100);
-    };
-    closeAddSupplyModalBtn.onclick = function() {
-      addSupplyModal.style.display = 'none';
-    };
+    }
+    
+    function closeModal() {
+      addSupplyModal.classList.remove('show');
+    }
+    
+    openAddSupplyModalBtn.onclick = openModal;
+    floatingAddBtn.onclick = openModal;
+    closeAddSupplyModalBtn.onclick = closeModal;
+    
     addSupplyModal.onclick = function(e) {
-      if (e.target === addSupplyModal) addSupplyModal.style.display = 'none';
+      if (e.target === addSupplyModal) closeModal();
     };
+    
     document.addEventListener('keydown', function(e) {
-      if (addSupplyModal.style.display === 'flex' && e.key === 'Escape') addSupplyModal.style.display = 'none';
+      if (addSupplyModal.classList.contains('show') && e.key === 'Escape') closeModal();
     });
 
     // حساب الإجمالي تلقائياً
@@ -257,6 +469,7 @@
     };
 
     const tableBody = document.querySelector('#suppliesTable tbody');
+    let allSupplies = []; // تخزين كل التوريدات هنا
 
     // جلب التوريدات من قاعدة البيانات
     async function fetchSupplies() {
@@ -264,9 +477,52 @@
       return await res.json();
     }
 
-    // عرض التوريدات في الجدول
-    async function renderTable() {
-      const supplies = await fetchSupplies();
+    // فلتر التاريخ
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filterBox = document.getElementById('filterBox');
+    const filterFrom = document.getElementById('filterFrom');
+    const filterTo = document.getElementById('filterTo');
+    const filterApplyBtn = document.getElementById('filterApplyBtn');
+    let dateFilter = { from: '', to: '' };
+
+    filterToggleBtn.onclick = function(e) {
+      filterBox.style.display = filterBox.style.display === 'none' ? 'block' : 'none';
+      e.stopPropagation();
+    };
+    document.body.onclick = function(e) {
+      if (filterBox.style.display === 'block' && !filterBox.contains(e.target) && e.target !== filterToggleBtn) {
+        filterBox.style.display = 'none';
+      }
+    };
+
+    filterApplyBtn.onclick = function() {
+      dateFilter.from = filterFrom.value;
+      dateFilter.to = filterTo.value;
+      renderTable(searchBox.value);
+      filterBox.style.display = 'none';
+    };
+
+    // عرض التوريدات في الجدول مع دعم البحث والفلترة بالتاريخ
+    async function renderTable(filter = '') {
+      if (!allSupplies.length) {
+        allSupplies = await fetchSupplies();
+      }
+      let supplies = allSupplies;
+      // فلترة بالبحث
+      if (filter) {
+        const f = filter.trim().toLowerCase();
+        supplies = supplies.filter(s =>
+          (s.supplier && s.supplier.toLowerCase().includes(f)) ||
+          (s.item && s.item.toLowerCase().includes(f))
+        );
+      }
+      // فلترة بالتاريخ
+      if (dateFilter.from) {
+        supplies = supplies.filter(s => s.date && s.date >= dateFilter.from);
+      }
+      if (dateFilter.to) {
+        supplies = supplies.filter(s => s.date && s.date <= dateFilter.to);
+      }
       tableBody.innerHTML = '';
       supplies.forEach((s, idx) => {
         const invoiceCell = s.invoice ? `<a href="${s.invoice}" target="_blank">عرض</a>` : '';
@@ -307,6 +563,12 @@
       });
     }
 
+    // مربع البحث
+    const searchBox = document.getElementById('supplySearchBox');
+    searchBox.oninput = function() {
+      renderTable(this.value);
+    };
+
     // إضافة توريد جديد للقاعدة
     supplyForm.onsubmit = async function(e) {
       e.preventDefault();
@@ -317,17 +579,19 @@
         quantity: supplyForm.quantity.value,
         unit: supplyForm.unit.value,
         unitPrice: supplyForm.unitPrice.value,
-        total: supplyForm.total.value
+        total: supplyForm.total.value,
+        invoice: supplyForm.invoice.value // إضافة رابط الفاتورة
       };
       await fetch('/supplies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      renderTable();
+      allSupplies = await fetchSupplies();
+      renderTable(searchBox.value);
       supplyForm.reset();
       supplyForm.total.value = '';
-      addSupplyModal.style.display = 'none';
+      closeModal();
     };
 
     // حذف توريد من القاعدة
@@ -336,7 +600,8 @@
         const id = e.target.dataset.id;
         if (confirm('هل أنت متأكد من حذف التوريد؟')) {
           await fetch(`/supplies/${id}`, { method: 'DELETE' });
-          renderTable();
+          allSupplies = await fetchSupplies();
+          renderTable(searchBox.value);
         }
       }
     };
@@ -344,6 +609,7 @@
     // عند تحميل الصفحة
     window.onload = async function() {
       await fillSuppliersSelect();
+      allSupplies = await fetchSupplies();
       renderTable();
     };
   </script>

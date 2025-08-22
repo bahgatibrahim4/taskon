@@ -19,7 +19,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-let extractsCollection, contractorsCollection, usersCollection, suppliesCollection, suppliersCollection; // أضف suppliersCollection
+let extractsCollection, contractorsCollection, usersCollection, suppliesCollection, suppliersCollection, purchasesCollection, storeCollection, workersCollection, monthlyPaysCollection, paysCollection; // أضف paysCollection
 
 // الاتصال بقاعدة البيانات
 async function connectDB() {
@@ -29,7 +29,12 @@ async function connectDB() {
   contractorsCollection = db.collection('contractors');
   usersCollection = db.collection('users');
   suppliesCollection = db.collection('supplies');
-  suppliersCollection = db.collection('suppliers'); // أضف هذا السطر
+  suppliersCollection = db.collection('suppliers');
+  purchasesCollection = db.collection('purchases');
+  storeCollection = db.collection('store');
+  workersCollection = db.collection('workers');
+  monthlyPaysCollection = db.collection('monthlyPays');
+  paysCollection = db.collection('pays'); // أضف هذا السطر
   console.log("Connected to MongoDB!");
 }
 
@@ -696,6 +701,155 @@ app.post('/contractors/:id/issue-material', async (req, res) => {
   }
 });
 
+// API المشتريات
+app.post('/purchases', async (req, res) => {
+  try {
+    const purchase = req.body;
+    const result = await purchasesCollection.insertOne(purchase);
+    res.status(201).json({ ...result, insertedId: result.insertedId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/purchases', async (req, res) => {
+  try {
+    const purchases = await purchasesCollection.find({}).toArray();
+    res.json(purchases);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/purchases/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await purchasesCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await purchasesCollection.deleteOne({ _id: id });
+    }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على الشراء' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API المخزن: جلب ملخص المخزون (مادة/كمية/وحدة/سعر/إجمالي)
+app.get('/store', async (req, res) => {
+  try {
+    // جلب كل التوريدات
+    const supplies = await suppliesCollection.find({}).toArray();
+    // جلب كل المشتريات
+    const purchases = await purchasesCollection.find({}).toArray();
+    // جلب كل عمليات الصرف للمقاولين (من حقل materials في المقاولين)
+    const contractors = await contractorsCollection.find({}).toArray();
+    let issuedMaterials = [];
+    contractors.forEach(c => {
+      if (Array.isArray(c.materials)) {
+        issuedMaterials = issuedMaterials.concat(
+          c.materials.map(m => ({
+            item: m.name,
+            quantity: Number(m.quantity) || 0
+          }))
+        );
+      }
+    });
+
+    // بناء جدول المخزون: لكل مادة
+    const items = {};
+    supplies.forEach(s => {
+      if (!s.item) return;
+      if (!items[s.item]) {
+        items[s.item] = {
+          item: s.item,
+          unit: s.unit || '',
+          unitPrice: s.unitPrice || '',
+          totalSupplied: 0,
+          totalPurchased: 0,
+          totalIssued: 0,
+          supplier: s.supplier || '',
+          lastSupplyDate: s.date || '',
+        };
+      }
+      items[s.item].totalSupplied += Number(s.quantity) || 0;
+      items[s.item].supplier = s.supplier || items[s.item].supplier;
+      items[s.item].lastSupplyDate = s.date || items[s.item].lastSupplyDate;
+      items[s.item].unit = s.unit || items[s.item].unit;
+      items[s.item].unitPrice = s.unitPrice || items[s.item].unitPrice;
+    });
+    purchases.forEach(p => {
+      if (!p.item || !items[p.item]) return;
+      items[p.item].totalPurchased += Number(p.quantity) || 0;
+    });
+    issuedMaterials.forEach(im => {
+      if (!im.item || !items[im.item]) return;
+      items[im.item].totalIssued += Number(im.quantity) || 0;
+    });
+
+    // بناء صفوف الجدول
+    const rows = Object.values(items).map((it, idx) => ({
+      idx: idx + 1,
+      date: it.lastSupplyDate,
+      supplier: it.supplier,
+      item: it.item,
+      quantity: (it.totalSupplied - it.totalPurchased - it.totalIssued),
+      unit: it.unit,
+      unitPrice: it.unitPrice,
+      total: ((it.totalSupplied - it.totalPurchased - it.totalIssued) * (Number(it.unitPrice) || 0)).toFixed(2)
+    }));
+
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API العمال
+
+// إضافة عامل جديد
+app.post('/workers', async (req, res) => {
+  try {
+    const worker = req.body;
+    const result = await workersCollection.insertOne(worker);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/workers', async (req, res) => {
+  try {
+    const workers = await workersCollection.find({}).toArray();
+    res.json(workers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// حذف عامل
+app.delete('/workers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await workersCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await workersCollection.deleteOne({ _id: id });
+    }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على العامل' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // دعم الرجوع للصفحة الرئيسية من المسار /
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
@@ -705,3 +859,94 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // لا يوجد أي تعديل مطلوب هنا بخصوص منطق إخفاء الجداول عند حذف آخر صف
+
+// API القبض الشهري
+
+// إضافة شهر جديد
+app.post('/monthly-pays', async (req, res) => {
+  try {
+    const { name, date } = req.body;
+    if (!name || !date) return res.status(400).json({ error: 'name and date required' });
+    const result = await monthlyPaysCollection.insertOne({ name, date });
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب كل الشهور
+app.get('/monthly-pays', async (req, res) => {
+  try {
+    const months = await monthlyPaysCollection.find({}).sort({ date: -1 }).toArray();
+    res.json(months);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// حذف شهر
+app.delete('/monthly-pays/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await monthlyPaysCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await monthlyPaysCollection.deleteOne({ _id: id });
+    }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على الشهر' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- API القبض الشهرى (pays) ---
+// جلب كل القبض لشهر معين
+app.get('/pays', async (req, res) => {
+  try {
+    const { month } = req.query;
+    let filter = {};
+    if (month) filter.month = month;
+    const pays = await paysCollection.find(filter).sort({ _id: 1 }).toArray();
+    res.json(pays);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// إضافة قبض جديد
+app.post('/pays', async (req, res) => {
+  try {
+    const pay = req.body;
+    // يجب أن يحتوى على name, date, value, month
+    if (!pay.name || !pay.date || pay.value === undefined || !pay.month) {
+      return res.status(400).json({ error: 'name, date, value, month مطلوبة' });
+    }
+    const result = await paysCollection.insertOne(pay);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// حذف صف قبض
+app.delete('/pays/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await paysCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await paysCollection.deleteOne({ _id: id });
+    }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على القبض' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});

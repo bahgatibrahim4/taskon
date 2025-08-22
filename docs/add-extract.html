@@ -878,6 +878,8 @@
           </div>
         </div>
       </div>
+      <!-- خط فاصل بين الأزرار وجدول الأعمال -->
+      <hr style="border:0; border-top:2px solid #8c969a; margin: 0 0 18px 0; width:100%;">
       <div class="table-section">
         <table id="workItemsTable" style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px #8c969a;">
           <thead>
@@ -1071,6 +1073,7 @@
         </div>
       </div>
       <button type="submit">إضافة المستخلص</button>
+      <button type="button" id="saveDraftBtn" style="margin-right:10px;background:#8c969a;color:#fff;border:none;border-radius:6px;padding:6px 18px;font-weight:bold;cursor:pointer;">حفظ كمسودة</button>
     </form>
     <div class="table-section" id="lumpSumSection" style="display:none; margin-top:0;">
       <!-- كرر نفس التعديل أعلاه إذا كان هناك تكرار للقسم (احذف زر الإضافة السفلي) -->
@@ -1553,6 +1556,7 @@
     // عدل دالة workItemRowHtml لإضافة أزرار التحريك
     function workItemRowHtml(item, rowNum, idx, groupKey) {
       let hiddenClass = groupKey && groupsCollapsed[groupKey] ? "hidden-row" : "";
+
       // تحقق من صلاحية المستخدم
       const userStr = localStorage.getItem('user');
       const user = userStr ? JSON.parse(userStr) : {};

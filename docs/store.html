@@ -140,15 +140,10 @@
   <script>
     const tableBody = document.querySelector('#storeTable tbody');
 
-    // بيانات التوريدات في المخزن (نحتاجها للمواد والكمية)
-    let suppliesCache = [];
-
-    // جلب التوريدات من قاعدة البيانات
-    async function fetchSupplies() {
-      const res = await fetch('/supplies');
-      const data = await res.json();
-      suppliesCache = data;
-      return data;
+    // جلب بيانات المخزون من السيرفر مباشرة
+    async function fetchStore() {
+      const res = await fetch('/store');
+      return await res.json();
     }
 
     // جلب المقاولين
@@ -170,12 +165,14 @@
       });
     }
 
-    // تعبئة قائمة المواد من التوريدات
-    function fillItemsSelect() {
+    // تعبئة قائمة المواد من بيانات المخزون
+    let storeCache = [];
+    async function fillItemsSelect() {
+      if (!storeCache.length) storeCache = await fetchStore();
       const select = document.getElementById('itemSelect');
       select.innerHTML = '<option value="">اختر المادة</option>';
       // استخراج المواد الفريدة
-      const items = [...new Set(suppliesCache.map(s => s.item).filter(Boolean))];
+      const items = [...new Set(storeCache.map(s => s.item).filter(Boolean))];
       items.forEach(item => {
         const opt = document.createElement('option');
         opt.value = item;
@@ -184,15 +181,11 @@
       });
     }
 
-    // حساب الكمية المتاحة لمادة معينة
+    // إظهار الكمية المتاحة لمادة معينة من بيانات المخزون
     function getAvailableQty(itemName) {
-      // مجموع الكميات المضافة (توريدات)
-      let totalIn = suppliesCache.filter(s => s.item === itemName).reduce((sum, s) => sum + Number(s.quantity || 0), 0);
-      // مجموع الكميات المصروفة (من عمليات الصرف)
-      let totalOut = 0;
-      const issued = JSON.parse(localStorage.getItem('issuedMaterials') || '[]');
-      totalOut = issued.filter(i => i.item === itemName).reduce((sum, i) => sum + Number(i.quantity || 0), 0);
-      return totalIn - totalOut;
+      if (!storeCache.length) return '-';
+      const item = storeCache.find(s => s.item === itemName);
+      return item ? item.quantity : 0;
     }
 
     // نافذة صرف مواد
@@ -206,8 +199,8 @@
 
     openIssueModalBtn.onclick = async function() {
       await fillContractorsSelect();
-      await fetchSupplies();
-      fillItemsSelect();
+      storeCache = await fetchStore();
+      await fillItemsSelect();
       availableQtySpan.textContent = '-';
       issueQtyInput.value = '';
       issueQtyInput.max = '';
@@ -248,7 +241,7 @@
       }
     };
 
-    // حفظ عملية الصرف (ترسل للسيرفر وتخصم من المخزون وتضاف للمقاول)
+    // حفظ عملية الصرف (ترسل للسيرفر فقط)
     issueForm.onsubmit = async function(e) {
       e.preventDefault();
       const data = {
@@ -269,15 +262,6 @@
       });
       if (res.ok) {
         alert('تم صرف المواد بنجاح');
-        // تحديث عمليات الصرف في localStorage
-        const issued = JSON.parse(localStorage.getItem('issuedMaterials') || '[]');
-        issued.push({
-          contractor: data.contractor,
-          date: data.date,
-          item: data.item,
-          quantity: data.quantity
-        });
-        localStorage.setItem('issuedMaterials', JSON.stringify(issued));
         issueModal.style.display = 'none';
         issueForm.reset();
         await renderTable();
@@ -293,27 +277,20 @@
       }
     }
 
+    // عرض جدول المخزون من السيرفر مباشرة
     async function renderTable() {
-      const supplies = await fetchSupplies();
-      // جلب عمليات الصرف من localStorage (أو من السيرفر إذا كانت موجودة هناك)
-      const issued = JSON.parse(localStorage.getItem('issuedMaterials') || '[]');
+      const store = await fetchStore();
+      storeCache = store;
       tableBody.innerHTML = '';
-      supplies.forEach((s, idx) => {
-        // حساب مجموع الكميات المصروفة لهذا الصنف
-        const issuedQty = issued
-          .filter(i => i.item === s.item)
-          .reduce((sum, i) => sum + Number(i.quantity || 0), 0);
-        // الكمية المتبقية = الكمية الأصلية - المصروفة
-        const remainingQty = Number(s.quantity || 0) - issuedQty;
-        const displayQty = remainingQty < 0 ? 0 : remainingQty;
-        const qtyStyle = displayQty === 0 ? 'color:#c00;font-weight:bold;' : '';
+      store.forEach((s, idx) => {
+        const qtyStyle = Number(s.quantity) === 0 ? 'color:#c00;font-weight:bold;' : '';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${idx + 1}</td>
           <td>${s.date || ''}</td>
           <td>${s.supplier || ''}</td>
           <td>${s.item || ''}</td>
-          <td style="${qtyStyle}">${displayQty}</td>
+          <td style="${qtyStyle}">${s.quantity || 0}</td>
           <td>${s.unit || ''}</td>
           <td>${s.unitPrice || ''}</td>
           <td>${s.total || ''}</td>
