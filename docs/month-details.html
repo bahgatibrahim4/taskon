@@ -5,48 +5,13 @@
   <title>تفاصيل الشهر</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
+    :root { direction: rtl; }
     body {
       margin: 0;
       font-family: 'Cairo', Arial, sans-serif;
       background: #c5d6db;
       min-height: 100vh;
-      direction: rtl;
-    }
-    .navbar {
-      background: #1a3b50;
-      color: #fff;
-      padding: 14px 0 10px 0;
-      text-align: center;
-      font-size: 1.6rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      box-shadow: 0 2px 18px #1a3b5022;
-      border-radius: 0 0 24px 24px;
-      margin-bottom: 40px;
-      position: relative;
-      z-index: 2;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 3px solid #2e8ca3;
-    }
-    .navbar .user-info {
-      position: absolute;
-      left: 32px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      background: #2e8ca3;
-      padding: 6px 18px;
-      border-radius: 18px;
-      box-shadow: 0 1px 6px #2e8ca322;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
     }
     .container {
       max-width: 900px;
@@ -148,12 +113,7 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    تفاصيل الشهر
-    <span class="user-info" id="userInfo">
-      <span id="logoutBtn" style="display:block; color:#fff; font-size:0.95rem; font-weight:400; margin-top:2px; cursor:pointer; text-decoration:underline;">تسجيل الخروج</span>
-    </span>
-  </div>
+  <div id="navbar-container"></div>
   <div class="container" style="max-width:900px;">
     <div class="header-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
       <button id="addPayBtn" type="button" style="border:2px solid #2e8ca3; border-radius:0; background:#fff; color:#1a3b50; font-family:'Cairo',Arial,sans-serif; font-size:1.05rem; font-weight:900; padding:7px 22px; letter-spacing:1px; box-shadow:0 2px 8px #2e8ca311; outline:none; cursor:pointer; transition:background 0.15s, color 0.15s, border 0.15s;">إضافة</button>
@@ -250,19 +210,6 @@
     if (!localStorage.getItem('user')) {
       window.location.href = 'login.html';
     }
-    // عرض اسم المستخدم أعلى يمين الشريط
-    const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        const username = JSON.parse(user).username || '';
-        document.getElementById('userInfo').childNodes[0].textContent = '👤 ' + username + ' ';
-      } catch {}
-    }
-    // زر تسجيل الخروج
-    document.getElementById('logoutBtn').onclick = function() {
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    };
     // --- بيانات الشهر من الرابط ---
     function getQueryParam(name) {
       const url = new URL(window.location.href);
@@ -553,6 +500,27 @@
     workerSearchInput.oninput = function() {
       renderWorkerList(this.value.trim());
     };
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
   </script>
 </body>
 </html>

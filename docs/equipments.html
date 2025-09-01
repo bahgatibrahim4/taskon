@@ -12,47 +12,8 @@
       min-height: 100vh;
       direction: rtl;
     }
-    .navbar {
-      background: #1a3b50;
-      color: #fff;
-      padding: 14px 0 10px 0;
-      text-align: center;
-      font-size: 1.6rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      box-shadow: 0 2px 18px #1a3b5022;
-      border-radius: 0 0 24px 24px;
-      margin-bottom: 40px;
-      position: relative;
-      z-index: 2;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 3px solid #2e8ca3;
-    }
-    .navbar .back-btn {
-      position: absolute;
-      left: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #fff;
-      color: #2e8ca3;
-      border: 2px solid #2e8ca3;
-      border-radius: 6px;
-      padding: 6px 18px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s, border 0.15s;
-    }
-    .navbar .back-btn:hover {
-      background: #2e8ca3;
-      color: #fff;
-      border-color: #1a3b50;
-    }
     .container {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 0 auto;
       background: #fff;
       border-radius: 18px;
@@ -145,25 +106,40 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    المعدات
-    <button class="back-btn" onclick="window.location.href='index.html'">العودة للرئيسية</button>
-  </div>
+  <div id="navbar-container"></div>
   <div class="container">
     <div class="header-row">
       <button id="addEquipmentBtn" class="add-btn">إضافة معدات</button>
-      <div class="equipments-title">قائمة المعدات</div>
-      <div style="width:120px;"></div>
+      <input type="text" id="equipmentSearch" placeholder="بحث باسم المعدة أو المكان" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; width:220px; margin-right:12px;">
+      <div style="position:relative; width:40px;">
+        <button id="filterBtn" title="فلترة بالتاريخ" style="background:none; border:none; cursor:pointer; padding:0;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+            <path d="M3 5h18M6 9h12M9 13h6M10 17h4" stroke="#2e8ca3" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div id="filterDropdown" style="display:none; position:absolute; left:0; top:36px; background:#fff; border:1.5px solid #c5d6db; border-radius:8px; box-shadow:0 2px 12px #1a3b5022; padding:16px 18px 12px 18px; z-index:10; min-width:210px;">
+          <div style="margin-bottom:10px; font-weight:700; color:#1a3b50;">فلترة بالتاريخ</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="font-size:0.97rem; color:#1a3b50;">من</label>
+            <input type="date" id="filterDateFrom" style="padding:5px 8px; border:1px solid #c5d6db; border-radius:5px;">
+            <label style="font-size:0.97rem; color:#1a3b50;">إلى</label>
+            <input type="date" id="filterDateTo" style="padding:5px 8px; border:1px solid #c5d6db; border-radius:5px;">
+            <button id="clearDateFilterBtn" style="margin-top:8px; background:#c5d6db; color:#1a3b50; border:none; border-radius:5px; padding:5px 0; font-weight:700; cursor:pointer;">مسح الفلتر</button>
+          </div>
+        </div>
+      </div>
     </div>
     <table id="equipmentsTable">
       <thead>
         <tr>
           <th>م</th>
           <th>اسم المعدة</th>
-          <th>النوع</th>
-          <th>الموديل</th>
-          <th>المالك</th>
-          <th>ملاحظات</th>
+          <th>المحل / الشخص</th>
+          <th>تاريخ تأجير المعدة</th>
+          <th>عدد الأيام</th>
+          <th>قيمة اليوم</th>
+          <th>الإجمالي</th>
+          <th>الفاتورة</th>
           <th>حذف</th>
         </tr>
       </thead>
@@ -174,20 +150,49 @@
   </div>
   <!-- مودال إضافة معدات -->
   <div id="equipmentModalOverlay" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:#0006; z-index:2000; align-items:center; justify-content:center;">
-    <form id="equipmentModal" style="background:#fff; border-radius:16px; box-shadow:0 8px 32px #1a3b5044; padding:32px 32px 24px 32px; min-width:320px; max-width:99vw; width:420px; display:flex; flex-direction:column; gap:18px; font-family:'Cairo',Arial,sans-serif;">
-      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">اسم المعدة</label>
-      <input type="text" id="equipmentName" required style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem;">
-      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">النوع</label>
-      <input type="text" id="equipmentType" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem;">
-      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">الموديل</label>
-      <input type="text" id="equipmentModel" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem;">
-      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">المالك</label>
-      <input type="text" id="equipmentOwner" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem;">
-      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">ملاحظات</label>
-      <input type="text" id="equipmentNotes" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem;">
-      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
-        <button type="button" id="cancelEquipmentModalBtn" style="border:none; background:#c5d6db; color:#1a3b50; font-weight:700; font-size:1rem; padding:8px 22px; border-radius:6px; cursor:pointer;">إلغاء</button>
-        <button type="submit" style="border:none; background:#2e8ca3; color:#fff; font-weight:700; font-size:1rem; padding:8px 22px; border-radius:6px; cursor:pointer;">حفظ</button>
+    <form id="equipmentModal"
+      style="background:#fff; border-radius:16px; box-shadow:0 8px 32px #1a3b5044; padding:28px 24px 18px 24px; min-width:340px; max-width:99vw; width:410px; display:flex; flex-direction:column; gap:12px; font-family:'Cairo',Arial,sans-serif;"
+      enctype="multipart/form-data">
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">اسم المعدة</label>
+          <input type="text" id="equipmentName" required style="padding:6px 8px; border:1.2px solid #c5d6db; border-radius:5px; font-size:1rem;">
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">المحل / الشخص</label>
+          <input type="text" id="equipmentOwner" required style="padding:6px 8px; border:1.2px solid #c5d6db; border-radius:5px; font-size:1rem;">
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">تاريخ تأجير المعدة</label>
+          <input type="date" id="equipmentRentDate" required style="padding:6px 8px; border:1.2px solid #c5d6db; border-radius:5px; font-size:1rem;">
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">عدد الأيام</label>
+          <input type="number" id="equipmentDays" min="1" required style="padding:6px 8px; border:1.2px solid #c5d6db; border-radius:5px; font-size:1rem;">
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">قيمة اليوم</label>
+          <input type="number" id="equipmentDayValue" min="0" required style="padding:6px 8px; border:1.2px solid #c5d6db; border-radius:5px; font-size:1rem;">
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">الإجمالي</label>
+          <input type="text" id="equipmentTotal" readonly style="padding:6px 8px; border:1.2px solid #c5d6db; border-radius:5px; font-size:1rem; background:#f8fafb;">
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1rem;">الفاتورة (PDF)</label>
+          <input type="file" id="equipmentInvoice" accept="application/pdf" style="padding:4px 0;">
+        </div>
+        <div style="flex:1;"></div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+        <button type="button" id="cancelEquipmentModalBtn" style="border:none; background:#c5d6db; color:#1a3b50; font-weight:700; font-size:1rem; padding:7px 18px; border-radius:5px; cursor:pointer;">إلغاء</button>
+        <button type="submit" style="border:none; background:#2e8ca3; color:#fff; font-weight:700; font-size:1rem; padding:7px 18px; border-radius:5px; cursor:pointer;">حفظ</button>
       </div>
     </form>
   </div>
@@ -197,20 +202,46 @@
   <script>
     // بيانات المعدات (واجهة فقط)
     let equipments = [];
+    let equipmentsFilter = '';
+    let filterDateFrom = '';
+    let filterDateTo = '';
 
     function renderEquipmentsTable() {
       const tbody = document.getElementById('equipmentsTbody');
       tbody.innerHTML = '';
-      equipments.forEach((eq, idx) => {
+      // تصفية النتائج حسب البحث والتاريخ
+      const filter = (equipmentsFilter || '').trim();
+      let filtered = equipments;
+      if (filter) {
+        filtered = filtered.filter(eq =>
+          (eq.name && eq.name.includes(filter)) ||
+          (eq.owner && eq.owner.includes(filter))
+        );
+      }
+      if (filterDateFrom) {
+        filtered = filtered.filter(eq => eq.createdAt && eq.createdAt >= filterDateFrom);
+      }
+      if (filterDateTo) {
+        filtered = filtered.filter(eq => eq.createdAt && eq.createdAt <= filterDateTo);
+      }
+      filtered.forEach((eq, idx) => {
+        const invoiceLink = eq.invoiceName
+          ? `<a href="${eq.invoiceUrl}" target="_blank" style="color:#2e8ca3; text-decoration:underline;">${eq.invoiceName}</a>`
+          : '';
+        const total = eq.total || (Number(eq.days) * Number(eq.dayValue) || 0);
+        const totalDisplay = isNaN(total) ? '' : total.toLocaleString();
+        const rentDateDisplay = eq.rentDate ? eq.rentDate : '';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${idx+1}</td>
           <td>${eq.name}</td>
-          <td>${eq.type || ''}</td>
-          <td>${eq.model || ''}</td>
-          <td>${eq.owner || ''}</td>
-          <td>${eq.notes || ''}</td>
-          <td><button class="delete-btn" onclick="deleteEquipment(${idx})">حذف</button></td>
+          <td>${eq.owner}</td>
+          <td>${rentDateDisplay}</td>
+          <td>${eq.days}</td>
+          <td>${eq.dayValue}</td>
+          <td>${totalDisplay}</td>
+          <td>${invoiceLink}</td>
+          <td><button class="delete-btn" onclick="deleteEquipment(${equipments.indexOf(eq)})">حذف</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -222,9 +253,19 @@
       renderEquipmentsTable();
     };
 
+    // تحديث الإجمالي تلقائياً
+    function updateEquipmentTotal() {
+      const days = Number(document.getElementById('equipmentDays').value) || 0;
+      const dayValue = Number(document.getElementById('equipmentDayValue').value) || 0;
+      document.getElementById('equipmentTotal').value = days && dayValue ? (days * dayValue).toLocaleString() : '';
+    }
+    document.getElementById('equipmentDays').oninput = updateEquipmentTotal;
+    document.getElementById('equipmentDayValue').oninput = updateEquipmentTotal;
+
     // فتح وغلق المودال
     document.getElementById('addEquipmentBtn').onclick = function() {
       document.getElementById('equipmentModal').reset();
+      document.getElementById('equipmentTotal').value = '';
       document.getElementById('equipmentModalOverlay').style.display = 'flex';
     };
     document.getElementById('cancelEquipmentModalBtn').onclick = function() {
@@ -237,20 +278,94 @@
     // إضافة معدات
     document.getElementById('equipmentModal').onsubmit = function(e) {
       e.preventDefault();
-      const eq = {
-        name: document.getElementById('equipmentName').value,
-        type: document.getElementById('equipmentType').value,
-        model: document.getElementById('equipmentModel').value,
-        owner: document.getElementById('equipmentOwner').value,
-        notes: document.getElementById('equipmentNotes').value
-      };
-      equipments.push(eq);
+      const name = document.getElementById('equipmentName').value;
+      const owner = document.getElementById('equipmentOwner').value;
+      const rentDate = document.getElementById('equipmentRentDate').value;
+      const days = document.getElementById('equipmentDays').value;
+      const dayValue = document.getElementById('equipmentDayValue').value;
+      const total = Number(days) * Number(dayValue) || 0;
+      const invoiceInput = document.getElementById('equipmentInvoice');
+      let invoiceName = '';
+      let invoiceUrl = '';
+      if (invoiceInput.files && invoiceInput.files[0]) {
+        invoiceName = invoiceInput.files[0].name;
+        invoiceUrl = URL.createObjectURL(invoiceInput.files[0]);
+      }
+      // إضافة تاريخ الإضافة
+      const createdAt = new Date().toISOString().slice(0, 10);
+      equipments.push({
+        name,
+        owner,
+        rentDate,
+        days,
+        dayValue,
+        total,
+        invoiceName,
+        invoiceUrl,
+        createdAt
+      });
       document.getElementById('equipmentModalOverlay').style.display = 'none';
+      renderEquipmentsTable();
+    };
+
+    // مربع البحث
+    document.getElementById('equipmentSearch').oninput = function() {
+      equipmentsFilter = this.value;
+      renderEquipmentsTable();
+    };
+
+    // فلتر التاريخ
+    document.getElementById('filterBtn').onclick = function(e) {
+      e.stopPropagation();
+      const dd = document.getElementById('filterDropdown');
+      dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+    };
+    document.getElementById('filterDropdown').onclick = function(e) {
+      e.stopPropagation();
+    };
+    document.body.onclick = function() {
+      document.getElementById('filterDropdown').style.display = 'none';
+    };
+    document.getElementById('filterDateFrom').onchange = function() {
+      filterDateFrom = this.value;
+      renderEquipmentsTable();
+    };
+    document.getElementById('filterDateTo').onchange = function() {
+      filterDateTo = this.value;
+      renderEquipmentsTable();
+    };
+    document.getElementById('clearDateFilterBtn').onclick = function() {
+      filterDateFrom = '';
+      filterDateTo = '';
+      document.getElementById('filterDateFrom').value = '';
+      document.getElementById('filterDateTo').value = '';
       renderEquipmentsTable();
     };
 
     // عند تحميل الصفحة
     renderEquipmentsTable();
   </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
 </body>
 </html>
+  

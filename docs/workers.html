@@ -5,12 +5,13 @@
   <title>العمال | سعيد أحمد بالبيد</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
+    :root { direction: rtl; }
     body {
       margin: 0;
       font-family: 'Cairo', Arial, sans-serif;
       background: #c5d6db;
       min-height: 100vh;
-      direction: rtl;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
     }
     .navbar {
       background: #1a3b50;
@@ -39,7 +40,7 @@
       color: #fff;
       font-size: 1rem;
       font-weight: 700;
-      background: #2e8ca3;
+      /* background: #2e8ca3; */ /* تم إزالة الخلفية */
       padding: 6px 18px;
       border-radius: 18px;
       box-shadow: 0 1px 6px #2e8ca322;
@@ -239,13 +240,7 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <!-- حذف كلمة العمال من الشريط العلوي -->
-    <span class="user-info" id="userInfo">
-      <!-- سيتم تعبئة اسم المستخدم هنا -->
-      <span id="logoutBtn" style="display:block; color:#fff; font-size:0.95rem; font-weight:400; margin-top:2px; cursor:pointer; text-decoration:underline;">تسجيل الخروج</span>
-    </span>
-  </div>
+  <div id="navbar-container"></div>
   <div class="container" style="margin-top:4px;">
     <div class="header-actions" style="margin-bottom:18px; justify-content:space-between; display:flex; gap:10px; align-items:center;">
       <!-- زر إضافة وزر القبض الشهري -->
@@ -330,37 +325,62 @@
     if (!localStorage.getItem('user')) {
       window.location.href = 'login.html';
     }
-    // عرض اسم المستخدم أعلى يمين الشريط
-    const user = localStorage.getItem('user');
-    if (user) {
+
+    // استخدم متغير باسم مختلف لتفادي التعارض مع الشريط العلوي
+    const pageUser = localStorage.getItem('user');
+    if (pageUser) {
       try {
-        const username = JSON.parse(user).username || '';
-        document.getElementById('userInfo').childNodes[0].textContent = '👤 ' + username + ' ';
+        const username = JSON.parse(pageUser).username || '';
+        // إذا كان عنصر userInfo موجود في الصفحة (قد لا يكون موجودًا بعد إزالة الشريط العلوي المحلي)
+        const userInfoEl = document.getElementById('userInfo');
+        if (userInfoEl && userInfoEl.childNodes[0]) {
+          userInfoEl.childNodes[0].textContent = '👤 ' + username + ' ';
+        }
       } catch {}
     }
-    // زر تسجيل الخروج
-    document.getElementById('logoutBtn').onclick = function() {
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    };
-    // زر فتح المودال
-    document.getElementById('addWorkerBtn').onclick = function() {
-      document.getElementById('modalOverlay').style.display = 'flex';
-      document.getElementById('workerForm').reset();
-      setTimeout(() => document.getElementById('workerName').focus(), 100);
-    };
-    // زر القبض الشهري
-    document.getElementById('monthlyPayBtn').onclick = function() {
-      window.location.href = 'monthly-pay.html';
-    };
-    // زر إلغاء المودال
-    document.getElementById('cancelModalBtn').onclick = function() {
-      document.getElementById('modalOverlay').style.display = 'none';
-    };
-    // إغلاق المودال عند الضغط خارج المربع
-    document.getElementById('modalOverlay').onclick = function(e) {
-      if (e.target === this) this.style.display = 'none';
-    };
+
+    // تأكد من وجود العناصر قبل ربط الأحداث
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.onclick = function() {
+          localStorage.removeItem('user');
+          window.location.href = 'login.html';
+        };
+      }
+      const addWorkerBtn = document.getElementById('addWorkerBtn');
+      if (addWorkerBtn) {
+        addWorkerBtn.onclick = function() {
+          document.getElementById('modalOverlay').style.display = 'flex';
+          document.getElementById('workerForm').reset();
+          setTimeout(() => document.getElementById('workerName').focus(), 100);
+        };
+      }
+      const monthlyPayBtn = document.getElementById('monthlyPayBtn');
+      if (monthlyPayBtn) {
+        monthlyPayBtn.onclick = function() {
+          window.location.href = 'monthly-pay.html';
+        };
+      }
+      const cancelModalBtn = document.getElementById('cancelModalBtn');
+      if (cancelModalBtn) {
+        cancelModalBtn.onclick = function() {
+          document.getElementById('modalOverlay').style.display = 'none';
+        };
+      }
+      const modalOverlay = document.getElementById('modalOverlay');
+      if (modalOverlay) {
+        modalOverlay.onclick = function(e) {
+          if (e.target === this) this.style.display = 'none';
+        };
+      }
+      // البحث
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', renderWorkersTable);
+      }
+    });
+
     // جلب العمال من السيرفر وعرضهم (مع معالجة الأخطاء)
     let allWorkers = [];
     async function fetchWorkers() {
@@ -437,9 +457,6 @@
       await fetchWorkers();
     };
 
-    // البحث
-    document.getElementById('searchInput').addEventListener('input', renderWorkersTable);
-
     // حذف عامل عند الضغط على زر الحذف
     function attachDeleteEvents() {
       document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -455,6 +472,27 @@
 
     // عند تحميل الصفحة
     fetchWorkers();
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
   </script>
 </body>
 </html>

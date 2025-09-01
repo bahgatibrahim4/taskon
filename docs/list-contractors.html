@@ -6,11 +6,14 @@
   <!-- إضافة خط Tajawal من Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      direction: rtl;
+    }
     body {
       margin: 0;
       font-family: 'Tajawal', 'Cairo', sans-serif;
       background: #c5d6db;
-      direction: rtl;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
     }
     .navbar {
       display: flex;
@@ -57,6 +60,7 @@
       padding: 4px 14px;
       border-radius: 0px;
       box-shadow: 0 1px 6px #0001;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
     }
     .logout-btn {
       background: #7a5230;
@@ -273,15 +277,7 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="navbar-section navbar-right">
-      <button class="nav-btn" onclick="location.href='index.html'">الرئيسية</button>
-    </div>
-    <div class="navbar-section navbar-left">
-      <span id="username"></span>
-      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
-    </div>
-  </div>
+  <div id="navbar-container"></div>
   <div class="container">
     <h2>عرض المقاولين</h2>
     <!-- مربع البحث -->
@@ -332,15 +328,24 @@
   </div>
   <script>
     // عرض اسم المستخدم
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!user.username) window.location.href = 'login.html';
-    document.getElementById('username').textContent = user.username;
-
+    let pageUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!pageUser.username) window.location.href = 'login.html';
     // تسجيل الخروج
     function logout() {
       localStorage.removeItem('user');
       window.location.href = 'login.html';
     }
+    // إضافة اسم المستخدم إلى الشريط العلوي بنفس الخط
+    document.addEventListener('DOMContentLoaded', function() {
+      // انتظر حتى يتم تحميل الشريط العلوي
+      setTimeout(function() {
+        const usernameEl = document.getElementById('username');
+        if (usernameEl && pageUser.username) {
+          usernameEl.textContent = pageUser.username;
+          usernameEl.style.fontFamily = "'Tajawal', 'Cairo', sans-serif";
+        }
+      }, 200);
+    });
 
     let allContractors = [];
 
@@ -363,7 +368,7 @@
           <td>${rowNum++}</td>
           <td>${c.name}</td>
           <td>${c.phone}</td>
-          <td>${c.address || ''}</td>
+          <td>${c.workItem || ''}</td>
           <td>
             <button class="edit-btn" data-id="${c._id}" onclick="event.stopPropagation();">تعديل</button>
           </td>
@@ -390,7 +395,7 @@
       }
       const filtered = allContractors.filter(c =>
         (c.name && c.name.toLowerCase().includes(q)) ||
-        (c.address && c.address.toLowerCase().includes(q))
+        (c.workItem && c.workItem.toLowerCase().includes(q))
       );
       renderContractors(filtered);
     });
@@ -419,7 +424,7 @@
         form.id.value = id;
         form.name.value = tds[1].textContent;    // اسم المقاول
         form.phone.value = tds[2].textContent;   // رقم التليفون
-        form.address.value = tds[3].textContent; // بند العمل
+        form.address.value = tds[3].textContent; // بند العمل (الآن workItem)
       }
     });
 
@@ -454,6 +459,27 @@
     };
 
     fetchContractors();
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
   </script>
 </body>
 </html>

@@ -204,11 +204,7 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <button class="nav-btn" onclick="window.history.back()">رجوع</button>
-    <span>بيانات المقاول</span>
-    <button class="nav-btn" onclick="location.href='list-contractors.html'">كل المقاولين</button>
-  </div>
+  <div id="navbar-container"></div>
   <div class="container">
     <!-- تفاصيل المقاول في سطر واحد -->
     <div id="contractorDetailsRow" style="display:flex;gap:24px;align-items:center;justify-content:center;margin-bottom:18px;background:#e8f5e9;border-radius:10px;padding:12px 8px;">
@@ -262,18 +258,20 @@
       </div>
       <div class="table-container" id="materialsContainer" style="display:none;">
         <div class="section-title">المواد المصروفة لهذا المقاول</div>
-        <table class="extracts-table" id="materialsTable">
+        <table class="extracts-table" id="contractorMaterialsTable">
           <thead>
             <tr>
               <th>م</th>
               <th>اسم المادة</th>
               <th>الكمية</th>
+              <th>الفئة</th>
               <th>تاريخ الصرف</th>
-              <th>ملاحظات</th>
+              <th>اسم المستخدم</th>
+              <th>تم الخصم في مستخلص</th>
             </tr>
           </thead>
           <tbody id="materialsBody">
-            <tr><td colspan="5" class="no-data">جاري التحميل...</td></tr>
+            <tr><td colspan="7" class="no-data">جاري التحميل...</td></tr>
           </tbody>
         </table>
       </div>
@@ -299,33 +297,52 @@
         return;
       }
       const c = await res.json();
-      console.log('بيانات المقاول:', c); // تحقق من وجود materials
       document.getElementById('name').textContent = c.name || '';
       document.getElementById('phone').textContent = c.phone || '';
       document.getElementById('address').textContent = c.address || '';
-      document.getElementById('notes').textContent = c.notes || '';
-      // document.getElementById('contractorName').textContent = c.name || 'بيانات المقاول'; // هذا السطر ليس له عنصر في الصفحة
 
-      // عرض المواد في جدول المواد
+      // اعتمد فقط على c.materials (مصفوفة)
       renderMaterialsTable(Array.isArray(c.materials) ? c.materials : []);
     }
 
     // عرض جدول المواد
     function renderMaterialsTable(materials) {
       const tbody = document.getElementById('materialsBody');
-      if (!materials.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="no-data">لا يوجد مواد لهذا المقاول.</td></tr>`;
+      if (!Array.isArray(materials) || !materials.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="no-data">لا يوجد مواد لهذا المقاول.</td></tr>`;
         return;
       }
       tbody.innerHTML = '';
       materials.forEach((mat, i) => {
+        const name = mat.name || mat.item || '';
+        const quantity = mat.quantity !== undefined ? mat.quantity : '';
+        const unitPrice = mat.unitPrice !== undefined ? mat.unitPrice : '';
+        const date = mat.date ? new Date(mat.date).toLocaleDateString('ar-EG') : '';
+        const username = mat.userName || mat.user || mat.username || '';
+        // فقط استخدم deductedInExtractNumber كما طلبت
+        const extractNumber = mat.deductedInExtractNumber || '';
+        const extractId = mat.deductedInExtractId || mat.extractId || '';
+        let deductedCell = '';
+        if (extractNumber) {
+          if (extractId) {
+            deductedCell = `<a href="extract.html?id=${extractId}" style="color:#2e8ca3;font-weight:bold;text-decoration:underline;" data-field="deducted">${extractNumber}</a>`;
+          } else {
+            deductedCell = `<span data-field="deducted">${extractNumber}</span>`;
+          }
+        } else {
+          deductedCell = `<span data-field="deducted"></span>`;
+        }
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${i + 1}</td>
-          <td>${mat.name || ''}</td>
-          <td>${mat.quantity || ''}</td>
-          <td>${mat.date ? new Date(mat.date).toLocaleDateString('ar-EG') : ''}</td>
-          <td>${mat.notes || ''}</td>
+          <td data-field="name">${name}</td>
+          <td>${quantity}</td>
+          <td>${unitPrice}</td>
+          <td data-field="date">${date}</td>
+          <td>${username}</td>
+          <td>
+            ${deductedCell}
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -421,27 +438,61 @@
       const extractsContainer = document.getElementById('extractsContainer');
       const deductionsContainer = document.getElementById('deductionsContainer');
       const materialsContainer = document.getElementById('materialsContainer');
-      document.getElementById('showExtractsBtn').onclick = function() {
+      const showExtractsBtn = document.getElementById('showExtractsBtn');
+      const showDeductionsBtn = document.getElementById('showDeductionsBtn');
+      const showMaterialsBtn = document.getElementById('showMaterialsBtn');
+
+      showExtractsBtn.onclick = function() {
         extractsContainer.style.display = '';
         deductionsContainer.style.display = 'none';
         materialsContainer.style.display = 'none';
       };
-      document.getElementById('showDeductionsBtn').onclick = function() {
+      showDeductionsBtn.onclick = function() {
         extractsContainer.style.display = 'none';
         deductionsContainer.style.display = '';
         materialsContainer.style.display = 'none';
       };
-      document.getElementById('showMaterialsBtn').onclick = function() {
+      showMaterialsBtn.onclick = function() {
         extractsContainer.style.display = 'none';
         deductionsContainer.style.display = 'none';
         materialsContainer.style.display = '';
+        // إعادة جلب المواد عند كل فتح للنافذة
+        fetchContractor();
       };
 
-      // استدعاء جميع دوال الجلب بعد التأكد من تحميل الـ DOM
+      // عند تحميل الصفحة: أظهر جدول المواد فقط
+      extractsContainer.style.display = 'none';
+      deductionsContainer.style.display = 'none';
+      materialsContainer.style.display = '';
       fetchContractor();
       fetchExtracts();
       fetchDeductions();
     });
+  </script>
+  <script>
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        // استخراج السكريبتات من النص
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        // جمع السكريبتات
+        const scripts = tempDiv.querySelectorAll('script');
+        // إزالة السكريبتات من الـ html قبل وضعه في الصفحة
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        // وضع الشريط العلوي بدون السكريبتات
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        // تنفيذ السكريبتات يدويًا
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
   </script>
 </body>
 </html>
