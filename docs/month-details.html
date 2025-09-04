@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تفاصيل الشهر</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { direction: rtl; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      min-height: 100vh;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #1a3b5011, 0 1.5px 8px #c5d6dbcc;
+      padding: 32px 18px 24px 18px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .month-title {
+      font-size: 1.15rem;
+      color: #1a3b50;
+      font-weight: 900;
+      margin-bottom: 0;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .month-date {
+      font-size: 1.1rem;
+      color: #2e8ca3;
+      margin-bottom: 0;
+      font-weight: 700;
+      text-align: left;
+    }
+    .back-btn {
+      border: 2px solid #2e8ca3;
+      background: #fff;
+      color: #1a3b50;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 8px 22px;
+      border-radius: 0;
+      cursor: pointer;
+      margin-bottom: 0;
+      transition: background 0.15s, color 0.15s, border 0.15s;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #2e8ca311;
+      outline: none;
+      display: inline-block;
+    }
+    .back-btn:hover, .back-btn:focus {
+      background: #2e8ca3;
+      color: #fff;
+      border-color: #1a3b50;
+    }
+    .footer {
+      text-align: center;
+      color: #2e8ca3;
+      font-size: 1.1rem;
+      margin-top: 60px;
+      padding-bottom: 18px;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      font-weight: 500;
+      text-shadow: 0 1px 8px #2e8ca311;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0 18px 0;
+      background: #f8fafb;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #2e8ca311;
+    }
+    th, td {
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 1rem;
+      color: #333;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #2e8ca3;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.05rem;
+    }
+    tr:hover {
+      background: #f1f1f1;
+    }
+    button.delete-btn {
+      color: #fff;
+      background: #e74c3c;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container" style="max-width:900px;">
+    <div class="header-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <button id="addPayBtn" type="button" style="border:2px solid #2e8ca3; border-radius:0; background:#fff; color:#1a3b50; font-family:'Cairo',Arial,sans-serif; font-size:1.05rem; font-weight:900; padding:7px 22px; letter-spacing:1px; box-shadow:0 2px 8px #2e8ca311; outline:none; cursor:pointer; transition:background 0.15s, color 0.15s, border 0.15s;">إضافة</button>
+      <div class="month-title" id="monthName" style="margin-bottom:0; flex:1; text-align:center;"></div>
+      <div class="month-date" id="monthDate" style="margin-bottom:0; min-width:120px; text-align:left; font-size:1.1rem;"></div>
+    </div>
+    <table id="payTable">
+      <thead>
+        <tr>
+          <th>م</th>
+          <th>اسم العامل</th>
+          <th>مكان العمل</th> <!-- العمود الجديد -->
+          <th>تاريخ القبض</th>
+          <th>قيمة القبض</th>
+          <th>الإضافي</th>
+          <th>الإجمالي</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody id="payTbody">
+        <!-- صفوف الجدول ستضاف ديناميكياً -->
+      </tbody>
+    </table>
+    <div style="margin:32px 0 0 0; text-align:left;">
+      <span style="font-weight:900; color:#1a3b50; font-size:1.15rem;">الإجمالي:</span>
+      <span id="totalValue" style="font-weight:900; color:#2e8ca3; font-size:1.15rem;">0</span>
+    </div>
+  </div>
+  <!-- مودال إضافة قبض -->
+  <div id="payModalOverlay" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:#0006; z-index:2000; align-items:center; justify-content:center;">
+    <form id="payModal" style="background:#fff; border-radius:16px; box-shadow:0 8px 32px #1a3b5044; padding:32px 32px 24px 32px; min-width:420px; max-width:99vw; width:520px; display:flex; flex-direction:column; gap:18px; font-family:'Cairo',Arial,sans-serif;">
+      <div style="display:flex; gap:18px; flex-wrap:wrap;">
+        <div style="flex:1 1 220px; min-width:180px; display:flex; flex-direction:column; gap:6px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">اسم العامل</label>
+          <input type="text" id="payWorkerName" readonly required style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; background:#f8fafb; cursor:pointer; width:100%;" placeholder="اختر العامل">
+        </div>
+        <div style="flex:1 1 180px; min-width:140px; display:flex; flex-direction:column; gap:6px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">مكان العمل</label>
+          <input type="text" id="payWorkerPlace" readonly style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; background:#f8fafb; width:100%;">
+        </div>
+      </div>
+      <div style="display:flex; gap:18px; flex-wrap:wrap;">
+        <div style="flex:1 1 120px; min-width:100px; display:flex; flex-direction:column; gap:6px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">قيمة اليومية</label>
+          <input type="number" id="payDayValue" required min="0" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; width:100%;">
+        </div>
+        <div style="flex:1 1 120px; min-width:100px; display:flex; flex-direction:column; gap:6px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">عدد الأيام</label>
+          <input type="number" id="payDaysCount" required min="1" style="padding:7px 12px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; width:100%;">
+        </div>
+      </div>
+      <!-- جدول الأوقات الإضافية -->
+      <div style="margin:18px 0 0 0;">
+        <div style="font-weight:900; color:#1a3b50; font-size:1.08rem; margin-bottom:8px; text-align:right;">أوقات إضافية</div>
+        <table style="width:100%; border-collapse:collapse; background:#f8fafb; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px #2e8ca311;">
+          <thead>
+            <tr>
+              <th style="background:#2e8ca3; color:#fff; font-weight:bold;">اختيار</th>
+              <th style="background:#2e8ca3; color:#fff; font-weight:bold;">عدد</th>
+              <th style="background:#2e8ca3; color:#fff; font-weight:bold;">القيمة</th>
+              <th style="background:#2e8ca3; color:#fff; font-weight:bold;">الإجمالي</th>
+              <th style="background:#2e8ca3; color:#fff; font-weight:bold;">حذف</th>
+            </tr>
+          </thead>
+          <tbody id="extraRowsTbody">
+            <!-- صفوف الإضافي ستضاف ديناميكياً -->
+          </tbody>
+        </table>
+        <button type="button" id="addExtraRowBtn" style="margin-top:6px; border:1.5px solid #2e8ca3; background:#fff; color:#2e8ca3; font-weight:700; font-size:0.98rem; padding:4px 14px; border-radius:6px; cursor:pointer;">إضافة صف إضافي</button>
+      </div>
+      <!-- خانة الإجمالي داخل المودال -->
+      <div id="modalTotalRow" style="margin-top:10px; text-align:left; font-weight:900; color:#1a3b50; font-size:1.08rem;">
+        الإجمالي: <span id="modalTotalValue" style="color:#2e8ca3;">0</span>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+        <button type="button" id="cancelPayModalBtn" style="border:none; background:#c5d6db; color:#1a3b50; font-weight:700; font-size:1rem; padding:8px 22px; border-radius:6px; cursor:pointer;">إلغاء</button>
+        <button type="submit" style="border:none; background:#2e8ca3; color:#fff; font-weight:700; font-size:1rem; padding:8px 22px; border-radius:6px; cursor:pointer;">حفظ</button>
+      </div>
+    </form>
+  </div>
+  <!-- مودال اختيار العامل -->
+  <div id="workerSelectOverlay" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:#0006; z-index:2100; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; box-shadow:0 8px 32px #1a3b5044; padding:22px 18px 18px 18px; min-width:320px; max-width:95vw; width:340px; display:flex; flex-direction:column; gap:10px; font-family:'Cairo',Arial,sans-serif;">
+      <input type="text" id="workerSearchInput" placeholder="بحث عن عامل..." style="padding:6px 10px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; margin-bottom:8px;">
+      <div id="workerList" style="max-height:220px; overflow-y:auto; border:1px solid #eee; border-radius:6px; background:#f8fafb;"></div>
+      <button type="button" id="cancelWorkerSelectBtn" style="margin-top:8px; border:none; background:#c5d6db; color:#1a3b50; font-weight:700; font-size:1rem; padding:7px 18px; border-radius:6px; cursor:pointer;">إلغاء</button>
+    </div>
+  </div>
+  <div class="footer">
+    جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
+  </div>
+  <script>
+    // حماية الصفحة
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+    // --- بيانات الشهر من الرابط ---
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name) || '';
+    }
+    const monthName = getQueryParam('name');
+    const monthDate = getQueryParam('date');
+    document.getElementById('monthName').textContent = 'شهر ' + monthName;
+    document.getElementById('monthDate').textContent = monthDate;
+
+    // --- بيانات القبض من قاعدة البيانات ---
+    let payRows = [];
+
+    // جلب بيانات القبض من السيرفر
+    async function fetchPays() {
+      try {
+        // monthDate هو التاريخ الفريد للشهر (مثلاً 2024-06)
+        const res = await fetch(`/pays?month=${encodeURIComponent(monthDate)}`);
+        if (!res.ok) throw new Error('تعذر جلب بيانات القبض');
+        payRows = await res.json();
+      } catch {
+        payRows = [];
+      }
+      renderTablesAndTotal();
+    }
+
+    // عند تحميل الصفحة: جلب بيانات القبض
+    fetchPays();
+
+    // دالة تحديث الجدول والإجمالي
+    function renderTablesAndTotal() {
+      const tbody = document.getElementById('payTbody');
+      tbody.innerHTML = '';
+      payRows.forEach((row, idx) => {
+        const totalExtra = Array.isArray(row.extra) ? row.extra.reduce((sum, r) => {
+          const c = parseFloat(r.count);
+          const v = parseFloat(r.value);
+          return sum + (!isNaN(c) && !isNaN(v) ? c * v : 0);
+        }, 0) : 0;
+        const total = (Number(row.value || 0) + totalExtra);
+        const extraDetails = Array.isArray(row.extra) && row.extra.length
+          ? `<div style="font-size:0.95rem; color:#2e8ca3;">إضافي: ${row.extra.map(r => `${r.type} × ${r.count} × ${r.value} = ${(parseFloat(r.count) * parseFloat(r.value)).toLocaleString()}`).join(' | ')}</div>`
+          : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx+1}</td>
+          <td>${row.name}</td>
+          <td>${row.place || ''}</td>
+          <td>${row.date}</td>
+          <td>${Number(row.value || 0).toLocaleString()}</td>
+          <td>
+            ${totalExtra ? totalExtra.toLocaleString() : 0}
+            ${extraDetails}
+          </td>
+          <td>${total.toLocaleString()}</td>
+          <td><button class="delete-btn" onclick="deletePayRow('${row._id || row.id || idx}')">حذف</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // حساب الإجمالي الكلي
+      let totalPay = payRows.reduce((sum, r) => {
+        const totalExtra = Array.isArray(r.extra) ? r.extra.reduce((s, rr) => {
+          const c = parseFloat(rr.count);
+          const v = parseFloat(rr.value);
+          return s + (!isNaN(c) && !isNaN(v) ? c * v : 0);
+        }, 0) : 0;
+        return sum + Number(r.value || 0) + totalExtra;
+      }, 0);
+      document.getElementById('totalValue').textContent = totalPay.toLocaleString();
+    }
+
+    // حذف صف من جدول القبض (من قاعدة البيانات)
+    window.deletePayRow = async function(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا الصف؟')) return;
+      try {
+        await fetch(`/pays/${id}`, { method: 'DELETE' });
+        // بعد الحذف، جلب البيانات من جديد
+        await fetchPays();
+      } catch {
+        alert('حدث خطأ أثناء الحذف');
+      }
+    };
+
+    // إضافة قبض (إرسال للسيرفر)
+    document.getElementById('payModal').onsubmit = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('payWorkerName').value;
+      const place = document.getElementById('payWorkerPlace').value;
+      const dayValue = Number(document.getElementById('payDayValue').value);
+      const daysCount = Number(document.getElementById('payDaysCount').value);
+      const date = monthDate;
+      let totalExtra = 0;
+      extraRowsInModal.forEach(r => {
+        const c = parseFloat(r.count);
+        const v = parseFloat(r.value);
+        if (!isNaN(c) && !isNaN(v)) totalExtra += c * v;
+      });
+      const newPay = {
+        name,
+        place,
+        date,
+        month: monthDate,
+        value: dayValue * daysCount,
+        extra: JSON.parse(JSON.stringify(extraRowsInModal)),
+        total: dayValue * daysCount + totalExtra
+      };
+      try {
+        await fetch('/pays', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newPay)
+        });
+        document.getElementById('payModalOverlay').style.display = 'none';
+        await fetchPays();
+      } catch {
+        alert('حدث خطأ أثناء الحفظ');
+      }
+    };
+
+    // أوقات إضافية داخل المودال
+    let extraRowsInModal = [];
+    const extraRowsTbody = document.getElementById('extraRowsTbody');
+    const addExtraRowBtn = document.getElementById('addExtraRowBtn');
+
+    function renderExtraRowsInModal() {
+      extraRowsTbody.innerHTML = '';
+      extraRowsInModal.forEach((row, idx) => {
+        const total = (parseFloat(row.count) || 0) * (parseFloat(row.value) || 0);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <select style="padding:4px 8px; border-radius:6px;">
+              <option value="يوم"${row.type === 'يوم' ? ' selected' : ''}>يوم</option>
+              <option value="ساعه"${row.type === 'ساعه' ? ' selected' : ''}>ساعه</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" min="0" value="${row.count || ''}" style="width:70px; padding:4px 8px; border-radius:6px;">
+          </td>
+          <td>
+            <input type="number" min="0" value="${row.value || ''}" style="width:90px; padding:4px 8px; border-radius:6px;">
+          </td>
+          <td>
+            <span style="color:#2e8ca3; font-weight:700;">
+              ${total ? total.toLocaleString() : ''}
+            </span>
+          </td>
+          <td>
+            <button type="button" style="border:none; background:#e74c3c; color:#fff; border-radius:4px; padding:2px 10px; font-size:0.95rem; cursor:pointer;" onclick="removeExtraRowInModal(${idx})">حذف</button>
+          </td>
+        `;
+        // تحديث القيم عند التغيير
+        const selects = tr.querySelectorAll('select');
+        const inputs = tr.querySelectorAll('input');
+        selects[0].onchange = function() {
+          extraRowsInModal[idx].type = this.value;
+          renderExtraRowsInModal();
+        };
+        inputs[0].oninput = function() {
+          extraRowsInModal[idx].count = this.value;
+          // فقط حدث الإجمالي بدون إعادة رسم الجدول
+          updateModalTotal();
+          // تحديث قيمة الإجمالي في نفس الصف
+          const total = (parseFloat(this.value) || 0) * (parseFloat(inputs[1].value) || 0);
+          tr.querySelector('span').textContent = total ? total.toLocaleString() : '';
+        };
+        inputs[1].oninput = function() {
+          extraRowsInModal[idx].value = this.value;
+          updateModalTotal();
+          const total = (parseFloat(inputs[0].value) || 0) * (parseFloat(this.value) || 0);
+          tr.querySelector('span').textContent = total ? total.toLocaleString() : '';
+        };
+        extraRowsTbody.appendChild(tr);
+      });
+      updateModalTotal();
+    }
+    window.removeExtraRowInModal = function(idx) {
+      extraRowsInModal.splice(idx, 1);
+      renderExtraRowsInModal();
+    };
+    addExtraRowBtn.onclick = function() {
+      extraRowsInModal.push({ type: 'يوم', count: '', value: '' });
+      renderExtraRowsInModal();
+    };
+
+    // تحديث الإجمالي في المودال
+    function updateModalTotal() {
+      const dayValue = Number(document.getElementById('payDayValue').value) || 0;
+      const daysCount = Number(document.getElementById('payDaysCount').value) || 0;
+      let totalExtra = 0;
+      extraRowsInModal.forEach(r => {
+        const c = parseFloat(r.count);
+        const v = parseFloat(r.value);
+        if (!isNaN(c) && !isNaN(v)) totalExtra += c * v;
+      });
+      document.getElementById('modalTotalValue').textContent = (dayValue * daysCount + totalExtra).toLocaleString();
+    }
+    document.getElementById('payDayValue').oninput = updateModalTotal;
+    document.getElementById('payDaysCount').oninput = updateModalTotal;
+
+    // عند تحميل الصفحة
+    // renderTablesAndTotal(); // لا داعي لاستدعاء هذه الدالة هنا لأن fetchPays تستدعيها بعد جلب البيانات
+
+    const addPayBtn = document.getElementById('addPayBtn');
+    const payModalOverlay = document.getElementById('payModalOverlay');
+    const payModal = document.getElementById('payModal');
+    const cancelPayModalBtn = document.getElementById('cancelPayModalBtn');
+    const payWorkerName = document.getElementById('payWorkerName');
+    const payWorkerPlace = document.getElementById('payWorkerPlace');
+    const workerSelectOverlay = document.getElementById('workerSelectOverlay');
+    const workerList = document.getElementById('workerList');
+    const workerSearchInput = document.getElementById('workerSearchInput');
+    const cancelWorkerSelectBtn = document.getElementById('cancelWorkerSelectBtn');
+
+    // جلب العمال من السيرفر
+    let allWorkers = [];
+    async function fetchWorkers() {
+      try {
+        const res = await fetch('/workers');
+        if (!res.ok) throw new Error('تعذر جلب بيانات العمال');
+        allWorkers = await res.json();
+      } catch {
+        allWorkers = [];
+      }
+    }
+
+    // إعادة تفعيل زر إضافة
+    addPayBtn.onclick = async function() {
+      await fetchWorkers();
+      payModal.reset();
+      payWorkerName.value = '';
+      payWorkerPlace.value = '';
+      extraRowsInModal = [];
+      renderExtraRowsInModal();
+      updateModalTotal();
+      payModalOverlay.style.display = 'flex';
+    };
+    cancelPayModalBtn.onclick = function() {
+      payModalOverlay.style.display = 'none';
+    };
+    payModalOverlay.onclick = function(e) {
+      if (e.target === this) this.style.display = 'none';
+    };
+
+    // عرض قائمة العمال مع البحث
+    function renderWorkerList(q) {
+      workerList.innerHTML = '';
+      let filtered = allWorkers;
+      if (q) {
+        filtered = allWorkers.filter(w =>
+          (w.name || '').includes(q) ||
+          (w.place || '').includes(q)
+        );
+      }
+      if (filtered.length === 0) {
+        workerList.innerHTML = '<div style="padding:10px; color:#888;">لا يوجد عمال</div>';
+        return;
+      }
+      filtered.forEach(w => {
+        const div = document.createElement('div');
+        div.textContent = w.name + (w.place ? ' - ' + w.place : '');
+        div.style.cssText = 'padding:8px 10px; cursor:pointer; border-bottom:1px solid #eee;';
+        div.onmouseover = () => div.style.background = '#e3f3f7';
+        div.onmouseout = () => div.style.background = '';
+        div.onclick = function() {
+          payWorkerName.value = w.name;
+          payWorkerPlace.value = w.place || '';
+          workerSelectOverlay.style.display = 'none';
+        };
+        workerList.appendChild(div);
+      });
+    }
+
+    // عند الضغط على اسم العامل يفتح مودال اختيار العامل
+    payWorkerName.onclick = function() {
+      renderWorkerList('');
+      workerSearchInput.value = '';
+      workerSelectOverlay.style.display = 'flex';
+      setTimeout(() => workerSearchInput.focus(), 100);
+    };
+    cancelWorkerSelectBtn.onclick = function() {
+      workerSelectOverlay.style.display = 'none';
+    };
+    workerSelectOverlay.onclick = function(e) {
+      if (e.target === this) this.style.display = 'none';
+    };
+    workerSearchInput.oninput = function() {
+      renderWorkerList(this.value.trim());
+    };
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>

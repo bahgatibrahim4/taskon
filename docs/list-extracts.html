@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>قائمة المستخلصات | سعيد أحمد بالبيد</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root { direction: rtl; }
+    body { margin: 0; font-family: 'Cairo', Arial, sans-serif; background: #c5d6db; /* direction: rtl; */ }
+    .container {
+      max-width: 950px;
+      margin: 18px auto 0 auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 0 18px #0002;
+      padding: 12px 10px 10px 10px;
+      border: 2px solid #8c969a;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      margin-top: 4px;
+      color: #2e8ca3;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #7a5230;
+      padding-bottom: 4px;
+    }
+    .filters-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .filter-btn, .today-btn {
+      background: #fff;
+      color: #2e8ca3;
+      border: 2px solid #2e8ca3;
+      border-radius: 0px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 2px 7px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px #0001;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .filter-btn.active, .today-btn.active {
+      background: #1a3b50;
+      color: #fff;
+    }
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #c5d6db;
+      border-radius: 0px;
+      padding: 6px 12px;
+      border: 1.5px solid #2e8ca3;
+    }
+    .date-filter label {
+      font-weight: bold;
+      color: #2e8ca3;
+      font-size: 0.85rem;
+    }
+    .date-filter input[type="date"] {
+      font-size: 0.85rem;
+      padding: 2px 5px;
+      border: 1px solid #8c969a;
+      border-radius: 0px;
+      background: #fff;
+      color: #2e8ca3;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #c5d6db;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px #8c969a;
+      margin-bottom: 6px;
+    }
+    th, td {
+      padding: 4px 2px;
+      border-bottom: 1px solid #8c969a;
+      border-right: 1px solid #e0e0e0;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.85rem;
+      background: transparent;
+      white-space: nowrap;
+      word-break: break-word;
+    }
+    th:last-child, td:last-child {
+      border-right: none;
+    }
+    th {
+      background: #2e8ca3 !important;
+      color: #fff !important;
+      font-weight: bold;
+    }
+    tr:last-child td { border-bottom: none; }
+    .btn {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      border-radius: 0px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: #1a3b50;
+      color: #fff;
+    }
+    tr:hover td {
+      background: #f7fafd;
+      transition: background 0.2s;
+    }
+    #contractorTotalBox {
+      background: #c5d6db !important;
+      border-radius: 0px !important;
+      border: 2px solid #2e8ca3 !important;
+      color: #2e8ca3 !important;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 4px; }
+      th, td { padding: 2px; font-size: .82rem; }
+      .filters-bar { gap: 6px; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 2px; }
+      th, td { padding: 1px; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container">
+    <h2>قائمة المستخلصات</h2>
+    <div class="filters-bar">
+      <button class="filter-btn" id="toggleDateFilter"><i class="fa-solid fa-filter"></i> فلترة بالتاريخ</button>
+      <div class="date-filter" id="dateFilterBox" style="display:none;">
+        <label>من:</label>
+        <input type="date" id="fromDate">
+        <label>إلى:</label>
+        <input type="date" id="toDate">
+        <button class="filter-btn" id="applyDateFilter"><i class="fa-solid fa-magnifying-glass"></i>تطبيق</button>
+      </div>
+      <button class="today-btn" id="showTodayBtn"><i class="fa-solid fa-calendar-day"></i> عرض مستخلصات اليوم</button>
+      <!-- مربع البحث عن المقاول -->
+      <input type="text" id="contractorSearch" placeholder="بحث عن مقاول..." style="border:1.5px solid #388e3c; border-radius:8px; padding:6px 12px; font-size:0.85rem; width:180px;">
+      <button class="filter-btn" id="searchContractorBtn"><i class="fa fa-search"></i> بحث</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>م</th>
+          <th>رقم المستخلص</th>
+          <!-- حذف عمود اسم المشروع -->
+          <th>اسم المقاول</th>
+          <th>التاريخ</th>
+          <th>القيمة</th>
+          <!-- حذف عمود اسم المستخدم -->
+          <th>ملاحظات</th>
+          <th>إجراءات</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody id="extractsList"></tbody>
+    </table>
+    <!-- مربع إجمالي مستخلصات المقاول -->
+    <div id="contractorTotalBox" style="display:none; margin:18px auto 0 auto; background:#e8f5e9; border-radius:10px; border:2px solid #388e3c; padding:12px; max-width:350px; text-align:center; font-weight:bold; color:#1b5e20;"></div>
+  </div>
+  <script>
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <script>
+    let allExtracts = [];
+    let contractorsMap = {};
+
+    async function fetchExtracts() {
+      // جلب المقاولين أولاً
+      const contractorsRes = await fetch('/contractors');
+      const contractors = await contractorsRes.json();
+      contractorsMap = {};
+      contractors.forEach(c => {
+        contractorsMap[c._id] = c.name;
+      });
+
+      // جلب المستخلصات
+      const res = await fetch('/extracts');
+      const extracts = await res.json();
+      allExtracts = extracts;
+      renderExtracts(extracts);
+    }
+
+    function renderExtracts(extracts) {
+      const list = document.getElementById('extractsList');
+      list.innerHTML = '';
+      // جلب صلاحيات المستخدم الحالي
+      let userPermissions = [];
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        userPermissions = user.permissions || [];
+      } catch {}
+      extracts.forEach((e, i) => {
+        const contractorName = contractorsMap[e.contractor] || e.contractor || '';
+        let value = 0;
+        if (Array.isArray(e.workItems)) {
+          value = e.workItems.reduce((sum, item) => sum + (parseFloat(item.currentAmount) || 0), 0);
+        }
+        // عرض قيمة المستخلص بالإنجليزي مع فواصل
+        const valueStr = Number(value).toLocaleString('en-US', {maximumFractionDigits: 2});
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${e.number}</td>
+          <td>${contractorName}</td>
+          <td>${e.date || ''}</td>
+          <td style="direction:ltr; text-align:center;">${valueStr}</td>
+          <td>${e.notes || ''}</td>
+          <td>
+            <a href="extract.html?id=${e._id}" class="btn">عرض/تعديل</a>
+          </td>
+          <td>
+            ${
+              userPermissions.includes('delete-extract')
+                ? `<button class="btn btn-delete" data-id="${e._id}" style="background:#e53935;">حذف</button>`
+                : `<span style="color:#888;font-size:0.85rem;">بدون صلاحية</span>`
+            }
+          </td>
+        `;
+        list.appendChild(tr);
+      });
+    }
+
+    // فلترة بالتاريخ
+    document.getElementById('toggleDateFilter').onclick = function() {
+      const box = document.getElementById('dateFilterBox');
+      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+      this.classList.toggle('active');
+      document.getElementById('contractorTotalBox').style.display = 'none';
+    };
+    document.getElementById('applyDateFilter').onclick = function() {
+      const from = document.getElementById('fromDate').value;
+      const to = document.getElementById('toDate').value;
+      let filtered = allExtracts;
+      if (from) {
+        filtered = filtered.filter(e => e.date && e.date >= from);
+      }
+      if (to) {
+        filtered = filtered.filter(e => e.date && e.date <= to);
+      }
+      renderExtracts(filtered);
+      document.getElementById('contractorTotalBox').style.display = 'none';
+    };
+    // زر عرض مستخلصات اليوم
+    document.getElementById('showTodayBtn').onclick = function() {
+      const today = new Date().toISOString().split('T')[0];
+      const filtered = allExtracts.filter(e => e.date === today);
+      renderExtracts(filtered);
+      this.classList.add('active');
+      setTimeout(() => this.classList.remove('active'), 1200);
+      document.getElementById('contractorTotalBox').style.display = 'none';
+    };
+
+    // بحث عن المقاول وعرض الإجمالي
+    document.getElementById('searchContractorBtn').onclick = function() {
+      const searchValue = document.getElementById('contractorSearch').value.trim();
+      if (!searchValue) return;
+
+      // ابحث عن المقاول في قائمة المقاولين
+      let contractorId = '';
+      for (const [id, name] of Object.entries(contractorsMap)) {
+        if (name.includes(searchValue)) {
+          contractorId = id;
+          break;
+        }
+      }
+
+      // فلترة المستخلصات حسب المقاول
+      const filtered = allExtracts.filter(e => {
+        const name = contractorsMap[e.contractor] || e.contractor || '';
+        return name.includes(searchValue);
+      });
+
+      renderExtracts(filtered);
+
+      // حساب الإجمالي
+      let total = 0;
+      filtered.forEach(e => {
+        if (Array.isArray(e.workItems)) {
+          total += e.workItems.reduce((sum, item) => sum + (parseFloat(item.currentAmount) || 0), 0);
+        }
+      });
+
+      // عرض الإجمالي
+      const box = document.getElementById('contractorTotalBox');
+      if (filtered.length > 0) {
+        box.style.display = 'block';
+        box.textContent = `إجمالي مستخلصات المقاول "${searchValue}": ${total.toLocaleString('ar-EG', {maximumFractionDigits: 2})}`;
+      } else {
+        box.style.display = 'block';
+        box.textContent = `لا يوجد مستخلصات لهذا المقاول "${searchValue}"`;
+      }
+    };
+
+    document.addEventListener('click', async function(e) {
+      if (e.target.classList.contains('btn-delete')) {
+        // تحقق من صلاحية المستخدم قبل الحذف
+        let userPermissions = [];
+        try {
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          userPermissions = user.permissions || [];
+        } catch {}
+        if (!userPermissions.includes('delete-extract')) {
+          alert('ليس لديك صلاحية حذف المستخلصات');
+          return;
+        }
+        const id = e.target.getAttribute('data-id');
+        if (confirm('هل أنت متأكد من حذف هذا المستخلص؟')) {
+          const res = await fetch(`/extracts/${id}`, { method: 'DELETE' });
+          if (res.ok) {
+            allExtracts = allExtracts.filter(ex => ex._id !== id);
+            renderExtracts(allExtracts);
+            document.getElementById('contractorTotalBox').style.display = 'none';
+          } else {
+            alert('حدث خطأ أثناء الحذف');
+          }
+        }
+      }
+    });
+
+    fetchExtracts();
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>
