@@ -477,42 +477,7 @@
   </style>
 </head>
 <body>
-  <!-- Navbar الجديد -->
-  <div class="navbar">
-  <div style="display: flex; align-items: center; max-width: 1300px; margin: 0 auto;">
-    <!-- الرئيسية في أقصى اليمين -->
-    <div style="margin-left:auto;">
-      <button onclick="location.href='index.html'" style="background:#fff; color:#1a3b50; border:2px solid #1a3b50; border-radius:7px; font-weight:bold; padding:2px 12px; font-size:0.95rem; cursor:pointer;">
-        الرئيسية
-      </button>
-    </div>
-    <!-- العنوان في المنتصف -->
-    <div style="flex:1; text-align:center;">
-      <span style="font-size: 1.15rem; font-weight: bold;">سعيد أحمد بالبيد</span>
-    </div>
-    <!-- اسم المستخدم وتسجيل الخروج في أقصى اليسار -->
-    <div style="display: flex; align-items: center; gap: 10px; margin-right:0; margin-left:auto;">
-      <span id="username" style="color:#fff; font-weight:bold;"></span>
-      <button onclick="logout()" style="background:#e53935; color:#fff; border:none; border-radius:6px; padding:2px 10px; font-weight:bold; font-size:0.95rem; cursor:pointer;">
-        تسجيل الخروج
-      </button>
-    </div>
-  </div>
-</div>
-<script>
-  // عرض اسم المستخدم الحالي بجانب زر تسجيل الخروج
-  const userStr = localStorage.getItem('user');
-  if (userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      document.getElementById('username').textContent = user.username || '';
-    } catch {}
-  }
-  function logout() {
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
-  }
-</script>
+  <div id="navbar-container"></div>
   <div class="container">
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
       <h2 style="margin-bottom: 0; margin-top: 0;">تعديل مستخلص</h2>
@@ -601,7 +566,7 @@
       <!-- جدول اليوميات -->
       <div id="dailySection" class="table-section" style="display:none;"></div>
       <!-- زر فتح/إغلاق الخصومات -->
-      <h3 style="display:flex; align-items:center; gap:8px;">
+      <h3 id="deductionsTitle" style="display:flex; align-items:center; gap:8px;">
         <span>الخصومات</span>
         <button type="button" id="addDeductionRowBtn" title="إضافة صف خصم جديد"
           style="background:#42a5f5; color:#fff; border:none; border-radius:50%; width:28px; height:28px; font-size:1.2rem; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0;">
@@ -612,7 +577,7 @@
         </button>
       </h3>
       <div id="deductionsSection" style="display:none;">
-        <table>
+        <table id="deductionsTable">
           <thead>
             <tr>
               <th>بيان الخصم</th>
@@ -626,8 +591,6 @@
           </thead>
           <tbody id="deductionsBody"></tbody>
         </table>
-        <!-- احذف زر إضافة صف خصم جديد من هنا -->
-        <!-- <button type="button" class="add-row-btn" id="addDeductionRowBtn" style="background: #42a5f5;">+ إضافة صف خصم جديد</button> -->
       </div>
       <!-- ملخص المبالغ -->
       <div class="summary" style="background:#c5d6db; border-radius:10px; padding:16px; margin-bottom:18px; border:1.5px solid #8c969a; display:flex; justify-content:space-between; align-items:center; gap:32px;">
@@ -749,8 +712,15 @@
     // 3. دالة عرض الخصومات من deductions (تعديل لجعلها تعرض صفوف قابلة للتحرير عند الإضافة)
     function renderDeductions() {
       const tbody = document.getElementById('deductionsBody');
+      const section = document.getElementById('deductionsSection');
+      const title = document.getElementById('deductionsTitle');
+      const table = document.getElementById('deductionsTable');
       tbody.innerHTML = '';
+      // إظهار/إخفاء القسم والعنوان حسب وجود خصومات
       if (deductions && deductions.length > 0) {
+        section.style.display = 'block';
+        title.style.display = 'flex';
+        table.style.display = '';
         deductions.forEach((ded, idx) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -764,8 +734,11 @@
           `;
           tbody.appendChild(tr);
         });
+      } else {
+        section.style.display = 'none';
+        title.style.display = 'none';
+        table.style.display = 'none';
       }
-      // لا تضف صف "لا توجد خصومات" أبداً
       calculateSummary();
     }
 
@@ -1561,6 +1534,27 @@
         `;
       }
     }
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
   </script>
 </body>
 </html>

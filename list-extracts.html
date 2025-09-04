@@ -6,41 +6,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { margin: 0; font-family: 'Cairo', Arial, sans-serif; background: #c5d6db; direction: rtl; }
-    .navbar {
-      background: #1a3b50;
-      color: #fff;
-      padding: 8px 0 8px 0;
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-      box-shadow: 0 2px 12px #0001;
-      letter-spacing: 1px;
-      position: relative;
-      min-height: 0;
-      border-bottom: 3px solid #2e8ca3;
-    }
-    #userBox {
-      position: absolute;
-      left: 12px;
-      top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.95rem;
-    }
-    #username { color: #fff; font-weight: bold; }
-    #logoutBtn {
-      background: #7a5230;
-      color: #fff;
-      border: none;
-      border-radius: 0px;
-      padding: 4px 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #logoutBtn:hover { background: #8c969a; }
+    :root { direction: rtl; }
+    body { margin: 0; font-family: 'Cairo', Arial, sans-serif; background: #c5d6db; /* direction: rtl; */ }
     .container {
       max-width: 950px;
       margin: 18px auto 0 auto;
@@ -179,18 +146,7 @@
   </style>
 </head>
 <body>
-  <div class="navbar">
-    سعيد أحمد بالبيد
-    <div style="position:absolute; right:18px; top:12px;">
-      <button onclick="location.href='index.html'" style="background:#fff; color:#1b5e20; border:2px solid #1b5e20; border-radius:7px; font-weight:bold; padding:4px 16px; cursor:pointer; font-size:1rem;">
-        <i class="fa fa-arrow-right"></i> الرجوع للرئيسية
-      </button>
-    </div>
-    <div id="userBox">
-      <span id="username"></span>
-      <button id="logoutBtn" onclick="logout()">تسجيل الخروج</button>
-    </div>
-  </div>
+  <div id="navbar-container"></div>
   <div class="container">
     <h2>قائمة المستخلصات</h2>
     <div class="filters-bar">
@@ -206,6 +162,7 @@
       <!-- مربع البحث عن المقاول -->
       <input type="text" id="contractorSearch" placeholder="بحث عن مقاول..." style="border:1.5px solid #388e3c; border-radius:8px; padding:6px 12px; font-size:0.85rem; width:180px;">
       <button class="filter-btn" id="searchContractorBtn"><i class="fa fa-search"></i> بحث</button>
+      <button class="filter-btn" id="exportExcelBtn"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
     </div>
     <table>
       <thead>
@@ -227,20 +184,26 @@
     <!-- مربع إجمالي مستخلصات المقاول -->
     <div id="contractorTotalBox" style="display:none; margin:18px auto 0 auto; background:#e8f5e9; border-radius:10px; border:2px solid #388e3c; padding:12px; max-width:350px; text-align:center; font-weight:bold; color:#1b5e20;"></div>
   </div>
+  <!-- نافذة اختيار الأعمدة للتصدير -->
+  <div id="exportModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0005; z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px; border-radius:12px; min-width:260px; box-shadow:0 0 12px #0003;">
+      <h3 style="margin-top:0; color:#2e8ca3;">اختر الأعمدة للتصدير</h3>
+      <form id="exportForm">
+        <label><input type="checkbox" name="cols" value="0" checked> م</label><br>
+        <label><input type="checkbox" name="cols" value="1" checked> رقم المستخلص</label><br>
+        <label><input type="checkbox" name="cols" value="2" checked> اسم المقاول</label><br>
+        <label><input type="checkbox" name="cols" value="3" checked> التاريخ</label><br>
+        <label><input type="checkbox" name="cols" value="4" checked> القيمة</label><br>
+        <label><input type="checkbox" name="cols" value="5" checked> ملاحظات</label><br>
+        <label><input type="checkbox" name="cols" value="6" checked> إجراءات</label><br>
+        <label><input type="checkbox" name="cols" value="7" checked> حذف</label><br>
+        <button type="submit" style="margin-top:12px;" class="filter-btn">تصدير</button>
+        <button type="button" id="closeExportModal" style="margin-top:12px;" class="filter-btn">إلغاء</button>
+      </form>
+    </div>
+  </div>
   <script>
     if (!localStorage.getItem('user')) {
-      window.location.href = 'login.html';
-    }
-    // عرض اسم المستخدم
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        document.getElementById('username').textContent = user.username || '';
-      } catch {}
-    }
-    function logout() {
-      localStorage.removeItem('user');
       window.location.href = 'login.html';
     }
   </script>
@@ -402,6 +365,55 @@
     });
 
     fetchExtracts();
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    // فتح نافذة اختيار الأعمدة
+    document.getElementById('exportExcelBtn').onclick = function() {
+      document.getElementById('exportModal').style.display = 'flex';
+    };
+    // إغلاق النافذة
+    document.getElementById('closeExportModal').onclick = function() {
+      document.getElementById('exportModal').style.display = 'none';
+    };
+    // تنفيذ التصدير حسب الأعمدة المختارة
+    document.getElementById('exportForm').onsubmit = function(e) {
+      e.preventDefault();
+      const checked = Array.from(document.querySelectorAll('#exportForm input[name="cols"]:checked')).map(c => parseInt(c.value));
+      const table = document.querySelector('table');
+      if (!table) return;
+      // استخراج البيانات المختارة فقط
+      const rows = Array.from(table.rows).map(row =>
+        checked.map(i => row.cells[i] ? row.cells[i].innerText : '')
+      );
+      // تحويل للـsheet
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "المستخلصات");
+      XLSX.writeFile(wb, "extracts-list.xlsx");
+      document.getElementById('exportModal').style.display = 'none';
+    };
   </script>
 </body>
 </html>

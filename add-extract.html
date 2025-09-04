@@ -8,11 +8,16 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
+    :root {
+      direction: rtl;
+      writing-mode: horizontal-tb;
+      /* text-orientation: initial; // optional, add if needed */
+    }
     body {
       margin: 0;
       font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
-      background: #c5d6db; /* اللون الفاتح */
-      direction: rtl;
+      background: #c5d6db;
+      /* direction: rtl;  <-- remove from here, now on :root */
     }
     .navbar {
       background: #1a3b50; /* أزرق غامق */
@@ -72,11 +77,11 @@
       border-radius: 10px;
       padding: 7px 7px;
       box-shadow: 0 2px 8px #1b5e2022;
-      border: 1.5px solid #8c969a;
+      border: 1.5px solid #22799b;
     }
     .row.details-inline {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap !important;
       gap: 18px;
       margin-bottom: 10px;
       align-items: center;
@@ -85,6 +90,7 @@
       padding: 5px 10px;
       box-shadow: 0 2px 8px #1b5e2022;
       border: 1.5px solid #1b5e20;
+      overflow-x: auto;
     }
     .row.details-inline .form-group {
       flex: none;
@@ -295,16 +301,17 @@
       background: #2e8ca3;
       color: #fff;
       border: none;
-      border-radius: 8px;
-      font-size: 0.98rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
       font-weight: bold;
-      padding: 7px 18px;
+      padding: 2px 8px;
       cursor: pointer;
       margin-top: 8px;
       transition: background 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      height: 28px;
     }
     .add-row-btn:hover {
       background: #1a3b50;
@@ -369,7 +376,7 @@
     }
     .details-inline {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap !important;
       gap: 18px;
       margin-bottom: 10px;
       align-items: center;
@@ -378,7 +385,7 @@
       padding: 5px 10px;
       box-shadow: 0 2px 8px #1b5e2022;
       border: 1.5px solid #1b5e20;
-      justify-content: center; /* يجعل الصف في منتصف الصفحة */
+      overflow-x: auto;
     }
     .details-pair {
       display: flex;
@@ -402,6 +409,28 @@
       border-radius: 6px;
       border: 1.2px solid #c5d6db;
       background: #fff;
+    }
+    /* تصغير الكلام في مربع التفاصيل العلوي فقط */
+    .details-inline, .details-pair {
+      gap: 6px !important;
+    }
+    .details-inline {
+      padding: 2px 4px !important;
+    }
+    .details-pair label {
+      font-size: 0.78rem !important;
+      margin-bottom: 0 !important;
+    }
+    .details-pair input,
+    .details-pair select {
+      font-size: 0.78rem !important;
+      padding: 2px 4px !important;
+      min-width: 60px !important;
+      max-width: 110px !important;
+      height: 26px !important;
+    }
+    .details-pair {
+      margin-bottom: 0 !important;
     }
     #extraWorksTable {
       width: 100%;
@@ -682,59 +711,156 @@
   white-space: normal !important;
   word-break: break-word;
 }
-  </style>
+    .btn-brown {
+  background: #7a5230 !important;
+  color: #fff !important;
+  border: 1.2px solid #7a5230 !important;
+  border-radius: 0 !important;
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 2px 8px !important;
+  letter-spacing: 0.2px;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 26px !important;
+  line-height: 1.1 !important;
+  box-shadow: none !important;
+}
+.btn-brown:hover, .btn-brown:focus {
+  background: #5d3f22 !important;
+  color: #fff !important;
+  border-color: #5d3f22 !important;
+}
+.btn-brown-outline {
+  background: #fff !important;
+  color: #7a5230 !important;
+  border: 1.2px solid #7a5230 !important;
+  border-radius: 0 !important;
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 2px 8px !important;
+  letter-spacing: 0.2px;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 26px !important;
+  line-height: 1.1 !important;
+  box-shadow: none !important;
+}
+.btn-brown-outline:hover, .btn-brown-outline:focus {
+  background: #7a5230 !important;
+  color: #fff !important;
+  border-color: #7a5230 !important;
+}
+/* زر اليوميات الأخضر بنفس التصغير */
+.btn-green {
+  background: #388e3c !important;
+  color: #fff !important;
+  border: 1.2px solid #388e3c !important;
+  border-radius: 0 !important;
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 2px 8px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 26px !important;
+  line-height: 1.1 !important;
+  box-shadow: none !important;
+}
+.btn-green:hover, .btn-green:focus {
+  background: #256c27 !important;
+  border-color: #256c27 !important;
+}
+/* تصغير input الحد الأقصى */
+#maxTotalPercentInput {
+  width: 38px !important;
+  font-size: 0.82rem !important;
+  padding: 2px 2px !important;
+  height: 24px !important;
+  border-radius: 4px !important;
+}
+/* تصغير span % */
+#maxTotalPercentInput + span,
+[for="maxTotalPercentInput"] {
+  font-size: 0.82rem !important;
+}
+/* تصغير المسافة بين الأزرار */
+.shrink-btns-bar {
+  gap: 4px !important;
+}
+.drag-handle {
+  cursor: grab;
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 1.1em;
+  color: #2e8ca3;
+  user-select: none;
+}
+.drag-handle:active {
+  cursor: grabbing;
+  color: #7a5230;
+}
+  /* ...existing code... */
+  .form-group input, .form-group select,
+  .details-pair input, .details-pair select,
+  input, select {
+    font-family: 'Tajawal', 'Cairo', Arial, sans-serif !important;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: #111 !important; /* خط أسود سادة */
+    text-shadow: none !important; /* أزل الظل */
+    vertical-align: middle;
+    font-style: normal !important; /* أزل الميلان */
+  }
+  /* اجعل النص داخل الحقول readonly أسود وغير مايل */
+  input:read-only, input[readonly], .details-pair input:read-only, .details-pair input[readonly] {
+    background: #e8f5e9 !important;
+    color: #111 !important;
+    cursor: not-allowed;
+    font-style: normal !important;
+    border: 1.5px solid #c5d6db;
+  }
+  /* ...existing code... */
+</style>
 </head>
 <body>
-  <!-- استبدل شريط الـ navbar بهذا الكود الاحترافي -->
-  <div class="navbar" style="background: #1a3b50; color: #fff; padding: 10px 0; text-align: center; font-size: 1.15rem; font-weight: bold; box-shadow: 0 2px 12px #0001; letter-spacing: 1px; border-bottom: 3px solid #2e8ca3;">
-    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1300px; margin: 0 auto;">
-      <div>
-        <button onclick="location.href='index.html'" style="background:#fff; color:#1a3b50; border:2px solid #1a3b50; border-radius:7px; font-weight:bold; padding:2px 12px; font-size:0.95rem; cursor:pointer;">
-          الرئيسية
-        </button>
-      </div>
-      <span style="font-size: 1.15rem; font-weight: bold; color:#2e8ca3;">سعيد أحمد بالبيد</span>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span id="username" style="color:#fff; font-weight:bold;"></span>
-        <button onclick="logout()" style="background:#7a5230; color:#fff; border:none; border-radius:6px; padding:2px 10px; font-weight:bold; font-size:0.95rem; cursor:pointer;">تسجيل الخروج</button>
-      </div>
-    </div>
-  </div>
+  <!-- ربط الشريط العلوي الموحد -->
+  <div id="main-navbar"></div>
   <script>
-    // عرض اسم المستخدم في الشريط
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        document.getElementById('username').textContent = user.username || '';
-      } catch {}
-    }
-    function logout() {
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    }
+    // تحميل الشريط العلوي الموحد من components/main-navbar.html
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('main-navbar').innerHTML = html;
 
-    // تعبئة اسم المستخدم تلقائياً في الحقل
-    document.addEventListener('DOMContentLoaded', function() {
-      // تعبئة اسم المستخدم
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          document.getElementById('extractUsername').value = user.username || '';
-        } catch {}
-      }
-      // تعبئة تاريخ اليوم تلقائياً
-      const dateInput = document.getElementById('extractDate');
-      if (dateInput && !dateInput.value) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        dateInput.value = `${yyyy}-${mm}-${dd}`;
-      }
-    });
+        // نفذ جميع السكريبتات الموجودة في الشريط العلوي يدوياً
+        document.querySelectorAll('#main-navbar script').forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
 
+        setTimeout(function() {
+          if (typeof window.initMainNavbar === 'function') window.initMainNavbar();
+          if (typeof window.updateNavbarUserName === 'function') window.updateNavbarUserName();
+        }, 100);
+
+        // تعبئة اسم المستخدم في تفاصيل المستخلص
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            const usernameInput = document.getElementById('extractUsername');
+            if (usernameInput) usernameInput.value = user.username || '';
+          } catch {}
+        }
+      });
   </script>
   <div class="container">
     <h2 style="margin-top:0; padding-top:0; text-align:right;">إضافة مستخلص جديد</h2>
@@ -749,9 +875,16 @@
           <input name="number" type="number" id="statementNumber" readonly style="background:#e8f5e9;">
         </div>
         <div class="details-pair">
+          <label>بند الأعمال</label>
+          <select id="workItemFilterSelect" required>
+            <option value="">اختر بند الأعمال</option>
+            <!-- سيتم تعبئة البنود دينامياً من السيرفر -->
+          </select>
+        </div>
+        <div class="details-pair">
           <label>اسم المقاول</label>
           <div style="display:flex; align-items:center; gap:6px;">
-            <select name="contractor" id="contractorSelect" required>
+            <select name="contractor" id="contractorSelect" required disabled>
               <option value="">اختر المقاول</option>
             </select>
             <button type="button" id="refreshContractorsBtn" title="تحديث المقاولين" style="background:#fff; border:1px solid #388e3c; border-radius:5px; color:#388e3c; font-weight:bold; cursor:pointer; padding:2px 8px;">
@@ -761,7 +894,7 @@
         </div>
         <div class="details-pair">
           <label>اسم المستخدم</label>
-          <input name="username" type="text" id="extractUsername" required>
+          <input name="username" type="text" id="extractUsername" required readonly>
         </div>
       </div>
       <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px; margin-bottom: 8px;">
@@ -774,15 +907,15 @@
           </button>
         </h3>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button type="button" class="add-row-btn" id="addLumpSumBtn" style="background:#7a5230;">إضافة مقطوعية</button>
-          <button type="button" class="add-row-btn" id="addDailyBtn" style="background:#388e3c;">إضافة يوميات</button>
-          <button type="button" class="add-row-btn" id="addSeparatorBtn" style="background:#7a5230;">+ إضافة فاصل</button>
+          <button type="button" class="btn-brown" id="addLumpSumBtn">إضافة مقطوعية</button>
+          <button type="button" class="btn-green" id="addDailyBtn">إضافة يوميات</button>
+          <button type="button" class="btn-brown" id="addSeparatorBtn" data-perm="add-extract-add-separator">+ إضافة فاصل</button>
+          <button type="button" class="btn-brown-outline" id="importOtherContractorBtn">إدراج أعمال مقاول آخر</button>
           <!-- زر إدراج أعمال مقاول آخر -->
-          <button type="button" class="add-row-btn" id="importOtherContractorBtn" style="background:#fff; color:#7a5230; border:1.5px solid #7a5230;">إدراج أعمال مقاول آخر</button>
           <!-- حقل الحد الأقصى للإجمالي % لكل بند: تم نقله هنا -->
-          <div style="display:flex; align-items:center; gap:6px; margin-right:12px;">
-            <label for="maxTotalPercentInput" style="font-weight:bold; color:#7a5230;">الحد الأقصى للإجمالي % لكل بند:</label>
-            <input type="number" id="maxTotalPercentInput" value="100" min="1" max="100" style="width:60px; font-weight:bold; text-align:center; border:2px solid #7a5230; border-radius:8px; background:#fffbe7; color:#7a5230;">
+          <div style="display:flex; align-items:center; gap:4px; margin-right:8px;">
+            <label for="maxTotalPercentInput" style="font-weight:bold; color:#7a5230; font-size:0.82rem;">الحد الأقصى للإجمالي % لكل بند:</label>
+            <input type="number" id="maxTotalPercentInput" value="100" min="1" max="100">
             <span style="color:#7a5230;">%</span>
           </div>
           <!-- أيقونة sort في النهاية -->
@@ -798,6 +931,8 @@
           </div>
         </div>
       </div>
+      <!-- خط فاصل بين الأزرار وجدول الأعمال -->
+      <hr style="border:0; border-top:2px solid #8c969a; margin: 0 0 18px 0; width:100%;">
       <div class="table-section">
         <table id="workItemsTable" style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px #8c969a;">
           <thead>
@@ -991,6 +1126,7 @@
         </div>
       </div>
       <button type="submit">إضافة المستخلص</button>
+      <button type="button" id="saveDraftBtn" style="margin-right:10px;background:#8c969a;color:#fff;border:none;border-radius:6px;padding:6px 18px;font-weight:bold;cursor:pointer;">حفظ كمسودة</button>
     </form>
     <div class="table-section" id="lumpSumSection" style="display:none; margin-top:0;">
       <!-- كرر نفس التعديل أعلاه إذا كان هناك تكرار للقسم (احذف زر الإضافة السفلي) -->
@@ -1012,13 +1148,17 @@
     </div>
   </div>
   <script>
-    // المقاولين من السيرفر
-    async function loadContractors() {
+    // المقاولين من السيرفر (تعديل: جلب حسب بند الأعمال)
+    async function loadContractors(workItem = null) {
       const select = document.getElementById('contractorSelect');
       const current = select.value;
       select.innerHTML = '<option value="">اختر المقاول</option>';
       try {
-        const res = await fetch('/contractors');
+        let url = '/contractors';
+        if (workItem) {
+          url += '?workItem=' + encodeURIComponent(workItem);
+        }
+        const res = await fetch(url);
         const contractors = await res.json();
         contractors.forEach(c => {
           const option = document.createElement('option');
@@ -1032,17 +1172,70 @@
         alert('تعذر تحميل قائمة المقاولين. تأكد من تشغيل السيرفر.');
       }
     }
-    loadContractors();
 
-    document.getElementById('refreshContractorsBtn').onclick = loadContractors;
-
-    // تحديث تلقائي عند تعديل المقاول من صفحة أخرى
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'contractor-updated') {
-        loadContractors();
-        // إزالة العلامة حتى لا تتكرر
-        localStorage.removeItem('contractor-updated');
+    // عند تغيير بند الأعمال، جلب المقاولين الخاصين به فقط
+    document.getElementById('workItemFilterSelect').addEventListener('change', function() {
+      const workItem = this.value;
+      const contractorSelect = document.getElementById('contractorSelect');
+      if (workItem) {
+        contractorSelect.disabled = false;
+        loadContractors(workItem);
+      } else {
+        contractorSelect.disabled = true;
+        contractorSelect.innerHTML = '<option value="">اختر المقاول</option>';
       }
+      contractorSelect.value = '';
+    });
+
+    // عند الضغط على زر تحديث المقاولين، جلب حسب البند الحالي
+    document.getElementById('refreshContractorsBtn').onclick = function() {
+      const workItem = document.getElementById('workItemFilterSelect').value;
+      loadContractors(workItem);
+    };
+
+    // عند تحميل الصفحة، جلب المقاولين للبند الحالي (إن وجد)
+    document.addEventListener('DOMContentLoaded', function() {
+      const workItem = document.getElementById('workItemFilterSelect').value;
+      const contractorSelect = document.getElementById('contractorSelect');
+      if (!workItem) {
+        contractorSelect.disabled = true;
+        contractorSelect.innerHTML = '<option value="">اختر المقاول</option>';
+      } else {
+        contractorSelect.disabled = false;
+        loadContractors(workItem);
+      }
+    });
+
+    // جلب بنود الأعمال الفعلية من السيرفر وتعبئة القائمة
+    async function loadWorkItemsOptions() {
+      const select = document.getElementById('workItemFilterSelect');
+      select.innerHTML = '<option value="">اختر بند الأعمال</option>';
+      try {
+        const res = await fetch('/contractors');
+        const contractors = await res.json();
+        // استخرج جميع البنود الفريدة فقط
+        const workItemsSet = new Set();
+        contractors.forEach(c => {
+          if (c.workItem && typeof c.workItem === 'string' && c.workItem.trim()) {
+            workItemsSet.add(c.workItem.trim());
+          }
+        });
+        Array.from(workItemsSet).sort().forEach(workItem => {
+          const option = document.createElement('option');
+          option.value = workItem;
+          option.textContent = workItem;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        // في حال الخطأ، أبقِ الخيار الافتراضي فقط
+      }
+    }
+
+    // عند تحميل الصفحة، جلب جميع البنود الفريدة من السيرفر
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadWorkItemsOptions();
+      const workItem = document.getElementById('workItemFilterSelect').value;
+      loadContractors(workItem);
     });
 
     let sortOrder = [];
@@ -1108,14 +1301,14 @@
           input.value = filteredExtracts.length + 1;
           let prev = filteredExtracts.length > 0 ? filteredExtracts[filteredExtracts.length - 1] : null;
 
-          // نسخ بنود الأعمال
+          // نسخ بنود الأعمال: الحالى دائما صفر
           if (prev && prev.workItems && prev.workItems.length > 0) {
             workItems = prev.workItems.map(item => ({
               ...item,
               prevPercent: item.totalPercent || '',
               prevAmount: item.totalAmount || '',
-              currentPercent: '',
-              currentAmount: '',
+              currentPercent: '0',
+              currentAmount: '0',
               totalPercent: item.totalPercent || '',
               totalAmount: item.totalAmount || ''
             }));
@@ -1182,7 +1375,6 @@
           lumpSumRows = [];
           document.getElementById('lumpSumSection').style.display = 'none';
           renderLumpSumRows();
-          // جدول اليوميات فارغ ومخفي
           dailyRows = [];
           document.getElementById('dailySection').style.display = 'none';
           renderDailyRows();
@@ -1390,6 +1582,29 @@
 
       document.getElementById('workItemsBody').innerHTML = finalHtml;
 
+      // قفل جميع الحقول إذا لم توجد صلاحيات أو لا توجد صلاحية تعديل الأعمال
+      let user = {};
+      try { user = JSON.parse(localStorage.getItem('user')) || {}; } catch {}
+      const perms = user.permissions || [];
+      const canEditAll = perms.includes('add-extract-edit-all');
+      const canEditCurrent = perms.includes('add-extract-edit-current');
+      if (!perms.length || (!canEditAll && !canEditCurrent)) {
+        document.querySelectorAll('#workItemsTable input, #workItemsTable select, #workItemsTable button').forEach(el => {
+          el.readOnly = true;
+          el.disabled = true;
+          el.style.background = "#eee";
+          el.style.cursor = "not-allowed";
+        });
+        // أيضاً اقفل زر إضافة صف جديد
+        const addWorkItemRowBtn = document.getElementById('addWorkItemRowBtn');
+        if (addWorkItemRowBtn) {
+          addWorkItemRowBtn.disabled = true;
+          addWorkItemRowBtn.style.opacity = "0.5";
+          addWorkItemRowBtn.style.cursor = "not-allowed";
+        }
+        return;
+      }
+
       // تفعيل الطي/الفتح للمجموعات والمجموعات الفرعية
       document.querySelectorAll('.group-row').forEach(el => {
         let groupKey = el.dataset.group;
@@ -1418,28 +1633,6 @@
           calculateSummary();
         };
       });
-
-      const userStr = localStorage.getItem('user');
-      const user = userStr ? JSON.parse(userStr) : {};
-      if (!user.permissions || !user.permissions.includes('edit-extract-items')) {
-        document.querySelectorAll('#workItemsBody tr').forEach(tr => {
-          tr.querySelectorAll('input').forEach(input => {
-            if (input.name !== 'currentPercent') {
-              input.setAttribute('readonly', true);
-              input.style.background = '#f5f5f5';
-              input.style.cursor = 'not-allowed';
-            } else {
-              input.removeAttribute('readonly');
-              input.style.background = '';
-              input.style.cursor = '';
-            }
-          });
-        });
-        document.getElementById('addWorkItemRowBtn').style.display = 'none';
-      } else {
-        document.getElementById('addWorkItemRowBtn').style.display = '';
-      }
-
       // إضافة أحداث حذف الفاصل
       document.querySelectorAll('.delete-separator-btn').forEach(btn => {
         btn.onclick = function() {
@@ -1450,6 +1643,7 @@
           }
         };
       });
+      updateTotalRowInTable();
     }
 
     // دالة لتحريك صف للأعلى (يسمح بالتحريك فوق الفاصل)
@@ -1470,9 +1664,10 @@
       }
     }
 
-    // عدل دالة workItemRowHtml لإضافة أزرار التحريك
+    // عدل دالة workItemRowHtml ليكون السحب فقط من المقبض وليس الصف كله
     function workItemRowHtml(item, rowNum, idx, groupKey) {
       let hiddenClass = groupKey && groupsCollapsed[groupKey] ? "hidden-row" : "";
+
       // تحقق من صلاحية المستخدم
       const userStr = localStorage.getItem('user');
       const user = userStr ? JSON.parse(userStr) : {};
@@ -1484,20 +1679,24 @@
       const lockMsg = isLocked ? 'title="تم احتساب هذا البند لمقاول آخر ولا يمكن تعديله"' : '';
 
       return `
-        <tr class="work-row ${hiddenClass}" ${groupKey ? `data-childof="${groupKey}"` : ""}>
-          <td ${lockMsg}>${rowNum}${isLocked ? ' 🔒' : ''}</td>
+        <tr class="work-row ${hiddenClass}" ${groupKey ? `data-childof="${groupKey}"` : ""} data-idx="${idx}">
+          <td title="اسحب لتغيير ترتيب الصف">
+            <span class="drag-handle" draggable="true" data-idx="${idx}">&#9776;</span>
+            ${rowNum}${isLocked ? ' 🔒' : ''}
+
+          </td>
           <td><input name="buildingNumber" class="work-item-input" data-idx="${idx}" data-field="buildingNumber" value="${item.buildingNumber || ''}" required placeholder="رقم المبني" ${readonlyAttr}></td>
           <td><input name="workItem" class="work-item-input" data-idx="${idx}" data-field="workItem" value="${item.workItem || ''}" required placeholder="بند الأعمال" ${readonlyAttr}></td>
           <td><input name="workDescription" class="work-item-input" data-idx="${idx}" data-field="workDescription" value="${item.workDescription || ''}" placeholder="بيان الأعمال" ${readonlyAttr}></td>
           <td><input name="quantity" class="work-item-input" data-idx="${idx}" data-field="quantity" value="${item.quantity || ''}" type="number" step="any" required placeholder="الكمية" ${readonlyAttr}></td>
           <td><input name="unit" class="work-item-input" data-idx="${idx}" data-field="unit" value="${item.unit || ''}" placeholder="الوحدة" ${readonlyAttr}></td>
           <td><input name="category" class="work-item-input" data-idx="${idx}" data-field="category" value="${item.category || ''}" type="number" step="any" placeholder="الفئة" ${readonlyAttr}></td>
-          <td><input name="prevPercent" class="work-item-input" data-idx="${idx}" data-field="prevPercent" value="${item.prevPercent || ''}" type="number" step="any" placeholder="السابق نسبة" readonly style="background:#e8f5e9;"></td>
+          <td><input name="prevPercent" class="work-item-input" data-idx="${idx}" data-field="prevPercent" value="${item.prevPercent || ''}" type="number" step="any" placeholder="السابق نسبة" readonly style="background:#e5f8e5;"></td>
           <td><input name="currentPercent" class="work-item-input" data-idx="${idx}" data-field="currentPercent" value="${item.currentPercent || ''}" type="number" step="any" placeholder="الحالي نسبة" ${readonlyAttr}></td>
-          <td><input name="totalPercent" class="work-item-input" data-idx="${idx}" data-field="totalPercent" value="${item.totalPercent || ''}" type="number" step="any" readonly placeholder="الإجمالي نسبة" style="background:#e8f5e9;"></td>
-          <td><input name="prevAmount" class="work-item-input" data-idx="${idx}" data-field="prevAmount" value="${item.prevAmount || ''}" type="number" step="any" placeholder="السابق مبلغ" readonly style="background:#e8f5e9;"></td>
+          <td><input name="totalPercent" class="work-item-input" data-idx="${idx}" data-field="totalPercent" value="${item.totalPercent || ''}" type="number" step="any" readonly placeholder="الإجمالي نسبة" style="background:#e5f8e5;"></td>
+          <td><input name="prevAmount" class="work-item-input" data-idx="${idx}" data-field="prevAmount" value="${item.prevAmount || ''}" type="number" step="any" placeholder="السابق مبلغ" readonly style="background:#e5f8e5;"></td>
           <td><input name="currentAmount" class="work-item-input" data-idx="${idx}" data-field="currentAmount" value="${item.currentAmount || ''}" type="number" step="any" placeholder="الحالي مبلغ" ${readonlyAttr}></td>
-          <td><input name="totalAmount" class="work-item-input" data-idx="${idx}" data-field="totalAmount" value="${item.totalAmount || ''}" type="number" step="any" readonly placeholder="الإجمالي مبلغ" style="background:#e8f5e9;"></td>
+          <td><input name="totalAmount" class="work-item-input" data-idx="${idx}" data-field="totalAmount" value="${item.totalAmount || ''}" type="number" step="any" readonly placeholder="الإجمالي مبلغ" style="background:#e5f8e5;"></td>
           <td>
             <button type="button" class="delete-work-row" data-idx="${idx}" style="background:#e53935; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;" ${isLocked ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>حذف</button>
             ${canEdit && !isLocked ? `
@@ -1572,6 +1771,9 @@
         if (field === 'currentAmount') input.value = item.currentAmount || '';
         if (field === 'totalAmount') input.value = item.totalAmount || '';
       });
+
+      updateTotalRowInTable();
+      updateGuaranteeDetailsBar(); // أضف هذا السطر
     }
 
     document.getElementById('addWorkItemRowBtn').addEventListener('click', addWorkItemRow);
@@ -1587,7 +1789,11 @@
       }
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><input name="deductionStatement"></td>
+        <td style="position:relative; overflow:visible;">
+          <button type="button" class="show-materials-btn" title="إدراج مادة" style="background:none; border:none; cursor:pointer; font-size:1.2em; color:#2e8ca3; margin-left:2px;">&#x25BC;</button>
+          <input name="deductionStatement" style="width:70%;" autocomplete="off">
+          <div class="materials-dropdown" style="display:none; position:fixed; left:0; top:0; z-index:99999; background:#fff; border:1px solid #2e8ca3; border-radius:7px; min-width:180px; max-width:350px; box-shadow:0 2px 12px #0002; max-height:320px; overflow:auto;"></div>
+        </td>
         <td><input name="deductionDate" type="date"></td>
         <td><input name="deductionQuantity" type="number" step="any"></td>
         <td><input name="deductionCategory" type="number" step="any"></td>
@@ -1596,6 +1802,7 @@
         <td><button type="button" class="delete-deduction-row" style="background:#e53935; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;">حذف</button></td>
       `;
       tbody.appendChild(tr);
+
       // حساب الاجمالى تلقائياً عند تغيير الكمية أو الفئة
       const qtyInput = tr.querySelector('input[name="deductionQuantity"]');
       const catInput = tr.querySelector('input[name="deductionCategory"]');
@@ -1608,6 +1815,86 @@
       }
       qtyInput.addEventListener('input', updateDeductionTotal);
       catInput.addEventListener('input', updateDeductionTotal);
+
+      // زر السهم لإظهار المواد
+      const showBtn = tr.querySelector('.show-materials-btn');
+      const dropdown = tr.querySelector('.materials-dropdown');
+      const statementInput = tr.querySelector('input[name="deductionStatement"]');
+      showBtn.onclick = async function(e) {
+        e.stopPropagation();
+        dropdown.innerHTML = '<div style="padding:8px; color:#888;">جاري التحميل...</div>';
+        dropdown.style.display = 'block';
+
+        // اجعل القائمة بمحاذاة مربع البيان وليس الزر
+        const rect = statementInput.getBoundingClientRect();
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.top = (rect.bottom + 2) + 'px';
+        dropdown.style.width = rect.width + 'px';
+
+        // جلب المواد من المقاول المختار
+        const contractorId = document.getElementById('contractorSelect')?.value;
+        if (!contractorId) {
+          dropdown.innerHTML = '<div style="padding:8px; color:#e53935;">اختر المقاول أولاً</div>';
+          return;
+        }
+        try {
+          const res = await fetch(`/contractors/${contractorId}`);
+          const contractor = await res.json();
+          // فقط المواد التي لم تخصم بعد (لا يوجد لها deductedInExtractNumber)
+          const availableMaterials = (contractor.materials || []).filter(mat => !mat.deductedInExtractNumber);
+          if (!availableMaterials.length) {
+            dropdown.innerHTML = '<div style="padding:8px; color:#e53935;">لا توجد مواد متاحة للخصم لهذا المقاول</div>';
+            return;
+          }
+          dropdown.innerHTML = availableMaterials.map((mat, i) => `
+            <div class="material-option" data-name="${mat.name}" data-qty="${mat.quantity}" data-category="${mat.unitPrice || mat.category || ''}" style="padding:7px 12px; cursor:pointer; border-bottom:1px solid #eee;">
+              <b>${mat.name}</b> <span style="color:#7a5230;">(${mat.quantity} ${mat.unit || ''})</span>
+            </div>
+          `).join('');
+          dropdown.querySelectorAll('.material-option').forEach(opt => {
+            opt.onclick = async function() {
+              statementInput.value = opt.dataset.name;
+              qtyInput.value = opt.dataset.qty;
+              catInput.value = opt.dataset.category || '';
+              dropdown.style.display = 'none';
+              updateDeductionTotal();
+              // --- تحديث عمود تم الخصم في مستخلص ---
+              const extractNumber = document.getElementById('statementNumber')?.value || '';
+              const materialName = opt.dataset.name;
+              const materialDate = tr.querySelector('input[name="deductionDate"]')?.value || '';
+              const contractorId = document.getElementById('contractorSelect')?.value;
+              if (contractorId && materialName && extractNumber) {
+                try {
+                  await fetch(`/contractors/${contractorId}/materials/deduct`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      name: materialName,
+                      deductedInExtractNumber: extractNumber,
+                      deductedDate: materialDate
+                    })
+                  });
+                } catch (err) {
+                  alert('تعذر تحديث المادة في السيرفر');
+                }
+              }
+              // إذا لديك دالة markMaterialDeductedInUI نفذها أيضاً
+              if (typeof markMaterialDeductedInUI === 'function') {
+                markMaterialDeductedInUI(materialName, materialDate, extractNumber);
+              }
+            };
+          });
+        } catch {
+          dropdown.innerHTML = '<div style="padding:8px; color:#e53935;">خطأ في جلب المواد</div>';
+        }
+      };
+
+      // إغلاق القائمة عند الضغط خارجها
+      document.addEventListener('click', function(e) {
+        if (dropdown && dropdown.style.display === 'block' && !dropdown.contains(e.target) && e.target !== showBtn) {
+          dropdown.style.display = 'none';
+        }
+      });
     }
     // تأكد من وجود العنصر قبل إضافة الحدث
     const addDeductionRowBtn = document.getElementById('addDeductionRowBtn');
@@ -1733,6 +2020,7 @@
           const field = e.target.dataset.field;
           lumpSumRows[idx][field] = e.target.value
           if (field === 'buildingsCount' || field === 'lumpSum') updateLumpSumRow(idx);
+          updateLumpSumTotalRow(); // أضف هذا السطر
         };
       });
       document.querySelectorAll('.delete-lump-row-btn').forEach(btn => {
@@ -1744,6 +2032,7 @@
             document.getElementById('lumpSumSection').style.display = 'none';
           }
           renderLumpSumRows();
+          updateLumpSumTotalRow(); // أضف هذا السطر
         };
 
       });
@@ -1913,54 +2202,92 @@ function formatNumberWithCommas(num) {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-    function calculateSummary() {
-      // إجمالي بنود الأعمال (الحالي مبلغ)
-      let workItemsTotal = workItems.reduce((sum, item) => {
-        if (!item.isSeparator && item.currentAmount) {
-          return sum + (parseFloat(item.currentAmount) || 0);
-        }
-        return sum;
-      }, 0);
+// === أضف هنا ===
+function calculateSummary() {
+  // إجمالي الأعمال (الحالي + المقطوعيات + اليوميات)
+  let workCurrent = 0;
+  if (Array.isArray(workItems)) {
+    workItems.forEach(item => {
+      if (!item.isSeparator) workCurrent += parseFloat(item.currentAmount) || 0;
+    });
+  }
+  let lumpSumTotal = 0;
+  if (Array.isArray(lumpSumRows)) {
+    lumpSumRows.forEach(row => {
+      lumpSumTotal += parseFloat(row.total) || 0;
+    });
+  }
+  let dailyCurrentTotal = 0;
+  if (Array.isArray(dailyRows)) {
+    dailyRows.forEach(row => {
+      dailyCurrentTotal += parseFloat(row.currentAmount) || 0;
+    });
+  }
 
-      // رقم المستخلص الحالي
-      let currentStatementNumber = parseInt(document.getElementById('statementNumber')?.value || '0');
+  // الصافي قبل الخصومات
+  let beforeDeductions = workCurrent + lumpSumTotal + dailyCurrentTotal;
 
-      // إجمالي المقطوعيات الجديدة فقط (statementNumber == currentStatementNumber)
-      let lumpSumTotal = lumpSumRows.reduce((sum, row) => {
-        if (parseInt(row.statementNumber) === currentStatementNumber) {
-          return sum + (parseFloat(row.total) || 0);
-        }
-        return sum;
-      }, 0);
+  // إجمالي الخصومات
+  let totalDeductions = 0;
+  document.querySelectorAll('#deductionsBody tr').forEach(tr => {
+    const totalInput = tr.querySelector('input[name="deductionTotal"]');
+    if (totalInput) totalDeductions += parseFloat(totalInput.value) || 0;
+  });
 
-      // إجمالي اليوميات (currentAmount)
-      let dailyTotal = dailyRows.reduce((sum, row) => {
-        return sum + (parseFloat(row.currentAmount) || 0);
-      }, 0);
+  // الصافي بعد الخصومات
+  let afterDeductions = beforeDeductions - totalDeductions;
 
-      // إجمالي الخصومات
-      let deductionsTotal = 0;
-      document.querySelectorAll('#deductionsBody input[name="deductionTotal"]').forEach(input => {
-        deductionsTotal += parseFloat(input.value) || 0;
-      });
+  // تحديث القيم في الصفحة
+  document.getElementById('beforeDeductions').textContent = formatNumberWithCommas(beforeDeductions);
+  document.getElementById('totalDeductions').textContent = formatNumberWithCommas(totalDeductions);
+  document.getElementById('afterDeductions').textContent = formatNumberWithCommas(afterDeductions);
+}
 
-      // ضمان الأعمال الحالي (يخصم فقط إذا التفعيل)
-      let guaranteeCurrent = 0;
-      if (document.getElementById('enableGuaranteeBox')?.checked) {
-        let percent = parseFloat(document.getElementById('guaranteePercentInput').value) || 0;
-        guaranteeCurrent = workItemsTotal * percent / 100;
+// تعريف دالة updateGuaranteeDetailsBar في الأعلى لتكون متاحة للجميع
+    function updateGuaranteeDetailsBar() {
+      const enabled = document.getElementById('enableGuaranteeBox')?.checked;
+      const bar = document.getElementById('guaranteeDetailsBar');
+      if (!bar) return;
+      bar.style.display = enabled ? '' : 'none';
+
+      let percent = parseFloat(document.getElementById('guaranteePercentInput')?.value) || 0;
+      let prevTotal = 0, currentTotal = 0, total = 0;
+
+      // جلب المقاول الحالي
+      const contractorId = document.getElementById('contractorSelect')?.value;
+      // إذا لم يوجد صفوف أعمال حقيقية، أو كلها فواصل، أو كلها صفر، أو حتى لو فيه صفوف، دايما جلب السابق من آخر مستخلص
+      if (contractorId) {
+        fetch(`/extracts?contractor=${contractorId}`)
+          .then(res => res.json())
+          .then(extracts => {
+            extracts = extracts.filter(e => !e.draft && e.contractor == contractorId);
+            const prev = extracts.length > 0 ? extracts[extracts.length - 1] : null;
+            let prevAmount = 0;
+            if (prev && Array.isArray(prev.workItems)) {
+              prev.workItems.forEach(item => {
+                if (!item.isSeparator) prevAmount += parseFloat(item.totalAmount) || 0;
+              });
+            }
+            let guaranteePrev = prevAmount * percent / 100;
+            // الحالي من workItems الحالي فقط
+            let currentTotalAmount = 0;
+            if (Array.isArray(workItems)) {
+              workItems.forEach(item => {
+                if (!item.isSeparator) currentTotalAmount += parseFloat(item.currentAmount) || 0;
+              });
+            }
+            let guaranteeCurrent = currentTotalAmount * percent / 100;
+            let guaranteeTotal = guaranteePrev + guaranteeCurrent;
+            document.getElementById('guaranteePrevValue').textContent = formatNumberWithCommas(guaranteePrev);
+            document.getElementById('guaranteeCurrentValue').textContent = formatNumberWithCommas(guaranteeCurrent);
+            document.getElementById('guaranteeTotalValue').textContent = formatNumberWithCommas(guaranteeTotal);
+          });
+      } else {
+        // في حال لم يوجد مقاول محدد، صفر
+        document.getElementById('guaranteePrevValue').textContent = formatNumberWithCommas(0);
+        document.getElementById('guaranteeCurrentValue').textContent = formatNumberWithCommas(0);
+        document.getElementById('guaranteeTotalValue').textContent = formatNumberWithCommas(0);
       }
-
-      // الصافي قبل الخصومات = بنود الأعمال (الحالي) - ضمان الأعمال الحالي + المقطوعيات + اليوميات
-      let beforeDeductions = (workItemsTotal - guaranteeCurrent) + lumpSumTotal + dailyTotal;
-      let afterDeductions = beforeDeductions - deductionsTotal;
-
-      document.getElementById('beforeDeductions').textContent = beforeDeductions.toFixed(2);
-      document.getElementById('totalDeductions').textContent = deductionsTotal.toFixed(2);
-      document.getElementById('afterDeductions').textContent = afterDeductions.toFixed(2);
-
-      // تحديث شريط الضمان إذا ظاهر
-      updateGuaranteeDetailsBar();
     }
 
     // عند تغيير مربع التفعيل أو النسبة، حدث الشريط والصافي
@@ -1968,11 +2295,13 @@ function formatNumberWithCommas(num) {
       // ...existing code...
       const guaranteeInput = document.getElementById('guaranteePercentInput');
       const enableBox = document.getElementById('enableGuaranteeBox');
+      const contractorSelect = document.getElementById('contractorSelect');
       if (guaranteeInput) {
         guaranteeInput.addEventListener('input', function() {
           workItems.forEach((item, idx) => updateTotalsRow(idx));
           updateTotalRowInTable();
           calculateSummary();
+          updateGuaranteeDetailsBar(); // أضف هذا السطر
         });
       }
       if (enableBox) {
@@ -1981,298 +2310,359 @@ function formatNumberWithCommas(num) {
           calculateSummary();
         });
       }
+      if (contractorSelect) {
+        contractorSelect.addEventListener('change', function() {
+          setTimeout(function() {
+            updateGuaranteeDetailsBar(); // أضف هذا السطر
+          }, 0);
+        });
+      }
     });
 
     // عند أي تعديل في بنود الأعمال، حدث شريط الضمان إذا ظاهر
     function updateTotalRowInTable() {
-      // ...existing code...
-      // تحديث شريط الضمان إذا ظاهر
-      updateGuaranteeDetailsBar();
-    }
-
-    // حساب وضبط شريط ضمان الأعمال عند التفعيل
-function updateGuaranteeDetailsBar() {
-  const enabled = document.getElementById('enableGuaranteeBox').checked;
-  const bar = document.getElementById('guaranteeDetailsBar');
-  if (!bar) return;
-  bar.style.display = enabled ? '' : 'none';
-
-  // حساب القيم
-  let percent = parseFloat(document.getElementById('guaranteePercentInput').value) || 0;
-  let prevTotal = 0, currentTotal = 0, total = 0;
-  // اجمع السابق والحالي من بنود الأعمال
-  workItems.forEach(item => {
-    if (!item.isSeparator) {
-      prevTotal += (parseFloat(item.prevAmount) || 0);
-      currentTotal += (parseFloat(item.currentAmount) || 0);
-    }
-  });
-  let guaranteePrev = prevTotal * percent / 100;
-  let guaranteeCurrent = currentTotal * percent / 100;
-  let guaranteeTotal = guaranteePrev + guaranteeCurrent;
-
-  document.getElementById('guaranteePrevValue').textContent = formatNumberWithCommas(guaranteePrev);
-  document.getElementById('guaranteeCurrentValue').textContent = formatNumberWithCommas(guaranteeCurrent);
-  document.getElementById('guaranteeTotalValue').textContent = formatNumberWithCommas(guaranteeTotal);
-}
-  </script>
-  <script>
-    // ========== دعم تغيير عرض الأعمدة بالسحب (Resizable Columns) ==========
-
-// دالة تفعيل تغيير عرض الأعمدة لجدول معين
-function makeTableResizable(tableId) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-  const ths = table.querySelectorAll('th');
-  ths.forEach((th, idx) => {
-    // لا تكرر إضافة المقبض
-    if (th.querySelector('.col-resizer')) return;
-    // لا تضف مقبض للعمود الأخير (عادة للحذف)
-    if (idx === ths.length - 1) return;
-    // أنشئ مقبض السحب
-    const resizer = document.createElement('div');
-    resizer.className = 'col-resizer';
-    resizer.style.cssText = `
-      position: absolute;
-      top: 0; right: 0;
-      width: 7px; height: 100%;
-      cursor: col-resize;
-      user-select: none;
-      z-index: 10;
-    `;
-    // اجعل رأس العمود position: relative
-    th.style.position = 'relative';
-    th.appendChild(resizer);
-
-    let startX, startWidth;
-
-    resizer.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-      startX = e.pageX;
-      startWidth = th.offsetWidth;
-      document.body.style.cursor = 'col-resize';
-
-      function onMouseMove(e2) {
-        const diff = e2.pageX - startX;
-        let newWidth = startWidth + diff;
-        if (newWidth < 30) newWidth = 30; // حد أدنى
-        th.style.width = newWidth + 'px';
-        // عدل جميع خلايا العمود بنفس العرض
-        table.querySelectorAll('tr').forEach(row => {
-          const cell = row.children[idx];
-          if (cell) cell.style.width = newWidth + 'px';
+      let totalQuantity = 0, totalCategory = 0, totalPrevPercent = 0, totalCurrentPercent = 0, totalTotalPercent = 0;
+      let totalPrevAmount = 0, totalCurrentAmount = 0, totalTotalAmount = 0;
+      let grandTotal = 0;
+      if (typeof workItems !== 'undefined' && Array.isArray(workItems)) {
+        workItems.forEach(item => {
+          if (!item.isSeparator) {
+            totalQuantity += parseFloat(item.quantity) || 0;
+            totalCategory += parseFloat(item.category) || 0;
+            totalPrevPercent += parseFloat(item.prevPercent) || 0;
+            totalCurrentPercent += parseFloat(item.currentPercent) || 0;
+            totalTotalPercent += parseFloat(item.totalPercent) || 0;
+            totalPrevAmount += parseFloat(item.prevAmount) || 0;
+            totalCurrentAmount += parseFloat(item.currentAmount) || 0;
+            totalTotalAmount += parseFloat(item.totalAmount) || 0;
+            grandTotal += (parseFloat(item.quantity) || 0) * (parseFloat(item.category) || 0);
+          }
         });
       }
-      function onMouseUp() {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        document.body.style.cursor = '';
+      // تحديث صف الإجمالي فقط
+      const totalRow = document.getElementById('workItemsTotalRow');
+      if (totalRow) {
+        totalRow.innerHTML = `
+          <td colspan="4" style="font-weight:bold;text-align:center;">الإجمالي</td>
+          <td>${formatNumberWithCommas(totalQuantity)}</td>
+          <td></td>
+          <td>${formatNumberWithCommas(totalCategory)}</td>
+          <td>${formatNumberWithCommas(totalPrevPercent)}</td>
+          <td>${formatNumberWithCommas(totalCurrentPercent)}</td>
+          <td>${formatNumberWithCommas(totalTotalPercent)}</td>
+          <td id="workItemsPrevAmountTotal">${formatNumberWithCommas(totalPrevAmount)}</td>
+          <td id="workItemsCurrentAmountTotal">${formatNumberWithCommas(totalCurrentAmount)}</td>
+          <td id="workItemsTotalAmountTotal">${formatNumberWithCommas(totalTotalAmount)}</td>
+          <td></td>
+        `;
       }
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      // تحديث قيمة الأعمال الإجمالية
+      const grandTotalSpan = document.getElementById('workItemsGrandTotal');
+      if (grandTotalSpan) {
+        grandTotalSpan.textContent = formatNumberWithCommas(grandTotal);
+      }
+      // تحديث قيمة ضمان الأعمال
+      const guaranteeValueSpan = document.getElementById('workItemsGuaranteeValue');
+      if (guaranteeValueSpan) {
+        let percent = parseFloat(document.getElementById('guaranteePercentInput').value) || 0;
+        let guaranteeValue = grandTotal * percent / 100;
+        guaranteeValueSpan.textContent = formatNumberWithCommas(guaranteeValue);
+      }
+    }
+
+    // حدث قيمة ضمان الأعمال عند تغيير النسبة
+    document.addEventListener('DOMContentLoaded', function() {
+      // ...existing code...
+      const guaranteeInput = document.getElementById('guaranteePercentInput');
+      if (guaranteeInput) {
+        guaranteeInput.addEventListener('input', updateTotalRowInTable);
+      }
     });
-  });
-}
 
-// فعلها لكل جدول عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-  ['workItemsTable', 'lumpSumTable', 'dailyTable', 'deductionsTable'].forEach(makeTableResizable);
-});
-
-// ستايل المقبض
-const style = document.createElement('style');
-style.textContent = `
-  .col-resizer {
-    background: linear-gradient(to left, #2e8ca3 60%, transparent 100%);
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .col-resizer:hover {
-    opacity: 1;
-    background: #2e8ca3;
-  }
-`;
-document.head.appendChild(style);
-  </script>
-  <script>
-// شريط إجمالي بنود الأعمال
-// function updateWorkItemsTotals() {
-//   let prev = 0, current = 0, total = 0;
-//   if (window.workItems && Array.isArray(workItems)) {
-//     workItems.forEach(item => {
-//       if (!item.isSeparator) {
-//         prev += parseFloat(item.prevAmount) || 0;
-//         current += parseFloat(item.currentAmount) || 0;
-//         total += parseFloat(item.totalAmount) || 0;
-//       }
-//     });
-//   }
-//   document.getElementById('workItemsPrevAmountTotal').textContent = prev.toFixed(2);
-//   document.getElementById('workItemsCurrentAmountTotal').textContent = current.toFixed(2);
-//   document.getElementById('workItemsTotalAmountTotal').textContent = total.toFixed(2);
-// }
-
-// استدعِها بعد كل رسم أو تعديل في جدول بنود الأعمال
-document.addEventListener('DOMContentLoaded', function() {
-  updateTotalRowInTable();
-});
-
-// استدعِها في نهاية renderWorkItems دائما
-const oldRenderWorkItems = renderWorkItems;
-renderWorkItems = function() {
-  oldRenderWorkItems.apply(this, arguments);
-  updateTotalRowInTable();
-};
-
-// إذا لم يكن لديك دالة renderWorkItems معرفة مسبقاً كمتغير، أضف السطر التالي في نهاية دالة renderWorkItems الأصلية فقط:
-// updateWorkItemsTotals();
-
-// تحديث workItems مباشرة عند أي تعديل في الجدول
-document.getElementById('workItemsBody').addEventListener('input', function(e) {
-  const input = e.target;
-  if (!input.classList.contains('work-item-input')) return;
-  const idx = parseInt(input.dataset.idx);
-  const field = input.dataset.field;
-  if (typeof workItems[idx] !== 'undefined') {
-    // إذا كان البند مقفول، امنع التعديل وأظهر رسالة
-    if (workItems[idx].locked) {
-      input.value = workItems[idx][field] || '';
-      alert('تم احتساب هذا البند لمقاول آخر ولا يمكن تعديله');
-      return;
+    // تحديث شريط الإجمالي في جدول المقطوعيات (جمع تلقائي للبيانات المعروضة في الجدول)
+    function updateLumpSumTotalRow() {
+      let total = 0;
+      // اجمع فقط القيم المعروضة فعلياً في الجدول (tbody)
+      document.querySelectorAll('#lumpSumBody tr').forEach(tr => {
+        const totalInput = tr.querySelector('input[data-field="total"]');
+        if (totalInput && !totalInput.disabled && totalInput.offsetParent !== null) {
+          total += parseFloat(totalInput.value) || 0;
+        }
+      });
+      const cell = document.getElementById('lumpSumTotalCell');
+      if (cell) cell.textContent = formatNumberWithCommas(total);
     }
-    workItems[idx][field] = input.value;
-    if (['quantity', 'category', 'currentPercent', 'prevPercent', 'currentAmount'].includes(field)) {
-      if (!window._lastWorkItemField) window._lastWorkItemField = {};
-      window._lastWorkItemField[idx] = field;
-      updateTotalsRow(idx);
+
+    // تحديث شريط الإجمالي في جدول اليوميات (جمع تلقائي للبيانات المعروضة في الجدول)
+    function updateDailyTotalRow() {
+      let prevAmount = 0, currentAmount = 0, totalAmount = 0;
+      // اجمع فقط القيم المعروضة فعلياً في الجدول (tbody)
+      document.querySelectorAll('#dailyBody tr').forEach(tr => {
+        const prevAmountInput = tr.querySelector('input[data-field="prevAmount"]');
+        const currentAmountInput = tr.querySelector('input[data-field="currentAmount"]');
+        const totalAmountInput = tr.querySelector('input[data-field="totalAmount"]');
+        if (prevAmountInput && prevAmountInput.offsetParent !== null)
+          prevAmount += parseFloat(prevAmountInput.value) || 0;
+        if (currentAmountInput && currentAmountInput.offsetParent !== null)
+          currentAmount += parseFloat(currentAmountInput.value) || 0;
+        if (totalAmountInput && totalAmountInput.offsetParent !== null)
+          totalAmount += parseFloat(totalAmountInput.value) || 0;
+      });
+      document.getElementById('dailyPrevAmountTotal').textContent = formatNumberWithCommas(prevAmount);
+      document.getElementById('dailyCurrentAmountTotal').textContent = formatNumberWithCommas(currentAmount);
+      document.getElementById('dailyTotalAmountTotal').textContent = formatNumberWithCommas(totalAmount);
     }
-    updateTotalRowInTable();
-    calculateSummary();
-  }
-});
 
-// دالة لتحديث صف الإجمالي فقط دون إعادة رسم الجدول كله
-function updateTotalRowInTable() {
-  let totalQuantity = 0, totalCategory = 0, totalPrevPercent = 0, totalCurrentPercent = 0, totalTotalPercent = 0;
-  let totalPrevAmount = 0, totalCurrentAmount = 0, totalTotalAmount = 0;
-  let grandTotal = 0;
-  workItems.forEach(item => {
-    if (!item.isSeparator) {
-      totalQuantity += parseFloat(item.quantity) || 0;
-      totalCategory += parseFloat(item.category) || 0;
-      totalPrevPercent += parseFloat(item.prevPercent) || 0;
-      totalCurrentPercent += parseFloat(item.currentPercent) || 0;
-      totalTotalPercent += parseFloat(item.totalPercent) || 0;
-      totalPrevAmount += parseFloat(item.prevAmount) || 0;
-      totalCurrentAmount += parseFloat(item.currentAmount) || 0;
-      totalTotalAmount += parseFloat(item.totalAmount) || 0;
-      grandTotal += (parseFloat(item.quantity) || 0) * (parseFloat(item.category) || 0);
+    // استدعاء التحديثات التلقائية بعد رسم الجداول
+    const oldRenderLumpSumRows = renderLumpSumRows;
+    renderLumpSumRows = function() {
+      oldRenderLumpSumRows.apply(this, arguments);
+      updateLumpSumTotalRow();
+    };
+
+    const oldRenderDailyRows = renderDailyRows;
+    renderDailyRows = function() {
+      oldRenderDailyRows.apply(this, arguments);
+      updateDailyTotalRow();
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateLumpSumTotalRow();
+      updateDailyTotalRow();
+    });
+
+    // تعيين تاريخ المستخلص إلى اليوم تلقائيًا إذا كان فارغًا
+    const extractDate = document.getElementById('extractDate');
+    if (extractDate && !extractDate.value) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      extractDate.value = `${yyyy}-${mm}-${dd}`;
     }
-  });
-  // تحديث صف الإجمالي فقط
-  const totalRow = document.getElementById('workItemsTotalRow');
-  if (totalRow) {
-    totalRow.innerHTML = `
-      <td colspan="4" style="font-weight:bold;text-align:center;">الإجمالي</td>
-      <td>${formatNumberWithCommas(totalQuantity)}</td>
-      <td></td>
-      <td>${formatNumberWithCommas(totalCategory)}</td>
-      <td>${formatNumberWithCommas(totalPrevPercent)}</td>
-      <td>${formatNumberWithCommas(totalCurrentPercent)}</td>
-      <td>${formatNumberWithCommas(totalTotalPercent)}</td>
-      <td id="workItemsPrevAmountTotal">${formatNumberWithCommas(totalPrevAmount)}</td>
-      <td id="workItemsCurrentAmountTotal">${formatNumberWithCommas(totalCurrentAmount)}</td>
-      <td id="workItemsTotalAmountTotal">${formatNumberWithCommas(totalTotalAmount)}</td>
-      <td></td>
-    `;
-  }
-  // تحديث قيمة الأعمال الإجمالية
-  const grandTotalSpan = document.getElementById('workItemsGrandTotal');
-  if (grandTotalSpan) {
-    grandTotalSpan.textContent = formatNumberWithCommas(grandTotal);
-  }
-  // تحديث قيمة ضمان الأعمال
-  const guaranteeValueSpan = document.getElementById('workItemsGuaranteeValue');
-  if (guaranteeValueSpan) {
-    let percent = parseFloat(document.getElementById('guaranteePercentInput').value) || 0;
-    let guaranteeValue = grandTotal * percent / 100;
-    guaranteeValueSpan.textContent = formatNumberWithCommas(guaranteeValue);
-  }
-}
 
-// حدث قيمة ضمان الأعمال عند تغيير النسبة
-document.addEventListener('DOMContentLoaded', function() {
-  // ...existing code...
-  const guaranteeInput = document.getElementById('guaranteePercentInput');
-  if (guaranteeInput) {
-    guaranteeInput.addEventListener('input', updateTotalRowInTable);
-  }
-});
+    document.addEventListener('DOMContentLoaded', function() {
+  // جلب صلاحيات المستخدم
+  let user = {};
+  try {
+    user = JSON.parse(localStorage.getItem('user')) || {};
+  } catch {}
+  const perms = user.permissions || [];
 
-    // إضافة دعم حذف صف بنود الأعمال
-    document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('delete-work-row')) {
-        const idx = parseInt(e.target.dataset.idx);
-        if (!isNaN(idx)) {
-          workItems.splice(idx, 1);
-          renderWorkItems();
-          updateTotalRowInTable();
-          calculateSummary();
+  // اجعل خانة بند الأعمال واسم المقاول متاحة دائماً لأي مستخدم
+  document.getElementById('workItemFilterSelect').disabled = false;
+  document.getElementById('contractorSelect').disabled = false;
+
+  // إذا لم توجد أي صلاحية، اقفل كل صفوف الأعمال (workItemsTable)
+  if (!perms || perms.length === 0) {
+    document.querySelectorAll('#workItemsTable input, #workItemsTable select, #workItemsTable button').forEach(el => {
+      el.readOnly = true;
+      el.disabled = true;
+      el.style.background = "#eee";
+      el.style.cursor = "not-allowed";
+    });
+    // أيضاً اقفل زر إضافة صف جديد
+    const addWorkItemRowBtn = document.getElementById('addWorkItemRowBtn');
+    if (addWorkItemRowBtn) {
+      addWorkItemRowBtn.disabled = true;
+      addWorkItemRowBtn.style.opacity = "0.5";
+      addWorkItemRowBtn.style.cursor = "not-allowed";
+    }
+    return;
+  }
+
+  // فقط زر إضافة فاصل مربوط بالصلاحية، أما زر إضافة يوميات وزر إضافة مقطوعية متاحين للجميع
+  const btn = document.getElementById('addSeparatorBtn');
+  if (btn && !perms.includes('add-extract-add-separator')) {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    btn.style.cursor = "not-allowed";
+  }
+
+  // زر إضافة المستخلص
+  const addExtractBtn = document.querySelector('button[type="submit"]');
+  if (addExtractBtn && !perms.includes('add-extract-add')) {
+    addExtractBtn.disabled = true;
+    addExtractBtn.title = "ليس لديك صلاحية إضافة مستخلص";
+    addExtractBtn.style.opacity = "0.6";
+    addExtractBtn.style.cursor = "not-allowed";
+  }
+
+  // تعديل كامل
+  if (perms.includes('add-extract-edit-all')) {
+    document.querySelectorAll('input, select, button').forEach(el => {
+      el.disabled = false;
+      el.readOnly = false;
+      el.style.opacity = "";
+      el.style.cursor = "";
+      // لا تزيل لون الخلفية للأزرار الملونة (زر إضافة بنود الأعمال وأزرار .btn-brown و .btn-green و .btn-brown-outline)
+      if (
+        el.id === "addWorkItemRowBtn" ||
+        el.classList.contains("btn-brown") ||
+        el.classList.contains("btn-green") ||
+        el.classList.contains("btn-brown-outline")
+      ) {
+        // لا تلمس الخلفية
+      } else {
+        el.style.background = "";
+      }
+    });
+    const extractUsername = document.getElementById('extractUsername');
+    if (extractUsername) extractUsername.readOnly = true;
+    return;
+  }
+
+  // تعديل الحالى فقط: كل شيء مقفول في جدول بنود الأعمال ماعدا عمود الحالى نسبة
+  if (perms.includes('add-extract-edit-current')) {
+    // قفل كل الأعمدة في جدول بنود الأعمال ماعدا currentPercent
+    document.querySelectorAll('#workItemsTable input').forEach(inp => {
+      if (inp.dataset.field !== "currentPercent") {
+        inp.readOnly = true;
+        inp.disabled = true;
+        inp.style.background = "#eee";
+        inp.style.cursor = "not-allowed";
+      } else {
+        inp.readOnly = false;
+        inp.disabled = false;
+        inp.style.background = "";
+        inp.style.cursor = "";
+      }
+    });
+    // تفعيل أزرار اليوميات/المقطوعيات/الفاصل حسب الصلاحية
+    [
+      { id: 'addLumpSumBtn', perm: 'add-extract-add-lump' },
+      { id: 'addDailyBtn', perm: 'add-extract-add-daily' },
+      { id: 'addSeparatorBtn', perm: 'add-extract-add-separator' }
+    ].forEach(({ id, perm }) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        if (perms.includes(perm)) {
+          btn.disabled = false;
+          btn.style.opacity = "";
+          btn.style.cursor = "";
+        } else {
+          btn.disabled = true;
+          btn.style.opacity = "0.5";
+          btn.style.cursor = "not-allowed";
         }
       }
     });
-  </script>
-  <script>
-// تحديث شريط الإجمالي في جدول المقطوعيات (جمع تلقائي للبيانات المعروضة في الجدول)
-function updateLumpSumTotalRow() {
-  let total = 0;
-  // اجمع فقط القيم المعروضة فعلياً في الجدول (tbody)
-  document.querySelectorAll('#lumpSumBody tr').forEach(tr => {
-    const totalInput = tr.querySelector('input[data-field="total"]');
-    if (totalInput && !totalInput.disabled && totalInput.offsetParent !== null) {
-      total += parseFloat(totalInput.value) || 0;
+    // باقي الحقول خارج جدول بنود الأعمال
+    document.querySelectorAll(
+      '#extractForm input:not([data-field="currentPercent"]), #extractForm select'
+    ).forEach(inp => {
+      // استثناء الشريط العلوي من التعطيل
+      if (
+        inp.id === "extractDate" ||
+        inp.id === "statementNumber" ||
+        inp.id === "workItemFilterSelect" ||
+        inp.id === "contractorSelect" ||
+        inp.id === "extractUsername"
+      ) {
+        inp.readOnly = false;
+        inp.disabled = false;
+        inp.style.background = "";
+        inp.style.cursor = "";
+        return;
+      }
+      if (inp.type !== "submit" && inp.type !== "button" && inp.id !== "extractUsername") {
+        inp.readOnly = true;
+        inp.disabled = true;
+        inp.style.background = "#eee";
+        inp.style.cursor = "not-allowed";
+      }
+    });
+    // عطل أزرار الحذف والتحريك والاستيراد
+    document.querySelectorAll('.delete-work-row, .move-up-row, .move-down-row, #importOtherContractorBtn').forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    });
+    // عطل ضمان الأعمال (checkbox + input)
+    const guaranteeBox = document.getElementById('enableGuaranteeBox');
+    if (guaranteeBox) {
+      guaranteeBox.disabled = true;
+      guaranteeBox.style.opacity = "0.5";
+      guaranteeBox.style.cursor = "not-allowed";
     }
-  });
-  const cell = document.getElementById('lumpSumTotalCell');
-  if (cell) cell.textContent = formatNumberWithCommas(total);
-}
+    const guaranteeInput = document.getElementById('guaranteePercentInput');
+    if (guaranteeInput) {
+      guaranteeInput.disabled = true;
+      guaranteeInput.style.opacity = "0.5";
+      guaranteeInput.style.cursor = "not-allowed";
+    }
+    return;
+  }
 
-// تحديث شريط الإجمالي في جدول اليوميات (جمع تلقائي للبيانات المعروضة في الجدول)
-function updateDailyTotalRow() {
-  let prevAmount = 0, currentAmount = 0, totalAmount = 0;
-  // اجمع فقط القيم المعروضة فعلياً في الجدول (tbody)
-  document.querySelectorAll('#dailyBody tr').forEach(tr => {
-    const prevAmountInput = tr.querySelector('input[data-field="prevAmount"]');
-    const currentAmountInput = tr.querySelector('input[data-field="currentAmount"]');
-    const totalAmountInput = tr.querySelector('input[data-field="totalAmount"]');
-    if (prevAmountInput && prevAmountInput.offsetParent !== null)
-      prevAmount += parseFloat(prevAmountInput.value) || 0;
-    if (currentAmountInput && currentAmountInput.offsetParent !== null)
-      currentAmount += parseFloat(currentAmountInput.value) || 0;
-    if (totalAmountInput && totalAmountInput.offsetParent !== null)
-      totalAmount += parseFloat(totalAmountInput.value) || 0;
-  });
-  document.getElementById('dailyPrevAmountTotal').textContent = formatNumberWithCommas(prevAmount);
-  document.getElementById('dailyCurrentAmountTotal').textContent = formatNumberWithCommas(currentAmount);
-  document.getElementById('dailyTotalAmountTotal').textContent = formatNumberWithCommas(totalAmount);
-}
-
-// استدعاء التحديثات التلقائية بعد رسم الجداول
-const oldRenderLumpSumRows = renderLumpSumRows;
-renderLumpSumRows = function() {
-  oldRenderLumpSumRows.apply(this, arguments);
-  updateLumpSumTotalRow();
-};
-
-const oldRenderDailyRows = renderDailyRows;
-renderDailyRows = function() {
-  oldRenderDailyRows.apply(this, arguments);
-  updateDailyTotalRow();
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-  updateLumpSumTotalRow();
-  updateDailyTotalRow();
+  // الصلاحيات الجزئية الأخرى
+  // إضافة مقطوعيات
+  if (!perms.includes('add-extract-add-lump')) {
+    const btn = document.getElementById('addLumpSumBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    }
+  }
+  // إضافة يوميات
+  if (!perms.includes('add-extract-add-daily')) {
+    const btn = document.getElementById('addDailyBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    }
+  }
+  // إضافة فاصل
+  if (!perms.includes('add-extract-add-separator')) {
+    const btn = document.getElementById('addSeparatorBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    }
+  }
+  // إضافة بنود أعمال
+  if (!perms.includes('add-extract-add-workitem')) {
+    const btn = document.getElementById('addWorkItemRowBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    }
+  }
+  // حذف بنود أعمال
+  if (!perms.includes('add-extract-delete-workitem')) {
+    document.querySelectorAll('.delete-work-row').forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    });
+  }
+  // النسبة القصوى لبنود الأعمال
+  if (!perms.includes('add-extract-max-workitem-percent')) {
+    const inp = document.getElementById('maxTotalPercentInput');
+    if (inp) {
+      inp.disabled = true;
+      inp.style.opacity = "0.5";
+      inp.style.cursor = "not-allowed";
+    }
+  }
+  // تفعيل ضمان الأعمال
+  if (!perms.includes('add-extract-enable-guarantee')) {
+    const box = document.getElementById('enableGuaranteeBox');
+    if (box) {
+      box.disabled = true;
+      box.style.opacity = "0.5";
+      box.style.cursor = "not-allowed";
+    }
+    const inp = document.getElementById('guaranteePercentInput');
+    if (inp) {
+      inp.disabled = true;
+      inp.style.opacity = "0.5";
+      inp.style.cursor = "not-allowed";
+    }
+  }
 });
   </script>
   <!-- أضف نافذة اختيار المقاول لاستيراد الأعمال -->
@@ -2306,7 +2696,9 @@ document.getElementById('importOtherContractorBtn').onclick = async function() {
         select.appendChild(option);
       }
     });
-  } catch {}
+  } catch (err) {
+    alert('تعذر تحميل قائمة المقاولين. تأكد من تشغيل السيرفر.');
+  }
   document.getElementById('importContractorModal').style.display = 'flex';
 };
 
@@ -2339,8 +2731,13 @@ document.getElementById('importContractorConfirmBtn').onclick = async function()
     const lastExtract = oldExtracts[oldExtracts.length - 1];
     let updated = false;
     checked.forEach(idx => {
-      // ابحث عن البند في مستخلص المقاول القديم
-      const oldItem = lastExtract.workItems[idx];
+      const importedItem = items[idx];
+      // ابحث عن البند في مستخلص المقاول القديم بناءً على الحقول المميزة
+      const oldItem = lastExtract.workItems.find(w =>
+        w.buildingNumber === importedItem.buildingNumber &&
+        w.workItem === importedItem.workItem &&
+        w.workDescription === importedItem.workDescription
+      );
       if (oldItem) {
         oldItem.locked = true;
         oldItem.lockComment = `تم سحب البند لصالح المقاول ${currentContractorName}`;
@@ -2367,7 +2764,7 @@ document.getElementById('importContractorConfirmBtn').onclick = async function()
       prevPercent: item.totalPercent || '',
       prevAmount: item.totalAmount || '',
       currentPercent: '',
-      currentAmount: '',
+      currentAmount: '0',
       totalPercent: item.totalPercent || '',
       totalAmount: item.totalAmount || ''
     });
@@ -2532,7 +2929,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // عند اختيار المقاول، جلب الحد الأقصى من السيرفر
+  // عند اختيار مقاول، جلب الحد الأقصى من السيرفر
   contractorSelect.addEventListener('change', async function() {
     const contractorId = this.value;
     if (!contractorId) return;
@@ -2546,6 +2943,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+  </script>
+  <script>
+  // حفظ حالة تفعيل ضمان الأعمال لكل مقاول في localStorage
+  function saveGuaranteeEnabledForContractor(contractorId, enabled) {
+    if (!contractorId) return;
+    localStorage.setItem('guarantee-enabled-' + contractorId, enabled ? '1' : '0');
+  }
+  function loadGuaranteeEnabledForContractor(contractorId) {
+    if (!contractorId) return false;
+    return localStorage.getItem('guarantee-enabled-' + contractorId) === '1';
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // ...existing code...
+    const enableBox = document.getElementById('enableGuaranteeBox');
+    const contractorSelect = document.getElementById('contractorSelect');
+    if (enableBox && contractorSelect) {
+      // عند تغيير حالة التفعيل، خزّنها للمقاول الحالي
+      enableBox.addEventListener('change', function() {
+        const contractorId = contractorSelect.value;
+        saveGuaranteeEnabledForContractor(contractorId, enableBox.checked);
+        updateGuaranteeDetailsBar();
+        calculateSummary();
+      });
+
+      // عند تغيير المقاول، فعّل/عطّل checkbox حسب آخر حالة محفوظة
+      contractorSelect.addEventListener('change', function() {
+        const contractorId = contractorSelect.value;
+        if (!contractorId) return;
+        // ...existing code...
+        // بعد أي كود آخر في change، أضف:
+        setTimeout(function() {
+          const enabled = loadGuaranteeEnabledForContractor(contractorId);
+          enableBox.checked = enabled;
+          updateGuaranteeDetailsBar();
+          calculateSummary();
+        }, 0);
+      });
+    }
+  });
+
+  // ...existing code...
   </script>
 </body>
 </html>
