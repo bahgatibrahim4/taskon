@@ -15,6 +15,8 @@
     <span id="chatIcon" title="الدردشة" style="cursor:pointer; font-size:1.25em; color:#2e8ca3; margin-right:4px; position:relative;">
       &#128172;
       <span id="chatNotifBadge" style="display:none;position:absolute;top:4px;right:-7px;width:13px;height:13px;background:#e53935;color:#fff;border-radius:50%;font-size:0.75em;line-height:13px;text-align:center;font-weight:700;box-shadow:0 1px 4px #0002;z-index:2;">!</span>
+      <!-- السهم تحت أيقونة الدردشة مباشرة -->
+      <span id="chatArrow" style="display:none;position:absolute;top:32px;right:2px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid #fff;z-index:10002;"></span>
     </span>
     <img src="https://www.gravatar.com/avatar/?d=mp&s=60" alt="user" class="user-avatar" id="userAvatar">
     <span class="user-name" id="userName"></span>
@@ -22,7 +24,8 @@
   </span>
 </div>
 <div id="chatModal" style="display:none; position:absolute; background:#fff; border-radius:10px; box-shadow:0 2px 12px #2e8ca322; z-index:10001; min-width:240px; max-width:90vw; width:270px; padding:12px 8px 10px 8px; border:1px solid #e3f2fd;">
-  <div style="position:absolute;top:-12px;right:18px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:12px solid #fff;z-index:2;"></div>
+  <!-- حذف السهم من هنا -->
+  <!-- <div style="position:absolute;top:-12px;right:18px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:12px solid #fff;z-index:2;"></div> -->
   <h3 style="margin-top:0; font-size:0.98rem; color:#2e8ca3; border-bottom:1px solid #e3f2fd; padding-bottom:5px; margin-bottom:8px; text-align:right; font-weight:700;">الدردشة</h3>
   <div id="chatUsersList" style="margin-bottom:8px; max-height:160px; overflow-y:auto;"></div>
   <div id="chatWindow" style="border-top:1px solid #eee; padding-top:7px; max-height:120px; overflow-y:auto; background:#f8fafd; border-radius:6px; margin-bottom:6px; font-size:0.85em;"></div>
@@ -214,7 +217,7 @@
     background: #fff;
     color: #1a3b50;
     border: 1.2px solid #2e8ca3;
-    border-radius: 12px;
+    border-radius: 0 !important;
     box-shadow: 0 4px 24px #0001;
     min-width: 140px;
     padding: 4px 0;
@@ -226,16 +229,16 @@
   }
   #navbarMenuDropdown a {
     display: block;
-    padding: 7px 16px 7px 8px;
+    padding: 4px 14px 4px 8px; /* قلل الارتفاع */
     color: #1976d2;
     text-decoration: none;
     border-bottom: 1px solid #f0f0f0;
     transition: background 0.16s, color 0.16s, font-size 0.16s;
     font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
-    font-size: 0.93em;
+    font-size: 0.78em; /* أصغر من قبل */
     cursor: pointer;
     border-radius: 6px;
-    margin: 0 4px;
+    margin: 0 2px;
     font-weight: 600;
     letter-spacing: 0.2px;
   }
@@ -478,13 +481,23 @@
     e.stopPropagation();
     const chatModal = document.getElementById('chatModal');
     const chatIcon = document.getElementById('chatIcon');
-    const rect = chatIcon.getBoundingClientRect();
+    const chatArrow = document.getElementById('chatArrow');
+    // إذا كانت النافذة مفتوحة، أغلقها وأخفي السهم
+    if (chatModal.style.display === 'block') {
+      chatModal.style.display = 'none';
+      chatArrow.style.display = 'none';
+      return;
+    }
     // اجعل القائمة تظهر للداخل أكثر (يمين وأسفل الايقونة)
     chatModal.style.display = 'block';
     chatModal.style.opacity = '1';
-    chatModal.style.top = (window.scrollY + rect.bottom + 6) + 'px';
-    chatModal.style.right = (window.innerWidth - rect.right - 4) + 'px';
+    chatModal.style.top = (window.scrollY + chatIcon.getBoundingClientRect().bottom + 6) + 'px';
+    chatModal.style.right = (window.innerWidth - chatIcon.getBoundingClientRect().right - 4) + 'px';
     chatModal.style.left = 'auto';
+
+    // أظهر السهم تحت أيقونة الدردشة
+    chatArrow.style.display = 'block';
+    chatArrow.style.top = (chatIcon.offsetHeight + 4) + 'px';
 
     // تعديل: اجعل النافذة دائماً داخل الشاشة
     setTimeout(() => {
@@ -577,23 +590,28 @@
     document.getElementById('chatNotifBadge').style.display = 'none';
   };
 
-  // إعادة ضبط موقع نافذة الدردشة عند تغيير حجم الشاشة
-  window.addEventListener('resize', function() {
+  // إغلاق نافذة الدردشة عند الضغط خارجها + إخفاء السهم
+  document.addEventListener('click', function(e) {
     const chatModal = document.getElementById('chatModal');
-    if (chatModal.style.display === 'block') {
-      const chatIcon = document.getElementById('chatIcon');
-      const rect = chatIcon.getBoundingClientRect();
-      chatModal.style.top = (window.scrollY + rect.bottom + 6) + 'px';
-      chatModal.style.right = (window.innerWidth - rect.right - 4) + 'px';
-      chatModal.style.left = 'auto';
+    const chatArrow = document.getElementById('chatArrow');
+    if (chatModal.style.display === 'block' && !chatModal.contains(e.target) && e.target.id !== 'chatIcon') {
+      chatModal.style.display = 'none';
+      if (chatArrow) chatArrow.style.display = 'none';
     }
   });
 
-  // إغلاق نافذة الدردشة عند الضغط خارجها
-  document.addEventListener('click', function(e) {
+  // إعادة ضبط موقع نافذة الدردشة عند تغيير حجم الشاشة + إعادة ضبط السهم
+  window.addEventListener('resize', function() {
     const chatModal = document.getElementById('chatModal');
-    if (chatModal.style.display === 'block' && !chatModal.contains(e.target) && e.target.id !== 'chatIcon') {
-      chatModal.style.display = 'none';
+    const chatIcon = document.getElementById('chatIcon');
+    const chatArrow = document.getElementById('chatArrow');
+    if (chatModal.style.display === 'block') {
+      chatModal.style.top = (window.scrollY + chatIcon.getBoundingClientRect().bottom + 6) + 'px';
+      chatModal.style.right = (window.innerWidth - chatIcon.getBoundingClientRect().right - 4) + 'px';
+      chatModal.style.left = 'auto';
+      if (chatArrow) {
+        chatArrow.style.top = (chatIcon.offsetHeight + 4) + 'px';
+      }
     }
   });
 
