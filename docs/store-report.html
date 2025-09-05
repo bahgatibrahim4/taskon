@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تقارير المخزن | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root { direction: rtl; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(120deg, #e3f0f7 0%, #f7fafd 100%);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 18px auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 0 16px #0001;
+      padding: 16px 10px 12px 10px;
+      border: 1px solid #8c969a;
+    }
+    h2 {
+      color: #1976d2;
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-align: right;
+      border-right: 4px solid #2e8ca3;
+      padding-right: 8px;
+      background: linear-gradient(90deg, #e3f0f7 60%, #fff 100%);
+      border-radius: 5px;
+      display: inline-block;
+    }
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      margin-top: 0;
+      letter-spacing: 0.5px;
+      padding-right: 4px;
+    }
+    .tabs-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      justify-content: flex-end;
+    }
+    .tab-btn {
+      background: #f7fafd;
+      color: #1976d2;
+      border: 1px solid #8c969a;
+      border-radius: 3px 3px 0 0;
+      font-size: 0.78rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      outline: none;
+      box-shadow: none;
+      min-width: 70px;
+    }
+    .tab-btn.active {
+      background: #1976d2;
+      color: #fff;
+      border-bottom: 2px solid #fff;
+    }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      margin-bottom: 10px;
+      background: #f7fafd;
+      border-radius: 7px;
+      padding: 8px 6px 4px 6px;
+      box-shadow: none;
+      border: 1px solid #c5d6db;
+    }
+    .filter-bar label {
+      font-weight: 500;
+      color: #2e8ca3;
+      margin-bottom: 2px;
+      display: block;
+      font-size: 0.92rem;
+    }
+    .filter-bar select,
+    .filter-bar input[type="date"] {
+      padding: 4px 8px;
+      border-radius: 5px;
+      border: 1px solid #c5d6db;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.92rem;
+      background: #fff;
+      transition: border 0.2s;
+      min-width: 90px;
+    }
+    .filter-bar select:focus,
+    .filter-bar input[type="date"]:focus {
+      border: 1px solid #1976d2;
+      outline: none;
+    }
+    button[id^="filterBtn"] {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 6px 18px;
+      cursor: pointer;
+      margin-top: 0;
+      box-shadow: none;
+      transition: background 0.2s;
+    }
+    button[id^="filterBtn"]:hover {
+      background: #2e8ca3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #f7fafd;
+      margin-bottom: 4px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: none;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 6px 2px;
+      border-bottom: 1px solid #c5d6db;
+      text-align: center;
+      vertical-align: middle;
+      background: transparent;
+      white-space: nowrap;
+      word-break: break-word;
+    }
+    th {
+      background: #2e8ca3 !important;
+      color: #fff !important;
+      font-weight: 500;
+      font-size: 0.92rem;
+      letter-spacing: 0.5px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: #e3f0f7;
+      transition: background 0.18s;
+    }
+    .summary {
+      font-weight: 500;
+      color: #1976d2;
+      margin-bottom: 8px;
+      margin-top: 0;
+      font-size: 0.93rem;
+      text-align: left;
+      padding-left: 6px;
+    }
+    .section {
+      margin-bottom: 18px;
+      background: #f7fafd;
+      border-radius: 7px;
+      padding: 8px 6px 4px 6px;
+      box-shadow: none;
+      border: 1px solid #c5d6db;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 4px; }
+      table { font-size: .85rem; }
+      th, td { padding: 3px 1px; }
+      .filter-bar, .section { padding: 4px 2px 2px 2px; }
+      h2 { font-size: 0.95rem; }
+      h3 { font-size: 0.85rem; }
+      .tab-btn { font-size: 0.72rem; padding: 2px 4px; min-width: 55px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <h2 style="margin-bottom:0;">تقارير المخزن</h2>
+      <div class="tabs-bar" style="margin-bottom:0;">
+        <button class="tab-btn active" data-tab="contractorMaterials">صرف للمقاول</button>
+        <button class="tab-btn" data-tab="storeIn">توريد للمخزن</button>
+        <button class="tab-btn" data-tab="storePurchase">شراء للمخزن</button>
+        <button class="tab-btn" data-tab="storeOut">كل عمليات الصرف</button>
+        <button class="tab-btn" data-tab="materialUsage">تقرير صرف مادة</button>
+      </div>
+    </div>
+
+    <!-- صرف للمقاول -->
+    <div id="contractorMaterialsSection" class="tab-section active">
+      <div class="filter-bar">
+        <div>
+          <label>اختر المقاول:</label>
+          <select id="contractorReportSelect">
+            <option value="">-- اختر المقاول --</option>
+          </select>
+        </div>
+        <div>
+          <label>من تاريخ:</label>
+          <input type="date" id="fromDate">
+        </div>
+        <div>
+          <label>إلى تاريخ:</label>
+          <input type="date" id="toDate">
+        </div>
+        <button id="filterBtn">عرض التقرير</button>
+      </div>
+      <div id="contractorMaterialsSummary" class="summary"></div>
+      <table id="contractorMaterialsTable">
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>اسم المادة</th>
+            <th>الكمية</th>
+            <th>تاريخ الصرف</th>
+            <th>ملاحظات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- صفوف المواد المصروفة للمقاول -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- توريد للمخزن -->
+    <div id="storeInSection" class="tab-section">
+      <div class="filter-bar">
+        <div>
+          <label>نوع العملية:</label>
+          <select id="operationTypeSelect">
+            <option value="all">الكل</option>
+            <option value="توريد">توريد فقط</option>
+            <option value="شراء">شراء فقط</option>
+          </select>
+        </div>
+        <div>
+          <label>من تاريخ:</label>
+          <input type="date" id="fromDateIn">
+        </div>
+        <div>
+          <label>إلى تاريخ:</label>
+          <input type="date" id="toDateIn">
+        </div>
+        <button id="filterBtnIn">عرض التقرير</button>
+      </div>
+      <div id="storeInSummary" class="summary"></div>
+      <table id="storeInTable">
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>اسم المادة</th>
+            <th>الكمية</th>
+            <th>تاريخ التوريد</th>
+            <th>اسم المورد</th>
+            <th>نوع العملية</th>
+            <th>ملاحظات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- صفوف المواد الواردة للمخزن -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- شراء للمخزن -->
+    <div id="storePurchaseSection" class="tab-section">
+      <div class="filter-bar">
+        <div>
+          <label>من تاريخ:</label>
+          <input type="date" id="fromDatePurchase">
+        </div>
+        <div>
+          <label>إلى تاريخ:</label>
+          <input type="date" id="toDatePurchase">
+        </div>
+        <button id="filterBtnPurchase">عرض التقرير</button>
+      </div>
+      <div id="storePurchaseSummary" class="summary"></div>
+      <table id="storePurchaseTable">
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>اسم المادة</th>
+            <th>الكمية</th>
+            <th>تاريخ الشراء</th>
+            <th>اسم المحل</th>
+            <th>الفئة</th>
+            <th>ملاحظات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- صفوف المواد المشتراة للمخزن -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- كل عمليات الصرف -->
+    <div id="storeOutSection" class="tab-section">
+      <div class="filter-bar">
+        <div>
+          <label>من تاريخ:</label>
+          <input type="date" id="fromDateOut">
+        </div>
+        <div>
+          <label>إلى تاريخ:</label>
+          <input type="date" id="toDateOut">
+        </div>
+        <button id="filterBtnOut">عرض التقرير</button>
+      </div>
+      <div id="storeOutSummary" class="summary"></div>
+      <table id="storeOutTable">
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>اسم المادة</th>
+            <th>الكمية</th>
+            <th>تاريخ الصرف</th>
+            <th>اسم المقاول/ملاحظات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- صفوف الصرف من المخزن -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- تقرير صرف مادة -->
+    <div id="materialUsageSection" class="tab-section">
+      <div class="filter-bar" style="gap:18px;">
+        <label style="font-weight:bold;color:#2e8ca3;">اختر المادة:</label>
+        <select id="materialUsageSelect" style="padding:7px 12px;border-radius:7px;border:1.5px solid #c5d6db;font-size:1rem;">
+          <option value="">-- اختر المادة --</option>
+        </select>
+      </div>
+      <div id="materialUsageResult" style="margin-top:18px;"></div>
+    </div>
+  </div>
+  <script>
+    // جلب كل المقاولين
+    async function fetchContractors() {
+      const res = await fetch('/contractors');
+      return await res.json();
+    }
+    // جلب كل التوريدات (المخزن)
+    async function fetchSupplies() {
+      const res = await fetch('/supplies');
+      return await res.json();
+    }
+    // جلب كل عمليات الصرف من المخزن
+    async function fetchStoreOut() {
+      const res = await fetch('/store');
+      const data = await res.json();
+      // فقط العمليات من نوع صرف
+      return data.filter(row => row.operationType === 'صرف');
+    }
+    // جلب بيانات مقاول واحد
+    async function fetchContractorById(id) {
+      const res = await fetch('/contractors/' + id);
+      return await res.json();
+    }
+    // جلب كل المشتريات
+    async function fetchPurchases() {
+      const res = await fetch('/purchases');
+      return await res.json();
+    }
+
+    // تعبئة قائمة المقاولين
+    async function fillContractorSelect() {
+      const contractors = await fetchContractors();
+      const select = document.getElementById('contractorReportSelect');
+      select.innerHTML = '<option value="">-- اختر المقاول --</option>';
+      contractors.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c._id;
+        opt.textContent = c.name || c.contractorName || '';
+        select.appendChild(opt);
+      });
+    }
+
+    // عرض المواد المصروفة لمقاول
+    async function renderContractorMaterials() {
+      const contractorId = document.getElementById('contractorReportSelect').value;
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+      const tbody = document.querySelector('#contractorMaterialsTable tbody');
+      const summaryDiv = document.getElementById('contractorMaterialsSummary');
+      tbody.innerHTML = '';
+      summaryDiv.textContent = '';
+      if (!contractorId) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#888;">اختر مقاول لعرض المواد المصروفة له</td></tr>';
+        return;
+      }
+      const contractor = await fetchContractorById(contractorId);
+      let materials = Array.isArray(contractor.materials) ? contractor.materials : [];
+      // فلترة بالتاريخ إذا تم اختياره
+      if (fromDate) {
+        materials = materials.filter(m => m.date && new Date(m.date) >= new Date(fromDate));
+      }
+      if (toDate) {
+        materials = materials.filter(m => m.date && new Date(m.date) <= new Date(toDate));
+      }
+      if (!materials.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#888;">لا توجد مواد مصروفة لهذا المقاول في الفترة المختارة</td></tr>';
+        return;
+      }
+      let totalQty = 0;
+      materials.forEach((m, idx) => {
+        totalQty += Number(m.quantity) || 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${m.name || ''}</td>
+          <td>${m.quantity || ''}</td>
+          <td>${m.date ? new Date(m.date).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${m.notes || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      summaryDiv.textContent = `إجمالي الكمية المصروفة: ${totalQty}`;
+    }
+
+    // عرض المواد الواردة للمخزن
+    async function renderStoreIn() {
+      const fromDate = document.getElementById('fromDateIn').value;
+      const toDate = document.getElementById('toDateIn').value;
+      const operationType = document.getElementById('operationTypeSelect').value;
+      const tbody = document.querySelector('#storeInTable tbody');
+      const summaryDiv = document.getElementById('storeInSummary');
+      tbody.innerHTML = '';
+      summaryDiv.textContent = '';
+      const supplies = await fetchSupplies();
+      let filtered = supplies;
+      if (fromDate) {
+        filtered = filtered.filter(s => s.date && new Date(s.date) >= new Date(fromDate));
+      }
+      if (toDate) {
+        filtered = filtered.filter(s => s.date && new Date(s.date) <= new Date(toDate));
+      }
+      if (operationType !== 'all') {
+        filtered = filtered.filter(s => {
+          // دعم حالات عدم وجود الخاصية أو اختلاف الكتابة
+          const op = (s.operationType || '').trim();
+          return op === operationType;
+        });
+      }
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#888;">لا توجد مواد واردة في الفترة/النوع المختار</td></tr>';
+        return;
+      }
+      let totalQty = 0;
+      filtered.forEach((s, idx) => {
+        totalQty += Number(s.quantity) || 0;
+        // تحديد نوع العملية للعرض
+        let opTypeDisplay = 'غير محدد';
+        if (s.operationType) {
+          if (s.operationType.trim() === 'شراء') opTypeDisplay = 'شراء';
+          else if (s.operationType.trim() === 'توريد') opTypeDisplay = 'توريد';
+          else opTypeDisplay = s.operationType;
+        }
+        tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${s.item || ''}</td>
+          <td>${s.quantity || ''}</td>
+          <td>${s.date ? new Date(s.date).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${s.supplier || ''}</td>
+          <td>${opTypeDisplay}</td>
+          <td>${s.notes || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      summaryDiv.textContent = `إجمالي الكمية الواردة: ${totalQty}`;
+    }
+
+    // عرض المواد المشتراة للمخزن
+    async function renderStorePurchases() {
+      const fromDate = document.getElementById('fromDatePurchase').value;
+      const toDate = document.getElementById('toDatePurchase').value;
+      const tbody = document.querySelector('#storePurchaseTable tbody');
+      const summaryDiv = document.getElementById('storePurchaseSummary');
+      tbody.innerHTML = '';
+      summaryDiv.textContent = '';
+      const purchases = await fetchPurchases();
+      let filtered = purchases;
+      if (fromDate) {
+        filtered = filtered.filter(s => s.date && new Date(s.date) >= new Date(fromDate));
+      }
+      if (toDate) {
+        filtered = filtered.filter(s => s.date && new Date(s.date) <= new Date(toDate));
+      }
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#888;">لا توجد مواد مشتراة في الفترة المختارة</td></tr>';
+        return;
+      }
+      let totalQty = 0;
+      filtered.forEach((s, idx) => {
+        totalQty += Number(s.quantity) || 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${s.item || ''}</td>
+          <td>${s.quantity || ''}</td>
+          <td>${s.date ? new Date(s.date).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${s.store || s.supplier || ''}</td>
+          <td>${s.category || s.unitPrice || ''}</td>
+          <td>${s.notes || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      summaryDiv.textContent = `إجمالي الكمية المشتراة: ${totalQty}`;
+    }
+
+    // عرض جميع عمليات الصرف من المخزن
+    async function renderStoreOut() {
+      const fromDate = document.getElementById('fromDateOut').value;
+      const toDate = document.getElementById('toDateOut').value;
+      const tbody = document.querySelector('#storeOutTable tbody');
+      const summaryDiv = document.getElementById('storeOutSummary');
+      tbody.innerHTML = '';
+      summaryDiv.textContent = '';
+      const storeOut = await fetchStoreOut();
+      let filtered = storeOut;
+      if (fromDate) {
+        filtered = filtered.filter(s => s.date && new Date(s.date) >= new Date(fromDate));
+      }
+      if (toDate) {
+        filtered = filtered.filter(s => s.date && new Date(s.date) <= new Date(toDate));
+      }
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#888;">لا توجد عمليات صرف في الفترة المختارة</td></tr>';
+        return;
+      }
+      let totalQty = 0;
+      filtered.forEach((s, idx) => {
+        totalQty += Number(s.quantity) || 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${s.item || ''}</td>
+          <td>${s.quantity || ''}</td>
+          <td>${s.date ? new Date(s.date).toLocaleDateString('ar-EG') : ''}</td>
+          <td>${s.contractor || s.notes || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      summaryDiv.textContent = `إجمالي الكمية المصروفة: ${totalQty}`;
+    }
+
+    // جلب كل المواد الفريدة من التوريدات والمشتريات
+    async function fetchAllMaterialNames() {
+      const supplies = await fetchSupplies();
+      const purchases = await fetchPurchases();
+      const itemsSet = new Set();
+      supplies.forEach(s => { if (s.item) itemsSet.add(s.item); });
+      purchases.forEach(p => { if (p.item) itemsSet.add(p.item); });
+      return Array.from(itemsSet);
+    }
+
+    // جلب كل المقاولين وموادهم
+    async function fetchAllContractorsWithMaterials() {
+      const res = await fetch('/contractors');
+      return await res.json();
+    }
+
+    // جلب الكمية المتبقية من المخزن لمادة معينة
+    async function fetchMaterialStock(itemName) {
+      const supplies = await fetchSupplies();
+      const purchases = await fetchPurchases();
+      const contractors = await fetchAllContractorsWithMaterials();
+
+      let totalSupplied = supplies.filter(s => s.item === itemName).reduce((sum, s) => sum + (Number(s.quantity) || 0), 0);
+      let totalPurchased = purchases.filter(p => p.item === itemName).reduce((sum, p) => sum + (Number(p.quantity) || 0), 0);
+
+      // مجموع المصروف للمقاولين
+      let totalIssued = 0;
+      contractors.forEach(c => {
+        if (Array.isArray(c.materials)) {
+          c.materials.forEach(m => {
+            if (m.name === itemName) totalIssued += Number(m.quantity) || 0;
+          });
+        }
+      });
+
+      return (totalSupplied + totalPurchased - totalIssued);
+    }
+
+    // تعبئة قائمة المواد
+    async function fillMaterialUsageSelect() {
+      const select = document.getElementById('materialUsageSelect');
+      select.innerHTML = '<option value="">-- اختر المادة --</option>';
+      const items = await fetchAllMaterialNames();
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+    }
+
+    // عند اختيار مادة، اعرض جدول المقاولين الذين صرفت لهم المادة
+    document.getElementById('materialUsageSelect').onchange = async function() {
+      const itemName = this.value;
+      const resultDiv = document.getElementById('materialUsageResult');
+      resultDiv.innerHTML = '';
+      if (!itemName) return;
+
+      // جلب كل المقاولين وموادهم
+      const contractors = await fetchAllContractorsWithMaterials();
+
+      // بناء صفوف المقاولين الذين صرفت لهم المادة
+      let rows = [];
+      contractors.forEach(c => {
+        if (Array.isArray(c.materials)) {
+          c.materials.forEach(m => {
+            if (m.name === itemName) {
+              rows.push({
+                contractor: c.name || '',
+                date: m.date ? new Date(m.date).toLocaleDateString('ar-EG') : '',
+                quantity: m.quantity || '',
+                notes: m.notes || ''
+              });
+            }
+          });
+        }
+      });
+
+      // ترتيب حسب التاريخ تنازلياً
+      rows.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // بناء الجدول
+      let html = '';
+      if (rows.length) {
+        html += `
+          <table style="width:100%;border-collapse:collapse;background:#f7fafd;margin-bottom:8px;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px #8c969a22;font-size:1.01rem;">
+            <thead>
+              <tr style="background:#2e8ca3;color:#fff;">
+                <th>م</th>
+                <th>اسم المقاول</th>
+                <th>الكمية المصروفة</th>
+                <th>تاريخ الصرف</th>
+                <th>ملاحظات</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        rows.forEach((row, idx) => {
+          html += `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${row.contractor}</td>
+              <td>${row.quantity}</td>
+              <td>${row.date}</td>
+              <td>${row.notes}</td>
+            </tr>
+          `;
+        });
+        html += `</tbody></table>`;
+      } else {
+        html = `<div style="color:#888;">لم يتم صرف هذه المادة لأي مقاول.</div>`;
+      }
+
+      // جلب الكمية المتبقية
+      const remaining = await fetchMaterialStock(itemName);
+      html += `<div style="margin-top:10px;font-weight:bold;color:#388e3c;font-size:1.08em;">الكمية المتبقية من "${itemName}": <span style="color:#1976d2;">${remaining}</span></div>`;
+
+      resultDiv.innerHTML = html;
+    };
+
+    // تبويبات التنقل
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(btn.dataset.tab + 'Section').classList.add('active');
+      };
+    });
+
+    // أزرار الفلترة لكل تقرير
+    document.getElementById('filterBtn').onclick = renderContractorMaterials;
+    document.getElementById('filterBtnIn').onclick = renderStoreIn;
+    document.getElementById('filterBtnPurchase').onclick = renderStorePurchases;
+    document.getElementById('filterBtnOut').onclick = renderStoreOut;
+
+    // تحديث تلقائي عند تغيير الفلاتر
+    document.getElementById('contractorReportSelect').onchange = renderContractorMaterials;
+    document.getElementById('fromDate').onchange = renderContractorMaterials;
+    document.getElementById('toDate').onchange = renderContractorMaterials;
+    document.getElementById('operationTypeSelect').onchange = renderStoreIn;
+    document.getElementById('fromDateIn').onchange = renderStoreIn;
+    document.getElementById('toDateIn').onchange = renderStoreIn;
+    document.getElementById('fromDatePurchase').onchange = renderStorePurchases;
+    document.getElementById('toDatePurchase').onchange = renderStorePurchases;
+    document.getElementById('fromDateOut').onchange = renderStoreOut;
+    document.getElementById('toDateOut').onchange = renderStoreOut;
+
+    // تقرير صرف مادة
+    document.getElementById('materialUsageSelect').onchange = async function() {
+      const itemName = this.value;
+      const resultDiv = document.getElementById('materialUsageResult');
+      resultDiv.innerHTML = '';
+      if (!itemName) return;
+
+      // جلب كل المقاولين وموادهم
+      const contractors = await fetchAllContractorsWithMaterials();
+
+      // بناء صفوف المقاولين الذين صرفت لهم المادة
+      let rows = [];
+      contractors.forEach(c => {
+        if (Array.isArray(c.materials)) {
+          c.materials.forEach(m => {
+            if (m.name === itemName) {
+              rows.push({
+                contractor: c.name || '',
+                date: m.date ? new Date(m.date).toLocaleDateString('ar-EG') : '',
+                quantity: m.quantity || '',
+                notes: m.notes || ''
+              });
+            }
+          });
+        }
+      });
+
+      // ترتيب حسب التاريخ تنازلياً
+      rows.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // بناء الجدول
+      let html = '';
+      if (rows.length) {
+        html += `
+          <table style="width:100%;border-collapse:collapse;background:#f7fafd;margin-bottom:8px;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px #8c969a22;font-size:1.01rem;">
+            <thead>
+              <tr style="background:#2e8ca3;color:#fff;">
+                <th>م</th>
+                <th>اسم المقاول</th>
+                <th>الكمية المصروفة</th>
+                <th>تاريخ الصرف</th>
+                <th>ملاحظات</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        rows.forEach((row, idx) => {
+          html += `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${row.contractor}</td>
+              <td>${row.quantity}</td>
+              <td>${row.date}</td>
+              <td>${row.notes}</td>
+            </tr>
+          `;
+        });
+        html += `</tbody></table>`;
+      } else {
+        html = `<div style="color:#888;">لم يتم صرف هذه المادة لأي مقاول.</div>`;
+      }
+
+      // جلب الكمية المتبقية
+      const remaining = await fetchMaterialStock(itemName);
+      html += `<div style="margin-top:10px;font-weight:bold;color:#388e3c;font-size:1.08em;">الكمية المتبقية من "${itemName}": <span style="color:#1976d2;">${remaining}</span></div>`;
+
+      resultDiv.innerHTML = html;
+    };
+
+    // عند تحميل الصفحة
+    window.onload = async function() {
+      await fillContractorSelect();
+      await fillMaterialUsageSelect();
+      await renderContractorMaterials();
+      await renderStoreIn();
+      await renderStorePurchases();
+      await renderStoreOut();
+    };
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>
+</html>
