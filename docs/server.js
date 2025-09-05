@@ -987,6 +987,31 @@ app.delete('/workers/:id', async (req, res) => {
   }
 });
 
+// تعديل بيانات عامل
+app.put('/workers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await workersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: req.body }
+      );
+    } else {
+      result = await workersCollection.updateOne(
+        { _id: id },
+        { $set: req.body }
+      );
+    }
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على العامل' });
+    }
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // دعم الرجوع للصفحة الرئيسية من المسار /
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));

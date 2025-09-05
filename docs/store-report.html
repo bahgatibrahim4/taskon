@@ -219,6 +219,10 @@
         <button id="filterBtn">عرض التقرير</button>
       </div>
       <div id="contractorMaterialsSummary" class="summary"></div>
+      <button onclick="exportTableToExcel('contractorMaterialsTable', 'صرف للمقاول')"
+        style="margin-bottom:8px;background:#388e3c;color:#fff;border:none;border-radius:6px;padding:6px 18px;cursor:pointer;">
+        تصدير Excel
+      </button>
       <table id="contractorMaterialsTable">
         <thead>
           <tr>
@@ -257,6 +261,10 @@
         <button id="filterBtnIn">عرض التقرير</button>
       </div>
       <div id="storeInSummary" class="summary"></div>
+      <button onclick="exportTableToExcel('storeInTable', 'توريد للمخزن')"
+        style="margin-bottom:8px;background:#388e3c;color:#fff;border:none;border-radius:6px;padding:6px 18px;cursor:pointer;">
+        تصدير Excel
+      </button>
       <table id="storeInTable">
         <thead>
           <tr>
@@ -289,6 +297,10 @@
         <button id="filterBtnPurchase">عرض التقرير</button>
       </div>
       <div id="storePurchaseSummary" class="summary"></div>
+      <button onclick="exportTableToExcel('storePurchaseTable', 'شراء للمخزن')"
+        style="margin-bottom:8px;background:#388e3c;color:#fff;border:none;border-radius:6px;padding:6px 18px;cursor:pointer;">
+        تصدير Excel
+      </button>
       <table id="storePurchaseTable">
         <thead>
           <tr>
@@ -321,6 +333,10 @@
         <button id="filterBtnOut">عرض التقرير</button>
       </div>
       <div id="storeOutSummary" class="summary"></div>
+      <button onclick="exportTableToExcel('storeOutTable', 'كل عمليات الصرف')"
+        style="margin-bottom:8px;background:#388e3c;color:#fff;border:none;border-radius:6px;padding:6px 18px;cursor:pointer;">
+        تصدير Excel
+      </button>
       <table id="storeOutTable">
         <thead>
           <tr>
@@ -345,6 +361,10 @@
           <option value="">-- اختر المادة --</option>
         </select>
       </div>
+      <button onclick="exportMaterialUsageToExcel()"
+        style="margin-bottom:8px;background:#388e3c;color:#fff;border:none;border-radius:6px;padding:6px 18px;cursor:pointer;">
+        تصدير Excel
+      </button>
       <div id="materialUsageResult" style="margin-top:18px;"></div>
     </div>
   </div>
@@ -776,6 +796,24 @@
       resultDiv.innerHTML = html;
     };
 
+    // دالة تصدير الجدول إلى Excel
+    function exportTableToExcel(tableId, sheetName) {
+      const table = document.getElementById(tableId);
+      if (!table) return;
+      const wb = XLSX.utils.table_to_book(table, { sheet: sheetName || "Sheet1" });
+      XLSX.writeFile(wb, (sheetName || "Report") + ".xlsx");
+    }
+
+    // دالة تصدير جدول تقرير صرف مادة (محتوى HTML ديناميكي)
+    function exportMaterialUsageToExcel() {
+      var resultDiv = document.getElementById('materialUsageResult');
+      var table = resultDiv.querySelector('table');
+      if (!table) return;
+      var itemName = document.getElementById('materialUsageSelect').value || "تقرير صرف مادة";
+      var wb = XLSX.utils.table_to_book(table, {sheet: itemName});
+      XLSX.writeFile(wb, itemName + ".xlsx");
+    }
+
     // عند تحميل الصفحة
     window.onload = async function() {
       await fillContractorSelect();
@@ -807,6 +845,7 @@
         });
       });
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
 </html>

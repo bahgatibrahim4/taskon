@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>المشروع | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #e9f2f6;
+      min-height: 100vh;
+      direction: rtl;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    #mainNavbarContainer {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 999;
+    }
+    .tabs-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 48px 0 18px 0; /* كانت 80px، الآن أقرب للأعلى */
+    }
+    .main-tab-btn {
+      background: #fff;
+      color: #1a3b50;
+      border: 1.5px solid #2e8ca3;
+      border-radius: 0; /* إطار حاد */
+      font-size: 0.97rem; /* أصغر */
+      padding: 7px 16px; /* أصغر */
+      cursor: pointer;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      outline: none;
+      min-width: 90px; /* أصغر */
+      transition: background 0.18s, color 0.18s;
+    }
+    .main-tab-btn.active {
+      background: #2e8ca3;
+      color: #fff;
+      border-bottom: 3px solid #fff;
+      z-index: 2;
+    }
+    .main-content-area {
+      width: 100%;
+      max-width: 1400px;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
+      padding: 38px 32px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column; /* أضف هذا السطر */
+      align-items: flex-start; /* أضف هذا السطر */
+      justify-content: flex-start; /* أضف هذا السطر */
+      font-size: 1.18rem;
+      color: #1a3b50;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 700px) {
+      .main-content-area { max-width: 98vw; padding: 18px 4vw;}
+      .main-tab-btn { padding: 6px 6px; font-size: 0.92rem; min-width: 70px;}
+      .tabs-bar { margin-top: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="mainNavbarContainer"></div>
+  <script>
+    // إدراج الشريط العلوي من ملف خارجي
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('mainNavbarContainer').innerHTML = html;
+        Array.from(document.getElementById('mainNavbarContainer').querySelectorAll('script')).forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+  <!-- أزرار أعلى الصفحة -->
+  <div class="tabs-bar">
+    <button class="main-tab-btn active" onclick="showMainTab('project')">بيانات المشروع</button>
+    <button class="main-tab-btn" onclick="showMainTab('contracts')">ملاحق العقود</button>
+    <button class="main-tab-btn" onclick="showMainTab('supplies')">ملاحق التوريدات</button>
+    <button class="main-tab-btn" onclick="showMainTab('extracts')">المستخلصات</button>
+  </div>
+  <!-- نافذة في المنتصف -->
+  <div class="main-content-area" id="mainContentArea">
+    بيانات المشروع
+  </div>
+  <!-- نافذة إدراج ملحق عقد (مودال) -->
+  <div id="contractModal" style="display:none; position:fixed; top:0; right:0; left:0; bottom:0; background:#0005; z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:400px; width:96vw; margin:auto; position:relative;">
+      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج ملحق عقد</h3>
+      <form id="contractForm">
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">اسم ملحق العقد</label>
+          <input type="text" name="addonName" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة ملحق العقد</label>
+          <input type="number" name="addonValue" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملحق العقد (PDF)</label>
+          <input type="file" name="addonPdf" accept="application/pdf" required style="width:100%;">
+        </div>
+        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
+        <button type="button" id="closeContractModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    // مصفوفة لحفظ الملاحق مؤقتاً
+    let contractAddons = [];
+
+    function renderContractAddonsTable() {
+      // زر إدراج في أعلى النافذة البيضاء
+      let html = `
+        <div style="width:100%; display:flex; justify-content:flex-start; margin-bottom:32px;">
+          <button id="showContractModalBtn"
+            style="
+              background:#2e8ca3;
+              color:#fff;
+              padding:9px 32px;
+              border:none;
+              border-radius:0;
+              font-size:1.08rem;
+              font-family:'Cairo', Arial, sans-serif;
+              font-weight:900;
+              letter-spacing:0.5px;
+              cursor:pointer;
+              box-shadow:0 2px 8px #2e8ca322;
+              transition:background 0.18s, color 0.18s;
+              min-width:0;
+              width:auto;
+              height:44px;
+              z-index:2;
+              display:inline-block;
+            "
+          >إدراج ملحق عقد</button>
+        </div>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
+          <thead>
+            <tr style="background:#f7fbfc;">
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">اسم الملحق</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة الملحق</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">الملحق (PDF)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      if (contractAddons.length === 0) {
+        html += `<tr><td colspan="4" style="text-align:center;color:#888;padding:22px;">لا توجد ملاحق بعد.</td></tr>`;
+      } else {
+        contractAddons.forEach((addon, idx) => {
+          html += `
+            <tr>
+              <td style="padding:8px;">${addon.name}</td>
+              <td style="padding:8px;">${addon.value}</td>
+              <td style="padding:8px;">
+                ${addon.pdfName ? `<span style="color:#2e8ca3;">${addon.pdfName}</span>` : '—'}
+              </td>
+              <td style="padding:8px; text-align:center;">
+                <span title="تعديل" style="cursor:pointer; margin-left:8px; font-size:1.3em; color:#2e8ca3;" onclick="editAddon(${idx})">&#9998;</span>
+                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteAddon(${idx})">&#128465;</span>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      html += `</tbody></table>`;
+      document.getElementById('mainContentArea').innerHTML = html;
+
+      // زر إظهار نافذة إدراج ملحق عقد
+      var btn = document.getElementById('showContractModalBtn');
+      if(btn) {
+        btn.onclick = function() {
+          document.getElementById('contractModal').style.display = 'flex';
+        };
+      }
+    }
+
+    function showMainTab(tab) {
+      document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        if (btn.textContent.trim() === getTabLabel(tab)) btn.classList.add('active');
+      });
+      if(tab === 'contracts') {
+        renderContractAddonsTable();
+      } else {
+        var content = '';
+        if(tab === 'project') content = 'بيانات المشروع';
+        else if(tab === 'supplies') content = 'ملاحق التوريدات';
+        else if(tab === 'extracts') content = 'المستخلصات';
+        document.getElementById('mainContentArea').innerHTML = content;
+      }
+    }
+    function getTabLabel(tab) {
+      if(tab === 'project') return 'بيانات المشروع';
+      if(tab === 'contracts') return 'ملاحق العقود';
+      if(tab === 'supplies') return 'ملاحق التوريدات';
+      if(tab === 'extracts') return 'المستخلصات';
+      return '';
+    }
+    // إضافة مستمع للنقر على شريط الأزرار
+    document.querySelector('.tabs-bar').addEventListener('click', function(e) {
+      const btn = e.target.closest('.main-tab-btn');
+      if (btn) {
+        let tab = '';
+        switch (btn.textContent.trim()) {
+          case 'بيانات المشروع': tab = 'project'; break;
+          case 'ملاحق العقود': tab = 'contracts'; break;
+          case 'ملاحق التوريدات': tab = 'supplies'; break;
+          case 'المستخلصات': tab = 'extracts'; break;
+        }
+        if (tab) showMainTab(tab);
+      }
+    });
+
+    // إغلاق نافذة إدراج ملحق عقد
+    document.getElementById('closeContractModalBtn').onclick = function() {
+      document.getElementById('contractModal').style.display = 'none';
+      document.getElementById('contractForm').reset();
+    };
+
+    // عند إدراج ملحق جديد أضفه للجدول
+    document.getElementById('contractForm').onsubmit = function(e) {
+      e.preventDefault();
+      var fd = new FormData(this);
+      var name = fd.get('addonName');
+      var value = fd.get('addonValue');
+      var pdfFile = fd.get('addonPdf');
+      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
+      contractAddons.push({ name, value, pdfName });
+      document.getElementById('contractModal').style.display = 'none';
+      document.getElementById('contractForm').reset();
+      showMainTab('contracts');
+    };
+
+    // إغلاق النافذة عند الضغط خارجها
+    document.getElementById('contractModal').addEventListener('click', function(e) {
+      if(e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('contractForm').reset();
+      }
+    });
+
+    // عند تحميل الصفحة، أظهر تبويب المشروع افتراضياً
+    showMainTab('project');
+  </script>
+</body>
+</html>
