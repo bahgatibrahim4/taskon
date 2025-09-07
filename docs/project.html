@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>المشروع | سعيد أحمد بالبيد</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       margin: 0;
@@ -54,23 +55,180 @@
     .main-content-area {
       width: 100%;
       max-width: 1400px;
+      margin: 0 auto 24px auto; /* هذا يضمن التمركز وعدم الخروج عن الصفحة */
       background: #fff;
       border-radius: 22px;
       box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
       padding: 38px 32px;
       min-height: 220px;
       display: flex;
-      flex-direction: column; /* أضف هذا السطر */
-      align-items: flex-start; /* أضف هذا السطر */
-      justify-content: flex-start; /* أضف هذا السطر */
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
       font-size: 1.18rem;
       color: #1a3b50;
-      margin-bottom: 24px;
+      position: relative;
     }
-    @media (max-width: 700px) {
-      .main-content-area { max-width: 98vw; padding: 18px 4vw;}
-      .main-tab-btn { padding: 6px 6px; font-size: 0.92rem; min-width: 70px;}
-      .tabs-bar { margin-top: 70px; }
+    .reports-container {
+      /* اجعل نافذة التقارير بعرض الخلفية البيضاء */
+      max-width: 1340px; /* كان 1300px، الآن أوسع */
+      width: 100%;
+      background: #f7fbfc;
+      padding: 32px 32px 32px 32px;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: relative;
+    }
+    .reports-header {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: #2e8ca3;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-align: right;
+    }
+    .reports-desc {
+      font-size: 1.18rem;
+      color: #1a3b50;
+      margin-bottom: 18px;
+      text-align: right;
+    }
+    .reports-options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 18px;
+      align-items: flex-end;
+      justify-content: flex-start;
+    }
+    .report-option-box {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px #2e8ca322;
+      padding: 18px 22px 14px 22px;
+      min-width: 260px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1 1 260px;
+    }
+    .report-option-box label {
+      font-weight: 700;
+      color: #1a3b50;
+      min-width: 140px;
+      font-size: 1.08rem;
+    }
+    .report-option-box select {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: 1px solid #bcd3db;
+      font-size: 1.04rem;
+      min-width: 110px;
+    }
+    .reports-results-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      margin-top: 32px;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+    .report-result-box {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px #2e8ca322;
+      padding: 24px 18px 18px 18px;
+      min-width: 320px;
+      flex: 1 1 320px;
+      margin-bottom: 0;
+    }
+    .report-result-title {
+      font-weight: 700;
+      color: #2e8ca3;
+      font-size: 1.18rem;
+      margin-bottom: 12px;
+      text-align: right;
+    }
+    .report-chart-box {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px #2e8ca322;
+      padding: 24px;
+      min-width: 420px;
+      flex: 2 1 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .report-chart-title {
+      font-weight: 900;
+      font-size: 1.18rem;
+      color: #1a3b50;
+      margin-bottom: 12px;
+      text-align: right;
+      width: 100%;
+    }
+    .reports-dropdown-btn {
+      background: #2e8ca3;
+      color: #fff;
+      padding: 13px 44px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.12rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2e8ca322;
+      min-width: 0;
+      width: auto;
+      height: 48px;
+      z-index: 2;
+      display: inline-block;
+      margin-bottom: 18px;
+      position: absolute;
+      right: 32px;
+      left: auto;
+      top: 0;
+      /* اجعل الزر في أقصى الشمال (يسار) أعلى مربع التقارير */
+    }
+    .reports-dropdown-list {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      left: 0;
+      margin: auto;
+      max-width: 1400px; /* كان 1300px، الآن أوسع */
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
+      padding: 32px 32px 24px 32px;
+      z-index: 10001;
+      display: none;
+    }
+    .reports-dropdown-list.active {
+      display: block;
+    }
+    .reports-dropdown-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    @media (max-width: 900px) {
+      .reports-options-row, .reports-results-row {
+        flex-direction: column;
+        gap: 18px;
+      }
+      .report-option-box, .report-result-box, .report-chart-box {
+        min-width: 0;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -99,14 +257,17 @@
     <button class="main-tab-btn" onclick="showMainTab('contracts')">ملاحق العقود</button>
     <button class="main-tab-btn" onclick="showMainTab('supplies')">ملاحق التوريدات</button>
     <button class="main-tab-btn" onclick="showMainTab('extracts')">المستخلصات</button>
+    <button class="main-tab-btn" onclick="showMainTab('letters')">الخطابات</button>
+    <button class="main-tab-btn" onclick="showMainTab('estimates')">المقايسات</button>
+    <button class="main-tab-btn" onclick="showMainTab('reports')">التقارير</button>
   </div>
   <!-- نافذة في المنتصف -->
   <div class="main-content-area" id="mainContentArea">
     بيانات المشروع
   </div>
   <!-- نافذة إدراج ملحق عقد (مودال) -->
-  <div id="contractModal" style="display:none; position:fixed; top:0; right:0; left:0; bottom:0; background:#0005; z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:400px; width:96vw; margin:auto; position:relative;">
+  <div id="contractModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
       <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج ملحق عقد</h3>
       <form id="contractForm">
         <div style="margin-bottom:14px;">
@@ -126,14 +287,132 @@
       </form>
     </div>
   </div>
+  <!-- نافذة إدراج ملحق توريد (مودال) -->
+  <div id="supplyModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
+      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج ملحق توريد</h3>
+      <form id="supplyForm">
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">اسم ملحق التوريد</label>
+          <input type="text" name="addonName" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة ملحق التوريد</label>
+          <input type="number" name="addonValue" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملحق التوريد (PDF)</label>
+          <input type="file" name="addonPdf" accept="application/pdf" required style="width:100%;">
+        </div>
+        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
+        <button type="button" id="closeSupplyModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
+      </form>
+    </div>
+  </div>
+  <!-- نافذة إدراج مستخلص (مودال) -->
+  <div id="extractModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
+      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج مستخلص</h3>
+      <form id="extractForm">
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">رقم المستخلص</label>
+          <input type="text" name="extractNumber" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">تاريخ المستخلص</label>
+          <input type="date" name="extractDate" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة المستخلص</label>
+          <input type="number" name="extractValue" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملف المستخلص (PDF)</label>
+          <input type="file" name="extractPdf" accept="application/pdf" required style="width:100%;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملف المستخلص (Excel)</label>
+          <input type="file" name="extractExcel" accept=".xlsx,.xls" required style="width:100%;">
+        </div>
+        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
+        <button type="button" id="closeExtractModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
+      </form>
+    </div>
+  </div>
+  <!-- نافذة إدراج خطاب (مودال) -->
+  <div id="letterModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
+      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج خطاب</h3>
+      <form id="letterForm">
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">بيان الخطاب</label>
+          <input type="text" name="statement" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">التاريخ</label>
+          <input type="date" name="date" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">موجه إلى</label>
+          <input type="text" name="to" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">الخطاب (PDF)</label>
+          <input type="file" name="pdf" accept="application/pdf" required style="width:100%;">
+        </div>
+        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
+        <button type="button" id="closeLetterModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
+      </form>
+    </div>
+  </div>
+  <!-- نافذة إدراج مقايسة (مودال) -->
+  <div id="estimateModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
+      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج مقايسة</h3>
+      <form id="estimateForm">
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">نموذج المبني</label>
+          <input type="text" name="buildingModel" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">كود المبني</label>
+          <input type="text" name="buildingCode" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">المكان</label>
+          <input type="text" name="location" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">المقايسة (PDF)</label>
+          <input type="file" name="estimatePdf" accept="application/pdf" required style="width:100%;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">المقايسة (Excel)</label>
+          <input type="file" name="estimateExcel" accept=".xlsx,.xls" required style="width:100%;">
+        </div>
+        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
+        <button type="button" id="closeEstimateModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
+      </form>
+    </div>
+  </div>
   <script>
     // مصفوفة لحفظ الملاحق مؤقتاً
     let contractAddons = [];
+    // مصفوفة لحفظ ملاحق التوريدات مؤقتاً
+    let suppliesAddons = [];
+    // مصفوفة لحفظ المستخلصات مؤقتاً
+    let extracts = [];
+    // مصفوفة لحفظ الخطابات مؤقتاً
+    let letters = [];
+    // مصفوفة لحفظ المقايسات مؤقتاً
+    let estimates = [];
 
+    // دالة عرض جدول ملاحق العقود مع مربع بحث
     function renderContractAddonsTable() {
-      // زر إدراج في أعلى النافذة البيضاء
+      let searchValue = window.contractSearchValue || '';
+      let filtered = contractAddons.filter(a => !searchValue || a.name.includes(searchValue));
       let html = `
-        <div style="width:100%; display:flex; justify-content:flex-start; margin-bottom:32px;">
+        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
           <button id="showContractModalBtn"
             style="
               background:#2e8ca3;
@@ -155,6 +434,8 @@
               display:inline-block;
             "
           >إدراج ملحق عقد</button>
+          <input id="contractSearchBox" type="text" placeholder="بحث باسم الملحق..." value="${searchValue || ''}"
+            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
         </div>
         <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
           <thead>
@@ -167,10 +448,10 @@
           </thead>
           <tbody>
       `;
-      if (contractAddons.length === 0) {
+      if (filtered.length === 0) {
         html += `<tr><td colspan="4" style="text-align:center;color:#888;padding:22px;">لا توجد ملاحق بعد.</td></tr>`;
       } else {
-        contractAddons.forEach((addon, idx) => {
+        filtered.forEach((addon, idx) => {
           html += `
             <tr>
               <td style="padding:8px;">${addon.name}</td>
@@ -189,15 +470,619 @@
       html += `</tbody></table>`;
       document.getElementById('mainContentArea').innerHTML = html;
 
+      // مربع البحث
+      document.getElementById('contractSearchBox').oninput = function() {
+        window.contractSearchValue = this.value;
+        renderContractAddonsTable();
+      };
+
       // زر إظهار نافذة إدراج ملحق عقد
       var btn = document.getElementById('showContractModalBtn');
       if(btn) {
         btn.onclick = function() {
-          document.getElementById('contractModal').style.display = 'flex';
+          showModalInsideWhiteFrame('contractModal');
         };
       }
     }
 
+    // دالة عرض جدول ملاحق التوريدات مع مربع بحث
+    function renderSuppliesAddonsTable() {
+      let searchValue = window.suppliesSearchValue || '';
+      let filtered = suppliesAddons.filter(a => !searchValue || a.name.includes(searchValue));
+      let html = `
+        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
+          <button id="showSupplyModalBtn"
+            style="
+              background:#2e8ca3;
+              color:#fff;
+              padding:9px 32px;
+              border:none;
+              border-radius:0;
+              font-size:1.08rem;
+              font-family:'Cairo', Arial, sans-serif;
+              font-weight:900;
+              letter-spacing:0.5px;
+              cursor:pointer;
+              box-shadow:0 2px 8px #2e8ca322;
+              transition:background 0.18s, color 0.18s;
+              min-width:0;
+              width:auto;
+              height:44px;
+              z-index:2;
+              display:inline-block;
+            "
+          >إدراج ملحق توريد</button>
+          <input id="suppliesSearchBox" type="text" placeholder="بحث باسم الملحق..." value="${searchValue || ''}"
+            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
+        </div>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
+          <thead>
+            <tr style="background:#f7fbfc;">
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">اسم الملحق</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة الملحق</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">الملحق (PDF)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      if (filtered.length === 0) {
+        html += `<tr><td colspan="4" style="text-align:center;color:#888;padding:22px;">لا توجد ملاحق بعد.</td></tr>`;
+      } else {
+        filtered.forEach((addon, idx) => {
+          html += `
+            <tr>
+              <td style="padding:8px;">${addon.name}</td>
+              <td style="padding:8px;">${addon.value}</td>
+              <td style="padding:8px;">
+                ${addon.pdfName ? `<span style="color:#2e8ca3;">${addon.pdfName}</span>` : '—'}
+              </td>
+              <td style="padding:8px; text-align:center;">
+                <span title="تعديل" style="cursor:pointer; margin-left:8px; font-size:1.3em; color:#2e8ca3;" onclick="editSupplyAddon(${idx})">&#9998;</span>
+                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteSupplyAddon(${idx})">&#128465;</span>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      html += `</tbody></table>`;
+      document.getElementById('mainContentArea').innerHTML = html;
+
+      // مربع البحث
+      document.getElementById('suppliesSearchBox').oninput = function() {
+        window.suppliesSearchValue = this.value;
+        renderSuppliesAddonsTable();
+      };
+
+      // زر إظهار نافذة إدراج ملحق توريد
+      var btn = document.getElementById('showSupplyModalBtn');
+      if(btn) {
+        btn.onclick = function() {
+          showModalInsideWhiteFrame('supplyModal');
+        };
+      }
+    }
+
+    // دالة عرض جدول المستخلصات مع مربع بحث
+    function renderExtractsTable() {
+      let searchValue = window.extractsSearchValue || '';
+      let filtered = extracts.filter(a => !searchValue || a.number.includes(searchValue));
+      let html = `
+        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
+          <button id="showExtractModalBtn"
+            style="
+              background:#2e8ca3;
+              color:#fff;
+              padding:9px 32px;
+              border:none;
+              border-radius:0;
+              font-size:1.08rem;
+              font-family:'Cairo', Arial, sans-serif;
+              font-weight:900;
+              letter-spacing:0.5px;
+              cursor:pointer;
+              box-shadow:0 2px 8px #2e8ca322;
+              transition:background 0.18s, color 0.18s;
+              min-width:0;
+              width:auto;
+              height:44px;
+              z-index:2;
+              display:inline-block;
+            "
+          >إدراج مستخلص</button>
+          <input id="extractsSearchBox" type="text" placeholder="بحث برقم المستخلص..." value="${searchValue || ''}"
+            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
+        </div>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
+          <thead>
+            <tr style="background:#f7fbfc;">
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">م</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">رقم المستخلص</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">تاريخ المستخلص</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة المستخلص</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المستخلص (PDF)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المستخلص (Excel)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      if (filtered.length === 0) {
+        html += `<tr><td colspan="7" style="text-align:center;color:#888;padding:22px;">لا توجد مستخلصات بعد.</td></tr>`;
+      } else {
+        filtered.forEach((extract, idx) => {
+          html += `
+            <tr>
+              <td style="padding:8px;">${idx + 1}</td>
+              <td style="padding:8px;">${extract.number}</td>
+              <td style="padding:8px;">${extract.date}</td>
+              <td style="padding:8px;">${extract.value}</td>
+              <td style="padding:8px;">
+                ${extract.pdfName ? `<span style="color:#2e8ca3;">${extract.pdfName}</span>` : '—'}
+              </td>
+              <td style="padding:8px;">
+                ${extract.excelName ? `<span style="color:#2e8ca3;">${extract.excelName}</span>` : '—'}
+              </td>
+              <td style="padding:8px; text-align:center;">
+                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteExtract(${idx})">&#128465;</span>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      html += `</tbody></table>`;
+      document.getElementById('mainContentArea').innerHTML = html;
+
+      // مربع البحث
+      document.getElementById('extractsSearchBox').oninput = function() {
+        window.extractsSearchValue = this.value;
+        renderExtractsTable();
+      };
+
+      // زر إظهار نافذة إدراج مستخلص
+      var btn = document.getElementById('showExtractModalBtn');
+      if(btn) {
+        btn.onclick = function() {
+          showModalInsideWhiteFrame('extractModal');
+        };
+      }
+    }
+
+    // دالة عرض جدول الخطابات مع مربع بحث
+    function renderLettersTable() {
+      let searchValue = window.lettersSearchValue || '';
+      let filtered = letters.filter(l =>
+        !searchValue ||
+        l.statement.includes(searchValue) ||
+        l.to.includes(searchValue)
+      );
+      let html = `
+        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
+          <button id="showLetterModalBtn"
+            style="
+              background:#2e8ca3;
+              color:#fff;
+              padding:9px 32px;
+              border:none;
+              border-radius:0;
+              font-size:1.08rem;
+              font-family:'Cairo', Arial, sans-serif;
+              font-weight:900;
+              letter-spacing:0.5px;
+              cursor:pointer;
+              box-shadow:0 2px 8px #2e8ca322;
+              transition:background 0.18s, color 0.18s;
+              min-width:0;
+              width:auto;
+              height:44px;
+              z-index:2;
+              display:inline-block;
+            "
+          >إدراج خطاب</button>
+          <input id="lettersSearchBox" type="text" placeholder="بحث ببيان الخطاب أو الجهة..." value="${searchValue || ''}"
+            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
+        </div>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
+          <thead>
+            <tr style="background:#f7fbfc;">
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">م</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">بيان الخطاب</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">التاريخ</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">موجه إلى</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">الخطاب (PDF)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      if (filtered.length === 0) {
+        html += `<tr><td colspan="6" style="text-align:center;color:#888;padding:22px;">لا توجد خطابات بعد.</td></tr>`;
+      } else {
+        filtered.forEach((letter, idx) => {
+          html += `
+            <tr>
+              <td style="padding:8px;">${idx + 1}</td>
+              <td style="padding:8px;">${letter.statement}</td>
+              <td style="padding:8px;">${letter.date}</td>
+              <td style="padding:8px;">${letter.to}</td>
+              <td style="padding:8px;">
+                ${letter.pdfName ? `<span style="color:#2e8ca3;">${letter.pdfName}</span>` : '—'}
+              </td>
+              <td style="padding:8px; text-align:center;">
+                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteLetter(${idx})">&#128465;</span>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      html += `</tbody></table>`;
+      document.getElementById('mainContentArea').innerHTML = html;
+
+      // مربع البحث
+      document.getElementById('lettersSearchBox').oninput = function() {
+        window.lettersSearchValue = this.value;
+        renderLettersTable();
+      };
+
+      // زر إظهار نافذة إدراج خطاب
+      var btn = document.getElementById('showLetterModalBtn');
+      if(btn) {
+        btn.onclick = function() {
+          showModalInsideWhiteFrame('letterModal');
+        };
+      }
+    }
+
+    let projectData = null;
+
+    function renderProjectForm() {
+      document.getElementById('mainContentArea').innerHTML = `
+      <form id="projectForm" style="max-width:900px; margin-top:18px; background:#f7fbfc; padding:32px 32px 24px 32px; border-radius:14px; box-shadow:0 2px 12px #2e8ca322;">
+        <div style="display:flex; gap:32px; margin-bottom:18px;">
+          <div style="flex:1;">
+            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">اسم المشروع</label>
+            <input type="text" name="projectName" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">مكان المشروع</label>
+            <input type="text" name="projectLocation" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
+          </div>
+        </div>
+        <div style="display:flex; gap:32px; margin-bottom:18px;">
+          <div style="flex:1;">
+            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">تاريخ البداية</label>
+            <input type="date" name="startDate" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">تاريخ النهاية</label>
+            <input type="date" name="endDate" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
+          </div>
+        </div>
+        <div style="display:flex; gap:32px; margin-bottom:18px;">
+          <div style="flex:1;">
+            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة عقد المشروع</label>
+            <input type="number" name="contractValue" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">إدراج عقد المشروع (PDF)</label>
+            <input type="file" name="contractPdf" accept="application/pdf" required style="width:100%; font-size:1.07rem;">
+          </div>
+        </div>
+        <button type="submit"
+          style="background:#2e8ca3; color:#fff; padding:13px 44px; border:none; border-radius:0; font-size:1.12rem; font-family:'Cairo', Arial, sans-serif; font-weight:900; letter-spacing:0.5px; cursor:pointer; box-shadow:0 2px 8px #2e8ca322; min-width:0; width:auto; height:48px; z-index:2; display:inline-block;">
+          حفظ البيانات
+        </button>
+      </form>
+    `;
+    document.getElementById('projectForm').onsubmit = function(e) {
+      e.preventDefault();
+      const fd = new FormData(this);
+      projectData = {
+        name: fd.get('projectName'),
+        location: fd.get('projectLocation'),
+        startDate: fd.get('startDate'),
+        endDate: fd.get('endDate'),
+        contractValue: fd.get('contractValue'),
+        pdfName: fd.get('contractPdf') && fd.get('contractPdf').name ? fd.get('contractPdf').name : ''
+      };
+      renderProjectView();
+    };
+    }
+
+    function getProjectProgress() {
+      if (!projectData || !extracts.length) return 0;
+      let totalExtracts = extracts.reduce((sum, e) => sum + Number(e.value || 0), 0);
+      let contractValue = Number(projectData.contractValue || 0);
+      if (!contractValue) return 0;
+      let percent = Math.min(100, Math.round((totalExtracts / contractValue) * 100));
+      return percent;
+    }
+
+    function renderProjectView() {
+      const percent = getProjectProgress();
+      document.getElementById('mainContentArea').innerHTML = `
+      <div style="display:flex; gap:32px; flex-wrap:wrap;">
+        <div style="flex:2; min-width:320px; background:#f7fbfc; padding:32px 32px 24px 32px; border-radius:14px; box-shadow:0 2px 12px #2e8ca322; margin-bottom:18px;">
+          <div style="display:flex; gap:32px; margin-bottom:18px;">
+            <div style="flex:1;">
+              <span style="font-weight:700; color:#1a3b50;">اسم المشروع:</span>
+              <span style="color:#2e8ca3; font-weight:700; margin-right:8px;">${projectData.name}</span>
+            </div>
+            <div style="flex:1;">
+              <span style="font-weight:700; color:#1a3b50;">مكان المشروع:</span>
+              <span style="color:#444; margin-right:8px;">${projectData.location}</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:32px; margin-bottom:18px;">
+            <div style="flex:1;">
+              <span style="font-weight:700; color:#1a3b50;">تاريخ البداية:</span>
+              <span style="color:#444; margin-right:8px;">${projectData.startDate}</span>
+            </div>
+            <div style="flex:1;">
+              <span style="font-weight:700; color:#1a3b50;">تاريخ النهاية:</span>
+              <span style="color:#444; margin-right:8px;">${projectData.endDate}</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:32px; margin-bottom:18px;">
+            <div style="flex:1;">
+              <span style="font-weight:700; color:#1a3b50;">قيمة عقد المشروع:</span>
+              <span style="color:#2e8ca3; font-weight:700; margin-right:8px;">
+                ${projectData.contractValue}
+                <span style="font-family:'Cairo', Arial, sans-serif; font-weight:900; color:#009a49; letter-spacing:1px; font-size:1.08em;">ريال</span>
+              </span>
+            </div>
+            <div style="flex:1;">
+              <span style="font-weight:700; color:#1a3b50;">عقد المشروع (PDF):</span>
+              <span style="color:#2e8ca3; margin-right:8px;">${projectData.pdfName ? projectData.pdfName : '—'}</span>
+            </div>
+          </div>
+          <button id="editProjectBtn"
+            style="background:#2e8ca3; color:#fff; padding:13px 44px; border:none; border-radius:0; font-size:1.12rem; font-family:'Cairo', Arial, sans-serif; font-weight:900; letter-spacing:0.5px; cursor:pointer; box-shadow:0 2px 8px #2e8ca322; min-width:0; width:auto; height:48px; z-index:2; display:inline-block;">
+            تعديل البيانات
+          </button>
+        </div>
+        <!-- مربع نسبة الإنجاز -->
+        <div style="flex:1; min-width:260px; background:#fff; padding:24px 18px 18px 18px; border-radius:14px; box-shadow:0 2px 12px #2e8ca322; margin-bottom:18px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-weight:900; font-size:1.18rem; color:#1a3b50; margin-bottom:12px;">نسبة إنجاز المشروع</div>
+          <canvas id="progressPieChart" width="180" height="180"></canvas>
+          <div style="margin-top:10px; font-size:1.08rem; color:#2e8ca3; font-weight:700;">
+            ${percent}%
+          </div>
+          <div style="margin-top:6px; font-size:0.98rem; color:#888;">
+            قيمة المستخلصات: <span style="color:#009a49; font-weight:700;">${extracts.reduce((sum, e) => sum + Number(e.value || 0), 0)}</span> ريال
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('editProjectBtn').onclick = renderProjectForm;
+
+    // رسم الرسم البياني الدائري
+    setTimeout(() => {
+      const ctx = document.getElementById('progressPieChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['منجز', 'متبقي'],
+          datasets: [{
+            data: [percent, 100 - percent],
+            backgroundColor: ['#2e8ca3', '#e9f2f6'],
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          }
+        }
+      });
+    }, 100);
+  }
+
+    // دالة عرض مربع التقارير مع زر وقائمة منسدلة
+    function renderReportsTab() {
+      const reportOptions = [
+        { key: 'extracts', label: 'مستخلصات المقاولين' },
+        { key: 'workers', label: 'القبض الشهري للعمال' },
+        { key: 'equipment', label: 'المعدات' },
+        { key: 'supplies', label: 'التوريدات' },
+        { key: 'purchases', label: 'المشتريات' }
+      ];
+      const months = [
+        { value: '', label: 'كل الشهور' },
+        { value: '01', label: 'يناير' },
+        { value: '02', label: 'فبراير' },
+        { value: '03', label: 'مارس' },
+        { value: '04', label: 'أبريل' },
+        { value: '05', label: 'مايو' },
+        { value: '06', label: 'يونيو' },
+        { value: '07', label: 'يوليو' },
+        { value: '08', label: 'أغسطس' },
+        { value: '09', label: 'سبتمبر' },
+        { value: '10', label: 'أكتوبر' },
+        { value: '11', label: 'نوفمبر' },
+        { value: '12', label: 'ديسمبر' }
+      ];
+      let html = `
+        <div class="reports-container" style="position:relative;">
+          <div class="reports-header">التقارير</div>
+          <button type="button" id="showReportsDropdownBtn" class="reports-dropdown-btn">اختيار التقارير</button>
+          <form id="reportsForm" style="margin-top:0;">
+            <div id="reportsDropdownList" class="reports-dropdown-list">
+              <div class="reports-options-row">
+                ${reportOptions.map(opt => `
+                  <div class="report-option-box">
+                    <input type="checkbox" id="report_${opt.key}" name="report_${opt.key}" style="width:22px; height:22px;">
+                    <label for="report_${opt.key}">${opt.label}</label>
+                    <select name="month_${opt.key}">
+                      ${months.map(m => `<option value="${m.value}">${m.label}</option>`).join('')}
+                    </select>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="reports-dropdown-actions">
+                <button type="button" id="closeReportsDropdownBtn" style="background:#2e8ca3; color:#fff; padding:9px 32px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer;">تم الاختيار</button>
+              </div>
+            </div>
+            <button type="submit"
+              style="background:#2e8ca3; color:#fff; padding:13px 44px; border:none; border-radius:0; font-size:1.12rem; font-family:'Cairo', Arial, sans-serif; font-weight:900; letter-spacing:0.5px; cursor:pointer; box-shadow:0 2px 8px #2e8ca322; min-width:0; width:auto; height:48px; z-index:2; display:inline-block; margin-top:18px;">
+              عرض التقارير
+            </button>
+          </form>
+          <div id="reportsResults"></div>
+        </div>
+      `;
+      document.getElementById('mainContentArea').innerHTML = html;
+
+      // زر فتح القائمة المنسدلة
+      document.getElementById('showReportsDropdownBtn').onclick = function() {
+        document.getElementById('reportsDropdownList').classList.add('active');
+      };
+      // زر إغلاق القائمة المنسدلة
+      document.getElementById('closeReportsDropdownBtn').onclick = function() {
+        document.getElementById('reportsDropdownList').classList.remove('active');
+      };
+      // إغلاق القائمة عند الضغط خارجها
+      document.addEventListener('mousedown', function(e) {
+        const dropdown = document.getElementById('reportsDropdownList');
+        const btn = document.getElementById('showReportsDropdownBtn');
+        if (dropdown && dropdown.classList.contains('active')) {
+          if (!dropdown.contains(e.target) && e.target !== btn) {
+            dropdown.classList.remove('active');
+          }
+        }
+      });
+
+      document.getElementById('reportsForm').onsubmit = function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        let selected = reportOptions.filter(opt => fd.get(`report_${opt.key}`));
+        let resultsHtml = '';
+        let chartData = [];
+        let resultBoxes = '';
+        selected.forEach(opt => {
+          let month = fd.get(`month_${opt.key}`);
+          if(opt.key === 'extracts') {
+            let filtered = extracts.filter(ex => {
+              if(!month) return true;
+              if(!ex.date) return false;
+              return ex.date.split('-')[1] === month;
+            });
+            resultBoxes += renderExtractsReportTable(filtered, month, opt.label);
+            chartData.push({ label: opt.label, value: filtered.reduce((sum, ex) => sum + Number(ex.value || 0), 0) });
+          }
+          else if(opt.key === 'workers') {
+            let value = month ? 12000 : 12000 * 12;
+            resultBoxes += renderSimpleReportTable(opt.label, value, month);
+            chartData.push({ label: opt.label, value });
+          }
+          else if(opt.key === 'equipment') {
+            let value = month ? 8000 : 8000 * 12;
+            resultBoxes += renderSimpleReportTable(opt.label, value, month);
+            chartData.push({ label: opt.label, value });
+          }
+          else if(opt.key === 'supplies') {
+            let value = month ? 5000 : 5000 * 12;
+            resultBoxes += renderSimpleReportTable(opt.label, value, month);
+            chartData.push({ label: opt.label, value });
+          }
+          else if(opt.key === 'purchases') {
+            let value = month ? 3000 : 3000 * 12;
+            resultBoxes += renderSimpleReportTable(opt.label, value, month);
+            chartData.push({ label: opt.label, value });
+          }
+        });
+        resultsHtml += `<div class="reports-results-row">${resultBoxes}`;
+        if(chartData.length) {
+          resultsHtml += `
+            <div class="report-chart-box">
+              <div class="report-chart-title">رسم بياني إجمالي</div>
+              <canvas id="reportsChart" width="420" height="220"></canvas>
+            </div>
+          `;
+        }
+        resultsHtml += `</div>`;
+        document.getElementById('reportsResults').innerHTML = resultsHtml;
+        if(chartData.length) {
+          setTimeout(() => {
+            const ctx = document.getElementById('reportsChart').getContext('2d');
+            new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: chartData.map(d => d.label),
+                datasets: [{
+                  label: 'القيمة',
+                  data: chartData.map(d => d.value),
+                  backgroundColor: '#2e8ca3'
+                }]
+              },
+              options: {
+                plugins: { legend: { display: false } }
+              }
+            });
+          }, 100);
+        }
+      };
+    }
+
+    // جدول مستخلصات المقاولين (مربع منسق)
+    function renderExtractsReportTable(filtered, month, label) {
+      let title = label + (month ? ` لشهر ${month}` : ' لكل الشهور');
+      let total = filtered.reduce((sum, ex) => sum + Number(ex.value || 0), 0);
+      let html = `
+        <div class="report-result-box">
+          <div class="report-result-title">${title}</div>
+          <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;">
+            <thead>
+              <tr style="background:#f7fbfc;">
+                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">رقم المستخلص</th>
+                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">تاريخ المستخلص</th>
+                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة المستخلص</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map(ex => `
+                <tr>
+                  <td style="padding:8px;">${ex.number}</td>
+                  <td style="padding:8px;">${ex.date}</td>
+                  <td style="padding:8px;">${ex.value}</td>
+                </tr>
+              `).join('') : `<tr><td colspan="3" style="text-align:center;color:#888;padding:22px;">لا توجد بيانات.</td></tr>`}
+            </tbody>
+            <tfoot>
+              <tr style="background:#f7fbfc;">
+                <td colspan="2" style="padding:10px 8px; font-weight:700; color:#1a3b50; text-align:left;">الإجمالي</td>
+                <td style="padding:10px 8px; font-weight:900; color:#009a49;">${total}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    // جدول بسيط للخيارات الأخرى (مربع منسق)
+    function renderSimpleReportTable(label, value, month) {
+      let title = label + (month ? ` لشهر ${month}` : ' لكل الشهور');
+      return `
+        <div class="report-result-box">
+          <div class="report-result-title">${title}</div>
+          <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;">
+            <thead>
+              <tr style="background:#f7fbfc;">
+                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">القيمة الإجمالية</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:8px;">${value}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
     function showMainTab(tab) {
       document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.main-tab-btn').forEach(btn => {
@@ -205,11 +1090,27 @@
       });
       if(tab === 'contracts') {
         renderContractAddonsTable();
+      } else if(tab === 'supplies') {
+        renderSuppliesAddonsTable();
+      } else if(tab === 'extracts') {
+        renderExtractsTable();
+      } else if(tab === 'letters') {
+        renderLettersTable();
+      } else if(tab === 'estimates') {
+        renderEstimatesTable();
+      } else if(tab === 'project') {
+        if(projectData) {
+          renderProjectView();
+        } else {
+          renderProjectForm();
+        }
+      } else if(tab === 'reports') {
+        renderReportsTab();
       } else {
         var content = '';
-        if(tab === 'project') content = 'بيانات المشروع';
-        else if(tab === 'supplies') content = 'ملاحق التوريدات';
+        if(tab === 'supplies') content = 'ملاحق التوريدات';
         else if(tab === 'extracts') content = 'المستخلصات';
+        else if(tab === 'letters') content = 'الخطابات';
         document.getElementById('mainContentArea').innerHTML = content;
       }
     }
@@ -218,6 +1119,9 @@
       if(tab === 'contracts') return 'ملاحق العقود';
       if(tab === 'supplies') return 'ملاحق التوريدات';
       if(tab === 'extracts') return 'المستخلصات';
+      if(tab === 'letters') return 'الخطابات';
+      if(tab === 'estimates') return 'المقايسات';
+      if(tab === 'reports') return 'التقارير';
       return '';
     }
     // إضافة مستمع للنقر على شريط الأزرار
@@ -230,6 +1134,9 @@
           case 'ملاحق العقود': tab = 'contracts'; break;
           case 'ملاحق التوريدات': tab = 'supplies'; break;
           case 'المستخلصات': tab = 'extracts'; break;
+          case 'الخطابات': tab = 'letters'; break;
+          case 'المقايسات': tab = 'estimates'; break;
+          case 'التقارير': tab = 'reports'; break;
         }
         if (tab) showMainTab(tab);
       }
@@ -239,6 +1146,30 @@
     document.getElementById('closeContractModalBtn').onclick = function() {
       document.getElementById('contractModal').style.display = 'none';
       document.getElementById('contractForm').reset();
+    };
+
+    // إغلاق نافذة إدراج ملحق توريد
+    document.getElementById('closeSupplyModalBtn').onclick = function() {
+      document.getElementById('supplyModal').style.display = 'none';
+      document.getElementById('supplyForm').reset();
+    };
+
+    // إغلاق نافذة إدراج مستخلص
+    document.getElementById('closeExtractModalBtn').onclick = function() {
+      document.getElementById('extractModal').style.display = 'none';
+      document.getElementById('extractForm').reset();
+    };
+
+    // إغلاق نافذة إدراج خطاب
+    document.getElementById('closeLetterModalBtn').onclick = function() {
+      document.getElementById('letterModal').style.display = 'none';
+      document.getElementById('letterForm').reset();
+    };
+
+    // إغلاق نافذة إدراج مقايسة
+    document.getElementById('closeEstimateModalBtn').onclick = function() {
+      document.getElementById('estimateModal').style.display = 'none';
+      document.getElementById('estimateForm').reset();
     };
 
     // عند إدراج ملحق جديد أضفه للجدول
@@ -255,6 +1186,166 @@
       showMainTab('contracts');
     };
 
+    // عند إدراج ملحق توريد جديد أضفه للجدول
+    function supplyFormSubmitHandler(e) {
+      e.preventDefault();
+      var fd = new FormData(this);
+      var name = fd.get('addonName');
+      var value = fd.get('addonValue');
+      var pdfFile = fd.get('addonPdf');
+      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
+      suppliesAddons.push({ name, value, pdfName });
+      document.getElementById('supplyModal').style.display = 'none';
+      document.getElementById('supplyForm').reset();
+      showMainTab('supplies');
+    }
+    document.getElementById('supplyForm').onsubmit = supplyFormSubmitHandler;
+
+    // عند إدراج مستخلص جديد أضفه للجدول
+    document.getElementById('extractForm').onsubmit = function(e) {
+      e.preventDefault();
+      var fd = new FormData(this);
+      var number = fd.get('extractNumber');
+      var date = fd.get('extractDate');
+      var value = fd.get('extractValue');
+      var pdfFile = fd.get('extractPdf');
+      var excelFile = fd.get('extractExcel');
+      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
+      var excelName = excelFile && excelFile.name ? excelFile.name : '';
+      extracts.push({ number, date, value, pdfName, excelName });
+      document.getElementById('extractModal').style.display = 'none';
+      document.getElementById('extractForm').reset();
+      showMainTab('extracts');
+    };
+
+    // عند إدراج خطاب جديد أضفه للجدول
+    document.getElementById('letterForm').onsubmit = function(e) {
+      e.preventDefault();
+      var fd = new FormData(this);
+      var statement = fd.get('statement');
+      var date = fd.get('date');
+      var to = fd.get('to');
+      var pdfFile = fd.get('pdf');
+      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
+      letters.push({ statement, date, to, pdfName });
+      document.getElementById('letterModal').style.display = 'none';
+      document.getElementById('letterForm').reset();
+      showMainTab('letters');
+    };
+
+    // عند إدراج مقايسة جديدة أضفها للجدول
+    document.getElementById('estimateForm').onsubmit = function(e) {
+      e.preventDefault();
+      var fd = new FormData(this);
+      var buildingModel = fd.get('buildingModel');
+      var buildingCode = fd.get('buildingCode');
+      var location = fd.get('location');
+      var pdfFile = fd.get('estimatePdf');
+      var excelFile = fd.get('estimateExcel');
+      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
+      var excelName = excelFile && excelFile.name ? excelFile.name : '';
+      estimates.push({ buildingModel, buildingCode, location, pdfName, excelName });
+      document.getElementById('estimateModal').style.display = 'none';
+      document.getElementById('estimateForm').reset();
+      showMainTab('estimates');
+    };
+
+    // دالة عرض جدول المقايسات مع مربع بحث
+    function renderEstimatesTable() {
+      let searchValue = window.estimatesSearchValue || '';
+      let filtered = estimates.filter(e =>
+        !searchValue ||
+        e.buildingModel.includes(searchValue) ||
+        e.buildingCode.includes(searchValue) ||
+        e.location.includes(searchValue)
+      );
+      let html = `
+        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
+          <button id="showEstimateModalBtn"
+            style="
+              background:#2e8ca3;
+              color:#fff;
+              padding:9px 32px;
+              border:none;
+              border-radius:0;
+              font-size:1.08rem;
+              font-family:'Cairo', Arial, sans-serif;
+              font-weight:900;
+              letter-spacing:0.5px;
+              cursor:pointer;
+              box-shadow:0 2px 8px #2e8ca322;
+              transition:background 0.18s, color 0.18s;
+              min-width:0;
+              width:auto;
+              height:44px;
+              z-index:2;
+              display:inline-block;
+            "
+          >إدراج مقايسة</button>
+          <input id="estimatesSearchBox" type="text" placeholder="بحث بالنموذج أو الكود أو المكان..." value="${searchValue || ''}"
+            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
+        </div>
+        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
+          <thead>
+            <tr style="background:#f7fbfc;">
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">م</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">نموذج المبني</th>
+                           <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">كود المبني</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المكان</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المقايسة (PDF)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المقايسة (Excel)</th>
+              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      if (filtered.length === 0) {
+        html += `<tr><td colspan="7" style="text-align:center;color:#888;padding:22px;">لا توجد مقايسات بعد.</td></tr>`;
+      } else {
+        filtered.forEach((estimate, idx) => {
+          html += `
+            <tr>
+              <td style="padding:8px;">${idx + 1}</td>
+              <td style="padding:8px;">${estimate.buildingModel}</td>
+              <td style="padding:8px;">${estimate.buildingCode}</td>
+              <td style="padding:8px;">${estimate.location}</td>
+              <td style="padding:8px;">
+                ${estimate.pdfName ? `<span style="color:#2e8ca3;">${estimate.pdfName}</span>` : '—'}
+              </td>
+              <td style="padding:8px;">
+                ${estimate.excelName ? `<span style="color:#2e8ca3;">${estimate.excelName}</span>` : '—'}
+              </td>
+              <td style="padding:8px; text-align:center;">
+                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteEstimate(${idx})">&#128465;</span>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      html += `</tbody></table>`;
+      document.getElementById('mainContentArea').innerHTML = html;
+
+      // مربع البحث
+      document.getElementById('estimatesSearchBox').oninput = function() {
+        window.estimatesSearchValue = this.value;
+        renderEstimatesTable();
+      };
+
+      // زر إظهار نافذة إدراج مقايسة
+      var btn = document.getElementById('showEstimateModalBtn');
+      if(btn) {
+        btn.onclick = function() {
+          showModalInsideWhiteFrame('estimateModal');
+        };
+      }
+    }
+
+    // حذف مقايسة
+    function deleteEstimate(idx) {
+      estimates.splice(idx, 1);
+      renderEstimatesTable();
+    }
+
     // إغلاق النافذة عند الضغط خارجها
     document.getElementById('contractModal').addEventListener('click', function(e) {
       if(e.target === this) {
@@ -262,9 +1353,34 @@
         document.getElementById('contractForm').reset();
       }
     });
+    document.getElementById('supplyModal').addEventListener('click', function(e) {
+      if(e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('supplyForm').reset();
+      }
+    });
+    document.getElementById('extractModal').addEventListener('click', function(e) {
+      if(e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('extractForm').reset();
+      }
+    });
+    document.getElementById('letterModal').addEventListener('click', function(e) {
+      if(e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('letterForm').reset();
+      }
+    });
+    document.getElementById('estimateModal').addEventListener('click', function(e) {
+      if(e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('estimateForm').reset();
+      }
+    });
 
     // عند تحميل الصفحة، أظهر تبويب المشروع افتراضياً
     showMainTab('project');
   </script>
 </body>
+</html>
 </html>
