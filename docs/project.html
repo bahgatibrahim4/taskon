@@ -1,1386 +1,1460 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>المشروع | سعيد أحمد بالبيد</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
+    :root {
+      --primary-color: #2e8ca3;
+      --primary-dark: #1a6a7e;
+      --primary-light: #4da9c2;
+      --secondary-color: #f8f9fa;
+      --accent-color: #ff6b6b;
+      --text-dark: #1a3b50;
+      --text-light: #6c757d;
+      --border-color: #dee2e6;
+      --success-color: #28a745;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+    body {
       font-family: 'Cairo', Arial, sans-serif;
-      background: #e9f2f6;
+      background: #f5f9fb;
+      color: var(--text-dark);
+      line-height: 1.6;
       min-height: 100vh;
-      direction: rtl;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      padding-top: 80px;
     }
+
     #mainNavbarContainer {
       width: 100%;
       position: fixed;
       top: 0;
       right: 0;
       left: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .tabs-container {
+      width: 100%;
+      background: white;
+      padding: 0.5rem 1rem;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 80px;
       z-index: 999;
     }
+
     .tabs-bar {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin: 48px 0 18px 0; /* كانت 80px، الآن أقرب للأعلى */
-    }
-    .main-tab-btn {
-      background: #fff;
-      color: #1a3b50;
-      border: 1.5px solid #2e8ca3;
-      border-radius: 0; /* إطار حاد */
-      font-size: 0.97rem; /* أصغر */
-      padding: 7px 16px; /* أصغر */
-      cursor: pointer;
-      font-family: 'Cairo', Arial, sans-serif;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      outline: none;
-      min-width: 90px; /* أصغر */
-      transition: background 0.18s, color 0.18s;
-    }
-    .main-tab-btn.active {
-      background: #2e8ca3;
-      color: #fff;
-      border-bottom: 3px solid #fff;
-      z-index: 2;
-    }
-    .main-content-area {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto 24px auto; /* هذا يضمن التمركز وعدم الخروج عن الصفحة */
-      background: #fff;
-      border-radius: 22px;
-      box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
-      padding: 38px 32px;
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-      font-size: 1.18rem;
-      color: #1a3b50;
-      position: relative;
-    }
-    .reports-container {
-      /* اجعل نافذة التقارير بعرض الخلفية البيضاء */
-      max-width: 1340px; /* كان 1300px، الآن أوسع */
-      width: 100%;
-      background: #f7fbfc;
-      padding: 32px 32px 32px 32px;
-      border-radius: 22px;
-      box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-      position: relative;
-    }
-    .reports-header {
-      font-size: 2.1rem;
-      font-weight: 900;
-      color: #2e8ca3;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-      text-align: right;
-    }
-    .reports-desc {
-      font-size: 1.18rem;
-      color: #1a3b50;
-      margin-bottom: 18px;
-      text-align: right;
-    }
-    .reports-options-row {
-      display: flex;
+      gap: 0.5rem;
       flex-wrap: wrap;
-      gap: 24px;
-      margin-bottom: 18px;
-      align-items: flex-end;
-      justify-content: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
     }
-    .report-option-box {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 2px 8px #2e8ca322;
-      padding: 18px 22px 14px 22px;
-      min-width: 260px;
+
+    .main-tab-btn {
+      background: transparent;
+      color: var(--text-dark);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 16px;
-      flex: 1 1 260px;
+      gap: 0.4rem;
     }
-    .report-option-box label {
-      font-weight: 700;
-      color: #1a3b50;
-      min-width: 140px;
-      font-size: 1.08rem;
+
+    .main-tab-btn:hover {
+      background: #f0f6f9;
+      color: var(--primary-color);
     }
-    .report-option-box select {
-      padding: 8px 14px;
-      border-radius: 6px;
-      border: 1px solid #bcd3db;
-      font-size: 1.04rem;
-      min-width: 110px;
+
+    .main-tab-btn.active {
+      background: var(--primary-color);
+      color: white;
     }
-    .reports-results-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 32px;
-      margin-top: 32px;
-      align-items: flex-start;
-      justify-content: flex-start;
+
+    .main-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--primary-color);
     }
-    .report-result-box {
+
+    .main-content-area {
+      width: 95%;
+      max-width: 1400px;
+      margin: 1.5rem auto 2rem;
       background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px #2e8ca322;
-      padding: 24px 18px 18px 18px;
-      min-width: 320px;
-      flex: 1 1 320px;
-      margin-bottom: 0;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      min-height: 500px;
     }
-    .report-result-title {
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #f0f6f9;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    .btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      border: none;
       font-weight: 700;
-      color: #2e8ca3;
-      font-size: 1.18rem;
-      margin-bottom: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #ff5252;
+    }
+
+    .search-box {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      width: 240px;
+      transition: var(--transition);
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .data-table th {
+      background: #f8f9fa;
+      padding: 0.9rem;
       text-align: right;
+      font-weight: 700;
+      color: var(--text-dark);
+      border-bottom: 2px solid var(--border-color);
     }
-    .report-chart-box {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px #2e8ca322;
-      padding: 24px;
-      min-width: 420px;
-      flex: 2 1 420px;
-      display: flex;
-      flex-direction: column;
+
+    .data-table td {
+      padding: 0.9rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      margin: 0 0.2rem;
+      transition: var(--transition);
+    }
+
+    .edit-btn {
+      color: var(--primary-color);
+    }
+
+    .edit-btn:hover {
+      color: var(--primary-dark);
+    }
+
+    .delete-btn {
+      color: var(--accent-color);
+    }
+
+    .delete-btn:hover {
+      color: #ff5252;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
       align-items: center;
       justify-content: center;
+      padding: 1rem;
     }
-    .report-chart-title {
-      font-weight: 900;
-      font-size: 1.18rem;
-      color: #1a3b50;
-      margin-bottom: 12px;
-      text-align: right;
+
+    .modal-content {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
       width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      position: relative;
+      animation: modalFadeIn 0.3s;
     }
-    .reports-dropdown-btn {
-      background: #2e8ca3;
-      color: #fff;
-      padding: 13px 44px;
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .close-modal {
+      background: none;
       border: none;
-      border-radius: 8px;
-      font-size: 1.12rem;
-      font-family: 'Cairo', Arial, sans-serif;
-      font-weight: 900;
-      letter-spacing: 0.5px;
+      font-size: 1.5rem;
       cursor: pointer;
-      box-shadow: 0 2px 8px #2e8ca322;
-      min-width: 0;
-      width: auto;
-      height: 48px;
-      z-index: 2;
-      display: inline-block;
-      margin-bottom: 18px;
-      position: absolute;
-      right: 32px;
-      left: auto;
-      top: 0;
-      /* اجعل الزر في أقصى الشمال (يسار) أعلى مربع التقارير */
+      color: var(--text-light);
     }
-    .reports-dropdown-list {
-      position: absolute;
-      top: 60px;
-      right: 0;
-      left: 0;
-      margin: auto;
-      max-width: 1400px; /* كان 1300px، الآن أوسع */
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 8px 32px #1a3b5022, 0 2px 12px #c5d6db44;
-      padding: 32px 32px 24px 32px;
-      z-index: 10001;
-      display: none;
+
+    .form-group {
+      margin-bottom: 1.2rem;
     }
-    .reports-dropdown-list.active {
+
+    .form-label {
       display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
     }
-    .reports-dropdown-actions {
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .form-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 12px;
-      margin-top: 18px;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
     }
-    @media (max-width: 900px) {
-      .reports-options-row, .reports-results-row {
+
+    /* Reports Section */
+    .reports-container {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .reports-header {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .report-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .report-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .chart-container {
+      height: 250px;
+      margin-top: 1rem;
+    }
+
+    /* Progress Section */
+    .progress-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      margin: 2rem 0;
+    }
+
+    .progress-percentage {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin: 1rem 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .main-content-area {
+        width: 97%;
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .tabs-bar {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+      }
+      
+      .section-header {
         flex-direction: column;
-        gap: 18px;
+        align-items: flex-start;
+        gap: 1rem;
       }
-      .report-option-box, .report-result-box, .report-chart-box {
-        min-width: 0;
+      
+      .reports-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-top: 70px;
+      }
+      
+      .main-tab-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+      
+      .main-content-area {
+        padding: 1.2rem;
+        border-radius: 12px;
+      }
+      
+      .section-title {
+        font-size: 1.4rem;
+      }
+      
+      .btn {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.9rem;
+      }
+      
+      .data-table {
+        font-size: 0.9rem;
+      }
+      
+      .data-table th, 
+      .data-table td {
+        padding: 0.7rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .tabs-bar {
+        gap: 0.3rem;
+      }
+      
+      .main-tab-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+      
+      .search-box {
         width: 100%;
+        margin-top: 0.5rem;
       }
+      
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Utility Classes */
+    .text-center {
+      text-align: center;
+    }
+    
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    
+    .d-flex {
+      display: flex;
+    }
+    
+    .align-center {
+      align-items: center;
+    }
+    
+    .justify-between {
+      justify-content: space-between;
     }
   </style>
 </head>
 <body>
   <div id="mainNavbarContainer"></div>
-  <script>
-    // إدراج الشريط العلوي من ملف خارجي
-    fetch('components/main-navbar.html')
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById('mainNavbarContainer').innerHTML = html;
-        Array.from(document.getElementById('mainNavbarContainer').querySelectorAll('script')).forEach(oldScript => {
-          const newScript = document.createElement('script');
-          if (oldScript.src) {
-            newScript.src = oldScript.src;
-          } else {
-            newScript.textContent = oldScript.textContent;
-          }
-          document.body.appendChild(newScript);
-        });
-      });
-  </script>
-  <!-- أزرار أعلى الصفحة -->
-  <div class="tabs-bar">
-    <button class="main-tab-btn active" onclick="showMainTab('project')">بيانات المشروع</button>
-    <button class="main-tab-btn" onclick="showMainTab('contracts')">ملاحق العقود</button>
-    <button class="main-tab-btn" onclick="showMainTab('supplies')">ملاحق التوريدات</button>
-    <button class="main-tab-btn" onclick="showMainTab('extracts')">المستخلصات</button>
-    <button class="main-tab-btn" onclick="showMainTab('letters')">الخطابات</button>
-    <button class="main-tab-btn" onclick="showMainTab('estimates')">المقايسات</button>
-    <button class="main-tab-btn" onclick="showMainTab('reports')">التقارير</button>
+  
+  <div class="tabs-container">
+    <div class="tabs-bar">
+      <button class="main-tab-btn active" data-tab="project">
+        <i class="fas fa-project-diagram"></i> بيانات المشروع
+      </button>
+      <button class="main-tab-btn" data-tab="contracts">
+        <i class="fas fa-file-contract"></i> ملاحق العقود
+      </button>
+      <button class="main-tab-btn" data-tab="supplies">
+        <i class="fas fa-truck-loading"></i> ملاحق التوريدات
+      </button>
+      <button class="main-tab-btn" data-tab="extracts">
+        <i class="fas fa-file-invoice-dollar"></i> المستخلصات
+      </button>
+      <button class="main-tab-btn" data-tab="letters">
+        <i class="fas fa-envelope"></i> الخطابات
+      </button>
+      <button class="main-tab-btn" data-tab="estimates">
+        <i class="fas fa-calculator"></i> المقايسات
+      </button>
+      <button class="main-tab-btn" data-tab="reports">
+        <i class="fas fa-chart-bar"></i> التقارير
+      </button>
+    </div>
   </div>
-  <!-- نافذة في المنتصف -->
+
   <div class="main-content-area" id="mainContentArea">
-    بيانات المشروع
+    <!-- سيتم تحميل المحتوى هنا ديناميكيًا -->
   </div>
-  <!-- نافذة إدراج ملحق عقد (مودال) -->
-  <div id="contractModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
-      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج ملحق عقد</h3>
-      <form id="contractForm">
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">اسم ملحق العقد</label>
-          <input type="text" name="addonName" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة ملحق العقد</label>
-          <input type="number" name="addonValue" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملحق العقد (PDF)</label>
-          <input type="file" name="addonPdf" accept="application/pdf" required style="width:100%;">
-        </div>
-        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
-        <button type="button" id="closeContractModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
-      </form>
-    </div>
-  </div>
-  <!-- نافذة إدراج ملحق توريد (مودال) -->
-  <div id="supplyModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
-      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج ملحق توريد</h3>
-      <form id="supplyForm">
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">اسم ملحق التوريد</label>
-          <input type="text" name="addonName" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة ملحق التوريد</label>
-          <input type="number" name="addonValue" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملحق التوريد (PDF)</label>
-          <input type="file" name="addonPdf" accept="application/pdf" required style="width:100%;">
-        </div>
-        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
-        <button type="button" id="closeSupplyModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
-      </form>
-    </div>
-  </div>
-  <!-- نافذة إدراج مستخلص (مودال) -->
-  <div id="extractModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
-      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج مستخلص</h3>
-      <form id="extractForm">
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">رقم المستخلص</label>
-          <input type="text" name="extractNumber" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">تاريخ المستخلص</label>
-          <input type="date" name="extractDate" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة المستخلص</label>
-          <input type="number" name="extractValue" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملف المستخلص (PDF)</label>
-          <input type="file" name="extractPdf" accept="application/pdf" required style="width:100%;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">ملف المستخلص (Excel)</label>
-          <input type="file" name="extractExcel" accept=".xlsx,.xls" required style="width:100%;">
-        </div>
-        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
-        <button type="button" id="closeExtractModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
-      </form>
-    </div>
-  </div>
-  <!-- نافذة إدراج خطاب (مودال) -->
-  <div id="letterModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
-      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج خطاب</h3>
-      <form id="letterForm">
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">بيان الخطاب</label>
-          <input type="text" name="statement" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">التاريخ</label>
-          <input type="date" name="date" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">موجه إلى</label>
-          <input type="text" name="to" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">الخطاب (PDF)</label>
-          <input type="file" name="pdf" accept="application/pdf" required style="width:100%;">
-        </div>
-        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
-        <button type="button" id="closeLetterModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
-      </form>
-    </div>
-  </div>
-  <!-- نافذة إدراج مقايسة (مودال) -->
-  <div id="estimateModal" style="display:none; position:absolute; top:12px; right:12px; left:12px; bottom:auto; background:#0002; z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:14px; box-shadow:0 4px 24px #1a3b5022; padding:32px 28px; max-width:420px; width:96%; margin:auto; position:relative;">
-      <h3 style="margin-top:0; color:#2e8ca3; font-size:1.18rem; font-weight:700; margin-bottom:18px; text-align:right;">إدراج مقايسة</h3>
-      <form id="estimateForm">
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">نموذج المبني</label>
-          <input type="text" name="buildingModel" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">كود المبني</label>
-          <input type="text" name="buildingCode" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">المكان</label>
-          <input type="text" name="location" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">المقايسة (PDF)</label>
-          <input type="file" name="estimatePdf" accept="application/pdf" required style="width:100%;">
-        </div>
-        <div style="margin-bottom:14px;">
-          <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">المقايسة (Excel)</label>
-          <input type="file" name="estimateExcel" accept=".xlsx,.xls" required style="width:100%;">
-        </div>
-        <button type="submit" style="background:#2e8ca3; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px #2e8ca322;">حفظ</button>
-        <button type="button" id="closeEstimateModalBtn" style="background:#d32f2f; color:#fff; padding:9px 22px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; margin-right:8px;">إلغاء</button>
-      </form>
-    </div>
-  </div>
-  <script>
-    // مصفوفة لحفظ الملاحق مؤقتاً
-    let contractAddons = [];
-    // مصفوفة لحفظ ملاحق التوريدات مؤقتاً
-    let suppliesAddons = [];
-    // مصفوفة لحفظ المستخلصات مؤقتاً
-    let extracts = [];
-    // مصفوفة لحفظ الخطابات مؤقتاً
-    let letters = [];
-    // مصفوفة لحفظ المقايسات مؤقتاً
-    let estimates = [];
 
-    // دالة عرض جدول ملاحق العقود مع مربع بحث
-    function renderContractAddonsTable() {
-      let searchValue = window.contractSearchValue || '';
-      let filtered = contractAddons.filter(a => !searchValue || a.name.includes(searchValue));
-      let html = `
-        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
-          <button id="showContractModalBtn"
-            style="
-              background:#2e8ca3;
-              color:#fff;
-              padding:9px 32px;
-              border:none;
-              border-radius:0;
-              font-size:1.08rem;
-              font-family:'Cairo', Arial, sans-serif;
-              font-weight:900;
-              letter-spacing:0.5px;
-              cursor:pointer;
-              box-shadow:0 2px 8px #2e8ca322;
-              transition:background 0.18s, color 0.18s;
-              min-width:0;
-              width:auto;
-              height:44px;
-              z-index:2;
-              display:inline-block;
-            "
-          >إدراج ملحق عقد</button>
-          <input id="contractSearchBox" type="text" placeholder="بحث باسم الملحق..." value="${searchValue || ''}"
-            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
-        </div>
-        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
-          <thead>
-            <tr style="background:#f7fbfc;">
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">اسم الملحق</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة الملحق</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">الملحق (PDF)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      if (filtered.length === 0) {
-        html += `<tr><td colspan="4" style="text-align:center;color:#888;padding:22px;">لا توجد ملاحق بعد.</td></tr>`;
-      } else {
-        filtered.forEach((addon, idx) => {
-          html += `
-            <tr>
-              <td style="padding:8px;">${addon.name}</td>
-              <td style="padding:8px;">${addon.value}</td>
-              <td style="padding:8px;">
-                ${addon.pdfName ? `<span style="color:#2e8ca3;">${addon.pdfName}</span>` : '—'}
-              </td>
-              <td style="padding:8px; text-align:center;">
-                <span title="تعديل" style="cursor:pointer; margin-left:8px; font-size:1.3em; color:#2e8ca3;" onclick="editAddon(${idx})">&#9998;</span>
-                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteAddon(${idx})">&#128465;</span>
-              </td>
-            </tr>
-          `;
-        });
-      }
-      html += `</tbody></table>`;
-      document.getElementById('mainContentArea').innerHTML = html;
-
-      // مربع البحث
-      document.getElementById('contractSearchBox').oninput = function() {
-        window.contractSearchValue = this.value;
-        renderContractAddonsTable();
-      };
-
-      // زر إظهار نافذة إدراج ملحق عقد
-      var btn = document.getElementById('showContractModalBtn');
-      if(btn) {
-        btn.onclick = function() {
-          showModalInsideWhiteFrame('contractModal');
-        };
-      }
-    }
-
-    // دالة عرض جدول ملاحق التوريدات مع مربع بحث
-    function renderSuppliesAddonsTable() {
-      let searchValue = window.suppliesSearchValue || '';
-      let filtered = suppliesAddons.filter(a => !searchValue || a.name.includes(searchValue));
-      let html = `
-        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
-          <button id="showSupplyModalBtn"
-            style="
-              background:#2e8ca3;
-              color:#fff;
-              padding:9px 32px;
-              border:none;
-              border-radius:0;
-              font-size:1.08rem;
-              font-family:'Cairo', Arial, sans-serif;
-              font-weight:900;
-              letter-spacing:0.5px;
-              cursor:pointer;
-              box-shadow:0 2px 8px #2e8ca322;
-              transition:background 0.18s, color 0.18s;
-              min-width:0;
-              width:auto;
-              height:44px;
-              z-index:2;
-              display:inline-block;
-            "
-          >إدراج ملحق توريد</button>
-          <input id="suppliesSearchBox" type="text" placeholder="بحث باسم الملحق..." value="${searchValue || ''}"
-            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
-        </div>
-        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
-          <thead>
-            <tr style="background:#f7fbfc;">
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">اسم الملحق</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة الملحق</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">الملحق (PDF)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      if (filtered.length === 0) {
-        html += `<tr><td colspan="4" style="text-align:center;color:#888;padding:22px;">لا توجد ملاحق بعد.</td></tr>`;
-      } else {
-        filtered.forEach((addon, idx) => {
-          html += `
-            <tr>
-              <td style="padding:8px;">${addon.name}</td>
-              <td style="padding:8px;">${addon.value}</td>
-              <td style="padding:8px;">
-                ${addon.pdfName ? `<span style="color:#2e8ca3;">${addon.pdfName}</span>` : '—'}
-              </td>
-              <td style="padding:8px; text-align:center;">
-                <span title="تعديل" style="cursor:pointer; margin-left:8px; font-size:1.3em; color:#2e8ca3;" onclick="editSupplyAddon(${idx})">&#9998;</span>
-                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteSupplyAddon(${idx})">&#128465;</span>
-              </td>
-            </tr>
-          `;
-        });
-      }
-      html += `</tbody></table>`;
-      document.getElementById('mainContentArea').innerHTML = html;
-
-      // مربع البحث
-      document.getElementById('suppliesSearchBox').oninput = function() {
-        window.suppliesSearchValue = this.value;
-        renderSuppliesAddonsTable();
-      };
-
-      // زر إظهار نافذة إدراج ملحق توريد
-      var btn = document.getElementById('showSupplyModalBtn');
-      if(btn) {
-        btn.onclick = function() {
-          showModalInsideWhiteFrame('supplyModal');
-        };
-      }
-    }
-
-    // دالة عرض جدول المستخلصات مع مربع بحث
-    function renderExtractsTable() {
-      let searchValue = window.extractsSearchValue || '';
-      let filtered = extracts.filter(a => !searchValue || a.number.includes(searchValue));
-      let html = `
-        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
-          <button id="showExtractModalBtn"
-            style="
-              background:#2e8ca3;
-              color:#fff;
-              padding:9px 32px;
-              border:none;
-              border-radius:0;
-              font-size:1.08rem;
-              font-family:'Cairo', Arial, sans-serif;
-              font-weight:900;
-              letter-spacing:0.5px;
-              cursor:pointer;
-              box-shadow:0 2px 8px #2e8ca322;
-              transition:background 0.18s, color 0.18s;
-              min-width:0;
-              width:auto;
-              height:44px;
-              z-index:2;
-              display:inline-block;
-            "
-          >إدراج مستخلص</button>
-          <input id="extractsSearchBox" type="text" placeholder="بحث برقم المستخلص..." value="${searchValue || ''}"
-            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
-        </div>
-        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
-          <thead>
-            <tr style="background:#f7fbfc;">
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">م</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">رقم المستخلص</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">تاريخ المستخلص</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة المستخلص</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المستخلص (PDF)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المستخلص (Excel)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      if (filtered.length === 0) {
-        html += `<tr><td colspan="7" style="text-align:center;color:#888;padding:22px;">لا توجد مستخلصات بعد.</td></tr>`;
-      } else {
-        filtered.forEach((extract, idx) => {
-          html += `
-            <tr>
-              <td style="padding:8px;">${idx + 1}</td>
-              <td style="padding:8px;">${extract.number}</td>
-              <td style="padding:8px;">${extract.date}</td>
-              <td style="padding:8px;">${extract.value}</td>
-              <td style="padding:8px;">
-                ${extract.pdfName ? `<span style="color:#2e8ca3;">${extract.pdfName}</span>` : '—'}
-              </td>
-              <td style="padding:8px;">
-                ${extract.excelName ? `<span style="color:#2e8ca3;">${extract.excelName}</span>` : '—'}
-              </td>
-              <td style="padding:8px; text-align:center;">
-                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteExtract(${idx})">&#128465;</span>
-              </td>
-            </tr>
-          `;
-        });
-      }
-      html += `</tbody></table>`;
-      document.getElementById('mainContentArea').innerHTML = html;
-
-      // مربع البحث
-      document.getElementById('extractsSearchBox').oninput = function() {
-        window.extractsSearchValue = this.value;
-        renderExtractsTable();
-      };
-
-      // زر إظهار نافذة إدراج مستخلص
-      var btn = document.getElementById('showExtractModalBtn');
-      if(btn) {
-        btn.onclick = function() {
-          showModalInsideWhiteFrame('extractModal');
-        };
-      }
-    }
-
-    // دالة عرض جدول الخطابات مع مربع بحث
-    function renderLettersTable() {
-      let searchValue = window.lettersSearchValue || '';
-      let filtered = letters.filter(l =>
-        !searchValue ||
-        l.statement.includes(searchValue) ||
-        l.to.includes(searchValue)
-      );
-      let html = `
-        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
-          <button id="showLetterModalBtn"
-            style="
-              background:#2e8ca3;
-              color:#fff;
-              padding:9px 32px;
-              border:none;
-              border-radius:0;
-              font-size:1.08rem;
-              font-family:'Cairo', Arial, sans-serif;
-              font-weight:900;
-              letter-spacing:0.5px;
-              cursor:pointer;
-              box-shadow:0 2px 8px #2e8ca322;
-              transition:background 0.18s, color 0.18s;
-              min-width:0;
-              width:auto;
-              height:44px;
-              z-index:2;
-              display:inline-block;
-            "
-          >إدراج خطاب</button>
-          <input id="lettersSearchBox" type="text" placeholder="بحث ببيان الخطاب أو الجهة..." value="${searchValue || ''}"
-            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
-        </div>
-        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
-          <thead>
-            <tr style="background:#f7fbfc;">
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">م</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">بيان الخطاب</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">التاريخ</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">موجه إلى</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">الخطاب (PDF)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      if (filtered.length === 0) {
-        html += `<tr><td colspan="6" style="text-align:center;color:#888;padding:22px;">لا توجد خطابات بعد.</td></tr>`;
-      } else {
-        filtered.forEach((letter, idx) => {
-          html += `
-            <tr>
-              <td style="padding:8px;">${idx + 1}</td>
-              <td style="padding:8px;">${letter.statement}</td>
-              <td style="padding:8px;">${letter.date}</td>
-              <td style="padding:8px;">${letter.to}</td>
-              <td style="padding:8px;">
-                ${letter.pdfName ? `<span style="color:#2e8ca3;">${letter.pdfName}</span>` : '—'}
-              </td>
-              <td style="padding:8px; text-align:center;">
-                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteLetter(${idx})">&#128465;</span>
-              </td>
-            </tr>
-          `;
-        });
-      }
-      html += `</tbody></table>`;
-      document.getElementById('mainContentArea').innerHTML = html;
-
-      // مربع البحث
-      document.getElementById('lettersSearchBox').oninput = function() {
-        window.lettersSearchValue = this.value;
-        renderLettersTable();
-      };
-
-      // زر إظهار نافذة إدراج خطاب
-      var btn = document.getElementById('showLetterModalBtn');
-      if(btn) {
-        btn.onclick = function() {
-          showModalInsideWhiteFrame('letterModal');
-        };
-      }
-    }
-
-    let projectData = null;
-
-    function renderProjectForm() {
-      document.getElementById('mainContentArea').innerHTML = `
-      <form id="projectForm" style="max-width:900px; margin-top:18px; background:#f7fbfc; padding:32px 32px 24px 32px; border-radius:14px; box-shadow:0 2px 12px #2e8ca322;">
-        <div style="display:flex; gap:32px; margin-bottom:18px;">
-          <div style="flex:1;">
-            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">اسم المشروع</label>
-            <input type="text" name="projectName" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
-          </div>
-          <div style="flex:1;">
-            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">مكان المشروع</label>
-            <input type="text" name="projectLocation" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
-          </div>
-        </div>
-        <div style="display:flex; gap:32px; margin-bottom:18px;">
-          <div style="flex:1;">
-            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">تاريخ البداية</label>
-            <input type="date" name="startDate" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
-          </div>
-          <div style="flex:1;">
-            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">تاريخ النهاية</label>
-            <input type="date" name="endDate" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
-          </div>
-        </div>
-        <div style="display:flex; gap:32px; margin-bottom:18px;">
-          <div style="flex:1;">
-            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">قيمة عقد المشروع</label>
-            <input type="number" name="contractValue" required style="width:100%; padding:12px; border-radius:6px; border:1px solid #bcd3db; font-size:1.07rem;">
-          </div>
-          <div style="flex:1;">
-            <label style="font-weight:700; color:#1a3b50; margin-bottom:6px; display:block;">إدراج عقد المشروع (PDF)</label>
-            <input type="file" name="contractPdf" accept="application/pdf" required style="width:100%; font-size:1.07rem;">
-          </div>
-        </div>
-        <button type="submit"
-          style="background:#2e8ca3; color:#fff; padding:13px 44px; border:none; border-radius:0; font-size:1.12rem; font-family:'Cairo', Arial, sans-serif; font-weight:900; letter-spacing:0.5px; cursor:pointer; box-shadow:0 2px 8px #2e8ca322; min-width:0; width:auto; height:48px; z-index:2; display:inline-block;">
-          حفظ البيانات
-        </button>
-      </form>
-    `;
-    document.getElementById('projectForm').onsubmit = function(e) {
-      e.preventDefault();
-      const fd = new FormData(this);
-      projectData = {
-        name: fd.get('projectName'),
-        location: fd.get('projectLocation'),
-        startDate: fd.get('startDate'),
-        endDate: fd.get('endDate'),
-        contractValue: fd.get('contractValue'),
-        pdfName: fd.get('contractPdf') && fd.get('contractPdf').name ? fd.get('contractPdf').name : ''
-      };
-      renderProjectView();
-    };
-    }
-
-    function getProjectProgress() {
-      if (!projectData || !extracts.length) return 0;
-      let totalExtracts = extracts.reduce((sum, e) => sum + Number(e.value || 0), 0);
-      let contractValue = Number(projectData.contractValue || 0);
-      if (!contractValue) return 0;
-      let percent = Math.min(100, Math.round((totalExtracts / contractValue) * 100));
-      return percent;
-    }
-
-    function renderProjectView() {
-      const percent = getProjectProgress();
-      document.getElementById('mainContentArea').innerHTML = `
-      <div style="display:flex; gap:32px; flex-wrap:wrap;">
-        <div style="flex:2; min-width:320px; background:#f7fbfc; padding:32px 32px 24px 32px; border-radius:14px; box-shadow:0 2px 12px #2e8ca322; margin-bottom:18px;">
-          <div style="display:flex; gap:32px; margin-bottom:18px;">
-            <div style="flex:1;">
-              <span style="font-weight:700; color:#1a3b50;">اسم المشروع:</span>
-              <span style="color:#2e8ca3; font-weight:700; margin-right:8px;">${projectData.name}</span>
-            </div>
-            <div style="flex:1;">
-              <span style="font-weight:700; color:#1a3b50;">مكان المشروع:</span>
-              <span style="color:#444; margin-right:8px;">${projectData.location}</span>
-            </div>
-          </div>
-          <div style="display:flex; gap:32px; margin-bottom:18px;">
-            <div style="flex:1;">
-              <span style="font-weight:700; color:#1a3b50;">تاريخ البداية:</span>
-              <span style="color:#444; margin-right:8px;">${projectData.startDate}</span>
-            </div>
-            <div style="flex:1;">
-              <span style="font-weight:700; color:#1a3b50;">تاريخ النهاية:</span>
-              <span style="color:#444; margin-right:8px;">${projectData.endDate}</span>
-            </div>
-          </div>
-          <div style="display:flex; gap:32px; margin-bottom:18px;">
-            <div style="flex:1;">
-              <span style="font-weight:700; color:#1a3b50;">قيمة عقد المشروع:</span>
-              <span style="color:#2e8ca3; font-weight:700; margin-right:8px;">
-                ${projectData.contractValue}
-                <span style="font-family:'Cairo', Arial, sans-serif; font-weight:900; color:#009a49; letter-spacing:1px; font-size:1.08em;">ريال</span>
-              </span>
-            </div>
-            <div style="flex:1;">
-              <span style="font-weight:700; color:#1a3b50;">عقد المشروع (PDF):</span>
-              <span style="color:#2e8ca3; margin-right:8px;">${projectData.pdfName ? projectData.pdfName : '—'}</span>
-            </div>
-          </div>
-          <button id="editProjectBtn"
-            style="background:#2e8ca3; color:#fff; padding:13px 44px; border:none; border-radius:0; font-size:1.12rem; font-family:'Cairo', Arial, sans-serif; font-weight:900; letter-spacing:0.5px; cursor:pointer; box-shadow:0 2px 8px #2e8ca322; min-width:0; width:auto; height:48px; z-index:2; display:inline-block;">
-            تعديل البيانات
-          </button>
-        </div>
-        <!-- مربع نسبة الإنجاز -->
-        <div style="flex:1; min-width:260px; background:#fff; padding:24px 18px 18px 18px; border-radius:14px; box-shadow:0 2px 12px #2e8ca322; margin-bottom:18px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-          <div style="font-weight:900; font-size:1.18rem; color:#1a3b50; margin-bottom:12px;">نسبة إنجاز المشروع</div>
-          <canvas id="progressPieChart" width="180" height="180"></canvas>
-          <div style="margin-top:10px; font-size:1.08rem; color:#2e8ca3; font-weight:700;">
-            ${percent}%
-          </div>
-          <div style="margin-top:6px; font-size:0.98rem; color:#888;">
-            قيمة المستخلصات: <span style="color:#009a49; font-weight:700;">${extracts.reduce((sum, e) => sum + Number(e.value || 0), 0)}</span> ريال
-          </div>
-        </div>
+  <!-- Modal Templates -->
+  <div class="modal" id="contractModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-file-contract"></i> إدراج ملحق عقد</h3>
+        <button class="close-modal">&times;</button>
       </div>
-    `;
-    document.getElementById('editProjectBtn').onclick = renderProjectForm;
-
-    // رسم الرسم البياني الدائري
-    setTimeout(() => {
-      const ctx = document.getElementById('progressPieChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['منجز', 'متبقي'],
-          datasets: [{
-            data: [percent, 100 - percent],
-            backgroundColor: ['#2e8ca3', '#e9f2f6'],
-            borderWidth: 2,
-          }]
-        },
-        options: {
-          cutout: '70%',
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false }
-          }
-        }
-      });
-    }, 100);
-  }
-
-    // دالة عرض مربع التقارير مع زر وقائمة منسدلة
-    function renderReportsTab() {
-      const reportOptions = [
-        { key: 'extracts', label: 'مستخلصات المقاولين' },
-        { key: 'workers', label: 'القبض الشهري للعمال' },
-        { key: 'equipment', label: 'المعدات' },
-        { key: 'supplies', label: 'التوريدات' },
-        { key: 'purchases', label: 'المشتريات' }
-      ];
-      const months = [
-        { value: '', label: 'كل الشهور' },
-        { value: '01', label: 'يناير' },
-        { value: '02', label: 'فبراير' },
-        { value: '03', label: 'مارس' },
-        { value: '04', label: 'أبريل' },
-        { value: '05', label: 'مايو' },
-        { value: '06', label: 'يونيو' },
-        { value: '07', label: 'يوليو' },
-        { value: '08', label: 'أغسطس' },
-        { value: '09', label: 'سبتمبر' },
-        { value: '10', label: 'أكتوبر' },
-        { value: '11', label: 'نوفمبر' },
-        { value: '12', label: 'ديسمبر' }
-      ];
-      let html = `
-        <div class="reports-container" style="position:relative;">
-          <div class="reports-header">التقارير</div>
-          <button type="button" id="showReportsDropdownBtn" class="reports-dropdown-btn">اختيار التقارير</button>
-          <form id="reportsForm" style="margin-top:0;">
-            <div id="reportsDropdownList" class="reports-dropdown-list">
-              <div class="reports-options-row">
-                ${reportOptions.map(opt => `
-                  <div class="report-option-box">
-                    <input type="checkbox" id="report_${opt.key}" name="report_${opt.key}" style="width:22px; height:22px;">
-                    <label for="report_${opt.key}">${opt.label}</label>
-                    <select name="month_${opt.key}">
-                      ${months.map(m => `<option value="${m.value}">${m.label}</option>`).join('')}
-                    </select>
-                  </div>
-                `).join('')}
-              </div>
-              <div class="reports-dropdown-actions">
-                <button type="button" id="closeReportsDropdownBtn" style="background:#2e8ca3; color:#fff; padding:9px 32px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer;">تم الاختيار</button>
-              </div>
-            </div>
-            <button type="submit"
-              style="background:#2e8ca3; color:#fff; padding:13px 44px; border:none; border-radius:0; font-size:1.12rem; font-family:'Cairo', Arial, sans-serif; font-weight:900; letter-spacing:0.5px; cursor:pointer; box-shadow:0 2px 8px #2e8ca322; min-width:0; width:auto; height:48px; z-index:2; display:inline-block; margin-top:18px;">
-              عرض التقارير
-            </button>
-          </form>
-          <div id="reportsResults"></div>
+      <form id="contractForm">
+        <div class="form-group">
+          <label class="form-label">اسم ملحق العقد</label>
+          <input type="text" name="addonName" class="form-control" required>
         </div>
-      `;
-      document.getElementById('mainContentArea').innerHTML = html;
-
-      // زر فتح القائمة المنسدلة
-      document.getElementById('showReportsDropdownBtn').onclick = function() {
-        document.getElementById('reportsDropdownList').classList.add('active');
-      };
-      // زر إغلاق القائمة المنسدلة
-      document.getElementById('closeReportsDropdownBtn').onclick = function() {
-        document.getElementById('reportsDropdownList').classList.remove('active');
-      };
-      // إغلاق القائمة عند الضغط خارجها
-      document.addEventListener('mousedown', function(e) {
-        const dropdown = document.getElementById('reportsDropdownList');
-        const btn = document.getElementById('showReportsDropdownBtn');
-        if (dropdown && dropdown.classList.contains('active')) {
-          if (!dropdown.contains(e.target) && e.target !== btn) {
-            dropdown.classList.remove('active');
-          }
-        }
-      });
-
-      document.getElementById('reportsForm').onsubmit = function(e) {
-        e.preventDefault();
-        const fd = new FormData(this);
-        let selected = reportOptions.filter(opt => fd.get(`report_${opt.key}`));
-        let resultsHtml = '';
-        let chartData = [];
-        let resultBoxes = '';
-        selected.forEach(opt => {
-          let month = fd.get(`month_${opt.key}`);
-          if(opt.key === 'extracts') {
-            let filtered = extracts.filter(ex => {
-              if(!month) return true;
-              if(!ex.date) return false;
-              return ex.date.split('-')[1] === month;
-            });
-            resultBoxes += renderExtractsReportTable(filtered, month, opt.label);
-            chartData.push({ label: opt.label, value: filtered.reduce((sum, ex) => sum + Number(ex.value || 0), 0) });
-          }
-          else if(opt.key === 'workers') {
-            let value = month ? 12000 : 12000 * 12;
-            resultBoxes += renderSimpleReportTable(opt.label, value, month);
-            chartData.push({ label: opt.label, value });
-          }
-          else if(opt.key === 'equipment') {
-            let value = month ? 8000 : 8000 * 12;
-            resultBoxes += renderSimpleReportTable(opt.label, value, month);
-            chartData.push({ label: opt.label, value });
-          }
-          else if(opt.key === 'supplies') {
-            let value = month ? 5000 : 5000 * 12;
-            resultBoxes += renderSimpleReportTable(opt.label, value, month);
-            chartData.push({ label: opt.label, value });
-          }
-          else if(opt.key === 'purchases') {
-            let value = month ? 3000 : 3000 * 12;
-            resultBoxes += renderSimpleReportTable(opt.label, value, month);
-            chartData.push({ label: opt.label, value });
-          }
-        });
-        resultsHtml += `<div class="reports-results-row">${resultBoxes}`;
-        if(chartData.length) {
-          resultsHtml += `
-            <div class="report-chart-box">
-              <div class="report-chart-title">رسم بياني إجمالي</div>
-              <canvas id="reportsChart" width="420" height="220"></canvas>
-            </div>
-          `;
-        }
-        resultsHtml += `</div>`;
-        document.getElementById('reportsResults').innerHTML = resultsHtml;
-        if(chartData.length) {
-          setTimeout(() => {
-            const ctx = document.getElementById('reportsChart').getContext('2d');
-            new Chart(ctx, {
-              type: 'bar',
-              data: {
-                labels: chartData.map(d => d.label),
-                datasets: [{
-                  label: 'القيمة',
-                  data: chartData.map(d => d.value),
-                  backgroundColor: '#2e8ca3'
-                }]
-              },
-              options: {
-                plugins: { legend: { display: false } }
-              }
-            });
-          }, 100);
-        }
-      };
-    }
-
-    // جدول مستخلصات المقاولين (مربع منسق)
-    function renderExtractsReportTable(filtered, month, label) {
-      let title = label + (month ? ` لشهر ${month}` : ' لكل الشهور');
-      let total = filtered.reduce((sum, ex) => sum + Number(ex.value || 0), 0);
-      let html = `
-        <div class="report-result-box">
-          <div class="report-result-title">${title}</div>
-          <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;">
-            <thead>
-              <tr style="background:#f7fbfc;">
-                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">رقم المستخلص</th>
-                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">تاريخ المستخلص</th>
-                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">قيمة المستخلص</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filtered.length ? filtered.map(ex => `
-                <tr>
-                  <td style="padding:8px;">${ex.number}</td>
-                  <td style="padding:8px;">${ex.date}</td>
-                  <td style="padding:8px;">${ex.value}</td>
-                </tr>
-              `).join('') : `<tr><td colspan="3" style="text-align:center;color:#888;padding:22px;">لا توجد بيانات.</td></tr>`}
-            </tbody>
-            <tfoot>
-              <tr style="background:#f7fbfc;">
-                <td colspan="2" style="padding:10px 8px; font-weight:700; color:#1a3b50; text-align:left;">الإجمالي</td>
-                <td style="padding:10px 8px; font-weight:900; color:#009a49;">${total}</td>
-              </tr>
-            </tfoot>
-          </table>
+        <div class="form-group">
+          <label class="form-label">قيمة ملحق العقد</label>
+          <input type="number" name="addonValue" class="form-control" required>
         </div>
-      `;
-      return html;
-    }
-
-    // جدول بسيط للخيارات الأخرى (مربع منسق)
-    function renderSimpleReportTable(label, value, month) {
-      let title = label + (month ? ` لشهر ${month}` : ' لكل الشهور');
-      return `
-        <div class="report-result-box">
-          <div class="report-result-title">${title}</div>
-          <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;">
-            <thead>
-              <tr style="background:#f7fbfc;">
-                <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">القيمة الإجمالية</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="padding:8px;">${value}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="form-group">
+          <label class="form-label">ملحق العقد (PDF)</label>
+          <input type="file" name="addonPdf" class="form-control" accept="application/pdf" required>
         </div>
-      `;
-    }
-    function showMainTab(tab) {
-      document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.main-tab-btn').forEach(btn => {
-        if (btn.textContent.trim() === getTabLabel(tab)) btn.classList.add('active');
-      });
-      if(tab === 'contracts') {
-        renderContractAddonsTable();
-      } else if(tab === 'supplies') {
-        renderSuppliesAddonsTable();
-      } else if(tab === 'extracts') {
-        renderExtractsTable();
-      } else if(tab === 'letters') {
-        renderLettersTable();
-      } else if(tab === 'estimates') {
-        renderEstimatesTable();
-      } else if(tab === 'project') {
-        if(projectData) {
-          renderProjectView();
-        } else {
-          renderProjectForm();
-        }
-      } else if(tab === 'reports') {
-        renderReportsTab();
-      } else {
-        var content = '';
-        if(tab === 'supplies') content = 'ملاحق التوريدات';
-        else if(tab === 'extracts') content = 'المستخلصات';
-        else if(tab === 'letters') content = 'الخطابات';
-        document.getElementById('mainContentArea').innerHTML = content;
+        <div class="form-actions">
+          <button type="button" class="btn btn-danger" id="closeContractModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="supplyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-truck-loading"></i> إدراج ملحق توريد</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="supplyForm">
+        <div class="form-group">
+          <label class="form-label">اسم ملحق التوريد</label>
+          <input type="text" name="addonName" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">قيمة ملحق التوريد</label>
+          <input type="number" name="addonValue" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ملحق التوريد (PDF)</label>
+          <input type="file" name="addonPdf" class="form-control" accept="application/pdf" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-danger" id="closeSupplyModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="extractModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-file-invoice-dollar"></i> إدراج مستخلص</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="extractForm">
+        <div class="form-group">
+          <label class="form-label">رقم المستخلص</label>
+          <input type="text" name="extractNumber" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">تاريخ المستخلص</label>
+          <input type="date" name="extractDate" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">قيمة المستخلص</label>
+          <input type="number" name="extractValue" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ملف المستخلص (PDF)</label>
+          <input type="file" name="extractPdf" class="form-control" accept="application/pdf" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ملف المستخلص (Excel)</label>
+          <input type="file" name="extractExcel" class="form-control" accept=".xlsx,.xls" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-danger" id="closeExtractModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="letterModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-envelope"></i> إدراج خطاب</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="letterForm">
+        <div class="form-group">
+          <label class="form-label">بيان الخطاب</label>
+          <input type="text" name="statement" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">التاريخ</label>
+          <input type="date" name="date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">موجه إلى</label>
+          <input type="text" name="to" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الخطاب (PDF)</label>
+          <input type="file" name="pdf" class="form-control" accept="application/pdf" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-danger" id="closeLetterModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="estimateModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-calculator"></i> إدراج مقايسة</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="estimateForm">
+        <div class="form-group">
+          <label class="form-label">نموذج المبني</label>
+          <input type="text" name="buildingModel" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">كود المبني</label>
+          <input type="text" name="buildingCode" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المكان</label>
+          <input type="text" name="location" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المقايسة (PDF)</label>
+          <input type="file" name="estimatePdf" class="form-control" accept="application/pdf" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المقايسة (Excel)</label>
+          <input type="file" name="estimateExcel" class="form-control" accept=".xlsx,.xls" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-danger" id="closeEstimateModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // بيانات التطبيق
+    const state = {
+      contractAddons: [],
+      suppliesAddons: [],
+      extracts: [],
+      letters: [],
+      estimates: [],
+      projectData: null,
+      currentTab: 'project',
+      searchValues: {
+        contracts: '',
+        supplies: '',
+        extracts: '',
+        letters: '',
+        estimates: ''
       }
-    }
-    function getTabLabel(tab) {
-      if(tab === 'project') return 'بيانات المشروع';
-      if(tab === 'contracts') return 'ملاحق العقود';
-      if(tab === 'supplies') return 'ملاحق التوريدات';
-      if(tab === 'extracts') return 'المستخلصات';
-      if(tab === 'letters') return 'الخطابات';
-      if(tab === 'estimates') return 'المقايسات';
-      if(tab === 'reports') return 'التقارير';
-      return '';
-    }
-    // إضافة مستمع للنقر على شريط الأزرار
-    document.querySelector('.tabs-bar').addEventListener('click', function(e) {
-      const btn = e.target.closest('.main-tab-btn');
-      if (btn) {
-        let tab = '';
-        switch (btn.textContent.trim()) {
-          case 'بيانات المشروع': tab = 'project'; break;
-          case 'ملاحق العقود': tab = 'contracts'; break;
-          case 'ملاحق التوريدات': tab = 'supplies'; break;
-          case 'المستخلصات': tab = 'extracts'; break;
-          case 'الخطابات': tab = 'letters'; break;
-          case 'المقايسات': tab = 'estimates'; break;
-          case 'التقارير': tab = 'reports'; break;
-        }
-        if (tab) showMainTab(tab);
-      }
+    };
+
+    // تهيئة التطبيق
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNavbar();
+      initEventListeners();
+      showTab('project');
     });
 
-    // إغلاق نافذة إدراج ملحق عقد
-    document.getElementById('closeContractModalBtn').onclick = function() {
-      document.getElementById('contractModal').style.display = 'none';
-      document.getElementById('contractForm').reset();
-    };
-
-    // إغلاق نافذة إدراج ملحق توريد
-    document.getElementById('closeSupplyModalBtn').onclick = function() {
-      document.getElementById('supplyModal').style.display = 'none';
-      document.getElementById('supplyForm').reset();
-    };
-
-    // إغلاق نافذة إدراج مستخلص
-    document.getElementById('closeExtractModalBtn').onclick = function() {
-      document.getElementById('extractModal').style.display = 'none';
-      document.getElementById('extractForm').reset();
-    };
-
-    // إغلاق نافذة إدراج خطاب
-    document.getElementById('closeLetterModalBtn').onclick = function() {
-      document.getElementById('letterModal').style.display = 'none';
-      document.getElementById('letterForm').reset();
-    };
-
-    // إغلاق نافذة إدراج مقايسة
-    document.getElementById('closeEstimateModalBtn').onclick = function() {
-      document.getElementById('estimateModal').style.display = 'none';
-      document.getElementById('estimateForm').reset();
-    };
-
-    // عند إدراج ملحق جديد أضفه للجدول
-    document.getElementById('contractForm').onsubmit = function(e) {
-      e.preventDefault();
-      var fd = new FormData(this);
-      var name = fd.get('addonName');
-      var value = fd.get('addonValue');
-      var pdfFile = fd.get('addonPdf');
-      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
-      contractAddons.push({ name, value, pdfName });
-      document.getElementById('contractModal').style.display = 'none';
-      document.getElementById('contractForm').reset();
-      showMainTab('contracts');
-    };
-
-    // عند إدراج ملحق توريد جديد أضفه للجدول
-    function supplyFormSubmitHandler(e) {
-      e.preventDefault();
-      var fd = new FormData(this);
-      var name = fd.get('addonName');
-      var value = fd.get('addonValue');
-      var pdfFile = fd.get('addonPdf');
-      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
-      suppliesAddons.push({ name, value, pdfName });
-      document.getElementById('supplyModal').style.display = 'none';
-      document.getElementById('supplyForm').reset();
-      showMainTab('supplies');
+    // تحميل شريط التنقل
+    function loadNavbar() {
+      fetch('components/main-navbar.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('mainNavbarContainer').innerHTML = html;
+          // معالجة أي scripts داخل navbar
+          Array.from(document.getElementById('mainNavbarContainer').querySelectorAll('script')).forEach(oldScript => {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+          });
+        })
+        .catch(err => console.error('Error loading navbar:', err));
     }
-    document.getElementById('supplyForm').onsubmit = supplyFormSubmitHandler;
 
-    // عند إدراج مستخلص جديد أضفه للجدول
-    document.getElementById('extractForm').onsubmit = function(e) {
-      e.preventDefault();
-      var fd = new FormData(this);
-      var number = fd.get('extractNumber');
-      var date = fd.get('extractDate');
-      var value = fd.get('extractValue');
-      var pdfFile = fd.get('extractPdf');
-      var excelFile = fd.get('extractExcel');
-      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
-      var excelName = excelFile && excelFile.name ? excelFile.name : '';
-      extracts.push({ number, date, value, pdfName, excelName });
-      document.getElementById('extractModal').style.display = 'none';
-      document.getElementById('extractForm').reset();
-      showMainTab('extracts');
-    };
+    // إعداد مستمعي الأحداث
+    function initEventListeners() {
+      // أحداث أزرار التبويب
+      document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          showTab(tab);
+        });
+      });
 
-    // عند إدراج خطاب جديد أضفه للجدول
-    document.getElementById('letterForm').onsubmit = function(e) {
-      e.preventDefault();
-      var fd = new FormData(this);
-      var statement = fd.get('statement');
-      var date = fd.get('date');
-      var to = fd.get('to');
-      var pdfFile = fd.get('pdf');
-      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
-      letters.push({ statement, date, to, pdfName });
-      document.getElementById('letterModal').style.display = 'none';
-      document.getElementById('letterForm').reset();
-      showMainTab('letters');
-    };
+      // أحداث إغلاق النماذج
+      document.querySelectorAll('.close-modal, .btn-danger').forEach(btn => {
+        btn.addEventListener('click', closeAllModals);
+      });
 
-    // عند إدراج مقايسة جديدة أضفها للجدول
-    document.getElementById('estimateForm').onsubmit = function(e) {
-      e.preventDefault();
-      var fd = new FormData(this);
-      var buildingModel = fd.get('buildingModel');
-      var buildingCode = fd.get('buildingCode');
-      var location = fd.get('location');
-      var pdfFile = fd.get('estimatePdf');
-      var excelFile = fd.get('estimateExcel');
-      var pdfName = pdfFile && pdfFile.name ? pdfFile.name : '';
-      var excelName = excelFile && excelFile.name ? excelFile.name : '';
-      estimates.push({ buildingModel, buildingCode, location, pdfName, excelName });
-      document.getElementById('estimateModal').style.display = 'none';
-      document.getElementById('estimateForm').reset();
-      showMainTab('estimates');
-    };
+      // أحداث إغلاق النماذج بالنقر خارجها
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeAllModals();
+        });
+      });
 
-    // دالة عرض جدول المقايسات مع مربع بحث
-    function renderEstimatesTable() {
-      let searchValue = window.estimatesSearchValue || '';
-      let filtered = estimates.filter(e =>
-        !searchValue ||
-        e.buildingModel.includes(searchValue) ||
-        e.buildingCode.includes(searchValue) ||
-        e.location.includes(searchValue)
+      // أحداث إرسال النماذج
+      document.getElementById('contractForm').addEventListener('submit', handleContractSubmit);
+      document.getElementById('supplyForm').addEventListener('submit', handleSupplySubmit);
+      document.getElementById('extractForm').addEventListener('submit', handleExtractSubmit);
+      document.getElementById('letterForm').addEventListener('submit', handleLetterSubmit);
+      document.getElementById('estimateForm').addEventListener('submit', handleEstimateSubmit);
+    }
+
+    // إظهار تبويب معين
+    function showTab(tabName) {
+      state.currentTab = tabName;
+      
+      // تحديث حالة أزرار التبويب
+      document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.main-tab-btn[data-tab="${tabName}"]`).classList.add('active');
+      
+      // تحميل محتوى التبويب
+      switch(tabName) {
+        case 'project':
+          renderProjectTab();
+          break;
+        case 'contracts':
+          renderContractsTab();
+          break;
+        case 'supplies':
+          renderSuppliesTab();
+          break;
+        case 'extracts':
+          renderExtractsTab();
+          break;
+        case 'letters':
+          renderLettersTab();
+          break;
+        case 'estimates':
+          renderEstimatesTab();
+          break;
+        case 'reports':
+          renderReportsTab();
+          break;
+      }
+    }
+
+    // عرض محتوى تبويب المشروع
+    function renderProjectTab() {
+      if (!state.projectData) {
+        document.getElementById('mainContentArea').innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-project-diagram"></i> بيانات المشروع</h2>
+          </div>
+          <form id="projectForm" class="project-form">
+            <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
+              <div class="form-group" style="flex: 1; min-width: 300px;">
+                <label class="form-label">اسم المشروع</label>
+                <input type="text" name="projectName" class="form-control" required>
+              </div>
+              <div class="form-group" style="flex: 1; min-width: 300px;">
+                <label class="form-label">مكان المشروع</label>
+                <input type="text" name="projectLocation" class="form-control" required>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
+              <div class="form-group" style="flex: 1; min-width: 300px;">
+                <label class="form-label">تاريخ البداية</label>
+                <input type="date" name="startDate" class="form-control" required>
+              </div>
+              <div class="form-group" style="flex: 1; min-width: 300px;">
+                <label class="form-label">تاريخ النهاية</label>
+                <input type="date" name="endDate" class="form-control" required>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
+              <div class="form-group" style="flex: 1; min-width: 300px;">
+                <label class="form-label">قيمة عقد المشروع</label>
+                <input type="number" name="contractValue" class="form-control" required>
+              </div>
+              <div class="form-group" style="flex: 1; min-width: 300px;">
+                <label class="form-label">إدراج عقد المشروع (PDF)</label>
+                <input type="file" name="contractPdf" class="form-control" accept="application/pdf" required>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">حفظ البيانات</button>
+            </div>
+          </form>
+        `;
+        
+        document.getElementById('projectForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          state.projectData = {
+            name: formData.get('projectName'),
+            location: formData.get('projectLocation'),
+            startDate: formData.get('startDate'),
+            endDate: formData.get('endDate'),
+            contractValue: formData.get('contractValue'),
+            pdfName: formData.get('contractPdf').name || ''
+          };
+          renderProjectTab();
+        });
+      } else {
+        const progress = calculateProjectProgress();
+        document.getElementById('mainContentArea').innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-project-diagram"></i> بيانات المشروع</h2>
+            <button class="btn btn-primary" id="editProjectBtn">
+              <i class="fas fa-edit"></i> تعديل البيانات
+            </button>
+          </div>
+          
+          <div class="d-flex justify-between" style="gap: 2rem; flex-wrap: wrap;">
+            <div style="flex: 2; min-width: 300px;">
+              <div class="project-details">
+                <div class="d-flex justify-between mb-2">
+                  <strong>اسم المشروع:</strong>
+                  <span>${state.projectData.name}</span>
+                </div>
+                <div class="d-flex justify-between mb-2">
+                  <strong>مكان المشروع:</strong>
+                  <span>${state.projectData.location}</span>
+                </div>
+                <div class="d-flex justify-between mb-2">
+                  <strong>تاريخ البداية:</strong>
+                  <span>${state.projectData.startDate}</span>
+                </div>
+                <div class="d-flex justify-between mb-2">
+                  <strong>تاريخ النهاية:</strong>
+                  <span>${state.projectData.endDate}</span>
+                </div>
+                <div class="d-flex justify-between mb-2">
+                  <strong>قيمة عقد المشروع:</strong>
+                  <span>${state.projectData.contractValue} ريال</span>
+                </div>
+                <div class="d-flex justify-between">
+                  <strong>عقد المشروع (PDF):</strong>
+                  <span>${state.projectData.pdfName || '—'}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div style="flex: 1; min-width: 250px;">
+              <div class="progress-container">
+                <div class="progress-percentage">${progress}%</div>
+                <canvas id="progressChart" width="200" height="200"></canvas>
+                <div class="mt-2">
+                  <p>قيمة المستخلصات: <strong>${calculateTotalExtracts()} ريال</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // رسم مخطط التقدم
+        setTimeout(() => {
+          const ctx = document.getElementById('progressChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: ['منجز', 'متبقي'],
+              datasets: [{
+                data: [progress, 100 - progress],
+                backgroundColor: ['#2e8ca3', '#e9f2f6'],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              cutout: '70%',
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+              }
+            }
+          });
+        }, 100);
+        
+        document.getElementById('editProjectBtn').addEventListener('click', () => {
+          state.projectData = null;
+          renderProjectTab();
+        });
+      }
+    }
+
+    // حساب تقدم المشروع
+    function calculateProjectProgress() {
+      if (!state.projectData || !state.extracts.length) return 0;
+      const totalExtracts = state.extracts.reduce((sum, e) => sum + Number(e.value || 0), 0);
+      const contractValue = Number(state.projectData.contractValue || 0);
+      if (!contractValue) return 0;
+      return Math.min(100, Math.round((totalExtracts / contractValue) * 100));
+    }
+
+    // حساب إجمالي المستخلصات
+    function calculateTotalExtracts() {
+      return state.extracts.reduce((sum, e) => sum + Number(e.value || 0), 0);
+    }
+
+    // عرض محتوى تبويب العقود
+    function renderContractsTab() {
+      const filtered = state.contractAddons.filter(a => 
+        !state.searchValues.contracts || a.name.includes(state.searchValues.contracts)
       );
-      let html = `
-        <div style="width:100%; display:flex; justify-content:flex-start; align-items:center; gap:18px; margin-bottom:32px;">
-          <button id="showEstimateModalBtn"
-            style="
-              background:#2e8ca3;
-              color:#fff;
-              padding:9px 32px;
-              border:none;
-              border-radius:0;
-              font-size:1.08rem;
-              font-family:'Cairo', Arial, sans-serif;
-              font-weight:900;
-              letter-spacing:0.5px;
-              cursor:pointer;
-              box-shadow:0 2px 8px #2e8ca322;
-              transition:background 0.18s, color 0.18s;
-              min-width:0;
-              width:auto;
-              height:44px;
-              z-index:2;
-              display:inline-block;
-            "
-          >إدراج مقايسة</button>
-          <input id="estimatesSearchBox" type="text" placeholder="بحث بالنموذج أو الكود أو المكان..." value="${searchValue || ''}"
-            style="border:1.5px solid #2e8ca3; border-radius:0; padding:8px 14px; font-size:1.04rem; font-family:'Cairo', Arial, sans-serif; outline:none; width:240px;">
+      
+      document.getElementById('mainContentArea').innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title"><i class="fas fa-file-contract"></i> ملاحق العقود</h2>
+          <div class="d-flex align-center" style="gap: 1rem;">
+            <input type="text" class="search-box" placeholder="بحث باسم الملحق..." 
+                   value="${state.searchValues.contracts}" id="contractSearch">
+            <button class="btn btn-primary" id="addContractBtn">
+              <i class="fas fa-plus"></i> إدراج ملحق عقد
+            </button>
+          </div>
         </div>
-        <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;box-shadow:0 2px 8px #c5d6db22;margin-top:0;">
+        
+        <table class="data-table">
           <thead>
-            <tr style="background:#f7fbfc;">
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">م</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">نموذج المبني</th>
-                           <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">كود المبني</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المكان</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المقايسة (PDF)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">المقايسة (Excel)</th>
-              <th style="padding:10px 8px;font-weight:700;color:#1a3b50;">إجراءات</th>
+            <tr>
+              <th>اسم الملحق</th>
+              <th>قيمة الملحق</th>
+              <th>الملحق (PDF)</th>
+              <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
+            ${filtered.length ? filtered.map((addon, idx) => `
+              <tr>
+                <td>${addon.name}</td>
+                <td>${addon.value}</td>
+                <td>${addon.pdfName ? addon.pdfName : '—'}</td>
+                <td>
+                  <button class="action-btn edit-btn" onclick="editContract(${idx})">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-btn delete-btn" onclick="deleteContract(${idx})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `).join('') : `
+              <tr>
+                <td colspan="4" class="text-center">لا توجد ملاحق عقود</td>
+              </tr>
+            `}
+          </tbody>
+        </table>
       `;
-      if (filtered.length === 0) {
-        html += `<tr><td colspan="7" style="text-align:center;color:#888;padding:22px;">لا توجد مقايسات بعد.</td></tr>`;
-      } else {
-        filtered.forEach((estimate, idx) => {
-          html += `
+      
+      document.getElementById('contractSearch').addEventListener('input', (e) => {
+        state.searchValues.contracts = e.target.value;
+        renderContractsTab();
+      });
+      
+      document.getElementById('addContractBtn').addEventListener('click', () => {
+        document.getElementById('contractModal').style.display = 'flex';
+      });
+    }
+
+    // معالجة إرسال نموذج العقد
+    function handleContractSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      state.contractAddons.push({
+        name: formData.get('addonName'),
+        value: formData.get('addonValue'),
+        pdfName: formData.get('addonPdf').name || ''
+      });
+      closeAllModals();
+      renderContractsTab();
+    }
+
+    // عرض محتوى تبويب التوريدات
+    function renderSuppliesTab() {
+      const filtered = state.suppliesAddons.filter(a => 
+        !state.searchValues.supplies || a.name.includes(state.searchValues.supplies)
+      );
+      
+      document.getElementById('mainContentArea').innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title"><i class="fas fa-truck-loading"></i> ملاحق التوريدات</h2>
+          <div class="d-flex align-center" style="gap: 1rem;">
+            <input type="text" class="search-box" placeholder="بحث باسم الملحق..." 
+                   value="${state.searchValues.supplies}" id="supplySearch">
+            <button class="btn btn-primary" id="addSupplyBtn">
+              <i class="fas fa-plus"></i> إدراج ملحق توريد
+            </button>
+          </div>
+        </div>
+        
+        <table class="data-table">
+          <thead>
             <tr>
-              <td style="padding:8px;">${idx + 1}</td>
-              <td style="padding:8px;">${estimate.buildingModel}</td>
-              <td style="padding:8px;">${estimate.buildingCode}</td>
-              <td style="padding:8px;">${estimate.location}</td>
-              <td style="padding:8px;">
-                ${estimate.pdfName ? `<span style="color:#2e8ca3;">${estimate.pdfName}</span>` : '—'}
-              </td>
-              <td style="padding:8px;">
-                ${estimate.excelName ? `<span style="color:#2e8ca3;">${estimate.excelName}</span>` : '—'}
-              </td>
-              <td style="padding:8px; text-align:center;">
-                <span title="حذف" style="cursor:pointer; font-size:1.3em; color:#d32f2f;" onclick="deleteEstimate(${idx})">&#128465;</span>
-              </td>
+              <th>اسم الملحق</th>
+              <th>قيمة الملحق</th>
+              <th>الملحق (PDF)</th>
+              <th>الإجراءات</th>
             </tr>
-          `;
-        });
-      }
-      html += `</tbody></table>`;
-      document.getElementById('mainContentArea').innerHTML = html;
+          </thead>
+          <tbody>
+            ${filtered.length ? filtered.map((addon, idx) => `
+              <tr>
+                <td>${addon.name}</td>
+                <td>${addon.value}</td>
+                <td>${addon.pdfName ? addon.pdfName : '—'}</td>
+                <td>
+                  <button class="action-btn edit-btn" onclick="editSupply(${idx})">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-btn delete-btn" onclick="deleteSupply(${idx})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `).join('') : `
+              <tr>
+                <td colspan="4" class="text-center">لا توجد ملاحق توريدات</td>
+              </tr>
+            `}
+          </tbody>
+        </table>
+      `;
+      
+      document.getElementById('supplySearch').addEventListener('input', (e) => {
+        state.searchValues.supplies = e.target.value;
+        renderSuppliesTab();
+      });
+      
+      document.getElementById('addSupplyBtn').addEventListener('click', () => {
+        document.getElementById('supplyModal').style.display = 'flex';
+      });
+    }
 
-      // مربع البحث
-      document.getElementById('estimatesSearchBox').oninput = function() {
-        window.estimatesSearchValue = this.value;
-        renderEstimatesTable();
-      };
+    // معالجة إرسال نموذج التوريد
+    function handleSupplySubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      state.suppliesAddons.push({
+        name: formData.get('addonName'),
+        value: formData.get('addonValue'),
+        pdfName: formData.get('addonPdf').name || ''
+      });
+      closeAllModals();
+      renderSuppliesTab();
+    }
 
-      // زر إظهار نافذة إدراج مقايسة
-      var btn = document.getElementById('showEstimateModalBtn');
-      if(btn) {
-        btn.onclick = function() {
-          showModalInsideWhiteFrame('estimateModal');
-        };
+    // عرض محتوى تبويب المستخلصات
+    function renderExtractsTab() {
+      const filtered = state.extracts.filter(e => 
+        !state.searchValues.extracts || e.number.includes(state.searchValues.extracts)
+      );
+      
+      document.getElementById('mainContentArea').innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> المستخلصات</h2>
+          <div class="d-flex align-center" style="gap: 1rem;">
+            <input type="text" class="search-box" placeholder="بحث برقم المستخلص..." 
+                   value="${state.searchValues.extracts}" id="extractSearch">
+            <button class="btn btn-primary" id="addExtractBtn">
+              <i class="fas fa-plus"></i> إدراج مستخلص
+            </button>
+          </div>
+        </div>
+        
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>رقم المستخلص</th>
+              <th>تاريخ المستخلص</th>
+              <th>قيمة المستخلص</th>
+              <th>المستخلص (PDF)</th>
+              <th>المستخلص (Excel)</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.length ? filtered.map((extract, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${extract.number}</td>
+                <td>${extract.date}</td>
+                <td>${extract.value}</td>
+                <td>${extract.pdfName || '—'}</td>
+                <td>${extract.excelName || '—'}</td>
+                <td>
+                  <button class="action-btn delete-btn" onclick="deleteExtract(${idx})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `).join('') : `
+              <tr>
+                <td colspan="7" class="text-center">لا توجد مستخلصات</td>
+              </tr>
+            `}
+          </tbody>
+        </table>
+      `;
+      
+      document.getElementById('extractSearch').addEventListener('input', (e) => {
+        state.searchValues.extracts = e.target.value;
+        renderExtractsTab();
+      });
+      
+      document.getElementById('addExtractBtn').addEventListener('click', () => {
+        document.getElementById('extractModal').style.display = 'flex';
+      });
+    }
+
+    // معالجة إرسال نموذج المستخلص
+    function handleExtractSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      state.extracts.push({
+        number: formData.get('extractNumber'),
+        date: formData.get('extractDate'),
+        value: formData.get('extractValue'),
+        pdfName: formData.get('extractPdf').name || '',
+        excelName: formData.get('extractExcel').name || ''
+      });
+      closeAllModals();
+      renderExtractsTab();
+    }
+
+    // عرض محتوى تبويب الخطابات
+    function renderLettersTab() {
+      const filtered = state.letters.filter(l => 
+        !state.searchValues.letters || 
+        l.statement.includes(state.searchValues.letters) || 
+        l.to.includes(state.searchValues.letters)
+      );
+      
+      document.getElementById('mainContentArea').innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title"><i class="fas fa-envelope"></i> الخطابات</h2>
+          <div class="d-flex align-center" style="gap: 1rem;">
+            <input type="text" class="search-box" placeholder="بحث ببيان الخطاب أو الجهة..." 
+                   value="${state.searchValues.letters}" id="letterSearch">
+            <button class="btn btn-primary" id="addLetterBtn">
+              <i class="fas fa-plus"></i> إدراج خطاب
+            </button>
+          </div>
+        </div>
+        
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>بيان الخطاب</th>
+              <th>التاريخ</th>
+              <th>موجه إلى</th>
+              <th>الخطاب (PDF)</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.length ? filtered.map((letter, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${letter.statement}</td>
+                <td>${letter.date}</td>
+                <td>${letter.to}</td>
+                <td>${letter.pdfName || '—'}</td>
+                <td>
+                  <button class="action-btn delete-btn" onclick="deleteLetter(${idx})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `).join('') : `
+              <tr>
+                <td colspan="6" class="text-center">لا توجد خطابات</td>
+              </tr>
+            `}
+          </tbody>
+        </table>
+      `;
+      
+      document.getElementById('letterSearch').addEventListener('input', (e) => {
+        state.searchValues.letters = e.target.value;
+        renderLettersTab();
+      });
+      
+      document.getElementById('addLetterBtn').addEventListener('click', () => {
+        document.getElementById('letterModal').style.display = 'flex';
+      });
+    }
+
+    // معالجة إرسال نموذج الخطاب
+    function handleLetterSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      state.letters.push({
+        statement: formData.get('statement'),
+        date: formData.get('date'),
+        to: formData.get('to'),
+        pdfName: formData.get('pdf').name || ''
+      });
+      closeAllModals();
+      renderLettersTab();
+    }
+
+    // عرض محتوى تبويب المقايسات
+    function renderEstimatesTab() {
+      const filtered = state.estimates.filter(e => 
+        !state.searchValues.estimates || 
+        e.buildingModel.includes(state.searchValues.estimates) || 
+        e.buildingCode.includes(state.searchValues.estimates) || 
+        e.location.includes(state.searchValues.estimates)
+      );
+      
+      document.getElementById('mainContentArea').innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title"><i class="fas fa-calculator"></i> المقايسات</h2>
+          <div class="d-flex align-center" style="gap: 1rem;">
+            <input type="text" class="search-box" placeholder="بحث بالنموذج أو الكود أو المكان..." 
+                   value="${state.searchValues.estimates}" id="estimateSearch">
+            <button class="btn btn-primary" id="addEstimateBtn">
+              <i class="fas fa-plus"></i> إدراج مقايسة
+            </button>
+          </div>
+        </div>
+        
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>نموذج المبني</th>
+              <th>كود المبني</th>
+              <th>المكان</th>
+              <th>المقايسة (PDF)</th>
+              <th>المقايسة (Excel)</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.length ? filtered.map((estimate, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${estimate.buildingModel}</td>
+                <td>${estimate.buildingCode}</td>
+                <td>${estimate.location}</td>
+                <td>${estimate.pdfName || '—'}</td>
+                <td>${estimate.excelName || '—'}</td>
+                <td>
+                  <button class="action-btn delete-btn" onclick="deleteEstimate(${idx})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `).join('') : `
+              <tr>
+                <td colspan="7" class="text-center">لا توجد مقايسات</td>
+              </tr>
+            `}
+          </tbody>
+        </table>
+      `;
+      
+      document.getElementById('estimateSearch').addEventListener('input', (e) => {
+        state.searchValues.estimates = e.target.value;
+        renderEstimatesTab();
+      });
+      
+      document.getElementById('addEstimateBtn').addEventListener('click', () => {
+        document.getElementById('estimateModal').style.display = 'flex';
+      });
+    }
+
+    // معالجة إرسال نموذج المقايسة
+    function handleEstimateSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      state.estimates.push({
+        buildingModel: formData.get('buildingModel'),
+        buildingCode: formData.get('buildingCode'),
+        location: formData.get('location'),
+        pdfName: formData.get('estimatePdf').name || '',
+        excelName: formData.get('estimateExcel').name || ''
+      });
+      closeAllModals();
+      renderEstimatesTab();
+    }
+
+    // عرض محتوى تبويب التقارير
+    function renderReportsTab() {
+      document.getElementById('mainContentArea').innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title"><i class="fas fa-chart-bar"></i> التقارير</h2>
+        </div>
+        
+        <div class="reports-container">
+          <h3 class="reports-header">تقارير المشروع</h3>
+          <p>اختر نوع التقرير الذي تريد إنشاءه من الخيارات أدناه:</p>
+          
+          <div class="reports-grid">
+            <div class="report-card">
+              <h4 class="report-title">مستخلصات المقاولين</h4>
+              <p>تقارير تفصيلية عن مستخلصات المقاولين حسب الفترة</p>
+              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            </div>
+            
+            <div class="report-card">
+              <h4 class="report-title">القبض الشهري للعمال</h4>
+              <p>تقارير عن القبض الشهري للعمال والمصروفات</p>
+              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            </div>
+            
+            <div class="report-card">
+              <h4 class="report-title">المعدات</h4>
+              <p>تقارير عن حالة المعدات ومصروفات الصيانة</p>
+              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            </div>
+            
+            <div class="report-card">
+              <h4 class="report-title">التوريدات</h4>
+              <p>تقارير عن التوريدات والمشتريات</p>
+              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            </div>
+            
+            <div class="report-card">
+              <h4 class="report-title">المشتريات</h4>
+              <p>تقارير تفصيلية عن المشتريات والفواتير</p>
+              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            </div>
+            
+            <div class="report-card">
+              <h4 class="report-title">تقدم المشروع</h4>
+              <p>تقارير عن تقدم المشروع ونسبة الإنجاز</p>
+              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // إغلاق جميع النماذج
+    function closeAllModals() {
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+      });
+      document.querySelectorAll('form').forEach(form => {
+        form.reset();
+      });
+    }
+
+    // وظائف الحذف (سيتم تنفيذها لاحقاً)
+    function deleteContract(index) {
+      if (confirm('هل أنت متأكد من حذف هذا الملحق؟')) {
+        state.contractAddons.splice(index, 1);
+        renderContractsTab();
       }
     }
 
-    // حذف مقايسة
-    function deleteEstimate(idx) {
-      estimates.splice(idx, 1);
-      renderEstimatesTable();
+    function deleteSupply(index) {
+      if (confirm('هل أنت متأكد من حذف هذا الملحق؟')) {
+        state.suppliesAddons.splice(index, 1);
+        renderSuppliesTab();
+      }
     }
 
-    // إغلاق النافذة عند الضغط خارجها
-    document.getElementById('contractModal').addEventListener('click', function(e) {
-      if(e.target === this) {
-        this.style.display = 'none';
-        document.getElementById('contractForm').reset();
+    function deleteExtract(index) {
+      if (confirm('هل أنت متأكد من حذف هذا المستخلص؟')) {
+        state.extracts.splice(index, 1);
+        renderExtractsTab();
       }
-    });
-    document.getElementById('supplyModal').addEventListener('click', function(e) {
-      if(e.target === this) {
-        this.style.display = 'none';
-        document.getElementById('supplyForm').reset();
-      }
-    });
-    document.getElementById('extractModal').addEventListener('click', function(e) {
-      if(e.target === this) {
-        this.style.display = 'none';
-        document.getElementById('extractForm').reset();
-      }
-    });
-    document.getElementById('letterModal').addEventListener('click', function(e) {
-      if(e.target === this) {
-        this.style.display = 'none';
-        document.getElementById('letterForm').reset();
-      }
-    });
-    document.getElementById('estimateModal').addEventListener('click', function(e) {
-      if(e.target === this) {
-        this.style.display = 'none';
-        document.getElementById('estimateForm').reset();
-      }
-    });
+    }
 
-    // عند تحميل الصفحة، أظهر تبويب المشروع افتراضياً
-    showMainTab('project');
+    function deleteLetter(index) {
+      if (confirm('هل أنت متأكد من حذف هذا الخطاب؟')) {
+        state.letters.splice(index, 1);
+        renderLettersTab();
+      }
+    }
+
+    function deleteEstimate(index) {
+      if (confirm('هل أنت متأكد من حذف هذه المقايسة؟')) {
+        state.estimates.splice(index, 1);
+        renderEstimatesTab();
+      }
+    }
+
+    // وظائف التعديل (سيتم تنفيذها لاحقاً)
+    function editContract(index) {
+      // سيتم تنفيذها لاحقاً
+      alert('سيتم تنفيذ وظيفة التعديل لاحقاً');
+    }
+
+    function editSupply(index) {
+      // سيتم تنفيذها لاحقاً
+      alert('سيتم تنفيذ وظيفة التعديل لاحقاً');
+    }
+
+    // جعل الدوال متاحة عالمياً للاستدعاء من الأحداث في HTML
+    window.deleteContract = deleteContract;
+    window.deleteSupply = deleteSupply;
+    window.deleteExtract = deleteExtract;
+    window.deleteLetter = deleteLetter;
+    window.deleteEstimate = deleteEstimate;
+    window.editContract = editContract;
+    window.editSupply = editSupply;
   </script>
 </body>
-</html>
 </html>
