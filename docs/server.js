@@ -20,6 +20,8 @@ const client = new MongoClient(uri, {
 });
 
 let extractsCollection, contractorsCollection, usersCollection, suppliesCollection, suppliersCollection, purchasesCollection, storeCollection, workersCollection, monthlyPaysCollection, paysCollection, chatsCollection, notificationsCollection; // أضف notificationsCollection
+// كولكشن بيانات المشروع
+let projectDataCollection, contractAddonsCollection, supplyAddonsCollection, lettersCollection, estimatesCollection;
 
 // الاتصال بقاعدة البيانات
 async function connectDB() {
@@ -37,6 +39,11 @@ async function connectDB() {
   paysCollection = db.collection('pays');
   chatsCollection = db.collection('chats');
   notificationsCollection = db.collection('notifications'); // أضف هذا السطر
+  projectDataCollection = db.collection('project_data');
+  contractAddonsCollection = db.collection('contract_addons');
+  supplyAddonsCollection = db.collection('supply_addons');
+  lettersCollection = db.collection('letters');
+  estimatesCollection = db.collection('estimates');
   console.log("Connected to MongoDB!");
 }
 
@@ -1567,6 +1574,97 @@ app.post('/notifications/send', async (req, res) => {
     };
     const result = await notificationsCollection.insertOne(notification);
     res.status(201).json({ success: true, notificationId: result.insertedId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API بيانات المشروع
+app.post('/project-data', async (req, res) => {
+  try {
+    const data = req.body;
+    await projectDataCollection.insertOne(data);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// جلب بيانات المشروع (واحدة فقط)
+app.get('/project-data', async (req, res) => {
+  try {
+    const arr = await projectDataCollection.find({}).limit(1).toArray();
+    res.json(arr);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// تعديل بيانات المشروع (حسب _id)
+app.put('/project-data/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await projectDataCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: data }
+      );
+    } else {
+      result = await projectDataCollection.updateOne(
+        { _id: id },
+        { $set: data }
+      );
+    }
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على بيانات المشروع' });
+    }
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API ملحقات العقود
+app.post('/contract-addons', async (req, res) => {
+  try {
+    const addon = req.body;
+    await contractAddonsCollection.insertOne(addon);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API ملحقات التوريدات
+app.post('/supply-addons', async (req, res) => {
+  try {
+    const addon = req.body;
+    await supplyAddonsCollection.insertOne(addon);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API الخطابات
+app.post('/letters', async (req, res) => {
+  try {
+    const letter = req.body;
+    await lettersCollection.insertOne(letter);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// API المقايسات
+app.post('/estimates', async (req, res) => {
+  try {
+    const estimate = req.body;
+    await estimatesCollection.insertOne(estimate);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -70,19 +70,20 @@
     }
 
     .main-tab-btn {
+      font-family: 'Cairo', Arial, sans-serif;
+      font-weight: 700; /* سماكة الخط */
+      font-size: 1.05rem; /* حجم الخط أكبر */
+      letter-spacing: 0.5px;
+      color: var(--primary-color);
+      text-shadow: 0 1px 2px #e0eaf0; /* ظل خفيف */
       background: transparent;
-      color: var(--text-dark);
       border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      padding: 0.6rem 1.2rem;
-      cursor: pointer;
-      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.7rem 1.4rem;
       transition: var(--transition);
-      position: relative;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
     }
 
     .main-tab-btn:hover {
@@ -92,7 +93,10 @@
 
     .main-tab-btn.active {
       background: var(--primary-color);
-      color: white;
+      color: #fff;
+      text-shadow: none;
+      font-weight: 900; /* خط أكثر سماكة عند التفعيل */
+      box-shadow: 0 2px 8px rgba(46,140,163,0.12);
     }
 
     .main-tab-btn.active::after {
@@ -496,7 +500,6 @@
 </head>
 <body>
   <div id="mainNavbarContainer"></div>
-  
   <div class="tabs-container">
     <div class="tabs-bar">
       <button class="main-tab-btn active" data-tab="project">
@@ -522,11 +525,9 @@
       </button>
     </div>
   </div>
-
   <div class="main-content-area" id="mainContentArea">
     <!-- سيتم تحميل المحتوى هنا ديناميكيًا -->
   </div>
-
   <!-- Modal Templates -->
   <div class="modal" id="contractModal">
     <div class="modal-content">
@@ -688,18 +689,22 @@
     const state = {
       contractAddons: [],
       suppliesAddons: [],
+      supplies: [],
       extracts: [],
       letters: [],
       estimates: [],
       projectData: null,
-      currentTab: 'project',
+      purchases: [],
+      pays: [],         // بدل workers
+      equipment: [],
       searchValues: {
         contracts: '',
         supplies: '',
         extracts: '',
         letters: '',
         estimates: ''
-      }
+      },
+      currentTab: 'project'
     };
 
     // تهيئة التطبيق
@@ -842,10 +847,10 @@
           </form>
         `;
         
-        document.getElementById('projectForm').addEventListener('submit', function(e) {
+        document.getElementById('projectForm').addEventListener('submit', async function(e) {
           e.preventDefault();
           const formData = new FormData(this);
-          state.projectData = {
+          const newData = {
             name: formData.get('projectName'),
             location: formData.get('projectLocation'),
             startDate: formData.get('startDate'),
@@ -853,6 +858,9 @@
             contractValue: formData.get('contractValue'),
             pdfName: formData.get('contractPdf').name || ''
           };
+          await saveProjectDataToDB(newData);
+          // جلب البيانات بعد الحفظ (للحصول على _id)
+          state.projectData = await fetchProjectDataFromDB();
           renderProjectTab();
         });
       } else {
@@ -930,9 +938,66 @@
           });
         }, 100);
         
-        document.getElementById('editProjectBtn').addEventListener('click', () => {
-          state.projectData = null;
-          renderProjectTab();
+        document.getElementById('editProjectBtn').addEventListener('click', async () => {
+          // عند التعديل، أظهر النموذج مع البيانات القديمة
+          document.getElementById('mainContentArea').innerHTML = `
+            <div class="section-header">
+              <h2 class="section-title"><i class="fas fa-project-diagram"></i> تعديل بيانات المشروع</h2>
+            </div>
+            <form id="projectForm" class="project-form">
+              <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 300px;">
+                  <label class="form-label">اسم المشروع</label>
+                  <input type="text" name="projectName" class="form-control" required value="${state.projectData.name || ''}">
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 300px;">
+                  <label class="form-label">مكان المشروع</label>
+                  <input type="text" name="projectLocation" class="form-control" required value="${state.projectData.location || ''}">
+                </div>
+              </div>
+              <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 300px;">
+                  <label class="form-label">تاريخ البداية</label>
+                  <input type="date" name="startDate" class="form-control" required value="${state.projectData.startDate || ''}">
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 300px;">
+                  <label class="form-label">تاريخ النهاية</label>
+                  <input type="date" name="endDate" class="form-control" required value="${state.projectData.endDate || ''}">
+                </div>
+              </div>
+              <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 300px;">
+                  <label class="form-label">قيمة عقد المشروع</label>
+                  <input type="number" name="contractValue" class="form-control" required value="${state.projectData.contractValue || ''}">
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 300px;">
+                  <label class="form-label">عقد المشروع (PDF)</label>
+                  <input type="file" name="contractPdf" class="form-control" accept="application/pdf">
+                  <div style="margin-top:6px;color:#888;">الملف الحالي: ${state.projectData.pdfName || '—'}</div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+              </div>
+            </form>
+          `;
+          document.getElementById('projectForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            // احتفظ بـ _id للتعديل
+            const updatedData = {
+              _id: state.projectData._id,
+              name: formData.get('projectName'),
+              location: formData.get('projectLocation'),
+              startDate: formData.get('startDate'),
+              endDate: formData.get('endDate'),
+              contractValue: formData.get('contractValue'),
+              pdfName: formData.get('contractPdf').name || state.projectData.pdfName || ''
+            };
+            await saveProjectDataToDB(updatedData);
+            state.projectData = await fetchProjectDataFromDB();
+            renderProjectTab();
+          });
         });
       }
     }
@@ -1016,11 +1081,13 @@
     function handleContractSubmit(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
-      state.contractAddons.push({
+      const addon = {
         name: formData.get('addonName'),
         value: formData.get('addonValue'),
         pdfName: formData.get('addonPdf').name || ''
-      });
+      };
+      state.contractAddons.push(addon);
+      saveContractAddonToDB(addon);
       closeAllModals();
       renderContractsTab();
     }
@@ -1090,11 +1157,13 @@
     function handleSupplySubmit(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
-      state.suppliesAddons.push({
+      const addon = {
         name: formData.get('addonName'),
         value: formData.get('addonValue'),
         pdfName: formData.get('addonPdf').name || ''
-      });
+      };
+      state.suppliesAddons.push(addon);
+      saveSupplyAddonToDB(addon);
       closeAllModals();
       renderSuppliesTab();
     }
@@ -1167,13 +1236,15 @@
     function handleExtractSubmit(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
-      state.extracts.push({
+      const extract = {
         number: formData.get('extractNumber'),
         date: formData.get('extractDate'),
         value: formData.get('extractValue'),
         pdfName: formData.get('extractPdf').name || '',
         excelName: formData.get('extractExcel').name || ''
-      });
+      };
+      state.extracts.push(extract);
+      saveExtractToDB(extract);
       closeAllModals();
       renderExtractsTab();
     }
@@ -1246,12 +1317,14 @@
     function handleLetterSubmit(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
-      state.letters.push({
+      const letter = {
         statement: formData.get('statement'),
         date: formData.get('date'),
         to: formData.get('to'),
         pdfName: formData.get('pdf').name || ''
-      });
+      };
+      state.letters.push(letter);
+      saveLetterToDB(letter);
       closeAllModals();
       renderLettersTab();
     }
@@ -1327,67 +1400,306 @@
     function handleEstimateSubmit(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
-      state.estimates.push({
+      const estimate = {
         buildingModel: formData.get('buildingModel'),
         buildingCode: formData.get('buildingCode'),
         location: formData.get('location'),
         pdfName: formData.get('estimatePdf').name || '',
         excelName: formData.get('estimateExcel').name || ''
-      });
+      };
+      state.estimates.push(estimate);
+      saveEstimateToDB(estimate);
       closeAllModals();
       renderEstimatesTab();
     }
 
     // عرض محتوى تبويب التقارير
     function renderReportsTab() {
+      const reportOptions = [
+        { key: 'extracts', label: 'المستخلصات' },
+        { key: 'purchases', label: 'المشتريات' },
+        { key: 'supplies', label: 'التوريدات' },
+        { key: 'workers', label: 'القبض الشهري للعمال' },
+        { key: 'equipment', label: 'المعدات' }
+      ];
+      const currentYear = new Date().getFullYear();
+      const years = [];
+      for(let y = currentYear; y >= currentYear - 10; y--) years.push(String(y));
+      const months = [
+        { value: '', label: 'كل الشهور' },
+        { value: '01', label: 'يناير' },
+        { value: '02', label: 'فبراير' },
+        { value: '03', label: 'مارس' },
+        { value: '04', label: 'أبريل' },
+        { value: '05', label: 'مايو' },
+        { value: '06', label: 'يونيو' },
+        { value: '07', label: 'يوليو' },
+        { value: '08', label: 'أغسطس' },
+        { value: '09', label: 'سبتمبر' },
+        { value: '10', label: 'أكتوبر' },
+        { value: '11', label: 'نوفمبر' },
+        { value: '12', label: 'ديسمبر' }
+      ];
+      let chartType = 'bar';
+
       document.getElementById('mainContentArea').innerHTML = `
         <div class="section-header">
           <h2 class="section-title"><i class="fas fa-chart-bar"></i> التقارير</h2>
+          <button class="btn btn-primary" id="showReportsPickerBtn">
+            <i class="fas fa-sliders-h"></i> اختيار التقارير
+          </button>
         </div>
-        
-        <div class="reports-container">
-          <h3 class="reports-header">تقارير المشروع</h3>
-          <p>اختر نوع التقرير الذي تريد إنشاءه من الخيارات أدناه:</p>
-          
-          <div class="reports-grid">
-            <div class="report-card">
-              <h4 class="report-title">مستخلصات المقاولين</h4>
-              <p>تقارير تفصيلية عن مستخلصات المقاولين حسب الفترة</p>
-              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+        <div id="reportsPickerModal" class="modal" style="display:none;">
+          <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+              <h3 class="modal-title" style="color:#2e8ca3; font-weight:900; font-size:1.1rem;"><i class="fas fa-sliders-h"></i> اختر عناصر التقرير</h3>
+              <button class="close-modal" onclick="closeReportsPicker()">&times;</button>
             </div>
-            
-            <div class="report-card">
-              <h4 class="report-title">القبض الشهري للعمال</h4>
-              <p>تقارير عن القبض الشهري للعمال والمصروفات</p>
-              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+            <form id="reportsPickerForm">
+              <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-weight:700; color:#2e8ca3; font-size:0.98rem;">اختر السنة</label>
+                <select id="yearSelect" name="year" class="form-control" style="font-weight:700; border-radius:6px; border:1px solid #2e8ca3; font-size:0.92rem; height:32px; padding:2px 8px; max-width:140px;">
+                  <option value="">كل السنوات</option>
+                  ${years.map(y => `<option value="${y}">${y}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group" id="monthsRow" style="margin-bottom:12px; display:none;">
+                <label style="font-weight:700; color:#2e8ca3; font-size:0.98rem;">اختر الشهر</label>
+                <select id="monthSelect" name="month" class="form-control" style="font-weight:700; border-radius:6px; border:1px solid #2e8ca3; font-size:0.92rem; height:32px; padding:2px 8px; max-width:140px;">
+                  ${months.map(m => `<option value="${m.value}">${m.label}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-weight:700; color:#2e8ca3; font-size:0.98rem;">اختر عناصر التقرير</label>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  ${reportOptions.map(opt => `
+                    <label style="background:#f7fbfc; border-radius:6px; padding:4px 12px; border:1px solid #2e8ca3; font-weight:600; color:#1a3b50; cursor:pointer; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+                      <input type="checkbox" name="report_${opt.key}" style="width:16px; height:16px;"> ${opt.label}
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-weight:700; color:#2e8ca3; font-size:0.98rem;">نوع الرسم البياني</label>
+                <select name="chartType" class="form-control" style="font-weight:700; border-radius:6px; border:1px solid #2e8ca3; font-size:0.92rem; height:32px; padding:2px 8px; max-width:120px;">
+                  <option value="bar">شارت عمودي</option>
+                  <option value="doughnut">دائري</option>
+                </select>
+              </div>
+              <div class="form-actions" style="margin-top:10px;">
+                <button type="button" class="btn btn-danger" onclick="closeReportsPicker()" style="font-size:0.95rem; padding:6px 18px;">إلغاء</button>
+                <button type="submit" class="btn btn-primary" style="font-size:0.95rem; padding:6px 18px;">عرض التقرير</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="reportsResults"></div>
+      `;
+
+      document.getElementById('showReportsPickerBtn').onclick = function() {
+        document.getElementById('reportsPickerModal').style.display = 'flex';
+      };
+      window.closeReportsPicker = function() {
+        document.getElementById('reportsPickerModal').style.display = 'none';
+      };
+
+      document.getElementById('yearSelect').onchange = function() {
+        document.getElementById('monthsRow').style.display = this.value ? 'block' : 'none';
+      };
+
+      document.getElementById('reportsPickerForm').onsubmit = function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        const selected = reportOptions
+          .map(opt => ({
+            ...opt,
+            checked: fd.get(`report_${opt.key}`)
+          }))
+          .filter(opt => opt.checked);
+        const year = fd.get('year');
+        const month = fd.get('month');
+        chartType = fd.get('chartType') || 'bar';
+        renderSelectedReports(selected, chartType, year, month);
+        closeReportsPicker();
+      };
+    }
+
+    function renderSelectedReports(selected, chartType, year, month) {
+      let resultBoxes = '';
+      let chartData = [];
+      let chartLabels = [];
+
+      selected.forEach(opt => {
+        if(opt.key === 'extracts') {
+          let arr = state.extracts;
+          if(year) arr = arr.filter(e => e.date && e.date.startsWith(year + '-'));
+          if(month) arr = arr.filter(e => e.date && e.date.split('-')[1] === month);
+          const total = arr.reduce((sum, e) => sum + Number(e.value || 0), 0);
+          const count = arr.length;
+          resultBoxes += `
+            <div class="report-card" style="min-width:320px;">
+              <div class="report-title"><i class="fas fa-file-invoice-dollar"></i> المستخلصات</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>رقم المستخلص</th>
+                    <th>تاريخ</th>
+                    <th>قيمة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${arr.length ? arr.map(e => `
+                    <tr>
+                      <td>${e.number}</td>
+                      <td>${e.date}</td>
+                      <td>${e.value}</td>
+                    </tr>
+                  `).join('') : `<tr><td colspan="3" class="text-center">لا توجد مستخلصات</td></tr>`}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="2"><strong>الإجمالي</strong></td>
+                    <td><strong>${total}</strong></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"><strong>عدد المستخلصات</strong></td>
+                    <td><strong>${count}</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-            
-            <div class="report-card">
-              <h4 class="report-title">المعدات</h4>
-              <p>تقارير عن حالة المعدات ومصروفات الصيانة</p>
-              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+          `;
+          chartLabels.push('المستخلصات');
+          chartData.push(total);
+        }
+        else if(opt.key === 'purchases') {
+          let arr = state.purchases || [];
+          if(year) arr = arr.filter(e => e.date && e.date.startsWith(year + '-'));
+          if(month) arr = arr.filter(e => e.date && e.date.split('-')[1] === month);
+          const value = arr.reduce((sum, e) => sum + Number(e.total || 0), 0); // تعديل هنا
+          resultBoxes += `
+            <div class="report-card" style="min-width:320px;">
+              <div class="report-title"><i class="fas fa-shopping-cart"></i> المشتريات</div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>إجمالي المشتريات</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>${value}</td></tr>
+                </tbody>
+              </table>
             </div>
-            
-            <div class="report-card">
-              <h4 class="report-title">التوريدات</h4>
-              <p>تقارير عن التوريدات والمشتريات</p>
-              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+          `;
+          chartLabels.push('المشتريات');
+          chartData.push(value);
+        }
+        else if(opt.key === 'supplies') {
+          let arr = state.supplies || [];
+          if(year) arr = arr.filter(e => e.date && e.date.startsWith(year + '-'));
+          if(month) arr = arr.filter(e => e.date && e.date.split('-')[1] === month);
+          const value = arr.reduce((sum, e) => sum + Number(e.total || 0), 0); // استخدم total
+          resultBoxes += `
+            <div class="report-card" style="min-width:320px;">
+              <div class="report-title"><i class="fas fa-truck-loading"></i> التوريدات</div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>إجمالي التوريدات</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>${value}</td></tr>
+                </tbody>
+              </table>
             </div>
-            
-            <div class="report-card">
-              <h4 class="report-title">المشتريات</h4>
-              <p>تقارير تفصيلية عن المشتريات والفواتير</p>
-              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+          `;
+          chartLabels.push('التوريدات');
+          chartData.push(value);
+        }
+        else if(opt.key === 'workers') {
+          let arr = state.pays || []; // بدل workers
+          if(year) arr = arr.filter(e => e.date && e.date.startsWith(year + '-'));
+          if(month) arr = arr.filter(e => e.date && e.date.split('-')[1] === month);
+          const value = arr.reduce((sum, e) => sum + (isFinite(Number(e.total)) ? Number(e.total) : 0), 0);
+          resultBoxes += `
+            <div class="report-card" style="min-width:320px;">
+              <div class="report-title"><i class="fas fa-users"></i> القبض الشهري للعمال</div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>إجمالي القبض الشهري</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>${value}</td></tr>
+                </tbody>
+              </table>
             </div>
-            
-            <div class="report-card">
-              <h4 class="report-title">تقدم المشروع</h4>
-              <p>تقارير عن تقدم المشروع ونسبة الإنجاز</p>
-              <button class="btn btn-primary mt-2">إنشاء التقرير</button>
+          `;
+          chartLabels.push('القبض الشهري');
+          chartData.push(value);
+        }
+        else if(opt.key === 'equipment') {
+          let arr = state.equipment || [];
+          if(year) arr = arr.filter(e => e.date && e.date.startsWith(year + '-'));
+          if(month) arr = arr.filter(e => e.date && e.date.split('-')[1] === month);
+          const value = arr.reduce((sum, e) => sum + Number(e.value || 0), 0);
+          resultBoxes += `
+            <div class="report-card" style="min-width:320px;">
+              <div class="report-title"><i class="fas fa-tools"></i> المعدات</div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>إجمالي المعدات</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>${value}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          `;
+          chartLabels.push('المعدات');
+          chartData.push(value);
+        }
+      });
+
+      let html = `
+        <div class="d-flex" style="gap:2.5rem; align-items:flex-start; flex-wrap:wrap;">
+          <div class="chart-container" style="flex:1; min-width:420px; max-width:520px; margin-bottom:2rem;">
+            <div class="d-flex align-center mb-2" style="gap:1rem;">
+              <label style="font-weight:700; color:#2e8ca3;"><i class="fas fa-chart-bar"></i> نوع الرسم البياني:</label>
+              <select id="chartTypeSelect" class="form-control" style="width:160px; font-weight:700;">
+                <option value="bar" ${chartType==='bar'?'selected':''}>شارت عمودي</option>
+                <option value="doughnut" ${chartType==='doughnut'?'selected':''}>دائري</option>
+              </select>
+            </div>
+            <canvas id="reportsChart" height="340" width="480"></canvas>
+          </div>
+          <div style="flex:2; min-width:320px;">
+            <div class="reports-grid" style="margin-bottom:2rem;">
+              ${resultBoxes}
             </div>
           </div>
         </div>
       `;
+      document.getElementById('reportsResults').innerHTML = html;
+
+      setTimeout(() => {
+        const ctx = document.getElementById('reportsChart').getContext('2d');
+        new Chart(ctx, {
+          type: chartType,
+          data: {
+            labels: chartLabels,
+            datasets: [{
+              label: 'القيمة',
+              data: chartData,
+              backgroundColor: ['#2e8ca3', '#4da9c2', '#ff6b6b', '#28a745', '#ffc107']
+            }]
+          },
+          options: {
+            plugins: { legend: { display: chartType === 'doughnut' } }
+          }
+        });
+      }, 100);
+
+      document.getElementById('chartTypeSelect').onchange = function() {
+        renderSelectedReports(selected, this.value, year, month);
+      };
     }
 
     // إغلاق جميع النماذج
@@ -1455,6 +1767,81 @@
     window.deleteEstimate = deleteEstimate;
     window.editContract = editContract;
     window.editSupply = editSupply;
+
+    // تعديل: حفظ بيانات كل تبويب في كولكشن خاص به في قاعدة البيانات
+    // استخدم fetch لإرسال البيانات عند الإضافة
+
+    // حفظ بيانات المشروع
+    async function saveProjectDataToDB(data) {
+      try {
+        // إذا يوجد _id عدل، إذا لا يوجد أضف
+        if (data._id) {
+          await fetch(`/project-data/${data._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        } else {
+          await fetch('/project-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        }
+      } catch (err) { }
+    }
+
+    // جلب بيانات المشروع من قاعدة البيانات
+    async function fetchProjectDataFromDB() {
+      try {
+        const res = await fetch('/project-data');
+        const arr = await res.json();
+        // إذا يوجد بيانات أعدها (واحدة فقط)
+        if (Array.isArray(arr) && arr.length > 0) return arr[0];
+        return null;
+      } catch (err) { return null; }
+    }
+
+    async function fetchPurchasesFromDB() {
+      try {
+        const res = await fetch('/purchases');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchWorkersFromDB() {
+      try {
+        const res = await fetch('/workers');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchEquipmentFromDB() {
+      try {
+        const res = await fetch('/equipment');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchSuppliesFromDB() {
+      try {
+        const res = await fetch('/supplies');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchPaysFromDB() {
+      try {
+        const res = await fetch('/pays');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+
+    // عند تحميل الصفحة، جلب بيانات المشروع من قاعدة البيانات
+    document.addEventListener('DOMContentLoaded', async function() {
+      state.projectData = await fetchProjectDataFromDB();
+      state.purchases = await fetchPurchasesFromDB();
+      state.supplies = await fetchSuppliesFromDB();
+      state.pays = await fetchPaysFromDB(); // بدل workers
+      state.equipment = await fetchEquipmentFromDB();
+      // لا داعي لاستدعاء initEventListeners و showTab هنا لأنهما بالفعل في الأعلى
+    });
   </script>
 </body>
 </html>
