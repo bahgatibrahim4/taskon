@@ -37,7 +37,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 80px; /* تم تعديله من 80px إلى 130px ليتناسب مع ارتفاع الشريطين */
+      padding-top: 80px;
     }
 
     #mainNavbarContainer {
@@ -55,8 +55,8 @@
       background: white;
       padding: 0.5rem 1rem;
       box-shadow: var(--shadow);
-      position: fixed; /* تغيير من sticky إلى fixed */
-      top: 80px; /* تم تعديله ليكون أسفل الشريط العلوي مباشرة */
+      position: sticky;
+      top: 80px;
       z-index: 999;
     }
 
@@ -121,7 +121,6 @@
       box-shadow: var(--shadow);
       padding: 2rem;
       min-height: 500px;
-      margin-top: 130px; /* إضافة margin-top لتجنب تداخل المحتوى مع الشريطين الثابتين */
     }
 
     .section-header {
@@ -418,15 +417,7 @@
 
     @media (max-width: 768px) {
       body {
-        padding-top: 120px; /* تعديل ليتناسب مع الارتفاع على الشاشات الصغيرة */
-      }
-      
-      .tabs-container {
-        top: 70px; /* تعديل ليتناسب مع ارتفاع الشريط العلوي على الشاشات الصغيرة */
-      }
-      
-      .main-content-area {
-        margin-top: 110px; /* تعديل ليتناسب مع الارتفاع على الشاشات الصغيرة */
+        padding-top: 70px;
       }
       
       .main-tab-btn {
@@ -971,7 +962,7 @@
                 </div>
                 <div class="form-group" style="flex: 1; min-width: 300px;">
                   <label class="form-label">تاريخ النهاية</label>
-                  <input type="date', name="endDate" class="form-control" required value="${state.projectData.endDate || ''}">
+                  <input type="date" name="endDate" class="form-control" required value="${state.projectData.endDate || ''}">
                 </div>
               </div>
               <div class="d-flex justify-between" style="gap: 1.5rem; flex-wrap: wrap;">
@@ -1441,7 +1432,7 @@
         { value: '03', label: 'مارس' },
         { value: '04', label: 'أبريل' },
         { value: '05', label: 'مايو' },
-        { value: '06', label: 'يوليو' },
+        { value: '06', label: 'يونيو' },
         { value: '07', label: 'يوليو' },
         { value: '08', label: 'أغسطس' },
         { value: '09', label: 'سبتمبر' },
@@ -1631,4 +1622,226 @@
           resultBoxes += `
             <div class="report-card" style="min-width:320px;">
               <div class="report-title"><i class="fas fa-users"></i> القبض الشهري للعمال</div>
-              <table class
+              <table class="data-table">
+                <thead>
+                  <tr><th>إجمالي القبض الشهري</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>${value}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          `;
+          chartLabels.push('القبض الشهري');
+          chartData.push(value);
+        }
+        else if(opt.key === 'equipment') {
+          let arr = state.equipment || [];
+          if(year) arr = arr.filter(e => e.date && e.date.startsWith(year + '-'));
+          if(month) arr = arr.filter(e => e.date && e.date.split('-')[1] === month);
+          const value = arr.reduce((sum, e) => sum + Number(e.value || 0), 0);
+          resultBoxes += `
+            <div class="report-card" style="min-width:320px;">
+              <div class="report-title"><i class="fas fa-tools"></i> المعدات</div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>إجمالي المعدات</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>${value}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          `;
+          chartLabels.push('المعدات');
+          chartData.push(value);
+        }
+      });
+
+      let html = `
+        <div class="d-flex" style="gap:2.5rem; align-items:flex-start; flex-wrap:wrap;">
+          <div class="chart-container" style="flex:1; min-width:420px; max-width:520px; margin-bottom:2rem;">
+            <div class="d-flex align-center mb-2" style="gap:1rem;">
+              <label style="font-weight:700; color:#2e8ca3;"><i class="fas fa-chart-bar"></i> نوع الرسم البياني:</label>
+              <select id="chartTypeSelect" class="form-control" style="width:160px; font-weight:700;">
+                <option value="bar" ${chartType==='bar'?'selected':''}>شارت عمودي</option>
+                <option value="doughnut" ${chartType==='doughnut'?'selected':''}>دائري</option>
+              </select>
+            </div>
+            <canvas id="reportsChart" height="340" width="480"></canvas>
+          </div>
+          <div style="flex:2; min-width:320px;">
+            <div class="reports-grid" style="margin-bottom:2rem;">
+              ${resultBoxes}
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('reportsResults').innerHTML = html;
+
+      setTimeout(() => {
+        const ctx = document.getElementById('reportsChart').getContext('2d');
+        new Chart(ctx, {
+          type: chartType,
+          data: {
+            labels: chartLabels,
+            datasets: [{
+              label: 'القيمة',
+              data: chartData,
+              backgroundColor: ['#2e8ca3', '#4da9c2', '#ff6b6b', '#28a745', '#ffc107']
+            }]
+          },
+          options: {
+            plugins: { legend: { display: chartType === 'doughnut' } }
+          }
+        });
+      }, 100);
+
+      document.getElementById('chartTypeSelect').onchange = function() {
+        renderSelectedReports(selected, this.value, year, month);
+      };
+    }
+
+    // إغلاق جميع النماذج
+    function closeAllModals() {
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+      });
+      document.querySelectorAll('form').forEach(form => {
+        form.reset();
+      });
+    }
+
+    // وظائف الحذف (سيتم تنفيذها لاحقاً)
+    function deleteContract(index) {
+      if (confirm('هل أنت متأكد من حذف هذا الملحق؟')) {
+        state.contractAddons.splice(index, 1);
+        renderContractsTab();
+      }
+    }
+
+    function deleteSupply(index) {
+      if (confirm('هل أنت متأكد من حذف هذا الملحق؟')) {
+        state.suppliesAddons.splice(index, 1);
+        renderSuppliesTab();
+      }
+    }
+
+    function deleteExtract(index) {
+      if (confirm('هل أنت متأكد من حذف هذا المستخلص؟')) {
+        state.extracts.splice(index, 1);
+        renderExtractsTab();
+      }
+    }
+
+    function deleteLetter(index) {
+      if (confirm('هل أنت متأكد من حذف هذا الخطاب؟')) {
+        state.letters.splice(index, 1);
+        renderLettersTab();
+      }
+    }
+
+    function deleteEstimate(index) {
+      if (confirm('هل أنت متأكد من حذف هذه المقايسة؟')) {
+        state.estimates.splice(index, 1);
+        renderEstimatesTab();
+      }
+    }
+
+    // وظائف التعديل (سيتم تنفيذها لاحقاً)
+    function editContract(index) {
+      // سيتم تنفيذها لاحقاً
+      alert('سيتم تنفيذ وظيفة التعديل لاحقاً');
+    }
+
+    function editSupply(index) {
+      // سيتم تنفيذها لاحقاً
+      alert('سيتم تنفيذ وظيفة التعديل لاحقاً');
+    }
+
+    // جعل الدوال متاحة عالمياً للاستدعاء من الأحداث في HTML
+    window.deleteContract = deleteContract;
+    window.deleteSupply = deleteSupply;
+    window.deleteExtract = deleteExtract;
+    window.deleteLetter = deleteLetter;
+    window.deleteEstimate = deleteEstimate;
+    window.editContract = editContract;
+    window.editSupply = editSupply;
+
+    // تعديل: حفظ بيانات كل تبويب في كولكشن خاص به في قاعدة البيانات
+    // استخدم fetch لإرسال البيانات عند الإضافة
+
+    // حفظ بيانات المشروع
+    async function saveProjectDataToDB(data) {
+      try {
+        // إذا يوجد _id عدل، إذا لا يوجد أضف
+        if (data._id) {
+          await fetch(`/project-data/${data._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        } else {
+          await fetch('/project-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        }
+      } catch (err) { }
+    }
+
+    // جلب بيانات المشروع من قاعدة البيانات
+    async function fetchProjectDataFromDB() {
+      try {
+        const res = await fetch('/project-data');
+        const arr = await res.json();
+        // إذا يوجد بيانات أعدها (واحدة فقط)
+        if (Array.isArray(arr) && arr.length > 0) return arr[0];
+        return null;
+      } catch (err) { return null; }
+    }
+
+    async function fetchPurchasesFromDB() {
+      try {
+        const res = await fetch('/purchases');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchWorkersFromDB() {
+      try {
+        const res = await fetch('/workers');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchEquipmentFromDB() {
+      try {
+        const res = await fetch('/equipment');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchSuppliesFromDB() {
+      try {
+        const res = await fetch('/supplies');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+    async function fetchPaysFromDB() {
+      try {
+        const res = await fetch('/pays');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+
+    // عند تحميل الصفحة، جلب بيانات المشروع من قاعدة البيانات
+    document.addEventListener('DOMContentLoaded', async function() {
+      state.projectData = await fetchProjectDataFromDB();
+      state.purchases = await fetchPurchasesFromDB();
+      state.supplies = await fetchSuppliesFromDB();
+      state.pays = await fetchPaysFromDB(); // بدل workers
+      state.equipment = await fetchEquipmentFromDB();
+      // لا داعي لاستدعاء initEventListeners و showTab هنا لأنهما بالفعل في الأعلى
+    });
+  </script>
+</body>
+</html>
