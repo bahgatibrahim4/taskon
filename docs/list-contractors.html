@@ -2,429 +2,331 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>عرض المقاولين | سعيد أحمد بالبيد</title>
   <!-- إضافة خط Tajawal من Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       direction: rtl;
-      --primary-color: #1a3b50;
-      --secondary-color: #2e8ca3;
-      --accent-color: #7a5230;
-      --light-color: #c5d6db;
-      --text-color: #333;
-      --white: #fff;
     }
     body {
       margin: 0;
       font-family: 'Tajawal', 'Cairo', sans-serif;
-      background: #f5f9fa;
-      color: var(--text-color);
+      background: #c5d6db;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
     }
-    
-    /* تحسينات الشريط العلوي */
     .navbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, var(--primary-color) 0%, #2a4b63 100%);
-      color: var(--white);
+      background: #1a3b50;
+      color: #fff;
       font-size: 1.18rem;
       font-weight: bold;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-      letter-spacing: 0.5px;
-      min-height: 65px;
+      box-shadow: 0 2px 12px #0002;
+      letter-spacing: 1px;
+      min-height: 58px;
       padding: 0 24px;
-      position: relative;
-      z-index: 100;
-    }
-    .navbar::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+      border-bottom: 3px solid #2e8ca3;
     }
     .navbar-section {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
     .nav-btn {
-      background: var(--white);
-      color: var(--secondary-color);
-      border: 2px solid var(--secondary-color);
-      font-size: 1rem;
+      background: #fff;
+      color: #2e8ca3;
+      border: 2px solid #2e8ca3;
+      font-size: 1.08rem;
       font-weight: bold;
       cursor: pointer;
-      padding: 8px 20px;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      padding: 7px 18px;
+      border-radius: 0px;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      box-shadow: 0 2px 10px #0001;
     }
     .nav-btn:hover {
-      background: var(--secondary-color);
-      color: var(--white);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      background: #1a3b50;
+      color: #fff;
+      border-color: #2e8ca3;
     }
     #username {
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       font-weight: bold;
       margin-left: 8px;
-      color: var(--white);
-      background: var(--secondary-color);
-      padding: 6px 16px;
-      border-radius: 20px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      color: #fff;
+      background: #2e8ca3;
+      padding: 4px 14px;
+      border-radius: 0px;
+      box-shadow: 0 1px 6px #0001;
       font-family: 'Tajawal', 'Cairo', sans-serif;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    #username::before {
-      content: "👤";
-      font-size: 0.9em;
     }
     .logout-btn {
-      background: var(--accent-color);
-      color: var(--white);
+      background: #7a5230;
+      color: #fff;
       border: none;
-      border-radius: 6px;
-      padding: 8px 20px;
+      border-radius: 0px;
+      padding: 7px 18px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .logout-btn::before {
-      content: "🚪";
-      font-size: 0.9em;
+      font-size: 1.08rem;
+      transition: background 0.2s;
+      box-shadow: 0 2px 10px #0001;
     }
     .logout-btn:hover {
-      background: #8c6b4d;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      background: #8c969a;
     }
-    
-    /* تحسينات المحتوى الرئيسي */
     .container {
-      max-width: 900px;
-      margin: 20px auto;
-      background: var(--white);
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-      padding: 30px;
-      border: 1px solid #e0e6eb;
+      max-width: 800px;
+      margin: 8px auto 0 auto; /* تقليل الفراغ العلوي */
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 38px 38px 28px 38px;
+      border: 2px solid #8c969a;
       position: relative;
     }
     h2 {
       text-align: center;
-      margin-top: 0;
-      margin-bottom: 30px;
-      color: var(--secondary-color);
-      font-size: 1.5rem;
-      font-weight: 800;
-      position: relative;
-      padding-bottom: 15px;
-    }
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 50%;
-      transform: translateX(50%);
-      width: 80px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary-color) 0%, var(--accent-color) 100%);
-      border-radius: 3px;
-    }
-    
-    /* تحسينات مربع البحث */
-    #searchBox {
-      width: 70%;
-      margin: 0 auto 25px auto;
-      display: block;
-      padding: 12px 18px;
-      font-size: 1rem;
-      border: 1.5px solid var(--secondary-color);
-      border-radius: 8px;
-      background: var(--white);
-      color: var(--text-color);
-      font-family: inherit;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-    #searchBox:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 3px 12px rgba(46, 140, 163, 0.15);
-    }
-    #searchBox::placeholder {
-      color: #a0aec0;
-    }
-    
-    /* تحسينات زر التصدير */
-    #exportExcelBtn {
-      display: block;
-      margin: 0 auto 25px auto;
-      background: var(--secondary-color);
-      color: var(--white);
-      border: none;
-      padding: 10px 22px;
+      margin-top: 0;         /* رفع العنوان لأعلى */
+      margin-bottom: 32px;
+      color: #2e8ca3;
+      letter-spacing: 1px;
+      font-size: 1.35rem;
       font-weight: bold;
-      font-size: 1rem;
+      border-bottom: 2px solid #7a5230;
+      padding-bottom: 12px;
+    }
+    .back {
+      display: block;
+      margin: 0 auto 15px auto;
+      text-align: center;
+      color: #2e8ca3;
+      text-decoration: underline;
       cursor: pointer;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-weight: bold;
+      transition: color 0.2s;
     }
-    #exportExcelBtn::before {
-      content: "📊";
+    .back:hover {
+      color: #1a3b50;
     }
-    #exportExcelBtn:hover {
-      background: #3a9cb4;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* تحسينات الجدول */
     table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      background: var(--white);
+      background: #c5d6db;
       margin-top: 10px;
-      border-radius: 10px;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: none;
     }
     th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 4px 4px;
+      border-bottom: 1px solid #8c969a;
+      /* border-right: 1px solid #8c969a; */ /* تم التعليق لإزالة الفواصل بين الأعمدة */
       text-align: right;
-      font-size: 0.95rem;
-      background: var(--white);
-      transition: background 0.2s;
+      font-size: 0.90rem;
+      background: #fff;
+      transition: background 0.18s;
+      height: 26px;
+    }
+    th:last-child, td:last-child {
+      border-right: none;
     }
     th {
-      background: var(--secondary-color);
-      color: var(--white);
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 10px;
-      position: relative;
-    }
-    th::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 100%;
-      height: 2px;
-      background: var(--accent-color);
-    }
-    tr:hover td {
-      background: #f8fafc;
+      background: #2e8ca3;
+      color: #fff;
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-size: 0.95rem;
+      border-bottom: 2px solid #7a5230;
+      box-shadow: none;
     }
     tr:last-child td {
       border-bottom: none;
     }
-    
-    /* تحسينات أزرار التعديل والحذف */
-    .edit-btn, .delete-btn {
-      border: none;
-      border-radius: 6px;
-      padding: 8px 14px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.2s ease;
-      min-width: 65px;
+    tr:hover td {
+      background: #f7fafd;
+      transition: background 0.18s;
     }
     .edit-btn {
-      background: var(--secondary-color);
-      color: var(--white);
-      box-shadow: 0 2px 6px rgba(46, 140, 163, 0.2);
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 0px;
+      padding: 3px 10px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 0;
+      margin-right: 0;
+      transition: background 0.2s;
+      box-shadow: none;
+      min-width: 60px;
+      height: 28px;
     }
     .edit-btn:hover {
-      background: #3a9cb4;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(46, 140, 163, 0.3);
+      background: #1a3b50;
     }
     .delete-btn {
-      background: var(--accent-color);
-      color: var(--white);
-      box-shadow: 0 2px 6px rgba(122, 82, 48, 0.2);
+      background: #7a5230;
+      color: #fff;
+      border: none;
+      border-radius: 0px;
+      padding: 3px 10px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+      box-shadow: none;
+      min-width: 60px;
+      height: 24px;
     }
     .delete-btn:hover {
-      background: #8c6b4d;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(122, 82, 48, 0.3);
+      background: #8c969a;
     }
-    
-    /* تحسينات نافذة التعديل */
+    /* نافذة التعديل */
     #editContractorModal {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
+      background: #0005;
       z-index: 1000;
       align-items: center;
       justify-content: center;
-      animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
     #editContractorModal .modal-content {
-      background: var(--white);
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-      border: 1px solid #e0e6eb;
-      animation: slideIn 0.3s ease;
-    }
-    @keyframes slideIn {
-      from { transform: translateY(-20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      background: #fff;
+      padding: 40px 32px;
+      border-radius: 16px;
+      max-width: 600px;
+      min-height: 340px;
+      margin: 0 auto 0 auto; /* إزالة الهامش العلوي */
+      box-shadow: 0 2px 24px #0003;
+      border: 2px solid #2e8ca3;
+      position: relative;
+      top: 0; /* رفع النافذة لأعلى الصفحة */
     }
     #editContractorModal h3 {
       text-align: center;
-      color: var(--secondary-color);
-      margin-bottom: 20px;
-      font-size: 1.3rem;
-      font-weight: 700;
-      position: relative;
-      padding-bottom: 12px;
-    }
-    #editContractorModal h3::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 50%;
-      transform: translateX(50%);
-      width: 60px;
-      height: 2px;
-      background: var(--accent-color);
-      border-radius: 2px;
+      color: #2e8ca3;
+      margin-bottom: 18px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      border-bottom: 1.5px solid #7a5230;
+      padding-bottom: 8px;
     }
     #editContractorForm label {
-      font-size: 1rem;
-      color: var(--primary-color);
-      font-weight: 600;
-      margin-bottom: 6px;
+      font-size: 1.02rem;
+      color: #2e8ca3;
+      font-weight: bold;
+      margin-bottom: 4px;
       display: block;
     }
     #editContractorForm input[type="text"] {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1.5px solid #e2e8f0;
-      font-size: 1rem;
-      margin-bottom: 18px;
-      background: var(--white);
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      padding: 7px 10px;
+      border-radius: 0px;
+      border: 1.5px solid #c5d6db;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      background: #f7fafd;
+      transition: border 0.2s, background 0.2s;
     }
     #editContractorForm input[type="text"]:focus {
-      outline: none;
-      border-color: var(--secondary-color);
-      box-shadow: 0 3px 10px rgba(46, 140, 163, 0.15);
+      border-color: #2e8ca3;
+      background: #c5d6db;
     }
     #editContractorForm .modal-actions {
       display: flex;
       gap: 12px;
       justify-content: center;
-      margin-top: 15px;
+      margin-top: 10px;
     }
     #editContractorForm button {
-      padding: 10px 22px;
-      border-radius: 8px;
+      padding: 7px 18px;
+      border-radius: 0px;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 1.05rem;
       cursor: pointer;
       border: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 8px #0001;
     }
     #editContractorForm button[type="submit"] {
-      background: var(--secondary-color);
-      color: var(--white);
+      background: #2e8ca3;
+      color: #fff;
     }
     #editContractorForm button[type="submit"]:hover {
-      background: #3a9cb4;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      background: #1a3b50;
     }
     #editContractorForm button[type="button"] {
-      background: #94a3b8;
-      color: var(--white);
+      background: #7a5230;
+      color: #fff;
     }
     #editContractorForm button[type="button"]:hover {
-      background: #a0aec0;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      background: #8c969a;
     }
-    
-    /* تحسينات التجاوب */
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 0 15px;
-        flex-direction: column;
-        min-height: auto;
-        padding: 10px;
-      }
-      .navbar-section {
-        margin: 8px 0;
-      }
-      .container {
-        padding: 20px 15px;
-        margin: 15px;
-      }
-      #searchBox {
-        width: 90%;
-      }
-      #editContractorModal .modal-content {
-        padding: 20px 15px;
-      }
-      #editContractorForm .modal-actions {
-        flex-direction: column;
-      }
-      th, td {
-        padding: 10px 8px;
-        font-size: 0.9rem;
-      }
+    @media (max-width: 600px) {
+      .container { padding: 10px; }
+      th, td { padding: 8px; font-size: .95rem; }
+      #editContractorModal .modal-content { padding: 18px 8px; }
+    }
+    .search-export-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+      margin: 0 auto 18px auto;
+      width: 100%;
+      max-width: 600px;
+    }
+    .search-export-row input[type="text"] {
+      flex: 1;
+      padding: 5px 12px;
+      font-size: 1.02rem;
+      border: 1.5px solid #2e8ca3;
+      border-radius: 0px;
+      background: #fff;
+      color: #2e8ca3;
+      font-family: inherit;
+      height: 32px;
+    }
+    #exportExcelBtn {
+      background: #176c3a;
+      color: #fff;
+      border: none;
+      padding: 4px 12px;
+      font-weight: 900;
+      font-size: 0.93rem;
+      cursor: pointer;
+      border-radius: 0px;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px #0001;
+      transition: background 0.2s, color 0.2s;
+      margin-left: auto;
+      min-width: 0;
+    }
+    #exportExcelBtn:hover {
+      background: #14562e;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <!-- باقي المحتوى يبقى كما هو دون تغيير -->
   <div id="navbar-container"></div>
-  <div class="container">
-    <h2>عرض المقاولين</h2>
-    <!-- مربع البحث -->
-    <input
-      type="text"
-      id="searchBox"
-      placeholder="ابحث باسم المقاول أو بند العمل..."
-    />
-    <!-- زر تصدير إلى Excel -->
-    <button id="exportExcelBtn">تصدير إلى Excel</button>
+  <div class="container" style="margin-top:0; padding-top:18px;">
+    <!-- مربع البحث وزر التصدير -->
+    <div class="search-export-row">
+      <input
+        type="text"
+        id="searchBox"
+        placeholder="ابحث باسم المقاول أو بند العمل..."
+      />
+      <button id="exportExcelBtn">تصدير إلى Excel</button>
+    </div>
     <table>
       <thead>
         <tr>
@@ -432,8 +334,7 @@
           <th>الاسم</th>
           <th>الهاتف</th>
           <th>بند العمل</th>
-          <th>تعديل</th>
-          <th>حذف</th>
+          <th>إجراءات</th>
         </tr>
       </thead>
       <tbody id="contractorsList"></tbody>
@@ -464,8 +365,6 @@
       </div>
     </div>
   </div>
-  
-  <!-- باقي السكريبتات تبقى كما هي -->
   <script>
     // عرض اسم المستخدم
     let pageUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -509,17 +408,13 @@
           <td>${c.name}</td>
           <td>${c.phone}</td>
           <td>${c.workItem || ''}</td>
-          <td>
-            <button class="edit-btn" data-id="${c._id}" onclick="event.stopPropagation();">تعديل</button>
-          </td>
-          <td>
-            <button class="delete-btn" data-id="${c._id}" onclick="event.stopPropagation();">حذف</button>
+          <td style="text-align:center;">
+            <span class="action-icon edit-icon" data-id="${c._id}" title="تعديل" style="cursor:pointer;font-size:1.25em;color:#2e8ca3;margin:0 7px;vertical-align:middle;">&#9998;</span>
+            <span class="action-icon delete-icon" data-id="${c._id}" title="حذف" style="cursor:pointer;font-size:1.25em;color:#e53935;margin:0 7px;vertical-align:middle;">&#128465;</span>
           </td>
         `;
-        // عند الضغط على الصف (وليس زر التعديل/الحذف) انتقل لصفحة المقاول
         tr.addEventListener('click', function(e) {
-          // تجاهل الضغط على زر التعديل أو الحذف
-          if (e.target.classList.contains('edit-btn') || e.target.classList.contains('delete-btn')) return;
+          if (e.target.classList.contains('edit-icon') || e.target.classList.contains('delete-icon')) return;
           window.location.href = `contractor.html?id=${c._id}`;
         });
         list.appendChild(tr);
@@ -542,7 +437,7 @@
 
     // حذف مقاول
     document.addEventListener('click', async function(e) {
-      if (e.target.classList.contains('delete-btn')) {
+      if (e.target.classList.contains('delete-icon')) {
         if (confirm('هل أنت متأكد من حذف هذا المقاول؟')) {
           const id = e.target.getAttribute('data-id');
           await fetch(`/contractors/${id}`, { method: 'DELETE' });
@@ -553,18 +448,17 @@
 
     // تعديل مقاول (فتح النموذج)
     document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('edit-btn')) {
+      if (e.target.classList.contains('edit-icon')) {
         const id = e.target.getAttribute('data-id');
         const tr = e.target.closest('tr');
         const tds = tr.querySelectorAll('td');
-        // تعبئة النموذج بالبيانات الصحيحة
         const modal = document.getElementById('editContractorModal');
         modal.style.display = 'flex';
         const form = document.getElementById('editContractorForm');
         form.id.value = id;
-        form.name.value = tds[1].textContent;    // اسم المقاول
-        form.phone.value = tds[2].textContent;   // رقم التليفون
-        form.address.value = tds[3].textContent; // بند العمل (الآن workItem)
+        form.name.value = tds[1].textContent;
+        form.phone.value = tds[2].textContent;
+        form.address.value = tds[3].textContent;
       }
     });
 

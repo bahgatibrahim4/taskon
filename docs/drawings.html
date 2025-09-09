@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إدراج مخطط هندسي</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="components/main-navbar.css">
+  <style>
+    :root {
+      direction: rtl;
+      font-family: 'Cairo', Arial, sans-serif;
+      background-color: #f5fafc;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 3em auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #0002;
+      padding: 2em 2em 2em 2em;
+      text-align: center;
+    }
+    h2 {
+      color: #197c91;
+      margin-bottom: 1.5em;
+      font-size: 2em;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    label {
+      display: block;
+      text-align: right;
+      margin-bottom: 0.5em;
+      color: #197c91;
+      font-weight: 500;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.7em;
+      margin-bottom: 1.2em;
+      border: 1px solid #b5d6de;
+      border-radius: 7px;
+      font-size: 1em;
+      background: #f5fafc;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    input[type="file"] {
+      padding: 0.3em;
+      background: #fff;
+    }
+    button {
+      background: #197c91;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 0.8em 2em;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-top: 1em;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #145e6e;
+    }
+    #drawingModal > div {
+      font-size: 0.97em;
+      padding: 1.3rem 1rem 1rem 1rem;
+      max-width: 370px;
+    }
+    #drawingModal label {
+      font-size: 0.97em;
+      margin-bottom: 0.3em;
+    }
+    #drawingModal input, #drawingModal textarea, #drawingModal select {
+      font-size: 0.97em;
+      padding: 0.45em 0.7em;
+      margin-bottom: 0.7em;
+      border-radius: 7px;
+    }
+    #drawingModal button[type="submit"] {
+      background: linear-gradient(90deg,#2e8ca3 60%,#197c91 100%);
+      color: #fff;
+      border: none;
+      border-radius: 0; /* حدود حادة تماماً */
+      padding: 0.12em 1.1em; /* أصغر حجم ممكن */
+      font-size: 0.85em;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-weight: 900;
+      letter-spacing: 1px;
+      min-width: 0;
+      box-shadow: 0 1px 4px #2e8ca322;
+      margin-top: 0.5em;
+      transition: background 0.2s,transform 0.18s;
+      display: inline-block;
+    }
+    /* صف عنوان البند */
+    .section-row {
+      background: #e3f2fd !important;
+      cursor: pointer;
+      user-select: none;
+    }
+    /* تأثير عند الوقوف على صف البيانات */
+    #drawingsTable tbody tr.data-row:hover {
+      background: #e0f7fa !important;
+      box-shadow: 0 2px 8px #2e8ca322;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+    <div id="main-navbar"></div>
+    <div style="max-width:1200px;margin:40px auto 0 auto;padding:0 1em;">
+      <button id="addDrawingBtn" style="background:linear-gradient(90deg,#2e8ca3 60%,#197c91 100%);color:#fff;border:none;border-radius:0;padding:0.28em 0.9em;font-size:0.98rem;font-weight:700;font-family:'Cairo', Arial, sans-serif;cursor:pointer;box-shadow:0 2px 8px #2e8ca322;transition:background 0.2s,transform 0.18s;margin-bottom:1.2em;display:inline-block;">
+        إضافة مخطط
+      </button>
+      <table id="drawingsTable" style="width:100%;max-width:1400px;background:#fff;border-radius:0;box-shadow:0 4px 24px #2e8ca311;border-collapse:separate;border-spacing:0;overflow:hidden;">
+        <thead style="background:#e0f7fa;">
+          <tr>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">رقم المخطط</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">نموذج المبني</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">اسم المخطط</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">البند</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">ملف DWG</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">ملف PDF</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">تاريخ آخر تعديل</th>
+            <th style="padding:16px 10px;border-bottom:2px solid #e0eaf0;text-align:center;">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="drawingsTableBody">
+          <tr><td colspan="8" style="text-align:center;color:#888;padding:2em;">لا توجد مخططات بعد.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- نافذة منبثقة لإضافة مخطط -->
+    <div id="drawingModal" style="display:none;position:fixed;top:0;right:0;bottom:0;left:0;background:#18475a44;z-index:10000;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:22px;box-shadow:0 8px 32px #2e8ca322;padding:2.5rem 2rem 2rem 2rem;max-width:440px;width:97%;margin:auto;position:relative;">
+        <button id="closeModalBtn" style="position:absolute;top:12px;left:12px;background:transparent;border:none;border-radius:0;width:36px;height:36px;font-size:1.5em;color:#197c91;cursor:pointer;box-shadow:none;transition:background 0.2s;">&times;</button>
+        <h2 style="color:#197c91;font-size:1.35em;font-weight:900;margin-bottom:1.2em;text-align:center;letter-spacing:1px;">إضافة مخطط هندسي</h2>
+        <form id="drawingForm">
+          <label for="drawingNumber">رقم المخطط</label>
+          <input type="text" id="drawingNumber" name="drawingNumber">
+          <label for="buildingModel">نموذج المبني</label>
+          <input type="text" id="buildingModel" name="buildingModel">
+          <label for="drawingName">اسم المخطط</label>
+          <input type="text" id="drawingName" name="drawingName">
+          <label for="drawingSection">البند</label>
+          <select id="drawingSection" name="drawingSection" style="width:100%;padding:0.7em;border:1.2px solid #c5d6db;border-radius:10px;font-size:1em;font-family:'Cairo',Arial,sans-serif;margin-bottom:1em;background:#f8fafd;">
+            <option value="">-- اختر البند --</option>
+            <option value="إنشائي">إنشائي</option>
+            <option value="معماري">معماري</option>
+            <option value="ميكانيكا">ميكانيكا</option>
+            <option value="كهرباء">كهرباء</option>
+            <option value="مساحة">مساحة</option>
+            <option value="موقع عام">موقع عام</option>
+          </select>
+          <label for="drawingFileDWG">ملف المخطط DWG</label>
+          <input type="file" id="drawingFileDWG" name="drawingFileDWG" accept=".dwg">
+          <label for="drawingFilePDF">ملف المخطط PDF</label>
+          <input type="file" id="drawingFilePDF" name="drawingFilePDF" accept=".pdf">
+          <button type="submit" style="background:linear-gradient(90deg,#2e8ca3 60%,#197c91 100%);color:#fff;border:none;border-radius:50px;padding:0.7em 2.2em;font-size:1.08rem;font-weight:800;cursor:pointer;box-shadow:0 2px 8px #2e8ca322;transition:background 0.2s,transform 0.18s;margin-top:0.5em;">حفظ المخطط</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      // إدراج الشريط العلوي من ملف components/main-navbar.html مع تفعيل السكريبتات والستايل
+      fetch('components/main-navbar.html')
+        .then(response => response.text())
+        .then(html => {
+          const temp = document.createElement('div');
+          temp.innerHTML = html;
+          temp.querySelectorAll('style').forEach(style => {
+            document.head.appendChild(style.cloneNode(true));
+          });
+          document.getElementById('main-navbar').innerHTML = '';
+          temp.childNodes.forEach(node => {
+            if (node.nodeName !== 'STYLE' && node.nodeName !== 'SCRIPT') {
+              document.getElementById('main-navbar').appendChild(node.cloneNode(true));
+            }
+          });
+          temp.querySelectorAll('script').forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+              newScript.src = script.src;
+              newScript.onload = function() {
+                if (window.initMainNavbar) window.initMainNavbar();
+              };
+            } else {
+              newScript.textContent = script.textContent + "\nif(window.initMainNavbar) initMainNavbar();";
+            }
+            document.body.appendChild(newScript);
+          });
+          setTimeout(function() {
+            if (window.initMainNavbar) window.initMainNavbar();
+          }, 100);
+        });
+      // منطق نافذة إضافة المخطط
+      const addDrawingBtn = document.getElementById('addDrawingBtn');
+      const drawingModal = document.getElementById('drawingModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      addDrawingBtn.onclick = function() {
+        drawingModal.style.display = 'flex';
+      };
+      closeModalBtn.onclick = function() {
+        drawingModal.style.display = 'none';
+      };
+      window.onclick = function(e) {
+        if (e.target === drawingModal) drawingModal.style.display = 'none';
+      };
+      // بيانات المخططات
+      const drawings = [];
+      document.getElementById('drawingForm').onsubmit = function(e) {
+        e.preventDefault();
+        const number = document.getElementById('drawingNumber').value.trim();
+        const buildingModel = document.getElementById('buildingModel').value.trim();
+        const name = document.getElementById('drawingName').value.trim();
+        const section = document.getElementById('drawingSection').value;
+        const fileDWGInput = document.getElementById('drawingFileDWG');
+        const filePDFInput = document.getElementById('drawingFilePDF');
+        let fileDWGUrl = '', fileDWGName = '', filePDFUrl = '', filePDFName = '';
+        if (fileDWGInput.files.length) {
+          fileDWGUrl = URL.createObjectURL(fileDWGInput.files[0]);
+          fileDWGName = fileDWGInput.files[0].name;
+        }
+        if (filePDFInput.files.length) {
+          filePDFUrl = URL.createObjectURL(filePDFInput.files[0]);
+          filePDFName = filePDFInput.files[0].name;
+        }
+        const now = new Date();
+        const lastModified = now.toLocaleString('ar-EG', { hour12: false });
+        if (window.editIndex !== undefined) {
+          drawings[window.editIndex] = { number, buildingModel, name, section, fileDWGUrl, fileDWGName, filePDFUrl, filePDFName, lastModified };
+          window.editIndex = undefined;
+        } else {
+          drawings.push({ number, buildingModel, name, section, fileDWGUrl, fileDWGName, filePDFUrl, filePDFName, lastModified });
+        }
+        renderDrawingsTable();
+        this.reset();
+        drawingModal.style.display = 'none';
+      };
+      function renderDrawingsTable() {
+        const tbody = document.getElementById('drawingsTableBody');
+        if (!drawings.length) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#888;padding:2em;">لا توجد مخططات بعد.</td></tr>';
+          return;
+        }
+        // تجميع المخططات حسب البند
+        const grouped = {};
+        drawings.forEach((d, idx) => {
+          const section = d.section || 'بدون بند';
+          if (!grouped[section]) grouped[section] = [];
+          grouped[section].push({ ...d, idx });
+        });
+        let html = '';
+        let sectionKeys = Object.keys(grouped);
+        sectionKeys.forEach((section, i) => {
+          html += `<tr class=\"section-row\" data-section=\"section${i}\"><td colspan=\"8\" style=\"font-weight:900;color:#197c91;font-size:1.08em;letter-spacing:1px;text-align:center;\">${section}</td></tr>`;
+          html += grouped[section].map(d => `
+            <tr class=\"data-row section${i}\" style=\"display:none;\">
+              <td style=\"text-align:center;\">${d.number || '-'}</td>
+              <td style=\"text-align:center;\">${d.buildingModel || '-'}</td>
+              <td style=\"text-align:center;\">${d.name || '-'}</td>
+              <td style=\"text-align:center;\">${d.section || '-'}</td>
+              <td style=\"text-align:center;\">${d.fileDWGUrl ? `<a href=\"${d.fileDWGUrl}\" target=\"_blank\">${d.fileDWGName}</a>` : '-'}</td>
+              <td style=\"text-align:center;\">${d.filePDFUrl ? `<a href=\"${d.filePDFUrl}\" target=\"_blank\">${d.filePDFName}</a>` : '-'}</td>
+              <td style=\"text-align:center;\">${d.lastModified || '-'}</td>
+              <td style=\"text-align:center;\">
+                <span style=\"cursor:pointer;color:#e53935;font-size:1.3em;margin:0 7px;\" title=\"حذف\" onclick=\"deleteDrawing(${d.idx})\">&#128465;</span>
+                <span style=\"cursor:pointer;color:#197c91;font-size:1.3em;margin:0 7px;\" title=\"تعديل\" onclick=\"editDrawing(${d.idx})\">&#9998;</span>
+              </td>
+            </tr>
+          `).join('');
+        });
+        tbody.innerHTML = html;
+        // إضافة منطق الإخفاء/الإظهار
+        sectionKeys.forEach((section, i) => {
+          const sectionRow = tbody.querySelector(`.section-row[data-section=section${i}]`);
+          sectionRow.onclick = function() {
+            const rows = tbody.querySelectorAll(`.section${i}`);
+            rows.forEach(row => {
+              row.style.display = row.style.display === 'none' ? '' : 'none';
+            });
+          };
+        });
+      }
+      window.deleteDrawing = function(idx) {
+        if (confirm('هل أنت متأكد من حذف هذا المخطط؟')) {
+          drawings.splice(idx, 1);
+          renderDrawingsTable();
+        }
+      }
+      window.editDrawing = function(idx) {
+        const d = drawings[idx];
+        document.getElementById('drawingNumber').value = d.number || '';
+        document.getElementById('buildingModel').value = d.buildingModel || '';
+        document.getElementById('drawingName').value = d.name || '';
+        document.getElementById('drawingSection').value = d.section || '';
+        // لا يمكن إعادة الملفات، فقط تعديل البيانات النصية
+        window.editIndex = idx;
+        drawingModal.style.display = 'flex';
+      }
+      renderDrawingsTable();
+    </script>
+</body>
+</html>
