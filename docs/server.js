@@ -3,6 +3,8 @@ const cors = require('cors');
 const path = require('path');
 const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
 app.use(cors());
@@ -50,19 +52,24 @@ async function connectDB() {
 
 connectDB().catch(console.dir);
 
-// إعدادات multer لتحميل الملفات
-const uploadFolder = path.join(__dirname, 'uploads');
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadFolder);
-  },
-  filename: function (req, file, cb) {
-    // اجعل اسم الملف فريد باستخدام التاريخ
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+
+
+// إعداد بيانات Cloudinary
+cloudinary.config({
+  cloud_name: 'root',
+  api_key: '994869753445758',
+  api_secret: 'qfLSlBcydXqctxqWdr3qzvSkI8k'
+});
+
+// إعداد التخزين على Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uploads', // اسم المجلد في Cloudinary
+    allowed_formats: ['jpg', 'png', 'pdf', 'doc', 'docx']
   }
 });
-const upload = multer({ storage: storage });
+const upload = require('multer')({ storage: storage });
 
 // API المقاولين
 // إضافة مقاول جديد (يدعم maxTotalPercentPerItem ويدعم المواد)
@@ -1700,10 +1707,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'لم يتم رفع أي ملف' });
   }
-  // رابط التحميل (يمكنك تعديله حسب الحاجة)
-  const fileUrl = `/uploads/${req.file.filename}`;
-  res.json({ url: fileUrl, name: req.file.originalname });
+  // رابط التحميل من Cloudinary
+  res.json({ url: req.file.path, name: req.file.originalname });
 });
-
-// تقديم ملفات الرفع statically
-app.use('/uploads', express.static(uploadFolder));
