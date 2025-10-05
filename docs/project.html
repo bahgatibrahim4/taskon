@@ -1048,11 +1048,18 @@
               <tr>
                 <td>${addon.name}</td>
                 <td>${addon.value}</td>
-                <td>${addon.pdfName ? addon.pdfName : '—'}</td>
+                <td>
+                  ${
+                    addon.pdfUrl
+                      ? `<a href="${addon.pdfUrl}" target="_blank" style="color:#2e8ca3; font-weight:700; text-decoration:underline;">${addon.pdfName}</a>`
+                      : '—'
+                  }
+                </td>
                 <td>
                   <button class="action-btn edit-btn" onclick="editContract(${idx})">
                     <i class="fas fa-edit"></i>
                   </button>
+
                   <button class="action-btn delete-btn" onclick="deleteContract(${idx})">
                     <i class="fas fa-trash"></i>
                   </button>
@@ -1077,17 +1084,60 @@
       });
     }
 
-    // معالجة إرسال نموذج العقد
-    function handleContractSubmit(e) {
+    // جلب ملاحق العقود من قاعدة البيانات
+    async function fetchContractAddonsFromDB() {
+      try {
+        const res = await fetch('/contract-addons');
+        return await res.json();
+      } catch (err) { return []; }
+    }
+
+    // حفظ ملحق عقد في قاعدة البيانات
+    async function saveContractAddonToDB(addon) {
+      try {
+        await fetch('/contract-addons', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(addon)
+        });
+      } catch (err) { }
+    }
+
+    // عند تحميل الصفحة، جلب ملاحق العقود من قاعدة البيانات
+    document.addEventListener('DOMContentLoaded', async function() {
+      state.contractAddons = await fetchContractAddonsFromDB();
+      state.projectData = await fetchProjectDataFromDB();
+      state.purchases = await fetchPurchasesFromDB();
+      state.supplies = await fetchSuppliesFromDB();
+      state.pays = await fetchPaysFromDB(); // بدل workers
+      state.equipment = await fetchEquipmentFromDB();
+      // لا داعي لاستدعاء initEventListeners و showTab هنا لأنهما بالفعل في الأعلى
+    });
+    
+    // عند إضافة ملحق جديد، أعد جلب الملاحق بعد الحفظ
+    async function handleContractSubmit(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
+
+      // رفع الملف أولاً
+      let pdfUrl = '';
+      const pdfFile = formData.get('addonPdf');
+      if (pdfFile && pdfFile.size > 0) {
+        const uploadForm = new FormData();
+        uploadForm.append('file', pdfFile);
+        const res = await fetch('/upload', { method: 'POST', body: uploadForm });
+        const data = await res.json();
+        pdfUrl = data.url; // رابط الملف بعد الرفع
+      }
+
       const addon = {
         name: formData.get('addonName'),
         value: formData.get('addonValue'),
-        pdfName: formData.get('addonPdf').name || ''
+        pdfName: pdfFile ? pdfFile.name : '',
+        pdfUrl: pdfUrl
       };
-      state.contractAddons.push(addon);
-      saveContractAddonToDB(addon);
+      await saveContractAddonToDB(addon);
+      state.contractAddons = await fetchContractAddonsFromDB();
       closeAllModals();
       renderContractsTab();
     }
@@ -1124,7 +1174,13 @@
               <tr>
                 <td>${addon.name}</td>
                 <td>${addon.value}</td>
-                <td>${addon.pdfName ? addon.pdfName : '—'}</td>
+                <td>
+                  ${
+                    addon.pdfUrl
+                      ? `<a href="${addon.pdfUrl}" target="_blank" style="color:#2e8ca3; font-weight:700; text-decoration:underline;">${addon.pdfName}</a>`
+                      : '—'
+                  }
+                </td>
                 <td>
                   <button class="action-btn edit-btn" onclick="editSupply(${idx})">
                     <i class="fas fa-edit"></i>

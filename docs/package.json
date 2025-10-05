@@ -13,6 +13,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "mongodb": "^6.18.0"
+    "gridfs-stream": "^1.1.1",
+    "mongodb": "^6.18.0",
+    "multer": "^2.0.2",
+    "multer-gridfs-storage": "^5.0.2"
   }
 }

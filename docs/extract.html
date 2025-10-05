@@ -534,6 +534,16 @@
           </div>
         </div>
       </div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <button type="button" id="addLumpSumBtn" class="btn" style="background:#7a5230;">إضافة مقطوعية</button>
+        <button type="button" id="addDailyBtn" class="btn" style="background:#388e3c;">إضافة يوميات</button>
+        <button type="button" id="addSeparatorBtn" class="btn" style="background:#7a5230;">+ إضافة فاصل</button>
+        <div style="display:flex; align-items:center; gap:4px; margin-right:8px;">
+          <label for="maxTotalPercentInput" style="font-weight:bold; color:#7a5230; font-size:0.82rem;">الحد الأقصى للإجمالي % لكل بند:</label>
+          <input type="number" id="maxTotalPercentInput" value="100" min="1" max="100" style="width:38px; font-size:0.82rem; padding:2px 2px; height:24px; border-radius:4px;">
+          <span style="color:#7a5230;">%</span>
+        </div>
+      </div>
       <div class="table-section" style="background: #c5d6db; border-radius: 10px; padding: 14px 8px; box-shadow: 0 2px 8px #1b5e2022; margin-bottom: 14px; border: 1.5px solid #8c969a;">
         <div style="overflow-x:auto;">
           <table id="workItemsTable" style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px #8c969a;">
@@ -556,8 +566,56 @@
               </tr>
             </thead>
             <tbody id="workItemsBody"></tbody>
-          </table>
-        </div>
+            <tfoot>
+              <tr id="workItemsTotalRow" style="background:#e8f5e9; font-weight:bold;">
+                <td colspan="10" style="text-align:center;">الإجمالي</td>
+                <td id="workItemsPrevAmountTotal" style="background:#c5d6db;">0</td>
+                <td id="workItemsCurrentAmountTotal" style="background:#c5d6db;">0</td>
+                <td id="workItemsTotalAmountTotal" style="background:#c5d6db;">0</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="14" style="padding:0; border:none;">
+                  <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:24px; margin:0; padding:10px 0 0 0;">
+                    <div style="background:#ede7f6; border-radius:8px; padding:8px 24px; min-width:220px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 1px 6px #d1c4e9;">
+                      <span style="color:#7a5230; font-weight:bold; font-size:1.05em;">قيمة الأعمال الإجمالية:</span>
+                      <span id="workItemsGrandTotal" style="color:#2e8ca3; font-weight:bold; font-size:1.12em;"></span>
+                    </div>
+                    <div style="background:#fff3e0; border-radius:8px; padding:8px 24px; min-width:260px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 1px 6px #ffe0b2;">
+                      <span style="color:#7a5230; font-weight:bold; font-size:1.05em;">حساب قيمة ضمان الأعمال:</span>
+                      <input id="guaranteePercentInput" type="number" min="0" max="100" step="any" value="5"
+                        style="width:60px; font-weight:bold; text-align:center; border:2px solid #7a5230; border-radius:8px; background:#fffbe7; color:#7a5230; font-size:1.08em; margin:0 4px;">
+                      <span style="color:#7a5230; font-weight:bold;">%</span>
+                      <span id="workItemsGuaranteeValue" style="color:#2e8ca3; font-weight:bold; font-size:1.12em; margin-right:10px;"></span>
+                      <label style="margin-right:16px; display:flex; align-items:center; gap:4px; font-weight:bold; color:#7a5230; font-size:1em; cursor:pointer;">
+                        <input type="checkbox" id="enableGuaranteeBox" style="width:18px; height:18px; accent-color:#2e8ca3; margin-left:4px;">
+                        تفعيل ضمان الأعمال
+                      </label>
+                    </div>
+                  </div>
+                  <div id="guaranteeDetailsBar" style="display:none; margin-top:12px; background:#e3f2fd; border-radius:8px; padding:10px 18px; box-shadow:0 1px 6px #90caf9; min-width:320px; max-width:600px; margin-right:auto; margin-left:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:transparent;">
+                      <tr style="background:transparent;">
+                        <td style="padding:8px 12px; text-align:center;">
+                          <span style="color:#7a5230; font-weight:bold;">ضمان الأعمال السابق:</span>
+                          <span id="guaranteePrevValue" style="color:#2e8ca3; font-weight:bold; margin-left:12px;"></span>
+                        </td>
+                        <td style="padding:8px 12px; text-align:center;">
+                          <span style="color:#7a5230; font-weight:bold;">ضمان الأعمال الحالي:</span>
+                          <span id="guaranteeCurrentValue" style="color:#2e8ca3; font-weight:bold; margin-left:12px;"></span>
+                        </td>
+                        <td style="padding:8px 12px; text-align:center;">
+                          <span style="color:#7a5230; font-weight:bold;">إجمالي ضمان الأعمال:</span>
+                          <span id="guaranteeTotalValue" style="color:#2e8ca3; font-weight:bold;"></span>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
       <!-- جدول الأعمال الأخرى (otherWorks) -->
       <div id="otherWorksSection" style="margin-top: 18px;"></div>
@@ -1534,6 +1592,78 @@
         `;
       }
     }
+
+    // دالة لإظهار/إخفاء جدول ضمان الأعمال حسب التفعيل
+    function updateGuaranteeDetailsBar() {
+      const enabled = document.getElementById('enableGuaranteeBox')?.checked;
+      const bar = document.getElementById('guaranteeDetailsBar');
+      if (bar) bar.style.display = enabled ? '' : 'none';
+      // دالة تقريب رقمين عشريين
+      function fix2(val) {
+        val = parseFloat(val);
+        return isNaN(val) ? '0.00' : val.toFixed(2);
+      }
+      // احسب القيم من workItems مباشرة (من قاعدة البيانات)
+      let percent = parseFloat(document.getElementById('guaranteePercentInput')?.value) || 0;
+      let prevTotal = 0, currentTotal = 0, total = 0;
+      if (Array.isArray(workItems)) {
+        workItems.forEach(item => {
+          if (!item.isSeparator && item.prevAmount) prevTotal += parseFloat(item.prevAmount) || 0;
+          if (!item.isSeparator && item.currentAmount) currentTotal += parseFloat(item.currentAmount) || 0;
+        });
+      }
+      let guaranteePrev = prevTotal * percent / 100;
+      let guaranteeCurrent = currentTotal * percent / 100;
+      let guaranteeTotal = guaranteePrev + guaranteeCurrent;
+      document.getElementById('guaranteePrevValue').textContent = fix2(guaranteePrev);
+      document.getElementById('guaranteeCurrentValue').textContent = fix2(guaranteeCurrent);
+      document.getElementById('guaranteeTotalValue').textContent = fix2(guaranteeTotal);
+    }
+    // عند تغيير مربع التفعيل أو النسبة، حدث الشريط
+    document.addEventListener('DOMContentLoaded', function() {
+      const enableBox = document.getElementById('enableGuaranteeBox');
+      if (enableBox) {
+        enableBox.addEventListener('change', updateGuaranteeDetailsBar);
+        updateGuaranteeDetailsBar();
+      }
+    });
+
+    // تفعيل زر إضافة مقطوعية
+    document.getElementById('addLumpSumBtn').addEventListener('click', function() {
+      document.getElementById('lumpSumSection').style.display = '';
+      if (document.getElementById('addLumpSumRowBtn')) {
+        document.getElementById('addLumpSumRowBtn').click();
+      }
+    });
+    // تفعيل زر إضافة يوميات
+    document.getElementById('addDailyBtn').addEventListener('click', function() {
+      document.getElementById('dailySection').style.display = '';
+      if (document.getElementById('addDailyRowBtn')) {
+        document.getElementById('addDailyRowBtn').click();
+      }
+    });
+    // تفعيل زر إضافة فاصل
+    document.getElementById('addSeparatorBtn').addEventListener('click', function() {
+      workItems.push({ isSeparator: true, separatorName: 'فاصل جديد' });
+      renderWorkItems();
+    });
+    // تفعيل الحد الأقصى للإجمالي لكل بند
+    document.getElementById('workItemsBody').addEventListener('input', function(e) {
+      if (e.target && e.target.dataset && e.target.dataset.field === 'currentPercent') {
+        const idx = parseInt(e.target.dataset.idx);
+        const maxPercent = parseFloat(document.getElementById('maxTotalPercentInput').value) || 100;
+        const prevPercent = parseFloat(workItems[idx].prevPercent) || 0;
+        let currentPercent = parseFloat(e.target.value) || 0;
+        if (prevPercent + currentPercent > maxPercent) {
+          currentPercent = maxPercent - prevPercent;
+          if (currentPercent < 0) currentPercent = 0;
+          workItems[idx].currentPercent = currentPercent;
+          e.target.value = currentPercent;
+        }
+        updateTotalsRow(idx);
+        calculateSummary();
+      }
+    });
   </script>
   <script>
     // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله

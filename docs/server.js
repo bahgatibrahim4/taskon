@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
@@ -48,6 +49,20 @@ async function connectDB() {
 }
 
 connectDB().catch(console.dir);
+
+// إعدادات multer لتحميل الملفات
+const uploadFolder = path.join(__dirname, 'uploads');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadFolder);
+  },
+  filename: function (req, file, cb) {
+    // اجعل اسم الملف فريد باستخدام التاريخ
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
 
 // API المقاولين
 // إضافة مقاول جديد (يدعم maxTotalPercentPerItem ويدعم المواد)
@@ -1637,6 +1652,16 @@ app.post('/contract-addons', async (req, res) => {
   }
 });
 
+// جلب كل ملاحق العقود
+app.get('/contract-addons', async (req, res) => {
+  try {
+    const arr = await contractAddonsCollection.find({}).toArray();
+    res.json(arr);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // API ملحقات التوريدات
 app.post('/supply-addons', async (req, res) => {
   try {
@@ -1669,3 +1694,16 @@ app.post('/estimates', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// API لرفع الملفات
+app.post('/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'لم يتم رفع أي ملف' });
+  }
+  // رابط التحميل (يمكنك تعديله حسب الحاجة)
+  const fileUrl = `/uploads/${req.file.filename}`;
+  res.json({ url: fileUrl, name: req.file.originalname });
+});
+
+// تقديم ملفات الرفع statically
+app.use('/uploads', express.static(uploadFolder));

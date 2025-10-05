@@ -301,14 +301,16 @@
       document.getElementById('name').textContent = c.name || '';
       document.getElementById('phone').textContent = c.phone || '';
       document.getElementById('workItem').textContent = c.workItem || '';
-      // جلب آخر مستخلص لهذا المقاول وحساب الإجمالي
+      // جلب آخر مستخلص خاص بهذا المقاول فقط وحساب الإجمالي
       let totalWorks = 0;
       try {
         const extractsRes = await fetch(`/extracts?contractor=${contractorId}`);
         if (extractsRes.ok) {
           const extracts = await extractsRes.json();
-          if (extracts.length > 0) {
-            const lastExtract = extracts[extracts.length - 1];
+          // فلترة المستخلصات الخاصة بهذا المقاول فقط
+          const filtered = extracts.filter(ex => ex.contractor == contractorId);
+          if (filtered.length > 0) {
+            const lastExtract = filtered[filtered.length - 1];
             if (Array.isArray(lastExtract.workItems)) {
               lastExtract.workItems.forEach(item => {
                 if (!item.isSeparator) {
