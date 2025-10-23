@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>اختيار المشروع</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2e8ca3;
+      --primary-dark: #197c91;
+      --secondary-color: #8c969a;
+      --background: #c5d6db;
+      --card-bg: #ffffff;
+      --border-color: #d1dfe4;
+      --text-primary: #2c3e50;
+      --text-secondary: #546e7a;
+      --success: #4caf50;
+      --shadow-sm: 0 2px 8px rgba(46, 140, 163, 0.08);
+      --shadow-md: 0 4px 16px rgba(46, 140, 163, 0.12);
+      --shadow-lg: 0 8px 32px rgba(46, 140, 163, 0.16);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #c5d6db 0%, #a8bcc4 100%);
+      color: var(--text-primary);
+      font-family: 'Cairo', Arial, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding-top: 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      margin-top: 1rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    .add-project-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, var(--success), #2e7d32);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-md);
+      margin: 2rem auto;
+      display: flex;
+    }
+
+    .add-project-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 2rem;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--primary-color), var(--primary-dark));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-color);
+    }
+
+    .project-card:hover::before {
+      opacity: 1;
+    }
+
+    .project-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .project-name {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .project-code {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .project-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #f0f4f7;
+    }
+
+    .project-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .project-detail i {
+      color: var(--primary-color);
+      font-size: 1rem;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn-select {
+      flex: 1;
+      padding: 0.7rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-select:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-edit, .btn-delete {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .btn-edit:hover {
+      background: #1976d2;
+      color: #ffffff;
+    }
+
+    .btn-delete {
+      background: #ffebee;
+      color: #e53935;
+    }
+
+    .btn-delete:hover {
+      background: #e53935;
+      color: #ffffff;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(24, 71, 90, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      max-width: 500px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      padding: 1.3rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 1.6rem;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+    }
+
+    .btn-secondary {
+      padding: 0.8rem 1.5rem;
+      background: #ffffff;
+      color: var(--primary-dark);
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #e8f4f7;
+    }
+
+    .btn-primary {
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+  </style>
+  <script src="js/projectUtils.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏗️ اختر المشروع</h1>
+      <p>اختر المشروع الذي تريد العمل عليه</p>
+      <button class="add-project-btn" id="addProjectBtn">
+        <span>➕</span>
+        إضافة مشروع جديد
+      </button>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="projectModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">إضافة مشروع جديد</h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="projectForm">
+          <div class="form-group">
+            <label class="form-label">اسم المشروع *</label>
+            <input type="text" class="form-input" id="projectName" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">كود المشروع *</label>
+            <input type="text" class="form-input" id="projectCode" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">الموقع</label>
+            <input type="text" class="form-input" id="location">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">الوصف</label>
+            <textarea class="form-textarea" id="description"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">تاريخ البدء</label>
+            <input type="date" class="form-input" id="startDate">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">تاريخ الانتهاء المتوقع</label>
+            <input type="date" class="form-input" id="endDate">
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancelBtn">إلغاء</button>
+            <button type="submit" class="btn-primary">
+              <span>💾</span>
+              حفظ المشروع
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // تحديد API URL حسب البيئة
+    const isProduction = window.location.hostname.includes('render.com') || window.location.hostname.includes('onrender.com');
+    const API_URL = isProduction ? window.location.origin : 'http://localhost:4000';
+    console.log('🌐 API URL:', API_URL);
+    let projects = [];
+    let editingId = null;
+    let currentUser = null;
+
+    // التحقق من وجود subdomain أو معرف الشركة (لا نعمل redirect هنا)
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    const hasSubdomain = parts.length >= 2 && parts[0] !== 'localhost' && parts[0] !== 'www';
+    console.log('🏢 Subdomain check:', { hostname, hasSubdomain });
+
+    // دالة للتحقق من صحة URL والتوجيه للشركة الصحيحة
+    function checkCorrectURL() {
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!currentUser.companyId) return true; // إذا لم يكن هناك companyId، اتركه يمر
+
+      const hostname = window.location.hostname;
+      const currentDomain = window.location.origin;
+      
+      // إذا كنا في localhost أو production domain بدون subdomain
+      if (hostname === 'localhost' || hostname.includes('render.com') || hostname.includes('onrender.com')) {
+        // تحقق إذا كان لدينا معرف شركة في URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyParam = urlParams.get('company') || urlParams.get('companyId');
+        
+        if (!companyParam && currentUser.companyId !== 'default-company-001') {
+          // إعادة توجيه مع معرف الشركة
+          const newUrl = `${currentDomain}/projects.html?company=${currentUser.companyId}`;
+          console.log('🔄 Redirecting to company URL:', newUrl);
+          window.location.replace(newUrl);
+          return false;
+        }
+      }
+      
+      return true;
+    }
+
+    // دالة رئيسية لتهيئة الصفحة
+    function initializePage() {
+      // تنفيذ فحص URL
+      if (!checkCorrectURL()) {
+        return; // إيقاف تنفيذ الكود إذا تم التوجيه
+      }
+
+      // Check if user is logged in
+      const userStr = localStorage.getItem('user'); // تغيير من currentUser إلى user
+      if (!userStr) {
+        console.log('❌ لا يوجد مستخدم مسجل، توجيه للدخول');
+        window.location.replace('login.html');
+        return; // إيقاف تنفيذ الكود
+      } else {
+        try {
+          currentUser = JSON.parse(userStr);
+          console.log('👤 تم العثور على مستخدم:', currentUser);
+          
+          // التأكد من وجود companyId - استخدام معرف افتراضي مؤقتاً
+          if (!currentUser.companyId) {
+            console.warn('⚠️ لا يوجد companyId، سيتم استخدام معرف افتراضي مؤقت');
+            currentUser.companyId = 'default-company-001'; // معرف افتراضي مؤقت
+            // حفظ التحديث
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          }
+          
+          // إذا وصلنا هنا، المستخدم مسجل بنجاح
+          setupPageElements();
+          loadProjects();
+          
+        } catch (error) {
+          console.error('خطأ في تحليل بيانات المستخدم:', error);
+          localStorage.removeItem('user');
+          localStorage.removeItem('currentUser');
+          window.location.replace('login.html');
+          return;
+        }
+      }
+    }
+
+    const projectsGrid = document.getElementById('projectsGrid');
+    const projectModal = document.getElementById('projectModal');
+    const projectForm = document.getElementById('projectForm');
+    const addProjectBtn = document.getElementById('addProjectBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const modalTitle = document.getElementById('modalTitle');
+
+    // دالة لإعداد عناصر الصفحة وأحداثها
+    function setupPageElements() {
+      // Add project button
+      addProjectBtn.addEventListener('click', () => openModal(false));
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      // Submit form
+      projectForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // الحصول على معرف الشركة من URL أو المستخدم
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyFromUrl = urlParams.get('company') || urlParams.get('companyId');
+        const companyId = companyFromUrl || currentUser.companyId || 'default-company-001';
+
+        const projectData = {
+          companyId: companyId,
+          projectName: document.getElementById('projectName').value.trim(),
+          projectCode: document.getElementById('projectCode').value.trim(),
+          location: document.getElementById('location').value.trim(),
+          description: document.getElementById('description').value.trim(),
+          startDate: document.getElementById('startDate').value,
+          endDate: document.getElementById('endDate').value
+        };
+
+        console.log('💾 حفظ مشروع للشركة:', companyId, projectData);
+
+        try {
+          let response;
+          if (editingId) {
+            response = await fetch(`${API_URL}/projects/${editingId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(projectData)
+            });
+          } else {
+            response = await fetch(`${API_URL}/projects`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(projectData)
+            });
+          }
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('الاستجابة ليست JSON');
+          }
+
+          const result = await response.json();
+
+          if (result.success) {
+            alert(editingId ? 'تم تحديث المشروع بنجاح! ✅' : 'تم إضافة المشروع بنجاح! ✅');
+            await loadProjects();
+            closeModal();
+          } else {
+            alert('حدث خطأ: ' + (result.error || 'خطأ غير معروف'));
+          }
+        } catch (err) {
+          console.error('Error saving project:', err);
+          alert('فشل حفظ المشروع: ' + err.message);
+        }
+      });
+    }
+
+    // Load projects
+    async function loadProjects() {
+      try {
+        // الحصول على معرف الشركة من المستخدم أو من URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyFromUrl = urlParams.get('company') || urlParams.get('companyId');
+        const companyId = companyFromUrl || currentUser.companyId || 'default-company-001';
+        
+        console.log('🏢 تحميل مشاريع الشركة:', companyId);
+        console.log('👤 معلومات المستخدم:', currentUser);
+        
+        // بناء URL مع معاملات المستخدم
+        const queryParams = new URLSearchParams({
+          companyId: companyId
+        });
+        
+        // إضافة معلومات المستخدم إذا كانت متوفرة
+        if (currentUser._id) {
+          queryParams.append('userId', currentUser._id);
+        }
+        if (currentUser.role) {
+          queryParams.append('userRole', currentUser.role);
+        }
+        
+        const requestUrl = `${API_URL}/projects?${queryParams.toString()}`;
+        console.log('🔗 طلب GET:', requestUrl);
+        
+        const response = await fetch(requestUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('Response is not JSON:', text);
+          throw new Error('الاستجابة ليست JSON');
+        }
+        
+        const allProjects = await response.json();
+        console.log('� استجابة الخادم:', allProjects);
+        
+        // لا نحتاج لفلترة إضافية هنا - السيرفر يقوم بالفلترة
+        projects = allProjects;
+        console.log(`✅ تم تحميل ${projects.length} مشروع`);
+        
+        renderProjects();
+      } catch (err) {
+        console.error('Error loading projects:', err);
+        projectsGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <div class="empty-text">خطأ في تحميل المشاريع</div>
+            <p style="margin-top: 1rem; opacity: 0.7;">${err.message}</p>
+            <button onclick="loadProjects()" style="margin-top: 1rem; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">إعادة المحاولة</button>
+          </div>
+        `;
+      }
+    }
+
+    // Render projects
+    function renderProjects() {
+      if (projects.length === 0) {
+        projectsGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🏗️</div>
+            <div class="empty-text">لا توجد مشاريع بعد</div>
+            <p style="margin-top: 1rem; opacity: 0.7;">ابدأ بإضافة مشروع جديد</p>
+          </div>
+        `;
+        return;
+      }
+
+      projectsGrid.innerHTML = projects.map(p => `
+        <div class="project-card">
+          <div class="project-icon">🏗️</div>
+          <div class="project-name">${p.projectName}</div>
+          <div class="project-code">${p.projectCode}</div>
+          
+          <div class="project-details">
+            ${p.location ? `<div class="project-detail"><i>📍</i> ${p.location}</div>` : ''}
+            ${p.startDate ? `<div class="project-detail"><i>📅</i> ${new Date(p.startDate).toLocaleDateString('ar-EG')}</div>` : ''}
+          </div>
+          
+          <div class="project-actions">
+            <button class="btn-select" onclick="selectProject('${p._id}', '${p.projectName}')">
+              اختر المشروع →
+            </button>
+            <button class="btn-edit" onclick="editProject('${p._id}')" title="تعديل">✏️</button>
+            <button class="btn-delete" onclick="deleteProject('${p._id}')" title="حذف">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Select project
+    window.selectProject = function(projectId, projectName) {
+      localStorage.setItem('currentProjectId', projectId);
+      localStorage.setItem('currentProjectName', projectName);
+      
+      // الحصول على company parameter من URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const companyParam = urlParams.get('company') || urlParams.get('companyId');
+      const companyUrlParam = companyParam ? `?company=${companyParam}` : '';
+      
+      window.location.replace(`index.html${companyUrlParam}`);
+    };
+
+    // Open modal
+    function openModal(isEdit = false) {
+      modalTitle.textContent = isEdit ? 'تعديل المشروع' : 'إضافة مشروع جديد';
+      projectModal.classList.add('show');
+    }
+
+    // Close modal
+    function closeModal() {
+      projectModal.classList.remove('show');
+      projectForm.reset();
+      editingId = null;
+    }
+
+    // Edit project
+    window.editProject = async function(id) {
+      const project = projects.find(p => p._id === id);
+      if (!project) return;
+
+      editingId = id;
+      document.getElementById('projectName').value = project.projectName;
+      document.getElementById('projectCode').value = project.projectCode;
+      document.getElementById('location').value = project.location || '';
+      document.getElementById('description').value = project.description || '';
+      document.getElementById('startDate').value = project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : '';
+      document.getElementById('endDate').value = project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : '';
+
+      openModal(true);
+    };
+
+    // Delete project
+    window.deleteProject = async function(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/projects/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('تم حذف المشروع بنجاح! ✅');
+          await loadProjects();
+        } else {
+          alert('حدث خطأ: ' + (result.error || 'خطأ غير معروف'));
+        }
+      } catch (err) {
+        console.error('Error deleting project:', err);
+        alert('فشل حذف المشروع');
+      }
+    };
+
+    // تشغيل الصفحة
+    initializePage();
+  </script>
+
+  <!-- زر Super Admin محذوف - للوصول اكتب admin-dashboard.html مباشرة في الرابط -->
+</body>
+</html>

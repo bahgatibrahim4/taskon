@@ -1,0 +1,1787 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سندات الاستلام | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- مكتبة html2pdf لحفظ PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #2e8ca3;
+      --primary-dark: #197c91;
+      --background: #c5d6db;
+      --card-bg: #ffffff;
+      --text-dark: #1a3b50;
+      --text-muted: #666;
+      --border-color: #8c969a;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --shadow: 0 4px 24px rgba(26, 59, 80, 0.08);
+      --shadow-lg: 0 8px 32px rgba(46, 140, 163, 0.2);
+      
+      /* Fix CSS writing-mode warning */
+      direction: rtl;
+      writing-mode: horizontal-tb;
+      text-orientation: mixed;
+    }
+
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: var(--background);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ========== HEADER BAR ========== */
+    .header-bar {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+      color: white;
+      padding: 24px 32px;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.75rem;
+      font-weight: 800;
+    }
+
+    .header-title .icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+      background: #f0f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 8px 16px;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.95rem;
+      width: 200px;
+    }
+
+    .search-box input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .search-box .icon {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    .filter-select {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: white;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .filter-select option {
+      background: var(--primary-dark);
+      color: white;
+    }
+
+    /* ========== MAIN CONTAINER ========== */
+    .container {
+      max-width: 1600px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* ========== TABLE VIEW ========== */
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 20px 24px;
+      border-bottom: 2px solid var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-header h2 {
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .receipt-count {
+      background: var(--primary-color);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    th {
+      padding: 16px 12px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #e5e7eb;
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    td {
+      padding: 14px 12px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin: 0 3px;
+    }
+
+    .btn-edit {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .btn-edit:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-delete:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-view {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
+
+    .btn-view:hover {
+      background: #a855f7;
+      color: white;
+    }
+
+    .btn-print {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .btn-print:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-pdf {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-pdf:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* ========== DRAWER PANEL ========== */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    .drawer-overlay.active {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      right: -600px;
+      top: 0;
+      bottom: 0;
+      width: 600px;
+      max-width: 100%;
+      background: var(--card-bg);
+      box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+      z-index: 201;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .drawer.active {
+      right: 0;
+    }
+
+    .drawer-header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+      color: white;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .drawer-header h3 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-drawer {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .close-drawer:hover {
+      background: rgba(255,255,255,0.3);
+      transform: rotate(90deg);
+    }
+
+    .drawer-body {
+      padding: 24px;
+    }
+
+    /* ========== FORM CARDS ========== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .form-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      transition: all 0.3s;
+    }
+
+    .form-card:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(46, 140, 163, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .form-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .form-label .icon {
+      font-size: 1.2rem;
+      color: var(--primary-color);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* ========== FORM ACTIONS ========== */
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      padding-top: 20px;
+      border-top: 2px solid #e2e8f0;
+      margin-top: 24px;
+    }
+
+    .btn-submit {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(46, 140, 163, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(46, 140, 163, 0.4);
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: #f1f5f9;
+      color: var(--text-dark);
+      padding: 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+      background: #e2e8f0;
+      border-color: var(--border-color);
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s;
+    }
+
+    .slide-up {
+      animation: slideUp 0.3s;
+    }
+
+    /* ========== EMPTY STATE ========== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: var(--text-dark);
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+
+    /* ========== PRINT TEMPLATE ========== */
+    .print-template {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 9999;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .print-template.active {
+      display: block;
+    }
+
+    #printContent {
+      max-width: 210mm;
+      margin: 0 auto;
+      background: white;
+    }
+
+    /* سند القبض - تصميم احترافي */
+    .voucher-container {
+      max-width: 210mm;
+      width: 100%;
+      margin: 0 auto;
+      border: 3px solid #1e3a5f;
+      background: white;
+      font-family: 'Cairo', Arial, sans-serif;
+      box-sizing: border-box;
+    }
+
+    .voucher-header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2e5a8f 100%);
+      padding: 20px 30px;
+      text-align: center;
+      color: white;
+      border-bottom: 4px solid #d4a056;
+    }
+
+    .voucher-title-ar {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .voucher-number-section {
+      background: #f8f9fa;
+      padding: 20px 30px;
+      border-bottom: 2px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .voucher-number-label {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .voucher-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #1e3a5f;
+      font-family: Arial, sans-serif;
+    }
+
+    .voucher-logo-section {
+      text-align: center;
+    }
+
+    .voucher-logo {
+      max-width: 140px;
+      max-height: 90px;
+      object-fit: contain;
+      margin-bottom: 5px;
+    }
+
+    .voucher-currency {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .voucher-logo-space {
+      width: 120px;
+      height: 80px;
+      border: 2px dashed #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+    }
+
+    .voucher-logo-space img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .voucher-body {
+      padding: 25px 30px;
+    }
+
+    .voucher-row {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: baseline;
+      font-size: 1.1rem;
+      border-bottom: 2px dotted #dee2e6;
+      padding-bottom: 12px;
+      gap: 15px;
+    }
+
+    .voucher-label {
+      font-weight: 700;
+      color: #1e3a5f;
+      min-width: 180px;
+      margin-left: 15px;
+    }
+
+    .voucher-label-ar {
+      font-weight: 700;
+      color: #1e3a5f;
+      font-size: 1.2rem;
+      min-width: 150px;
+      white-space: nowrap;
+    }
+
+    .voucher-amount-row .voucher-label-ar {
+      font-size: 1.4rem;
+    }
+
+    .voucher-value {
+      flex: 1;
+      font-weight: 600;
+      color: #333;
+      padding: 5px 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .voucher-amount-row {
+      border: 3px solid #d4a056;
+      background: #fff9e6;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .voucher-amount-row .voucher-value {
+      font-size: 1.8rem;
+      color: #22c55e;
+      font-weight: 900;
+      background: white;
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .voucher-currency-inline {
+      font-size: 1.1rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .voucher-amount-words {
+      border: 2px dashed #2e5a8f;
+      background: #e8f4f8;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+
+    .voucher-amount-words .voucher-value {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1e3a5f;
+      background: white;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .voucher-description {
+      min-height: 80px;
+      border: 2px solid #dee2e6;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      line-height: 1.8;
+    }
+
+    .voucher-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-top: 30px;
+      padding: 25px 30px 25px;
+      border-top: 2px solid #1e3a5f;
+    }
+
+    .voucher-signature-box {
+      text-align: center;
+    }
+
+    .voucher-signature-line {
+      border-top: 2px solid #1e3a5f;
+      width: 180px;
+      margin: 30px auto 12px;
+    }
+
+    .voucher-signature-label {
+      font-weight: 700;
+      color: #1e3a5f;
+      font-size: 1.1rem;
+    }
+
+    .print-actions {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 10000;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+
+      .print-actions {
+        display: none !important;
+      }
+      
+      .print-template {
+        padding: 0;
+        margin: 0;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+      
+      .print-template, .print-template * {
+        visibility: visible;
+      }
+      
+      .print-template {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+
+      #printContent {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .voucher-container {
+        border: 3px solid #000;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        page-break-inside: avoid;
+      }
+
+      .voucher-logo {
+        max-width: 120px;
+        max-height: 80px;
+      }
+
+      /* إزالة كل الخلفيات الملونة في الطباعة */
+      .voucher-number-section {
+        background: white !important;
+      }
+
+      .voucher-value {
+        background: white !important;
+      }
+
+      .voucher-amount-row {
+        background: white !important;
+        border: 2px solid #000 !important;
+      }
+
+      .voucher-amount-row .voucher-value {
+        background: white !important;
+      }
+
+      .voucher-amount-words {
+        background: white !important;
+        border: 2px solid #000 !important;
+      }
+
+      .voucher-amount-words .voucher-value {
+        background: white !important;
+      }
+
+      .voucher-description {
+        background: white !important;
+      }
+
+      /* ضبط الألوان للطباعة - فقط للعناصر المهمة */
+      .voucher-header {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+        background: linear-gradient(135deg, #1e3a5f 0%, #2e5a8f 100%) !important;
+      }
+
+      /* تحسين حجم الخطوط في الطباعة */
+      .voucher-title-ar {
+        font-size: 2.2rem !important;
+      }
+
+      .voucher-number {
+        font-size: 2rem !important;
+      }
+
+      .voucher-row {
+        font-size: 1rem !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+      }
+
+      .voucher-label-ar {
+        font-size: 1.1rem !important;
+      }
+
+      .voucher-amount-row {
+        padding: 15px !important;
+        margin: 20px 0 !important;
+      }
+
+      .voucher-amount-row .voucher-value {
+        font-size: 1.5rem !important;
+      }
+
+      .voucher-amount-words {
+        padding: 15px !important;
+        margin: 15px 0 !important;
+      }
+
+      .voucher-body {
+        padding: 20px 25px !important;
+      }
+
+      /* التوقيعات في الطباعة */
+      .voucher-signatures {
+        margin-top: 25px !important;
+        padding: 20px 25px 20px !important;
+        page-break-inside: avoid !important;
+      }
+
+      .voucher-signature-line {
+        width: 150px !important;
+        margin: 25px auto 10px !important;
+        border-top: 2px solid #000 !important;
+      }
+
+      .voucher-signature-label {
+        font-size: 1rem !important;
+      }
+    }
+
+    /* ========== LOGO UPLOAD SECTION ========== */
+    .logo-upload-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border-color);
+    }
+
+    .logo-upload-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .logo-upload-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-preview {
+      max-width: 150px;
+      max-height: 80px;
+      object-fit: contain;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      background: white;
+    }
+
+    .logo-upload-input {
+      display: none;
+    }
+
+    .logo-upload-btn {
+      background: var(--primary-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+
+    .logo-upload-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .header-bar {
+        padding: 16px;
+      }
+
+      .header-title {
+        font-size: 1.3rem;
+      }
+
+      .search-box input {
+        width: 120px;
+      }
+
+      .drawer {
+        width: 100%;
+        right: -100%;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .form-card.full-width {
+        grid-column: 1;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      th, td {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="js/projectUtils.js"></script>
+  <script>
+    if (!projectUtils.checkAuth()) throw new Error('No project selected');
+  </script>
+  <!-- Header Bar -->
+  <div class="header-bar">
+    <div class="header-title">
+      <span class="icon">📝</span>
+      <span>سندات الاستلام</span>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <span class="icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="بحث سريع...">
+      </div>
+
+      <button class="btn btn-primary" id="btnNewReceipt">
+        ➕ إنشاء سند جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Logo Upload Section -->
+    <div class="logo-upload-section slide-up">
+      <div class="logo-upload-header">
+        <h3 class="logo-upload-title">
+          <span>🏢</span>
+          <span>لوجو الشركة</span>
+        </h3>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <img id="logoPreview" class="logo-preview" style="display: none;" alt="Logo Preview">
+          <label for="logoInput" class="logo-upload-btn">
+            📤 رفع اللوجو
+          </label>
+          <input type="file" id="logoInput" class="logo-upload-input" accept="image/*">
+        </div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="table-container slide-up">
+      <div class="table-header">
+        <h2>
+          📋 قائمة السندات
+          <span class="receipt-count" id="receiptCount">0</span>
+        </h2>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>رقم السند</th>
+              <th>التاريخ</th>
+              <th>المستلم</th>
+              <th>البيان</th>
+              <th>المبلغ</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="receiptsTableBody">
+            <!-- Empty State -->
+            <tr class="empty-row">
+              <td colspan="6">
+                <div class="empty-state">
+                  <div class="icon">📭</div>
+                  <h3>لا توجد سندات بعد</h3>
+                  <p>ابدأ بإنشاء أول سند استلام مالي</p>
+                  <button class="btn btn-primary" onclick="openDrawer()">
+                    ➕ إنشاء سند جديد
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+  <!-- Drawer Panel -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h3>
+        <span>📝</span>
+        <span id="drawerTitle">إنشاء سند جديد</span>
+      </h3>
+      <button class="close-drawer" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <form id="receiptForm">
+        <div class="form-grid">
+          <!-- رقم السند -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">🏷️</span>
+              <span>رقم السند</span>
+            </label>
+            <input type="text" class="form-input" id="receiptNumber" placeholder="مثال: R-001" required>
+          </div>
+
+          <!-- التاريخ -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">📅</span>
+              <span>التاريخ</span>
+            </label>
+            <input type="date" class="form-input" id="receiptDate" required>
+          </div>
+
+          <!-- المستلم -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">🧑‍💼</span>
+              <span>المستلم</span>
+            </label>
+            <input type="text" class="form-input" id="receiverName" placeholder="اسم المستلم" required>
+          </div>
+
+          <!-- البيان / نوع الخدمة -->
+          <div class="form-card full-width">
+            <label class="form-label">
+              <span class="icon">�</span>
+              <span>البيان (وصف الخدمة)</span>
+            </label>
+            <textarea class="form-input" id="serviceDescription" placeholder="مثال: توريد ديزل للمعدات، نقل مواد بناء، إيجار كرين..." rows="3" required></textarea>
+          </div>
+
+          <!-- المبلغ -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">💰</span>
+              <span>المبلغ (ريال)</span>
+            </label>
+            <input type="number" class="form-input" id="amount" placeholder="مثال: 5000" step="0.01" required>
+          </div>
+
+          <!-- المبلغ بالحروف (تلقائي) -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">�</span>
+              <span>المبلغ بالحروف</span>
+            </label>
+            <input type="text" class="form-input" id="amountInWords" placeholder="سيتم التحويل تلقائياً" readonly style="background: #f0f9ff; cursor: not-allowed;">
+          </div>
+
+          <!-- الحالة -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">✅</span>
+              <span>الحالة</span>
+            </label>
+            <select class="form-input" id="status" required>
+              <option value="مكتمل">✅ مكتمل</option>
+              <option value="قيد التنفيذ">⏳ قيد التنفيذ</option>
+              <option value="معلق">⏸️ معلق</option>
+            </select>
+          </div>
+
+          <!-- ملاحظات -->
+          <div class="form-card full-width">
+            <label class="form-label">
+              <span class="icon">💬</span>
+              <span>ملاحظات</span>
+            </label>
+            <textarea class="form-input" id="notes" placeholder="أي ملاحظات إضافية..."></textarea>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            💾 حفظ السند
+          </button>
+          <button type="button" class="btn-cancel" onclick="closeDrawer()">
+            ✕ إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Print Template -->
+  <div class="print-template" id="printTemplate">
+    <div class="print-actions">
+      <button class="btn btn-primary" onclick="printReceipt()">
+        🖨️ طباعة
+      </button>
+      <button class="btn btn-primary" onclick="downloadPDF()">
+        📥 حفظ PDF
+      </button>
+      <button class="btn btn-primary" onclick="closePrintPreview()">
+        ✕ إغلاق
+      </button>
+    </div>
+
+    <div id="printContent">
+      <!-- Official Receipt Voucher Design - Arabic Only -->
+      <div class="voucher-container">
+        
+        <!-- Header -->
+        <div class="voucher-header">
+          <div class="voucher-title-ar">سند قبض</div>
+        </div>
+
+        <!-- Number Section -->
+        <div class="voucher-number-section">
+          <div>
+            <div class="voucher-number-label">رقم</div>
+            <div class="voucher-number" id="printReceiptNumber">0001</div>
+          </div>
+          <div class="voucher-logo-section">
+            <img id="printVoucherLogo" class="voucher-logo" style="display: none;" alt="Logo">
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="voucher-body">
+
+          <!-- Date Row -->
+          <div class="voucher-row">
+            <div class="voucher-label-ar">التاريخ:</div>
+            <div class="voucher-value" id="printVoucherDate">
+              <span class="date-part">/</span>
+              <span class="date-part">/</span>
+              <span class="date-part"></span>
+            </div>
+          </div>
+
+          <!-- Received From Row -->
+          <div class="voucher-row">
+            <div class="voucher-label-ar">استلم السيد:</div>
+            <div class="voucher-value" id="printReceivedFrom">_________________</div>
+          </div>
+
+          <!-- Amount Row -->
+          <div class="voucher-amount-row">
+            <div class="voucher-label-ar">مبلغ وقدره:</div>
+            <div class="voucher-value voucher-amount-value">
+              <span id="printAmountValue">_________________</span>
+              <span class="voucher-currency-inline">ريال سعودي</span>
+            </div>
+          </div>
+
+          <!-- Bank/Cheque Row -->
+          <div class="voucher-row">
+            <div class="voucher-label-ar">البنك:</div>
+            <div class="voucher-value">_________________</div>
+            <div class="voucher-label-ar" style="margin: 0 20px;">رقم الشيك / نقدي:</div>
+            <div class="voucher-value">_________________</div>
+          </div>
+
+          <!-- Amount in Words -->
+          <div class="voucher-amount-words">
+            <div class="voucher-label-ar" style="margin-bottom: 10px;">المبلغ بالحروف:</div>
+            <div class="voucher-value" id="printAmountWords" style="font-size: 1.1rem; font-weight: 700; text-align: center;">
+              _________________________________
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="voucher-row" style="min-height: 80px; align-items: flex-start;">
+            <div class="voucher-label-ar">وذلك مقابل:</div>
+            <div class="voucher-value" id="printBieng" style="flex: 1; min-height: 60px; text-align: right; padding: 10px;">
+              _________________
+            </div>
+          </div>
+
+        </div>
+
+
+      <!-- Signatures -->
+      <div class="voucher-signatures">
+        <div class="voucher-signature-box">
+          <div class="voucher-signature-line"></div>
+          <div class="voucher-signature-label">
+            <span class="voucher-label-ar">المستلم</span>
+          </div>
+        </div>
+        <div class="voucher-signature-box">
+          <div class="voucher-signature-line"></div>
+          <div class="voucher-signature-label">
+            <span class="voucher-label-ar">المحاسب</span>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+  <script>
+    // ========== STATE ========== 
+    let receipts = [];
+    let editingIndex = null;
+    let currentPrintReceipt = null;
+    
+    // التحقق من اختيار المشروع
+    const currentProjectId = localStorage.getItem('currentProjectId');
+    if (!currentProjectId) {
+      alert('الرجاء اختيار مشروع أولاً');
+      window.location.href = 'projects.html';
+    }
+
+    // ========== NUMBER TO ARABIC WORDS ==========
+    function numberToArabicWords(num) {
+      if (num === 0) return 'صفر';
+      
+      const ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة'];
+      const tens = ['', '', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
+      const teens = ['عشرة', 'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
+      const hundreds = ['', 'مائة', 'مئتان', 'ثلاثمائة', 'أربعمائة', 'خمسمائة', 'ستمائة', 'سبعمائة', 'ثمانمائة', 'تسعمائة'];
+      
+      function convertLessThanThousand(n) {
+        if (n === 0) return '';
+        
+        let result = '';
+        
+        // المئات
+        const h = Math.floor(n / 100);
+        if (h > 0) {
+          result += hundreds[h];
+        }
+        
+        n = n % 100;
+        
+        // العشرات والآحاد
+        if (n >= 10 && n < 20) {
+          if (result) result += ' و';
+          result += teens[n - 10];
+        } else {
+          const t = Math.floor(n / 10);
+          const o = n % 10;
+          
+          if (t > 0) {
+            if (result) result += ' و';
+            result += tens[t];
+          }
+          
+          if (o > 0) {
+            if (result) result += ' و';
+            result += ones[o];
+          }
+        }
+        
+        return result;
+      }
+      
+      // فصل الجزء الصحيح والكسري
+      const integerPart = Math.floor(num);
+      const decimalPart = Math.round((num - integerPart) * 100);
+      
+      let result = '';
+      
+      // الملايين
+      const millions = Math.floor(integerPart / 1000000);
+      if (millions > 0) {
+        if (millions === 1) {
+          result += 'مليون';
+        } else if (millions === 2) {
+          result += 'مليونان';
+        } else {
+          result += convertLessThanThousand(millions) + ' مليون';
+        }
+      }
+      
+      // الآلاف
+      const thousands = Math.floor((integerPart % 1000000) / 1000);
+      if (thousands > 0) {
+        if (result) result += ' و';
+        if (thousands === 1) {
+          result += 'ألف';
+        } else if (thousands === 2) {
+          result += 'ألفان';
+        } else if (thousands >= 3 && thousands <= 10) {
+          result += convertLessThanThousand(thousands) + ' آلاف';
+        } else {
+          result += convertLessThanThousand(thousands) + ' ألف';
+        }
+      }
+      
+      // المئات والعشرات والآحاد
+      const remainder = integerPart % 1000;
+      if (remainder > 0) {
+        if (result) result += ' و';
+        result += convertLessThanThousand(remainder);
+      }
+      
+      result += ' ريال';
+      
+      // الجزء الكسري (الهللات)
+      if (decimalPart > 0) {
+        result += ' و' + convertLessThanThousand(decimalPart) + ' هللة';
+      }
+      
+      return result + ' فقط لا غير';
+    }
+
+    // ========== DOM ELEMENTS ==========
+    const drawer = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const drawerTitle = document.getElementById('drawerTitle');
+    const receiptForm = document.getElementById('receiptForm');
+    const receiptsTableBody = document.getElementById('receiptsTableBody');
+    const receiptCount = document.getElementById('receiptCount');
+    const searchInput = document.getElementById('searchInput');
+    const btnNewReceipt = document.getElementById('btnNewReceipt');
+    const amountInput = document.getElementById('amount');
+    const amountInWordsInput = document.getElementById('amountInWords');
+
+    // ========== AMOUNT CONVERTER ==========
+    amountInput.addEventListener('input', function() {
+      const amount = parseFloat(this.value);
+      if (!isNaN(amount) && amount > 0) {
+        amountInWordsInput.value = numberToArabicWords(amount);
+      } else {
+        amountInWordsInput.value = '';
+      }
+    });
+    // ========== LOAD RECEIPTS FROM API ==========
+    async function loadReceipts() {
+      try {
+        const response = await fetch(`http://localhost:4000/receipts?projectId=${currentProjectId}`);
+        if (!response.ok) {
+          console.error('Server returned:', response.status, response.statusText);
+          receipts = [];
+          renderTable();
+          return;
+        }
+        const data = await response.json();
+        receipts = Array.isArray(data) ? data : [];
+        renderTable();
+      } catch (error) {
+        console.error('Error loading receipts:', error);
+        receipts = [];
+        renderTable();
+      }
+    }
+
+    // ========== RENDER TABLE ==========
+    function renderTable() {
+      const searchTerm = searchInput.value.toLowerCase();
+
+      const filtered = receipts.filter(receipt => {
+        const matchSearch = !searchTerm || 
+          receipt.receiptNumber.toLowerCase().includes(searchTerm) ||
+          receipt.receiverName.toLowerCase().includes(searchTerm) ||
+          (receipt.serviceDescription && receipt.serviceDescription.toLowerCase().includes(searchTerm));
+
+        return matchSearch;
+      });
+
+      receiptCount.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        receiptsTableBody.innerHTML = `
+          <tr class="empty-row">
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="icon">📭</div>
+                <h3>لا توجد نتائج</h3>
+                <p>جرب تغيير معايير البحث</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      receiptsTableBody.innerHTML = filtered.map((receipt, idx) => `
+        <tr>
+          <td><strong>${receipt.receiptNumber}</strong></td>
+          <td>${new Date(receipt.receiptDate).toLocaleDateString('ar-EG')}</td>
+          <td>${receipt.receiverName}</td>
+          <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right;">${receipt.serviceDescription || '-'}</td>
+          <td><strong style="color: #22c55e; font-size: 1.1rem;">${parseFloat(receipt.amount || 0).toFixed(2)} ر.س</strong></td>
+          <td>
+            <button class="action-btn btn-print" onclick="openPrintPreview(${idx})" title="طباعة">🖨️</button>
+            <button class="action-btn btn-edit" onclick="editReceipt(${idx})" title="تعديل">✏️</button>
+            <button class="action-btn btn-delete" onclick="deleteReceipt(${idx})" title="حذف">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ========== OPEN DRAWER ==========
+    function openDrawer(isEdit = false) {
+      drawer.classList.add('active');
+      drawerOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      if (!isEdit) {
+        drawerTitle.textContent = 'إنشاء سند جديد';
+        receiptForm.reset();
+        document.getElementById('receiptDate').valueAsDate = new Date();
+        editingIndex = null;
+      } else {
+        drawerTitle.textContent = 'تعديل السند';
+      }
+    }
+
+    // ========== CLOSE DRAWER ==========
+    function closeDrawer() {
+      drawer.classList.remove('active');
+      drawerOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      receiptForm.reset();
+      editingIndex = null;
+    }
+
+    // ========== VIEW RECEIPT ==========
+    function viewReceipt(index) {
+      const receipt = receipts[index];
+      alert(`
+📝 تفاصيل السند
+━━━━━━━━━━━━━━━━━━━
+🏷️ رقم السند: ${receipt.receiptNumber}
+📅 التاريخ: ${new Date(receipt.receiptDate).toLocaleDateString('ar-EG')}
+🧑‍💼 المستلم: ${receipt.receiverName}
+📋 البيان: ${receipt.serviceDescription || 'لا يوجد'}
+💰 المبلغ: ${parseFloat(receipt.amount || 0).toFixed(2)} ر.س
+📝 المبلغ بالحروف: ${receipt.amountInWords || ''}
+💬 ملاحظات: ${receipt.notes || 'لا توجد'}
+      `);
+    }
+
+    // ========== EDIT RECEIPT ==========
+    function editReceipt(index) {
+      const receipt = receipts[index];
+      editingIndex = index;
+      
+      document.getElementById('receiptNumber').value = receipt.receiptNumber;
+      document.getElementById('receiptDate').value = receipt.receiptDate;
+      document.getElementById('receiverName').value = receipt.receiverName;
+      document.getElementById('serviceDescription').value = receipt.serviceDescription || '';
+      document.getElementById('amount').value = receipt.amount || 0;
+      document.getElementById('amountInWords').value = receipt.amountInWords || '';
+      document.getElementById('notes').value = receipt.notes || '';
+      
+      openDrawer(true);
+    }
+
+    // ========== DELETE RECEIPT ==========
+    async function deleteReceipt(index) {
+      if (!confirm('هل أنت متأكد من حذف هذا السند؟')) return;
+
+      const receipt = receipts[index];
+      try {
+        const response = await fetch(`http://localhost:4000/receipts/${receipt._id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Failed to delete');
+
+        receipts.splice(index, 1);
+        renderTable();
+        alert('✅ تم حذف السند بنجاح');
+      } catch (error) {
+        console.error('Error deleting receipt:', error);
+        alert('❌ حدث خطأ أثناء الحذف');
+      }
+    }
+
+    // ========== FORM SUBMIT ==========
+    receiptForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const receiptData = {
+        receiptNumber: document.getElementById('receiptNumber').value,
+        receiptDate: document.getElementById('receiptDate').value,
+        receiverName: document.getElementById('receiverName').value,
+        serviceDescription: document.getElementById('serviceDescription').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        amountInWords: document.getElementById('amountInWords').value,
+        notes: document.getElementById('notes').value,
+        projectId: currentProjectId // إضافة projectId
+      };
+
+      try {
+        let response;
+        if (editingIndex !== null) {
+          // Update existing receipt
+          const receiptId = receipts[editingIndex]._id;
+          response = await fetch(`http://localhost:4000/receipts/${receiptId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(receiptData)
+          });
+        } else {
+          // Create new receipt
+          response = await fetch('http://localhost:4000/receipts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(receiptData)
+          });
+        }
+
+        if (!response.ok) throw new Error('Failed to save receipt');
+
+        const isEdit = editingIndex !== null;
+        await loadReceipts();
+        closeDrawer();
+        receiptForm.reset();
+        editingIndex = null;
+        alert(isEdit ? '✅ تم تحديث السند بنجاح' : '✅ تم إضافة السند بنجاح');
+      } catch (error) {
+        console.error('Error saving receipt:', error);
+        alert('❌ حدث خطأ أثناء الحفظ');
+      }
+    });
+
+    // ========== EVENT LISTENERS ==========
+    btnNewReceipt.addEventListener('click', () => openDrawer(false));
+    searchInput.addEventListener('input', renderTable);
+
+    // Set default date to today
+    document.getElementById('receiptDate').valueAsDate = new Date();
+
+    // ========== LOGO UPLOAD ==========
+    const logoInput = document.getElementById('logoInput');
+    const logoPreview = document.getElementById('logoPreview');
+    const printVoucherLogo = document.getElementById('printVoucherLogo');
+
+    // Load saved logo from localStorage
+    const savedLogo = localStorage.getItem('companyLogo');
+    if (savedLogo && logoPreview) {
+      logoPreview.src = savedLogo;
+      logoPreview.style.display = 'block';
+    }
+    if (savedLogo && printVoucherLogo) {
+      printVoucherLogo.src = savedLogo;
+      printVoucherLogo.style.display = 'block';
+    }
+
+    logoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const logoData = event.target.result;
+          // Save to localStorage
+          localStorage.setItem('companyLogo', logoData);
+          // Update preview
+          if (logoPreview) {
+            logoPreview.src = logoData;
+            logoPreview.style.display = 'block';
+          }
+          if (printVoucherLogo) {
+            printVoucherLogo.src = logoData;
+            printVoucherLogo.style.display = 'block';
+          }
+          alert('✅ تم حفظ اللوجو بنجاح');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // ========== PRINT FUNCTIONS ==========
+    function openPrintPreview(index) {
+      currentPrintReceipt = receipts[index];
+      const receipt = currentPrintReceipt;
+
+      // Fill voucher template with data
+      document.getElementById('printReceiptNumber').textContent = receipt.receiptNumber;
+      
+      // Format date as day/month/year
+      const date = new Date(receipt.receiptDate);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const dateParts = document.getElementById('printVoucherDate').querySelectorAll('.date-part');
+      dateParts[0].textContent = day;
+      dateParts[1].textContent = month;
+      dateParts[2].textContent = year;
+      
+      document.getElementById('printReceivedFrom').textContent = receipt.receiverName;
+      document.getElementById('printAmountValue').textContent = parseFloat(receipt.amount || 0).toFixed(2);
+      document.getElementById('printAmountWords').textContent = receipt.amountInWords || numberToArabicWords(receipt.amount || 0);
+      document.getElementById('printBieng').textContent = receipt.serviceDescription || '_________________';
+      
+      // Load company logo if exists
+      const logo = localStorage.getItem('companyLogo');
+      const logoElement = document.getElementById('printVoucherLogo');
+      if (logoElement) {
+        if (logo) {
+          logoElement.src = logo;
+          logoElement.style.display = 'block';
+        } else {
+          logoElement.style.display = 'none';
+        }
+      }
+
+      // Show print template
+      document.getElementById('printTemplate').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePrintPreview() {
+      document.getElementById('printTemplate').classList.remove('active');
+      document.body.style.overflow = '';
+      currentPrintReceipt = null;
+    }
+
+    function printReceipt() {
+      window.print();
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('printContent');
+      const receiptNumber = currentPrintReceipt.receiptNumber.replace(/[/\\?%*:|"<>]/g, '-');
+      
+      const opt = {
+        margin: 10,
+        filename: `سند_استلام_${receiptNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        alert('✅ تم حفظ ملف PDF بنجاح');
+      });
+    }
+
+    // Close print preview with ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('printTemplate').classList.contains('active')) {
+        closePrintPreview();
+      }
+    });
+
+    // ========== INIT ==========
+    loadReceipts();
+  </script>
+</body>
+</html>
+
+
+
