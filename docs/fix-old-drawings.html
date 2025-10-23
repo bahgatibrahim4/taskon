@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إصلاح المخططات القديمة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+    }
+    
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 2rem;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 1rem;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    
+    .warning-box {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    .result {
+      display: none;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    
+    .result.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 2px solid #4caf50;
+    }
+    
+    .result.error {
+      background: #ffebee;
+      color: #c62828;
+      border: 2px solid #f44336;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 إصلاح المخططات القديمة</h1>
+    <p class="subtitle">إضافة projectId و companyId للمخططات المحفوظة قبل التحديث</p>
+    
+    <div class="info-box">
+      <strong>📝 ما الذي سيتم؟</strong><br>
+      سيتم إضافة معرف المشروع ومعرف الشركة لكل المخططات القديمة التي لا تحتوي عليهم.
+    </div>
+    
+    <div class="warning-box">
+      <strong>⚠️ تحذير:</strong><br>
+      تأكد من اختيار المشروع الصحيح قبل الضغط على الزر. هذا الإجراء سيؤثر على جميع المخططات القديمة.
+    </div>
+    
+    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>📍 المشروع الحالي:</strong><br>
+      <span id="projectInfo" style="color: #1976d2; font-weight: bold;">جاري التحميل...</span>
+    </div>
+    
+    <button id="fixBtn" onclick="fixDrawings()">
+      🚀 إصلاح المخططات الآن
+    </button>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>جاري المعالجة...</p>
+    </div>
+    
+    <div class="result" id="result"></div>
+  </div>
+
+  <script src="js/projectUtils.js"></script>
+  <script>
+    // التحقق من المشروع
+    if (!projectUtils.checkAuth()) {
+      throw new Error('No project selected');
+    }
+
+    // عرض معلومات المشروع
+    const projectId = projectUtils.getCurrentProjectId();
+    const projectName = projectUtils.getCurrentProjectName();
+    document.getElementById('projectInfo').textContent = 
+      `${projectName} (${projectId})`;
+
+    async function fixDrawings() {
+      const btn = document.getElementById('fixBtn');
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+      
+      // إخفاء النتائج السابقة
+      result.style.display = 'none';
+      
+      // تأكيد من المستخدم
+      if (!confirm('هل أنت متأكد من إضافة projectId و companyId لكل المخططات القديمة؟')) {
+        return;
+      }
+      
+      try {
+        btn.disabled = true;
+        loading.style.display = 'block';
+        
+        // جلب companyId من localStorage
+        const companyId = localStorage.getItem('companyId');
+        if (!companyId) {
+          throw new Error('لم يتم العثور على معرف الشركة');
+        }
+        
+        const response = await fetch('/admin/fix-drawings-projectid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            projectId: projectId,
+            companyId: companyId
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          result.className = 'result success';
+          result.innerHTML = `
+            <strong>✅ تم الإصلاح بنجاح!</strong><br><br>
+            📊 <strong>الإحصائيات:</strong><br>
+            • تم العثور على: ${data.found} مخطط<br>
+            • تم التحديث: ${data.modified} مخطط<br><br>
+            ${data.drawings && data.drawings.length > 0 ? `
+              <strong>📋 المخططات المحدّثة:</strong><br>
+              ${data.drawings.map(d => `• رقم ${d.drawingNumber} - ${d.drawingName}`).join('<br>')}
+            ` : ''}
+          `;
+          result.style.display = 'block';
+          
+          // إعادة تحميل الصفحة بعد 3 ثواني
+          setTimeout(() => {
+            window.location.href = 'drawings.html';
+          }, 3000);
+        } else {
+          throw new Error(data.error || 'حدث خطأ');
+        }
+        
+      } catch (err) {
+        result.className = 'result error';
+        result.innerHTML = `
+          <strong>❌ حدث خطأ!</strong><br><br>
+          ${err.message}
+        `;
+        result.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
