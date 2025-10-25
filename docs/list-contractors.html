@@ -963,7 +963,17 @@ function hasPermission(permission) {
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.permissions) return false;
-    return user.permissions.includes(permission) || user.permissions.includes('all');
+    
+    // التحقق من الصلاحيات الكاملة
+    if (user.permissions.includes('*') || 
+        user.permissions.includes('all') || 
+        user.role === 'admin' ||
+        user.role === 'owner') {
+      return true;
+    }
+    
+    // التحقق من الصلاحية المحددة
+    return user.permissions.includes(permission);
   } catch {
     return false;
   }
