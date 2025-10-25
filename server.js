@@ -34,8 +34,30 @@ app.use((req, res, next) => {
 // Company Context Middleware - يبحث عن الشركة من قاعدة البيانات
 app.use(async (req, res, next) => {
   try {
-    // إذا كان هناك subdomain وتم الاتصال بقاعدة البيانات
+    let companyIdentifier = null;
+    
+    console.log('🔍 Company Middleware - Query params:', { 
+      company: req.query.company, 
+      companyId: req.query.companyId,
+      subdomain: req.subdomain 
+    });
+    
+    // 1. محاولة من subdomain
     if (req.subdomain) {
+      companyIdentifier = { subdomain: req.subdomain };
+      console.log('🌐 Using subdomain:', req.subdomain);
+    }
+    // 2. محاولة من query params (company name أو companyId)
+    else if (req.query.company) {
+      companyIdentifier = { companyName: req.query.company };
+      console.log('🏢 Using company name from query:', req.query.company);
+    } else if (req.query.companyId) {
+      companyIdentifier = { _id: new ObjectId(req.query.companyId) };
+      console.log('🆔 Using companyId from query:', req.query.companyId);
+    }
+    
+    // إذا كان هناك معرّف للشركة وتم الاتصال بقاعدة البيانات
+    if (companyIdentifier) {
       // انتظار حتى يصبح companiesCollection جاهزاً
       let attempts = 0;
       while (!companiesCollection && attempts < 50) {
@@ -44,7 +66,7 @@ app.use(async (req, res, next) => {
       }
       
       if (companiesCollection) {
-        const company = await companiesCollection.findOne({ subdomain: req.subdomain });
+        const company = await companiesCollection.findOne(companyIdentifier);
         if (company) {
           req.companyId = company._id.toString();
           req.company = company;
@@ -58,9 +80,9 @@ app.use(async (req, res, next) => {
             req.companyProjectsCollection = projectsCollection; // fallback
           }
           
-          console.log(`✅ Company found: ${company.companyName} (ID: ${req.companyId})`);
+          console.log(`✅ Company found: ${company.companyName} (ID: ${req.companyId}) via ${companyIdentifier.subdomain ? 'subdomain' : companyIdentifier.companyName ? 'name' : 'ID'}`);
         } else {
-          console.log(`⚠️ No company found for subdomain: ${req.subdomain}`);
+          console.log(`⚠️ No company found for identifier:`, companyIdentifier);
         }
       }
     }
@@ -443,8 +465,10 @@ app.get('/contractors', async (req, res) => {
     // الأولوية لـ companyId من query أو من middleware
     const finalCompanyId = companyId || req.companyId;
     
-    console.log('📋 GET /contractors - Query params:', { workItem, projectId, companyId: finalCompanyId });
+    console.log('📋 GET /contractors - Query params:', { workItem, projectId, companyId: finalCompanyId, company: req.query.company });
     console.log('📋 GET /contractors - req.companyName:', req.companyName);
+    console.log('📋 GET /contractors - req.companyId:', req.companyId);
+    console.log('📋 GET /contractors - req.company:', req.company ? 'موجود' : 'غير موجود');
     console.log('📋 GET /contractors - req.projectCollections:', req.projectCollections ? 'موجود' : 'غير موجود');
     
     // ⚠️ إلزامي: يجب وجود companyId أو projectId لمنع عرض مقاولين كل الشركات
