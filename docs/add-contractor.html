@@ -1,0 +1,1172 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>التعاملات الخارجية | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      direction: rtl;
+      font-family: 'Cairo', Arial, sans-serif;
+      --primary-color: #2e8ca3;
+      --primary-dark: #197c91;
+      --secondary-color: #8c969a;
+      --background: #c5d6db;
+      --card-bg: #ffffff;
+      --border-color: #d1dfe4;
+      --text-primary: #2c3e50;
+      --text-secondary: #546e7a;
+      --hover-bg: #e8f4f7;
+      --success: #4caf50;
+      --danger: #e53935;
+      --warning: #ff9800;
+      --shadow-sm: 0 2px 8px rgba(46, 140, 163, 0.08);
+      --shadow-md: 0 4px 16px rgba(46, 140, 163, 0.12);
+      --shadow-lg: 0 8px 32px rgba(46, 140, 163, 0.16);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--background);
+      color: var(--text-primary);
+      font-family: 'Cairo', Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      padding: 1.2rem 0;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .page-header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: #ffffff;
+    }
+
+    .page-title-icon {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    .page-title h1 {
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .page-title p {
+      font-size: 0.75rem;
+      opacity: 0.95;
+      margin-top: 0.2rem;
+    }
+
+    /* Stats Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      max-width: 1400px;
+      margin: 0 auto 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-color);
+    }
+
+    .stat-icon {
+      font-size: 1.8rem;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.2rem;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      font-variant-numeric: lining-nums;
+      direction: ltr;
+      text-align: right;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem 2rem 1.5rem;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .toolbar-left {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 250px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 0.9rem 0.6rem 2.2rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .search-box::before {
+      content: "🔍";
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 0.6rem 0.9rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--primary-dark);
+      border: 2px solid var(--primary-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--hover-bg);
+    }
+
+    /* Table */
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: linear-gradient(135deg, #e8f4f7 0%, #d4e9ef 100%);
+    }
+
+    th {
+      padding: 0.9rem 0.8rem;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--border-color);
+      letter-spacing: 0.3px;
+    }
+
+    td {
+      padding: 0.8rem;
+      text-align: center;
+      font-size: 0.75rem;
+      border-bottom: 1px solid #f0f4f7;
+      color: var(--text-primary);
+    }
+
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: var(--hover-bg);
+      transform: scale(1.01);
+    }
+
+    .service-badge {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .service-diesel { background: #fff3cd; color: #856404; }
+    .service-transport { background: #cfe2ff; color: #084298; }
+    .service-equipment { background: #f8d7da; color: #842029; }
+    .service-labor { background: #d1e7dd; color: #0f5132; }
+    .service-materials { background: #e2d9f3; color: #432874; }
+    .service-other { background: #e2e3e5; color: #41464b; }
+
+    .payment-badge {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .payment-cash { background: #d1e7dd; color: #0f5132; }
+    .payment-check { background: #cfe2ff; color: #084298; }
+    .payment-transfer { background: #e2d9f3; color: #432874; }
+
+    .action-btns {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-edit {
+      color: var(--primary-color);
+    }
+
+    .btn-edit:hover {
+      background: #e8f4f7;
+    }
+
+    .btn-delete {
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: #ffebee;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(24, 71, 90, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      max-width: 600px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      padding: 1.3rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 1.6rem;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .form-input[type="file"] {
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 2px solid #f0f4f7;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 0.8rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .page-header-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-left,
+      .toolbar-right {
+        flex-direction: column;
+      }
+
+      .search-box {
+        min-width: 100%;
+      }
+
+      .filter-group {
+        flex-direction: column;
+      }
+
+      .filter-select {
+        width: 100%;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 800px;
+      }
+    }
+  </style>
+<script src="js/permissions.js"></script>
+</head>
+<body>
+  <div id="main-navbar"></div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title">
+        <div class="page-title-icon">🤝</div>
+        <div>
+          <h1>التعاملات الخارجية</h1>
+          <p>إدارة الموردين والخدمات المساندة</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="addServiceBtn">
+        <span>➕</span>
+        إضافة تعامل جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-info">
+        <div class="stat-label">إجمالي التعاملات</div>
+        <div class="stat-value" id="totalServices">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <div class="stat-label">إجمالي المبالغ (ريال)</div>
+        <div class="stat-value" id="totalAmount">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-info">
+        <div class="stat-label">تعاملات هذا الشهر</div>
+        <div class="stat-value" id="monthServices">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-info">
+        <div class="stat-label">أكثر خدمة طلباً</div>
+        <div class="stat-value" id="topService" style="font-size: 0.9rem;">-</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="بحث بالاسم أو الوصف...">
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <div class="filter-group">
+          <select class="filter-select" id="serviceTypeFilter">
+            <option value="">كل الخدمات</option>
+            <option value="ديزل">⛽ ديزل</option>
+            <option value="نقل">🚚 نقل</option>
+            <option value="معدات">🚜 معدات</option>
+            <option value="عمالة">👷 عمالة</option>
+            <option value="توريد مواد">📦 توريد مواد</option>
+            <option value="أخرى">🔧 أخرى</option>
+          </select>
+          <select class="filter-select" id="paymentFilter">
+            <option value="">كل طرق الدفع</option>
+            <option value="نقدي">💵 نقدي</option>
+            <option value="شيك">📝 شيك</option>
+            <option value="تحويل">🏦 تحويل</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" id="exportBtn">
+          <span>📥</span>
+          تصدير Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>التاريخ</th>
+            <th>اسم الجهة</th>
+            <th>نوع الخدمة</th>
+            <th>وصف العملية</th>
+            <th>القيمة</th>
+            <th>طريقة الدفع</th>
+            <th>المستلم</th>
+            <th>المرفقات</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="servicesTableBody">
+          <tr>
+            <td colspan="9">
+              <div class="empty-state">
+                <div class="empty-state-icon">🤝</div>
+                <div class="empty-state-text">لا توجد تعاملات بعد</div>
+                <p style="margin-top: 0.5rem; opacity: 0.7; font-size: 0.85rem;">ابدأ بإضافة تعامل جديد من الزر أعلاه</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="serviceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>🤝</span>
+          <span id="modalTitle">إضافة تعامل جديد</span>
+        </h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="serviceForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">اسم الجهة / المورد *</label>
+              <input type="text" class="form-input" id="supplierName" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">نوع الخدمة *</label>
+              <select class="form-select" id="serviceType" required>
+                <option value="">-- اختر --</option>
+                <option value="ديزل">⛽ ديزل</option>
+                <option value="نقل">🚚 نقل</option>
+                <option value="معدات">🚜 معدات</option>
+                <option value="عمالة">👷 عمالة</option>
+                <option value="توريد مواد">📦 توريد مواد</option>
+                <option value="أخرى">🔧 أخرى</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">تاريخ التعامل *</label>
+              <input type="date" class="form-input" id="serviceDate" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">القيمة (ريال) *</label>
+              <input type="number" class="form-input" id="amount" step="0.01" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">طريقة الدفع *</label>
+              <select class="form-select" id="paymentMethod" required>
+                <option value="">-- اختر --</option>
+                <option value="نقدي">💵 نقدي</option>
+                <option value="شيك">📝 شيك</option>
+                <option value="تحويل">🏦 تحويل</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">اسم المستلم</label>
+              <input type="text" class="form-input" id="receiverName">
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">وصف العملية *</label>
+            <textarea class="form-textarea" id="description" required></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">ملاحظات إضافية</label>
+            <textarea class="form-textarea" id="notes" rows="2"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">مرفقات (فاتورة / إيصال)</label>
+            <input type="file" class="form-input" id="attachmentFile" accept=".pdf,.jpg,.jpeg,.png">
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">إلغاء</button>
+            <button type="submit" class="btn btn-primary">
+              <span>💾</span>
+              حفظ التعامل
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/projectUtils.js"></script>
+  <script>
+    // ضبط API_URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
+
+    // التحقق من وجود مشروع محدد
+    if (!projectUtils.checkAuth()) {
+      throw new Error('No project selected');
+    }
+
+    // إدراج الشريط العلوي
+    fetch('components/main-navbar.html')
+      .then(response => response.text())
+      .then(html => {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        temp.querySelectorAll('style').forEach(style => {
+          document.head.appendChild(style.cloneNode(true));
+        });
+        document.getElementById('main-navbar').innerHTML = '';
+        temp.childNodes.forEach(node => {
+          if (node.nodeName !== 'STYLE' && node.nodeName !== 'SCRIPT') {
+            document.getElementById('main-navbar').appendChild(node.cloneNode(true));
+          }
+        });
+        temp.querySelectorAll('script').forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+            newScript.onload = function() {
+              if (window.initMainNavbar) window.initMainNavbar();
+            };
+          } else {
+            newScript.textContent = script.textContent + "\nif(window.initMainNavbar) initMainNavbar();";
+          }
+          document.body.appendChild(newScript);
+        });
+        setTimeout(function() {
+          if (window.initMainNavbar) window.initMainNavbar();
+        }, 100);
+      });
+
+    // Data
+    let services = [];
+    let editingIndex = null;
+    
+    // التحقق من اختيار المشروع
+    const currentProjectId = localStorage.getItem('currentProjectId');
+    if (!currentProjectId) {
+      alert('الرجاء اختيار مشروع أولاً');
+      window.location.href = 'projects.html';
+    }
+
+    // DOM Elements
+    const serviceModal = document.getElementById('serviceModal');
+    const serviceForm = document.getElementById('serviceForm');
+    const addServiceBtn = document.getElementById('addServiceBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const searchInput = document.getElementById('searchInput');
+    const serviceTypeFilter = document.getElementById('serviceTypeFilter');
+    const paymentFilter = document.getElementById('paymentFilter');
+    const exportBtn = document.getElementById('exportBtn');
+    const servicesTableBody = document.getElementById('servicesTableBody');
+    const modalTitle = document.getElementById('modalTitle');
+
+    // Service Type Icons & Classes
+    const serviceConfig = {
+      'ديزل': { icon: '⛽', class: 'service-diesel' },
+      'نقل': { icon: '🚚', class: 'service-transport' },
+      'معدات': { icon: '🚜', class: 'service-equipment' },
+      'عمالة': { icon: '👷', class: 'service-labor' },
+      'توريد مواد': { icon: '📦', class: 'service-materials' },
+      'أخرى': { icon: '🔧', class: 'service-other' }
+    };
+
+    const paymentConfig = {
+      'نقدي': { icon: '💵', class: 'payment-cash' },
+      'شيك': { icon: '📝', class: 'payment-check' },
+      'تحويل': { icon: '🏦', class: 'payment-transfer' }
+    };
+
+    // Set today's date as default
+    document.getElementById('serviceDate').valueAsDate = new Date();
+
+    // Modal Functions
+    function openModal(isEdit = false) {
+      modalTitle.textContent = isEdit ? 'تعديل التعامل' : 'إضافة تعامل جديد';
+      serviceModal.classList.add('show');
+    }
+
+    function closeModal() {
+      serviceModal.classList.remove('show');
+      serviceForm.reset();
+      editingIndex = null;
+      document.getElementById('serviceDate').valueAsDate = new Date();
+    }
+
+    // Event Listeners - Modal
+    addServiceBtn.addEventListener('click', () => openModal(false));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    
+    serviceModal.addEventListener('click', (e) => {
+      if (e.target === serviceModal) closeModal();
+    });
+
+    // Form Submit
+    serviceForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      formData.append('supplierName', document.getElementById('supplierName').value.trim());
+      formData.append('serviceType', document.getElementById('serviceType').value);
+      formData.append('serviceDate', document.getElementById('serviceDate').value);
+      formData.append('amount', document.getElementById('amount').value);
+      formData.append('paymentMethod', document.getElementById('paymentMethod').value);
+      formData.append('receiverName', document.getElementById('receiverName').value.trim());
+      formData.append('description', document.getElementById('description').value.trim());
+      formData.append('notes', document.getElementById('notes').value.trim());
+      formData.append('projectId', currentProjectId); // إضافة projectId
+      
+      const attachmentFile = document.getElementById('attachmentFile');
+      if (attachmentFile.files.length > 0) {
+        formData.append('attachment', attachmentFile.files[0]);
+      }
+      
+      try {
+        let response;
+        if (editingIndex !== null) {
+          const serviceId = services[editingIndex]._id;
+          response = await fetch(`${API_URL}/external-services/${serviceId}`, {
+            method: 'PUT',
+            body: formData
+          });
+        } else {
+          response = await fetch(`${API_URL}/external-services`, {
+            method: 'POST',
+            body: formData
+          });
+        }
+        
+        if (response.ok) {
+          await loadServices();
+          closeModal();
+          alert(editingIndex !== null ? 'تم تحديث التعامل بنجاح!' : 'تم إضافة التعامل بنجاح!');
+        } else {
+          alert('حدث خطأ أثناء حفظ البيانات');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ في الاتصال بالسيرفر');
+      }
+    });
+
+    // Load Services
+    async function loadServices() {
+      try {
+        const response = await fetch(`${API_URL}/external-services?projectId=${currentProjectId}`);
+        
+        if (!response.ok) {
+          console.error('Server returned:', response.status, response.statusText);
+          services = [];
+          renderTable();
+          updateStats();
+          return;
+        }
+        
+        const data = await response.json();
+        services = Array.isArray(data) ? data : [];
+        renderTable();
+        updateStats();
+      } catch (error) {
+        console.error('Error loading services:', error);
+        services = [];
+        renderTable();
+        updateStats();
+      }
+    }
+
+    // Render Table
+    function renderTable() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const typeFilter = serviceTypeFilter.value;
+      const paymentFilterValue = paymentFilter.value;
+      
+      let filtered = services.filter(s => {
+        const matchSearch = !searchTerm || 
+          s.supplierName.toLowerCase().includes(searchTerm) ||
+          s.description.toLowerCase().includes(searchTerm);
+        const matchType = !typeFilter || s.serviceType === typeFilter;
+        const matchPayment = !paymentFilterValue || s.paymentMethod === paymentFilterValue;
+        return matchSearch && matchType && matchPayment;
+      });
+
+      if (filtered.length === 0) {
+        servicesTableBody.innerHTML = `
+          <tr>
+            <td colspan="9">
+              <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <div class="empty-state-text">لا توجد نتائج</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      servicesTableBody.innerHTML = filtered.map((service, idx) => {
+        const originalIndex = services.indexOf(service);
+        const serviceInfo = serviceConfig[service.serviceType] || serviceConfig['أخرى'];
+        const paymentInfo = paymentConfig[service.paymentMethod] || paymentConfig['نقدي'];
+        const date = new Date(service.serviceDate).toLocaleDateString('ar-EG');
+        
+        return `
+          <tr>
+            <td>${date}</td>
+            <td style="font-weight: 600;">${service.supplierName}</td>
+            <td>
+              <span class="service-badge ${serviceInfo.class}">
+                ${serviceInfo.icon} ${service.serviceType}
+              </span>
+            </td>
+            <td style="text-align: right; max-width: 200px;">${service.description}</td>
+            <td style="font-weight: 700; color: var(--primary-dark); direction: ltr; font-variant-numeric: lining-nums;">
+              ${parseFloat(service.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ريال
+            </td>
+            <td>
+              <span class="payment-badge ${paymentInfo.class}">
+                ${paymentInfo.icon} ${service.paymentMethod}
+              </span>
+            </td>
+            <td>${service.receiverName || '-'}</td>
+            <td>
+              ${service.attachmentUrl ? 
+                `<a href="${service.attachmentUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none;">📎 عرض</a>` : 
+                '<span style="color: #999;">-</span>'
+              }
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn btn-edit" onclick="editService(${originalIndex})" title="تعديل">
+                  ✏️
+                </button>
+                <button class="action-btn btn-delete" onclick="deleteService(${originalIndex})" title="حذف">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Update Stats
+    function updateStats() {
+      const total = services.length;
+      const totalAmount = services.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+      
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthServices = services.filter(s => {
+        const serviceDate = new Date(s.serviceDate);
+        return serviceDate.getMonth() === currentMonth && serviceDate.getFullYear() === currentYear;
+      }).length;
+
+      // Find most frequent service type
+      const serviceCount = {};
+      services.forEach(s => {
+        serviceCount[s.serviceType] = (serviceCount[s.serviceType] || 0) + 1;
+      });
+      const topService = Object.keys(serviceCount).length > 0 
+        ? Object.keys(serviceCount).reduce((a, b) => serviceCount[a] > serviceCount[b] ? a : b)
+        : '-';
+
+      document.getElementById('totalServices').textContent = total;
+      document.getElementById('totalAmount').textContent = totalAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('monthServices').textContent = monthServices;
+      document.getElementById('topService').textContent = topService !== '-' ? topService : '-';
+    }
+
+    // Edit Service
+    window.editService = function(idx) {
+      editingIndex = idx;
+      const service = services[idx];
+      
+      document.getElementById('supplierName').value = service.supplierName;
+      document.getElementById('serviceType').value = service.serviceType;
+      document.getElementById('serviceDate').value = service.serviceDate.split('T')[0];
+      document.getElementById('amount').value = service.amount;
+      document.getElementById('paymentMethod').value = service.paymentMethod;
+      document.getElementById('receiverName').value = service.receiverName || '';
+      document.getElementById('description').value = service.description;
+      document.getElementById('notes').value = service.notes || '';
+      
+      openModal(true);
+    };
+
+    // Delete Service
+    window.deleteService = async function(idx) {
+      if (!confirm('هل أنت متأكد من حذف هذا التعامل؟\nلا يمكن التراجع عن هذا الإجراء.')) {
+        return;
+      }
+      
+      try {
+        const serviceId = services[idx]._id;
+        const response = await fetch(`${API_URL}/external-services/${serviceId}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          await loadServices();
+          alert('تم حذف التعامل بنجاح!');
+        } else {
+          alert('حدث خطأ أثناء الحذف');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ في الاتصال بالسيرفر');
+      }
+    };
+
+    // Search and Filter
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(renderTable, 300);
+    });
+
+    serviceTypeFilter.addEventListener('change', renderTable);
+    paymentFilter.addEventListener('change', renderTable);
+
+    // Export to Excel
+    exportBtn.addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${API_URL}/external-services/export`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `external-services-${new Date().getTime()}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error('Export error:', error);
+        alert('حدث خطأ أثناء التصدير');
+      }
+    });
+
+    // Initial Load
+    loadServices();
+  </script>
+</body>
+</html>

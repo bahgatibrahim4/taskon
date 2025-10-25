@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>«·„‘—Ê⁄ | ‰Ÿ«„ ≈œ«—… «·„‘«—Ì⁄</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #2e8ca3;
+      --primary-dark: #1a6a7e;
+      --secondary-color: #f8f9fa;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      --text-dark: #1a3b50;
+      --text-light: #6c757d;
+      --border-color: #dee2e6;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --bg-gradient: linear-gradient(135deg, #2e8ca3 0%, #1976d2 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(135deg, #c5d6db 0%, #e8f4f8 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: 70px;
+    }
+
+    #mainNavbarContainer {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .page-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 900;
+    }
+
+    /* Tabs */
+    .tabs-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      border-bottom: 3px solid #e9ecef;
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      background: white;
+      border: 2px solid var(--border-color);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text-dark);
+      font-family: 'Cairo', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      background: var(--secondary-color);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(46, 140, 163, 0.3);
+    }
+
+    .tab-btn i {
+      font-size: 1.1rem;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      min-height: 400px;
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Cairo', Arial, sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--bg-gradient);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 140, 163, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    /* Cards */
+    .info-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border-top: 4px solid var(--primary-color);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-card-label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .info-card-value {
+      font-size: 1.3rem;
+      color: var(--text-dark);
+      font-weight: 900;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .progress-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .progress-percentage {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--primary-color);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-chart-container {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    .data-table thead {
+      background: var(--bg-gradient);
+      color: white;
+    }
+
+    .data-table th {
+      padding: 15px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .data-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table tbody tr:hover {
+      background: var(--secondary-color);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      margin: 0 3px;
+    }
+
+    .edit-btn {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: #138496;
+      transform: scale(1.1);
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+      transform: scale(1.1);
+    }
+
+    .view-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .view-btn:hover {
+      background: #218838;
+      transform: scale(1.1);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 20px;
+      border-radius: 15px 15px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-modal {
+      background: white;
+      color: var(--primary-color);
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-modal:hover {
+      background: var(--danger-color);
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 25px;
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-label .required {
+      color: var(--danger-color);
+    }
+
+    .form-control {
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    /* Search Box */
+    .search-box {
+      padding: 10px 15px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      min-width: 250px;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(46, 140, 163, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .loading-content {
+      background: white;
+      padding: 40px 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: fadeInScale 0.3s ease;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .loading-spinner {
+      width: 70px;
+      height: 70px;
+      border: 6px solid #e9ecef;
+      border-top-color: var(--primary-color);
+      border-right-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 25px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.3rem;
+      font-weight: 900;
+      background: var(--bg-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .loading-subtext {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-weight: 700;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 300px;
+    }
+
+    .notification.success {
+      background: #28a745;
+      color: white;
+    }
+
+    .notification.error {
+      background: #dc3545;
+      color: white;
+    }
+
+    .notification.warning {
+      background: #ffc107;
+      color: #1a3b50;
+    }
+
+    .notification.info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    /* No Data */
+    .no-data {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+
+    .no-data i {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .no-data-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .no-data-subtext {
+      font-size: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .page-header h2 {
+        font-size: 1.3rem;
+      }
+
+      .tabs-container {
+        gap: 5px;
+      }
+
+      .tab-btn {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .info-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script src="js/projectUtils.js"></script>
+<script src="js/permissions.js"></script>
+</head>
+<body>
+  <!-- Navbar Container -->
+  <div id="mainNavbarContainer"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <i class="fas fa-project-diagram"></i>
+      <h2>≈œ«—… «·„‘—Ê⁄</h2>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container" id="tabsContainer">
+      <button class="tab-btn active" data-tab="project">
+        <i class="fas fa-info-circle"></i> »Ì«‰«  «·„‘—Ê⁄
+      </button>
+      <button class="tab-btn" data-tab="contracts">
+        <i class="fas fa-file-contract"></i> „·«Õﬁ «·⁄ﬁÊœ
+      </button>
+      <button class="tab-btn" data-tab="supplies">
+        <i class="fas fa-truck-loading"></i> „·«Õﬁ «· Ê—Ìœ« 
+      </button>
+      <button class="tab-btn" data-tab="extracts">
+        <i class="fas fa-file-invoice-dollar"></i> «·„” Œ·’« 
+      </button>
+      <button class="tab-btn" data-tab="letters">
+        <i class="fas fa-envelope"></i> «·Œÿ«»« 
+      </button>
+      <button class="tab-btn" data-tab="estimates">
+        <i class="fas fa-calculator"></i> «·„ﬁ«Ì”« 
+      </button>
+      <button class="tab-btn" data-tab="reports">
+        <i class="fas fa-chart-bar"></i> «· ﬁ«—Ì—
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="tabContent"></div>
+  </div>
+
+  <!-- Project Data Modal -->
+  <div id="projectModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-project-diagram"></i> <span id="projectModalTitle">≈÷«›… »Ì«‰«  «·„‘—Ê⁄</span></h3>
+        <button class="close-modal" onclick="closeModal('projectModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="projectForm">
+          <input type="hidden" id="projectId" name="_id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-project-diagram"></i> «”„ «·„‘—Ê⁄ <span class="required">*</span></label>
+              <input type="text" class="form-control" id="projectName" name="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-map-marker-alt"></i> «·„Êﬁ⁄ <span class="required">*</span></label>
+              <input type="text" class="form-control" id="projectLocation" name="location" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-calendar-alt"></i>  «—ÌŒ «·»œ«Ì… <span class="required">*</span></label>
+              <input type="date" class="form-control" id="projectStartDate" name="startDate" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-calendar-check"></i>  «—ÌŒ «·‰Â«Ì… <span class="required">*</span></label>
+              <input type="date" class="form-control" id="projectEndDate" name="endDate" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-money-bill-wave"></i> ﬁÌ„… «·⁄ﬁœ <span class="required">*</span></label>
+              <input type="number" class="form-control" id="projectContractValue" name="contractValue" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-file-pdf"></i> „·› «·⁄ﬁœ (PDF)</label>
+              <input type="file" class="form-control" id="projectPdf" name="pdf" accept=".pdf">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('projectModal')">≈·€«¡</button>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Õ›Ÿ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contract Addon Modal -->
+  <div id="contractModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-file-contract"></i> <span id="contractModalTitle">≈÷«›… „·Õﬁ ⁄ﬁœ</span></h3>
+        <button class="close-modal" onclick="closeModal('contractModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="contractForm">
+          <input type="hidden" id="contractId" name="_id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-file-alt"></i> «”„ «·„·Õﬁ <span class="required">*</span></label>
+              <input type="text" class="form-control" id="contractName" name="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-money-bill"></i> ﬁÌ„… «·„·Õﬁ <span class="required">*</span></label>
+              <input type="number" class="form-control" id="contractValue" name="value" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-calendar"></i> «· «—ÌŒ <span class="required">*</span></label>
+              <input type="date" class="form-control" id="contractDate" name="date" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-file-pdf"></i> „·› «·„·Õﬁ (PDF)</label>
+              <input type="file" class="form-control" id="contractPdf" name="pdf" accept=".pdf">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('contractModal')">≈·€«¡</button>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Õ›Ÿ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supply Addon Modal -->
+  <div id="supplyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-truck-loading"></i> <span id="supplyModalTitle">≈÷«›… „·Õﬁ  Ê—Ìœ</span></h3>
+        <button class="close-modal" onclick="closeModal('supplyModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="supplyForm">
+          <input type="hidden" id="supplyId" name="_id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-file-alt"></i> «”„ «·„·Õﬁ <span class="required">*</span></label>
+              <input type="text" class="form-control" id="supplyName" name="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-money-bill"></i> ﬁÌ„… «·„·Õﬁ <span class="required">*</span></label>
+              <input type="number" class="form-control" id="supplyValue" name="value" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-calendar"></i> «· «—ÌŒ <span class="required">*</span></label>
+              <input type="date" class="form-control" id="supplyDate" name="date" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-file-pdf"></i> „·› «·„·Õﬁ (PDF)</label>
+              <input type="file" class="form-control" id="supplyPdf" name="pdf" accept=".pdf">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('supplyModal')">≈·€«¡</button>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Õ›Ÿ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // «· Õﬁﬁ „‰ ÊÃÊœ subdomain («·‘—ﬂ…)
+    if (!window.projectUtils || !projectUtils.checkSubdomain()) {
+      alert('?? ÌÃ» «·œŒÊ· „‰ Œ·«· ‰ÿ«ﬁ «·‘—ﬂ…!');
+      window.location.replace('platform-landing.html');
+      throw new Error('No subdomain detected');
+    }
+
+    // Global State
+    const app = {
+      projectData: null,
+      contractAddons: [],
+      suppliesAddons: [],
+      extracts: [],
+      letters: [],
+      estimates: [],
+      purchases: [],
+      supplies: [],
+      pays: [],
+      equipment: [],
+      currentTab: 'project',
+      searchTerms: {}
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadNavbar();
+      await loadAllData();
+      initEventListeners();
+      showTab('project');
+    });
+
+    // ÷»ÿ API_URL Õ”» «·»Ì∆…
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
+
+    // Load Navbar
+    async function loadNavbar() {
+      try {
+        const response = await fetch('components/main-navbar.html');
+        const html = await response.text();
+        document.getElementById('mainNavbarContainer').innerHTML = html;
+      } catch (error) {
+        console.error('Œÿ√ ›Ì  Õ„Ì· «·ﬁ«∆„…:', error);
+      }
+    }
+
+    // Load All Data „‰ «·”Ì—›—
+    async function loadAllData() {
+      showLoading('Ã«—Ì  Õ„Ì· «·»Ì«‰« ...');
+      try {
+        // «‰ Ÿ— 3 ÀÊ«‰Ì ·· √ÀÌ— «·»’—Ì
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        const [
+          projectData,
+          contractAddons,
+          suppliesAddons,
+          extracts,
+          letters,
+          estimates,
+          purchases,
+          supplies,
+          pays,
+          equipment
+        ] = await Promise.all([
+          fetchData('/project-data'),
+          fetchData('/contract-addons'),
+          fetchData('/supply-addons'),
+          fetchData('/extracts'),
+          fetchData('/letters'),
+          fetchData('/estimates'),
+          fetchData('/purchases'),
+          fetchData('/supplies'),
+          fetchData('/pays'),
+          fetchData('/equipment')
+        ]);
+
+        app.projectData = projectData[0] || null;
+        app.contractAddons = contractAddons;
+        app.suppliesAddons = suppliesAddons;
+        app.extracts = extracts.filter(e => e.contractor); // ›ﬁÿ «·„” Œ·’«  «··Ì ·Â« „ﬁ«Ê·
+        app.letters = letters;
+        app.estimates = estimates;
+        app.purchases = purchases;
+        app.supplies = supplies;
+        app.pays = pays;
+        app.equipment = equipment;
+
+        console.log('?  „  Õ„Ì· «·»Ì«‰«  »‰Ã«Õ');
+      } catch (error) {
+        console.error('? Œÿ√ ›Ì  Õ„Ì· «·»Ì«‰« :', error);
+        showNotification('ÕœÀ Œÿ√ ›Ì  Õ„Ì· «·»Ì«‰« ', 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Fetch Data Helper
+    async function fetchData(endpoint) {
+      try {
+        // ≈÷«›… projectId ··‹ query parameters
+        const projectId = getCurrentProjectId();
+        const separator = endpoint.includes('?') ? '&' : '?';
+        const url = `${endpoint}${separator}projectId=${projectId}`;
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.error(`Œÿ√ ›Ì Ã·» ${endpoint}:`, error);
+        return [];
+      }
+    }
+
+    // Initialize Event Listeners
+    function initEventListeners() {
+      // Tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const tab = this.getAttribute('data-tab');
+          showTab(tab);
+        });
+      });
+
+      // Forms
+      document.getElementById('projectForm').addEventListener('submit', handleProjectSubmit);
+      document.getElementById('contractForm').addEventListener('submit', handleContractSubmit);
+      document.getElementById('supplyForm').addEventListener('submit', handleSupplySubmit);
+
+      // Modal background click to close
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) {
+            closeModal(this.id);
+          }
+        });
+      });
+    }
+
+    // Show Tab
+    function showTab(tabName) {
+      app.currentTab = tabName;
+      
+      // Update active tab button
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-tab') === tabName) {
+          btn.classList.add('active');
+        }
+      });
+
+      // Render content
+      const content = document.getElementById('tabContent');
+      
+      switch(tabName) {
+        case 'project':
+          renderProjectTab(content);
+          break;
+        case 'contracts':
+          renderContractsTab(content);
+          break;
+        case 'supplies':
+          renderSuppliesTab(content);
+          break;
+        case 'extracts':
+          renderExtractsTab(content);
+          break;
+        case 'letters':
+          renderLettersTab(content);
+          break;
+        case 'estimates':
+          renderEstimatesTab(content);
+          break;
+        case 'reports':
+          renderReportsTab(content);
+          break;
+      }
+    }
+
+    // ============ Render Functions ============
+
+    // Render Project Tab
+    function renderProjectTab(container) {
+      if (!app.projectData) {
+        // ·«  ÊÃœ »Ì«‰«  - «⁄—÷ “— ≈÷«›…
+        container.innerHTML = `
+          <div class="no-data">
+            <i class="fas fa-project-diagram"></i>
+            <div class="no-data-text">·«  ÊÃœ »Ì«‰«  ··„‘—Ê⁄</div>
+            <div class="no-data-subtext">ﬁ„ »≈÷«›… »Ì«‰«  «·„‘—Ê⁄ «·√”«”Ì…</div>
+            <button class="btn btn-primary" onclick="openModal('projectModal')" style="margin-top: 20px;">
+              <i class="fas fa-plus"></i> ≈÷«›… »Ì«‰«  «·„‘—Ê⁄
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // ⁄—÷ »Ì«‰«  «·„‘—Ê⁄
+      const progress = calculateProjectProgress();
+      
+      container.innerHTML = `
+        <div class="section-header">
+          <h3 class="section-title"><i class="fas fa-info-circle"></i> „⁄·Ê„«  «·„‘—Ê⁄</h3>
+          <button class="btn btn-primary" onclick="editProject()">
+            <i class="fas fa-edit"></i>  ⁄œÌ· «·»Ì«‰« 
+          </button>
+        </div>
+
+        <div class="info-cards-grid">
+          <div class="info-card">
+            <div class="info-card-label"><i class="fas fa-project-diagram"></i> «”„ «·„‘—Ê⁄</div>
+            <div class="info-card-value">${app.projectData.name || '-'}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label"><i class="fas fa-map-marker-alt"></i> «·„Êﬁ⁄</div>
+            <div class="info-card-value">${app.projectData.location || '-'}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label"><i class="fas fa-calendar-alt"></i>  «—ÌŒ «·»œ«Ì…</div>
+            <div class="info-card-value">${app.projectData.startDate || '-'}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label"><i class="fas fa-calendar-check"></i>  «—ÌŒ «·‰Â«Ì…</div>
+            <div class="info-card-value">${app.projectData.endDate || '-'}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label"><i class="fas fa-money-bill-wave"></i> ﬁÌ„… «·⁄ﬁœ</div>
+            <div class="info-card-value">${parseFloat(app.projectData.contractValue || 0).toLocaleString()} Ã‰ÌÂ</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label"><i class="fas fa-file-pdf"></i> „·› «·⁄ﬁœ</div>
+            <div class="info-card-value">
+              ${app.projectData.pdfUrl ? `<a href="${app.projectData.pdfUrl}" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-download"></i>  Õ„Ì·</a>` : '-'}
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-header">
+            <h4 style="margin-bottom: 15px; color: var(--primary-color);"><i class="fas fa-chart-line"></i> ‰”»… «·≈‰Ã«“</h4>
+            <div class="progress-percentage">${progress}%</div>
+          </div>
+          <div class="progress-chart-container">
+            <canvas id="progressChart"></canvas>
+          </div>
+        </div>
+      `;
+
+      // —”„ «·‹ Chart
+      setTimeout(() => {
+        const ctx = document.getElementById('progressChart');
+        if (ctx) {
+          new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: ['«·„‰Ã“', '«·„ »ﬁÌ'],
+              datasets: [{
+                data: [progress, 100 - progress],
+                backgroundColor: ['#2e8ca3', '#e9ecef'],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              cutout: '75%',
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    font: {
+                      family: 'Cairo',
+                      size: 14,
+                      weight: 'bold'
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+      }, 100);
+    }
+
+    // Calculate Project Progress
+    function calculateProjectProgress() {
+      if (!app.projectData || !app.extracts.length) return 0;
+      
+      const contractValue = parseFloat(app.projectData.contractValue || 0);
+      if (contractValue === 0) return 0;
+
+      const totalExtracts = app.extracts.reduce((sum, extract) => {
+        return sum + parseFloat(extract.totalNetAfterDeductions || extract.totalNet || 0);
+      }, 0);
+
+      const progress = Math.min(100, Math.round((totalExtracts / contractValue) * 100));
+      return progress;
+    }
+
+    // Edit Project
+    window.editProject = function() {
+      document.getElementById('projectModalTitle').textContent = ' ⁄œÌ· »Ì«‰«  «·„‘—Ê⁄';
+      document.getElementById('projectId').value = app.projectData._id;
+      document.getElementById('projectName').value = app.projectData.name || '';
+      document.getElementById('projectLocation').value = app.projectData.location || '';
+      document.getElementById('projectStartDate').value = app.projectData.startDate || '';
+      document.getElementById('projectEndDate').value = app.projectData.endDate || '';
+      document.getElementById('projectContractValue').value = app.projectData.contractValue || '';
+      
+      openModal('projectModal');
+    };
+
+    // Handle Project Submit
+    async function handleProjectSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalContent = submitBtn.innerHTML;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ã«—Ì «·Õ›Ÿ...';
+
+        const formData = new FormData(form);
+        const data = {
+          name: formData.get('name'),
+          location: formData.get('location'),
+          startDate: formData.get('startDate'),
+          endDate: formData.get('endDate'),
+          contractValue: formData.get('contractValue'),
+          pdfName: '',
+          pdfUrl: ''
+        };
+
+        // Upload PDF if provided
+        const pdfFile = formData.get('pdf');
+        if (pdfFile && pdfFile.size > 0) {
+          const uploadForm = new FormData();
+          uploadForm.append('file', pdfFile);
+          const uploadRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: uploadForm });
+          const uploadData = await uploadRes.json();
+          data.pdfUrl = uploadData.url;
+          data.pdfName = pdfFile.name;
+        } else if (app.projectData) {
+          data.pdfUrl = app.projectData.pdfUrl || '';
+          data.pdfName = app.projectData.pdfName || '';
+        }
+
+        const id = form.querySelector('#projectId').value;
+        const url = id ? `/project-data/${id}` : '/project-data';
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('›‘· ›Ì Õ›Ÿ «·»Ì«‰« ');
+
+        // Reload data
+        const projectDataArray = await fetchData('/project-data');
+        app.projectData = projectDataArray[0] || null;
+
+        closeModal('projectModal');
+        showNotification(' „ Õ›Ÿ »Ì«‰«  «·„‘—Ê⁄ »‰Ã«Õ', 'success');
+        showTab('project');
+      } catch (error) {
+        console.error('Error saving project:', error);
+        showNotification('ÕœÀ Œÿ√ ›Ì Õ›Ÿ «·»Ì«‰« ', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      }
+    }
+
+    // Render Contracts Tab
+    function renderContractsTab(container) {
+      const searchTerm = app.searchTerms.contracts || '';
+      const filtered = app.contractAddons.filter(item => 
+        !searchTerm || item.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      container.innerHTML = `
+        <div class="section-header">
+          <h3 class="section-title"><i class="fas fa-file-contract"></i> „·«Õﬁ «·⁄ﬁÊœ</h3>
+          <div class="section-actions">
+            <input type="text" class="search-box" placeholder="»ÕÀ..." value="${searchTerm}" 
+                   onchange="app.searchTerms.contracts = this.value; showTab('contracts')">
+            <button class="btn btn-primary" onclick="openAddContractModal()">
+              <i class="fas fa-plus"></i> ≈÷«›… „·Õﬁ ⁄ﬁœ
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>«”„ «·„·Õﬁ</th>
+                <th>ﬁÌ„… «·„·Õﬁ</th>
+                <th>«· «—ÌŒ</th>
+                <th>«·„·›</th>
+                <th>«·≈Ã—«¡« </th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map((item, idx) => `
+                <tr>
+                  <td style="font-weight: bold; color: var(--primary-color);">${idx + 1}</td>
+                  <td style="font-weight: 600;">${item.name || '-'}</td>
+                  <td style="font-weight: bold; color: var(--success-color);">${parseFloat(item.value || 0).toLocaleString()} Ã‰ÌÂ</td>
+                  <td>${item.date || '-'}</td>
+                  <td>
+                    ${item.pdfUrl ? 
+                      `<a href="${item.pdfUrl}" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.85rem;"><i class="fas fa-download"></i></a>` : 
+                      '-'
+                    }
+                  </td>
+                  <td>
+                    <button class="action-btn edit-btn" onclick="editContract('${item._id}')" title=" ⁄œÌ·">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteContract('${item._id}')" title="Õ–›">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              `).join('') : `
+                <tr>
+                  <td colspan="6" class="no-data">
+                    <div style="padding: 40px;">
+                      <i class="fas fa-inbox" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                      <div style="font-size: 1.1rem; font-weight: 700;">·«  ÊÃœ „·«Õﬁ ⁄ﬁÊœ</div>
+                      <div style="font-size: 0.95rem; margin-top: 5px;">ﬁ„ »≈÷«›… √Ê· „·Õﬁ ⁄ﬁœ</div>
+                    </div>
+                  </td>
+                </tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // Open Add Contract Modal
+    window.openAddContractModal = function() {
+      document.getElementById('contractModalTitle').textContent = '≈÷«›… „·Õﬁ ⁄ﬁœ';
+      document.getElementById('contractForm').reset();
+      document.getElementById('contractId').value = '';
+      openModal('contractModal');
+    };
+
+    // Edit Contract
+    window.editContract = function(id) {
+      const item = app.contractAddons.find(c => c._id === id);
+      if (!item) return;
+
+      document.getElementById('contractModalTitle').textContent = ' ⁄œÌ· „·Õﬁ ⁄ﬁœ';
+      document.getElementById('contractId').value = item._id;
+      document.getElementById('contractName').value = item.name || '';
+      document.getElementById('contractValue').value = item.value || '';
+      document.getElementById('contractDate').value = item.date || '';
+      
+      openModal('contractModal');
+    };
+
+    // Handle Contract Submit
+    async function handleContractSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalContent = submitBtn.innerHTML;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ã«—Ì «·Õ›Ÿ...';
+
+        const formData = new FormData(form);
+        const data = {
+          name: formData.get('name'),
+          value: formData.get('value'),
+          date: formData.get('date'),
+          pdfName: '',
+          pdfUrl: ''
+        };
+
+        // Upload PDF if provided
+        const pdfFile = formData.get('pdf');
+        if (pdfFile && pdfFile.size > 0) {
+          const uploadForm = new FormData();
+          uploadForm.append('file', pdfFile);
+          const uploadRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: uploadForm });
+          const uploadData = await uploadRes.json();
+          data.pdfUrl = uploadData.url;
+          data.pdfName = pdfFile.name;
+        }
+
+        const id = form.querySelector('#contractId').value;
+        const url = id ? `/contract-addons/${id}` : '/contract-addons';
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('›‘· ›Ì Õ›Ÿ «·„·Õﬁ');
+
+        app.contractAddons = await fetchData('/contract-addons');
+        closeModal('contractModal');
+        showNotification(' „ Õ›Ÿ „·Õﬁ «·⁄ﬁœ »‰Ã«Õ', 'success');
+        showTab('contracts');
+      } catch (error) {
+        console.error('Error saving contract:', error);
+        showNotification('ÕœÀ Œÿ√ ›Ì Õ›Ÿ «·„·Õﬁ', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      }
+    }
+
+    // Delete Contract
+    window.deleteContract = async function(id) {
+      if (!confirm('Â· √‰  „ √ﬂœ „‰ Õ–› Â–« «·„·Õﬁø')) return;
+
+      try {
+        const response = await fetch(`/contract-addons/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('›‘· ›Ì «·Õ–›');
+
+        app.contractAddons = await fetchData('/contract-addons');
+        showNotification(' „ Õ–› «·„·Õﬁ »‰Ã«Õ', 'success');
+        showTab('contracts');
+      } catch (error) {
+        console.error('Error deleting contract:', error);
+        showNotification('ÕœÀ Œÿ√ ›Ì «·Õ–›', 'error');
+      }
+    };
+
+    // Render Supplies Tab (‰”Œ… „‰ Contracts „⁄  ⁄œÌ·«  »”Ìÿ…)
+    function renderSuppliesTab(container) {
+      const searchTerm = app.searchTerms.supplies || '';
+      const filtered = app.suppliesAddons.filter(item => 
+        !searchTerm || item.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      container.innerHTML = `
+        <div class="section-header">
+          <h3 class="section-title"><i class="fas fa-truck-loading"></i> „·«Õﬁ «· Ê—Ìœ« </h3>
+          <div class="section-actions">
+            <input type="text" class="search-box" placeholder="»ÕÀ..." value="${searchTerm}" 
+                   onchange="app.searchTerms.supplies = this.value; showTab('supplies')">
+            <button class="btn btn-primary" onclick="openAddSupplyModal()">
+              <i class="fas fa-plus"></i> ≈÷«›… „·Õﬁ  Ê—Ìœ
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>«”„ «·„·Õﬁ</th>
+                <th>ﬁÌ„… «·„·Õﬁ</th>
+                <th>«· «—ÌŒ</th>
+                <th>«·„·›</th>
+                <th>«·≈Ã—«¡« </th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map((item, idx) => `
+                <tr>
+                  <td style="font-weight: bold; color: var(--primary-color);">${idx + 1}</td>
+                  <td style="font-weight: 600;">${item.name || '-'}</td>
+                  <td style="font-weight: bold; color: var(--success-color);">${parseFloat(item.value || 0).toLocaleString()} Ã‰ÌÂ</td>
+                  <td>${item.date || '-'}</td>
+                  <td>
+                    ${item.pdfUrl ? 
+                      `<a href="${item.pdfUrl}" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.85rem;"><i class="fas fa-download"></i></a>` : 
+                      '-'
+                    }
+                  </td>
+                  <td>
+                    <button class="action-btn edit-btn" onclick="editSupply('${item._id}')" title=" ⁄œÌ·">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteSupply('${item._id}')" title="Õ–›">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              `).join('') : `
+                <tr>
+                  <td colspan="6" class="no-data">
+                    <div style="padding: 40px;">
+                      <i class="fas fa-inbox" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                      <div style="font-size: 1.1rem; font-weight: 700;">·«  ÊÃœ „·«Õﬁ  Ê—Ìœ« </div>
+                      <div style="font-size: 0.95rem; margin-top: 5px;">ﬁ„ »≈÷«›… √Ê· „·Õﬁ  Ê—Ìœ</div>
+                    </div>
+                  </td>
+                </tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    window.openAddSupplyModal = function() {
+      document.getElementById('supplyModalTitle').textContent = '≈÷«›… „·Õﬁ  Ê—Ìœ';
+      document.getElementById('supplyForm').reset();
+      document.getElementById('supplyId').value = '';
+      openModal('supplyModal');
+    };
+
+    window.editSupply = function(id) {
+      const item = app.suppliesAddons.find(s => s._id === id);
+      if (!item) return;
+
+      document.getElementById('supplyModalTitle').textContent = ' ⁄œÌ· „·Õﬁ  Ê—Ìœ';
+      document.getElementById('supplyId').value = item._id;
+      document.getElementById('supplyName').value = item.name || '';
+      document.getElementById('supplyValue').value = item.value || '';
+      document.getElementById('supplyDate').value = item.date || '';
+      
+      openModal('supplyModal');
+    };
+
+    async function handleSupplySubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalContent = submitBtn.innerHTML;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ã«—Ì «·Õ›Ÿ...';
+
+        const formData = new FormData(form);
+        const data = {
+          name: formData.get('name'),
+          value: formData.get('value'),
+          date: formData.get('date'),
+          pdfName: '',
+          pdfUrl: ''
+        };
+
+        const pdfFile = formData.get('pdf');
+        if (pdfFile && pdfFile.size > 0) {
+          const uploadForm = new FormData();
+          uploadForm.append('file', pdfFile);
+          const uploadRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: uploadForm });
+          const uploadData = await uploadRes.json();
+          data.pdfUrl = uploadData.url;
+          data.pdfName = pdfFile.name;
+        }
+
+        const id = form.querySelector('#supplyId').value;
+        const url = id ? `/supply-addons/${id}` : '/supply-addons';
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('›‘· ›Ì Õ›Ÿ «·„·Õﬁ');
+
+        app.suppliesAddons = await fetchData('/supply-addons');
+        closeModal('supplyModal');
+        showNotification(' „ Õ›Ÿ „·Õﬁ «· Ê—Ìœ »‰Ã«Õ', 'success');
+        showTab('supplies');
+      } catch (error) {
+        console.error('Error saving supply:', error);
+        showNotification('ÕœÀ Œÿ√ ›Ì Õ›Ÿ «·„·Õﬁ', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      }
+    }
+
+    window.deleteSupply = async function(id) {
+      if (!confirm('Â· √‰  „ √ﬂœ „‰ Õ–› Â–« «·„·Õﬁø')) return;
+
+      try {
+        const response = await fetch(`/supply-addons/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('›‘· ›Ì «·Õ–›');
+
+        app.suppliesAddons = await fetchData('/supply-addons');
+        showNotification(' „ Õ–› «·„·Õﬁ »‰Ã«Õ', 'success');
+        showTab('supplies');
+      } catch (error) {
+        console.error('Error deleting supply:', error);
+        showNotification('ÕœÀ Œÿ√ ›Ì «·Õ–›', 'error');
+      }
+    };
+
+    // Placeholder tabs (”√÷Ì›Â„ ›Ì «·„—Õ·… «·ﬁ«œ„…)
+    function renderExtractsTab(container) {
+      container.innerHTML = `
+        <div class="no-data">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <div class="no-data-text">ﬁ”„ «·„” Œ·’« </div>
+          <div class="no-data-subtext">ﬁÌœ «· ÿÊÌ—...</div>
+        </div>
+      `;
+    }
+
+    function renderLettersTab(container) {
+      container.innerHTML = `
+        <div class="no-data">
+          <i class="fas fa-envelope"></i>
+          <div class="no-data-text">ﬁ”„ «·Œÿ«»« </div>
+          <div class="no-data-subtext">ﬁÌœ «· ÿÊÌ—...</div>
+        </div>
+      `;
+    }
+
+    function renderEstimatesTab(container) {
+      container.innerHTML = `
+        <div class="no-data">
+          <i class="fas fa-calculator"></i>
+          <div class="no-data-text">ﬁ”„ «·„ﬁ«Ì”« </div>
+          <div class="no-data-subtext">ﬁÌœ «· ÿÊÌ—...</div>
+        </div>
+      `;
+    }
+
+    function renderReportsTab(container) {
+      container.innerHTML = `
+        <div class="no-data">
+          <i class="fas fa-chart-bar"></i>
+          <div class="no-data-text">ﬁ”„ «· ﬁ«—Ì—</div>
+          <div class="no-data-subtext">ﬁÌœ «· ÿÊÌ—...</div>
+        </div>
+      `;
+    }
+
+    // ============ Utility Functions ============
+
+    function showLoading(message = 'Ã«—Ì  Õ„Ì· «·»Ì«‰« ...') {
+      const overlay = document.createElement('div');
+      overlay.className = 'loading-overlay';
+      overlay.id = 'loadingOverlay';
+      overlay.innerHTML = `
+        <div class="loading-content">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">${message}</div>
+          <div class="loading-subtext">«·—Ã«¡ «·«‰ Ÿ«—...</div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay')?.remove();
+    }
+
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+      };
+      
+      notification.innerHTML = `
+        <i class="fas ${icons[type]}"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+        const form = modal.querySelector('form');
+        if (form) form.reset();
+      }
+    }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    }
+
+    // «·„—Õ·… «·ﬁ«œ„…: ”√÷Ì› «·‹ render functions ·ﬂ· tab
+  </script>
+</body>
+</html>

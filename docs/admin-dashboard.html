@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم المدير - TASKON</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5568d3;
+      --secondary: #764ba2;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --dark: #1a202c;
+      --light: #f7fafc;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #f7fafc;
+      color: var(--dark);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--gradient);
+      color: white;
+      padding: 2rem 0;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+      padding: 0 2rem 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-header h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-header p {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    .sidebar-nav {
+      padding: 2rem 0;
+    }
+
+    .nav-item {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-right: 3px solid transparent;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+      border-right-color: white;
+    }
+
+    .nav-item i {
+      font-size: 1.3rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-right: 280px;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h1 {
+      font-size: 1.8rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+    }
+
+    .stat-info h3 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-info p {
+      color: #718096;
+      font-weight: 600;
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      opacity: 0.3;
+    }
+
+    /* Content Section */
+    .content-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--dark);
+    }
+
+    /* Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .data-table th {
+      background: var(--gradient);
+      color: white;
+      padding: 1rem;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .data-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .data-table tr:hover {
+      background: #f7fafc;
+    }
+
+    .badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-header h3 {
+      font-size: 1.5rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-btn {
+      font-size: 2rem;
+      cursor: pointer;
+      color: #718096;
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--danger);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .chart-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-container h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+    }
+
+    /* Announcements */
+    .announcement-item {
+      background: #f7fafc;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      border-right: 4px solid var(--primary);
+    }
+
+    .announcement-item h4 {
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .announcement-item .date {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 0;
+        transform: translateX(100%);
+      }
+
+      .sidebar.mobile-open {
+        width: 280px;
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-right: 0;
+        padding: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>TASKON</h2>
+      <p>لوحة تحكم المدير</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showSection('dashboard')">
+        <span>📊</span>
+        <span>لوحة المعلومات</span>
+      </div>
+      <div class="nav-item" onclick="showSection('companies')">
+        <span>🏢</span>
+        <span>إدارة الشركات</span>
+      </div>
+      <div class="nav-item" onclick="showSection('users')">
+        <span>👥</span>
+        <span>إدارة المستخدمين</span>
+      </div>
+      <div class="nav-item" onclick="showSection('admins')">
+        <span>🔐</span>
+        <span>مسؤولي المنصة</span>
+      </div>
+      <div class="nav-item" onclick="showSection('announcements')">
+        <span>📢</span>
+        <span>الإعلانات</span>
+      </div>
+      <div class="nav-item" onclick="showSection('subscriptions')">
+        <span>💳</span>
+        <span>الاشتراكات</span>
+      </div>
+      <div class="nav-item" onclick="showSection('statistics')">
+        <span>📈</span>
+        <span>الإحصائيات</span>
+      </div>
+      <div class="nav-item" onclick="showSection('settings')">
+        <span>⚙️</span>
+        <span>الإعدادات</span>
+      </div>
+      <div class="nav-item" onclick="window.location.href='platform-landing.html'">
+        <span>🏠</span>
+        <span>العودة للصفحة الرئيسية</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1 id="welcomeMessage">مرحباً بك، المدير 👋</h1>
+      <div class="user-info" style="display: flex; align-items: center; gap: 1rem;">
+        <button onclick="logout()" style="padding: 0.5rem 1rem; background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;">
+          🚪 تسجيل الخروج
+        </button>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div class="user-avatar">A</div>
+          <div>
+            <p style="font-weight: 600;" id="adminName">Admin</p>
+            <p style="font-size: 0.85rem; color: #718096;" id="adminRole">مدير النظام</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="content-section active" id="dashboard-section">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="totalCompanies">0</h3>
+            <p>إجمالي الشركات</p>
+          </div>
+          <div class="stat-icon">🏢</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="totalUsers">0</h3>
+            <p>إجمالي المستخدمين</p>
+          </div>
+          <div class="stat-icon">👥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="totalProjects">0</h3>
+            <p>إجمالي المشاريع</p>
+          </div>
+          <div class="stat-icon">📊</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="monthlyRevenue">0</h3>
+            <p>الإيرادات الشهرية</p>
+          </div>
+          <div class="stat-icon">💰</div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+        <h2 style="margin-bottom: 1.5rem;">آخر الأنشطة</h2>
+        <div id="recentActivity"></div>
+      </div>
+    </div>
+
+    <!-- Companies Section -->
+    <div class="content-section" id="companies-section">
+      <div class="section-header">
+        <h2>إدارة الشركات</h2>
+        <button class="btn btn-primary" onclick="openCompanyModal()">
+          ➕ إضافة شركة جديدة
+        </button>
+      </div>
+      <table class="data-table" id="companiesTable">
+        <thead>
+          <tr>
+            <th>اسم الشركة</th>
+            <th>النطاق الفرعي</th>
+            <th>البريد الإلكتروني</th>
+            <th>الاشتراك</th>
+            <th>تاريخ الإنشاء</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="companiesTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Users Section -->
+    <div class="content-section" id="users-section">
+      <div class="section-header">
+        <h2>إدارة المستخدمين</h2>
+      </div>
+      <table class="data-table" id="usersTable">
+        <thead>
+          <tr>
+            <th>اسم المستخدم</th>
+            <th>البريد الإلكتروني</th>
+            <th>الشركة</th>
+            <th>الدور</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Platform Admins Section -->
+    <div class="content-section" id="admins-section">
+      <div class="section-header">
+        <h2>مسؤولي المنصة</h2>
+        <button class="btn btn-primary" onclick="openAddAdminModal()">
+          ➕ إضافة مسؤول جديد
+        </button>
+      </div>
+      <table class="data-table" id="adminsTable">
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>البريد الإلكتروني</th>
+            <th>الدور</th>
+            <th>تاريخ الإنشاء</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="adminsTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Announcements Section -->
+    <div class="content-section" id="announcements-section">
+      <div class="section-header">
+        <h2>إدارة الإعلانات</h2>
+        <button class="btn btn-primary" onclick="openAnnouncementModal()">
+          ➕ إضافة إعلان جديد
+        </button>
+      </div>
+      <div id="announcementsList"></div>
+    </div>
+
+    <!-- Subscriptions Section -->
+    <div class="content-section" id="subscriptions-section">
+      <div class="section-header">
+        <h2>إدارة الاشتراكات</h2>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="freeSubscriptions">0</h3>
+            <p>اشتراكات مجانية</p>
+          </div>
+          <div class="stat-icon">🆓</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="proSubscriptions">0</h3>
+            <p>اشتراكات احترافية</p>
+          </div>
+          <div class="stat-icon">⭐</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3 id="enterpriseSubscriptions">0</h3>
+            <p>اشتراكات المؤسسات</p>
+          </div>
+          <div class="stat-icon">🏆</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="content-section" id="statistics-section">
+      <div class="section-header">
+        <h2>الإحصائيات المتقدمة</h2>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <h3>نمو الشركات (آخر 6 أشهر)</h3>
+          <canvas id="companiesChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>نمو المستخدمين (آخر 6 أشهر)</h3>
+          <canvas id="usersChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="content-section" id="settings-section">
+      <div class="section-header">
+        <h2>إعدادات النظام</h2>
+      </div>
+      <div style="max-width: 600px;">
+        <div class="form-group">
+          <label>اسم المنصة</label>
+          <input type="text" class="form-control" value="TASKON">
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني للدعم</label>
+          <input type="email" class="form-control" value="support@taskon.com">
+        </div>
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input type="tel" class="form-control" value="+20 123 456 7890">
+        </div>
+        <button class="btn btn-primary">حفظ التغييرات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Modal -->
+  <div class="modal" id="companyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="companyModalTitle">إضافة شركة جديدة</h3>
+        <span class="close-btn" onclick="closeCompanyModal()">&times;</span>
+      </div>
+      <form id="companyForm">
+        <div class="form-group">
+          <label>اسم الشركة *</label>
+          <input type="text" class="form-control" id="companyName" required>
+        </div>
+        <div class="form-group">
+          <label>النطاق الفرعي (Subdomain)</label>
+          <input type="text" class="form-control" id="companySubdomain" placeholder="اتركه فارغاً للتوليد التلقائي">
+          <small style="color: #718096; font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+            سيتم توليد النطاق تلقائياً من اسم الشركة إذا تركته فارغاً
+          </small>
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني *</label>
+          <input type="email" class="form-control" id="companyEmail" required>
+        </div>
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input type="tel" class="form-control" id="companyPhone">
+        </div>
+        <div class="form-group">
+          <label>العنوان</label>
+          <textarea class="form-control" id="companyAddress"></textarea>
+        </div>
+        <div class="form-group">
+          <label>نوع الاشتراك</label>
+          <select class="form-control" id="companySubscription">
+            <option value="free">مجاني</option>
+            <option value="pro">احترافي</option>
+            <option value="enterprise">مؤسسات</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeCompanyModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Announcement Modal -->
+  <div class="modal" id="announcementModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>إضافة إعلان جديد</h3>
+        <span class="close-btn" onclick="closeAnnouncementModal()">&times;</span>
+      </div>
+      <form id="announcementForm">
+        <div class="form-group">
+          <label>عنوان الإعلان *</label>
+          <input type="text" class="form-control" id="announcementTitle" required>
+        </div>
+        <div class="form-group">
+          <label>محتوى الإعلان *</label>
+          <textarea class="form-control" id="announcementContent" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>نوع الإعلان</label>
+          <select class="form-control" id="announcementType">
+            <option value="info">معلومة</option>
+            <option value="warning">تحذير</option>
+            <option value="success">نجاح</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeAnnouncementModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">نشر الإعلان</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal show" id="loginModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>تسجيل دخول المسؤول</h3>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>البريد الإلكتروني *</label>
+          <input type="email" class="form-control" id="loginEmail" value="bahgatt55@outlook.com" required>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور *</label>
+          <input type="password" class="form-control" id="loginPassword" value="123456" required>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+          <button type="submit" class="btn btn-primary" style="width: 100%;">تسجيل الدخول</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // تحديد API URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000'
+      : window.location.origin;
+    let adminToken = localStorage.getItem('adminToken');
+    
+    // Check if admin is logged in
+    if (!adminToken) {
+      // Show login modal
+      document.getElementById('loginModal').classList.add('show');
+    } else {
+      // Hide login modal and load dashboard
+      document.getElementById('loginModal').classList.remove('show');
+      loadDashboardStats();
+    }
+
+    // Login Form Submit
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        const response = await fetch(`${API_URL}/platform/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          adminToken = result.token;
+          localStorage.setItem('adminToken', adminToken);
+          localStorage.setItem('platformAdmin', JSON.stringify(result.admin));
+          
+          // Update UI with admin info
+          updateAdminUI(result.admin);
+          
+          document.getElementById('loginModal').classList.remove('show');
+          alert('مرحباً بك في لوحة التحكم! ✅');
+          loadDashboardStats();
+        } else {
+          alert('خطأ في تسجيل الدخول: ' + (result.error || 'بيانات غير صحيحة'));
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        alert('حدث خطأ في تسجيل الدخول');
+      }
+    });
+
+    // Show all sections by default
+
+    // Function to update UI with admin info
+    function updateAdminUI(adminData) {
+      if (adminData) {
+        document.getElementById('welcomeMessage').textContent = `مرحباً بك، ${adminData.name} 👋`;
+        document.getElementById('adminName').textContent = adminData.name;
+        document.getElementById('adminRole').textContent = adminData.role === 'superadmin' ? 'مدير أعلى' : 'مسؤول المنصة';
+      }
+    }
+
+    // Get admin data from localStorage if available
+    const platformAdmin = localStorage.getItem('platformAdmin');
+    if (platformAdmin) {
+      try {
+        const adminData = JSON.parse(platformAdmin);
+        updateAdminUI(adminData);
+      } catch (err) {
+        console.error('Error parsing admin data:', err);
+      }
+    }
+
+    // Navigation
+    function showSection(section) {
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById(`${section}-section`).classList.add('active');
+      event.target.closest('.nav-item').classList.add('active');
+
+      if (section === 'companies') loadCompanies();
+      if (section === 'users') loadUsers();
+      if (section === 'admins') loadPlatformAdmins();
+      if (section === 'announcements') loadAnnouncements();
+    }
+
+    // Load Dashboard Stats
+    async function loadDashboardStats() {
+      try {
+        const companiesResponse = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!companiesResponse.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await companiesResponse.json();
+        console.log('Dashboard stats - companies:', companies);
+
+        // Calculate stats
+        const totalCompanies = companies.length;
+        const activeCompanies = companies.filter(c => c.status === 'active').length;
+        const suspendedCompanies = companies.filter(c => c.status === 'suspended').length;
+        const expiredCompanies = companies.filter(c => c.status === 'expired').length;
+
+        document.getElementById('totalCompanies').textContent = totalCompanies;
+        document.getElementById('totalUsers').textContent = activeCompanies;
+        document.getElementById('totalProjects').textContent = suspendedCompanies;
+        document.getElementById('monthlyRevenue').textContent = expiredCompanies;
+
+        // Recent Activity
+        const activityHtml = `
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="padding: 1rem; background: #f7fafc; border-radius: 8px; border-right: 3px solid var(--success);">
+              <p style="font-weight: 600;">شركة جديدة انضمت للمنصة</p>
+              <p style="font-size: 0.85rem; color: #718096;">منذ ساعتين</p>
+            </div>
+            <div style="padding: 1rem; background: #f7fafc; border-radius: 8px; border-right: 3px solid var(--info);">
+              <p style="font-weight: 600;">مستخدم جديد سجل في النظام</p>
+              <p style="font-size: 0.85rem; color: #718096;">منذ 5 ساعات</p>
+            </div>
+            <div style="padding: 1rem; background: #f7fafc; border-radius: 8px; border-right: 3px solid var(--primary);">
+              <p style="font-weight: 600;">مشروع جديد تم إنشاؤه</p>
+              <p style="font-size: 0.85rem; color: #718096;">منذ يوم واحد</p>
+            </div>
+          </div>
+        `;
+        document.getElementById('recentActivity').innerHTML = activityHtml;
+      } catch (err) {
+        console.error('Error loading dashboard stats:', err);
+      }
+    }
+
+    // Load Companies
+    async function loadCompanies() {
+      try {
+        const response = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await response.json();
+        console.log('Loaded companies:', companies);
+
+        const tbody = document.getElementById('companiesTableBody');
+        if (!companies || companies.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #718096;">لا توجد شركات بعد</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = companies.map(company => {
+          const subdomain = company.subdomain || 'غير محدد';
+          
+          // إنشاء الرابط حسب البيئة
+          const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+          const fullUrl = subdomain !== 'غير محدد' ? 
+            (isProduction ? 
+              `${window.location.origin}/index.html?company=${subdomain}` : 
+              `http://${subdomain}.taskon.local:4000`) : '';
+              
+          const statusBadge = company.status === 'active' ? 'badge-success' : 
+                            company.status === 'suspended' ? 'badge-warning' : 'badge-danger';
+          
+          return `
+          <tr>
+            <td>${company.companyName}</td>
+            <td>
+              ${subdomain !== 'غير محدد' ? `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <code style="background: #edf2f7; padding: 0.25rem 0.5rem; border-radius: 4px;">${subdomain}</code>
+                  <button onclick="copyUrl('${fullUrl}')" style="background: var(--info); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem;" title="نسخ الرابط الكامل">
+                    📋
+                  </button>
+                </div>
+              ` : subdomain}
+            </td>
+            <td>${company.email}</td>
+            <td><span class="badge ${statusBadge}">${company.status || 'active'}</span></td>
+            <td>${new Date(company.createdAt).toLocaleDateString('ar-EG')}</td>
+            <td>
+              ${fullUrl ? `<button class="btn btn-primary" onclick="window.open('${fullUrl}', '_blank')" style="padding: 0.5rem 1rem; margin-left: 0.5rem;" title="تصفح موقع الشركة">🌐</button>` : ''}
+              <button class="btn btn-secondary" onclick="editCompany('${company._id}')" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">✏️</button>
+              <button class="btn btn-danger" onclick="deleteCompany('${company._id}')" style="padding: 0.5rem 1rem;">🗑️</button>
+            </td>
+          </tr>
+        `;
+        }).join('');
+      } catch (err) {
+        console.error('Error loading companies:', err);
+        document.getElementById('companiesTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #e53e3e;">حدث خطأ في تحميل البيانات</td></tr>';
+      }
+    }
+
+    // Load Users
+    async function loadUsers() {
+      try {
+        // First get all companies to get their user counts
+        const companiesResponse = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!companiesResponse.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await companiesResponse.json();
+        console.log('Users page - companies:', companies);
+        
+        // Get users from all companies
+        let allUsers = [];
+        for (const company of companies) {
+          try {
+            const usersResponse = await fetch(`${API_URL}/companies/${company._id}/users`, {
+              headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            
+            if (usersResponse.ok) {
+              const usersData = await usersResponse.json();
+              const users = usersData.success ? usersData.users : [];
+              users.forEach(user => {
+                user.companyName = company.companyName;
+                user.companyId = company._id;
+              });
+              allUsers = allUsers.concat(users);
+            }
+          } catch (err) {
+            console.error(`Error loading users for company ${company.companyName}:`, err);
+          }
+        }
+
+        const tbody = document.getElementById('usersTableBody');
+        if (allUsers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #718096;">لا يوجد مستخدمون بعد</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = allUsers.map(user => `
+          <tr>
+            <td>${user.username || user.email}</td>
+            <td>${user.email}</td>
+            <td>${user.companyName || 'غير محدد'}</td>
+            <td>${user.role || 'مستخدم'}</td>
+            <td><span class="badge badge-success">نشط</span></td>
+            <td>
+              <button class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">✏️</button>
+              <button class="btn btn-danger" style="padding: 0.5rem 1rem;">🗑️</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading users:', err);
+        document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #e53e3e;">حدث خطأ في تحميل المستخدمين</td></tr>';
+      }
+    }
+
+    // Load Announcements
+    function loadAnnouncements() {
+      const announcements = [
+        {
+          title: 'تحديث جديد للنظام',
+          content: 'تم إضافة ميزة إدارة المشاريع المتعددة',
+          date: '2025-10-19',
+          type: 'success'
+        },
+        {
+          title: 'صيانة مجدولة',
+          content: 'سيتم إجراء صيانة للنظام يوم الجمعة القادم',
+          date: '2025-10-18',
+          type: 'warning'
+        }
+      ];
+
+      const html = announcements.map(ann => `
+        <div class="announcement-item">
+          <h4>${ann.title}</h4>
+          <p class="date">${new Date(ann.date).toLocaleDateString('ar-EG')}</p>
+          <p>${ann.content}</p>
+          <div style="margin-top: 1rem;">
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">✏️ تعديل</button>
+            <button class="btn btn-danger" style="padding: 0.5rem 1rem;">🗑️ حذف</button>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('announcementsList').innerHTML = html;
+    }
+
+    // Company Modal Functions
+    function openCompanyModal() {
+      document.getElementById('companyModal').classList.add('show');
+    }
+
+    function closeCompanyModal() {
+      document.getElementById('companyModal').classList.remove('show');
+      const form = document.getElementById('companyForm');
+      form.reset();
+      // Reset edit mode
+      form.dataset.editMode = 'false';
+      form.dataset.editId = '';
+    }
+
+    // Announcement Modal Functions
+    function openAnnouncementModal() {
+      document.getElementById('announcementModal').classList.add('show');
+    }
+
+    function closeAnnouncementModal() {
+      document.getElementById('announcementModal').classList.remove('show');
+      document.getElementById('announcementForm').reset();
+    }
+
+    // Company Form Submit
+    document.getElementById('companyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const isEditMode = form.dataset.editMode === 'true';
+      const editId = form.dataset.editId;
+
+      const companyData = {
+        companyName: document.getElementById('companyName').value,
+        subdomain: document.getElementById('companySubdomain').value.trim() || undefined,
+        email: document.getElementById('companyEmail').value,
+        phone: document.getElementById('companyPhone').value,
+        address: document.getElementById('companyAddress').value,
+        status: document.getElementById('companySubscription').value
+      };
+
+      try {
+        const url = isEditMode 
+          ? `${API_URL}/companies/${editId}`
+          : `${API_URL}/companies`;
+        
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
+          body: JSON.stringify(companyData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          if (isEditMode) {
+            alert('تم تحديث الشركة بنجاح! ✅');
+          } else {
+            // Show success message with full URL and admin user info for new companies
+            const fullUrl = result.fullUrl || `${window.location.origin}?company=${result.subdomain}`;
+            const userInfo = result.adminUser ? 
+              `\n\n👤 مستخدم المدير:\nالبريد الإلكتروني: ${result.adminUser.email}\nاسم المستخدم: ${result.adminUser.username}\nكلمة المرور: ${result.adminUser.password}` : '';
+            
+            alert(`تم إضافة الشركة بنجاح! ✅\n\nالنطاق الفرعي: ${result.subdomain}\nالرابط الكامل: ${fullUrl}${userInfo}\n\nيمكن للعميل الآن الدخول للنظام باستخدام هذه البيانات`);
+          }
+          
+          closeCompanyModal();
+          document.getElementById('companyForm').reset();
+          // Reset edit mode
+          form.dataset.editMode = 'false';
+          form.dataset.editId = '';
+          
+          loadCompanies();
+          loadDashboardStats();
+        } else {
+          alert('حدث خطأ: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Error with company operation:', err);
+        alert(isEditMode ? 'فشل في تحديث الشركة' : 'فشل في إضافة الشركة');
+      }
+    });
+
+    // Announcement Form Submit
+    document.getElementById('announcementForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('تم نشر الإعلان بنجاح! ✅');
+      closeAnnouncementModal();
+      loadAnnouncements();
+    });
+
+    // Delete Company
+    async function deleteCompany(id) {
+      if (!confirm('هل أنت متأكد من حذف هذه الشركة؟')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/companies/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('تم حذف الشركة بنجاح! ✅');
+          loadCompanies();
+          loadDashboardStats();
+        } else {
+          alert('حدث خطأ: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Error deleting company:', err);
+        alert('فشل في حذف الشركة');
+      }
+    }
+
+    // Edit Company
+    async function editCompany(id) {
+      try {
+        // Get company details first
+        const response = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await response.json();
+        const company = companies.find(c => c._id === id);
+        
+        if (!company) {
+          alert('لم يتم العثور على الشركة');
+          return;
+        }
+
+        // Open modal and fill with company data
+        document.getElementById('companyName').value = company.companyName || '';
+        document.getElementById('companySubdomain').value = company.subdomain || '';
+        document.getElementById('companyEmail').value = company.email || '';
+        document.getElementById('companyPhone').value = company.phone || '';
+        document.getElementById('companyAddress').value = company.address || '';
+        document.getElementById('companySubscription').value = company.status || 'active';
+        
+        // Change form to update mode
+        const form = document.getElementById('companyForm');
+        form.dataset.editId = id;
+        form.dataset.editMode = 'true';
+        
+        openCompanyModal();
+        
+      } catch (err) {
+        console.error('Error loading company for edit:', err);
+        alert('فشل في تحميل بيانات الشركة');
+      }
+    }
+
+    // Copy URL to clipboard
+    function copyUrl(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        alert(`تم نسخ الرابط! 📋\n${url}`);
+      }).catch(err => {
+        console.error('Error copying URL:', err);
+        // Fallback method
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert(`تم نسخ الرابط! 📋\n${url}`);
+      });
+    }
+
+    // ====================================
+    // Platform Admins Management
+    // ====================================
+
+    // Load Platform Admins
+    async function loadPlatformAdmins() {
+      try {
+        const response = await fetch(`${API_URL}/platform/admins`);
+        const admins = await response.json();
+
+        const tbody = document.getElementById('adminsTableBody');
+        if (admins.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #718096;">لا يوجد مسؤولين بعد</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = admins.map(admin => `
+          <tr>
+            <td>${admin.name}</td>
+            <td>${admin.email}</td>
+            <td><span class="badge ${admin.role === 'superadmin' ? 'badge-danger' : 'badge-info'}">${admin.role === 'superadmin' ? 'مدير أعلى' : 'مسؤول'}</span></td>
+            <td>${new Date(admin.createdAt).toLocaleDateString('ar-EG')}</td>
+            <td>
+              <button class="btn btn-secondary" onclick="editAdmin('${admin._id}')" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">✏️</button>
+              <button class="btn btn-danger" onclick="deleteAdmin('${admin._id}')" style="padding: 0.5rem 1rem;">🗑️</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading admins:', err);
+      }
+    }
+
+    // Edit Admin
+    async function editAdmin(id) {
+      try {
+        const response = await fetch(`${API_URL}/platform/admins`);
+        const admins = await response.json();
+        const admin = admins.find(a => a._id === id);
+        
+        if (!admin) return;
+
+        const name = prompt('اسم المسؤول:', admin.name);
+        if (!name) return;
+
+        const email = prompt('البريد الإلكتروني:', admin.email);
+        if (!email) return;
+
+        const password = prompt('كلمة المرور الجديدة (اتركه فارغاً لعدم التغيير):');
+        
+        const role = confirm('هل تريد جعله مدير أعلى؟ (اضغط OK للموافقة)') ? 'superadmin' : 'admin';
+
+        const updateData = { name, email, role };
+        if (password) updateData.password = password;
+
+        const updateRes = await fetch(`${API_URL}/platform/admins/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updateData)
+        });
+
+        const result = await updateRes.json();
+
+        if (result.success) {
+          alert('✅ تم تحديث المسؤول بنجاح!');
+          loadPlatformAdmins();
+        } else {
+          alert('❌ حدث خطأ: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Error editing admin:', err);
+        alert('❌ فشل في تحديث المسؤول');
+      }
+    }
+
+    // Delete Admin
+    async function deleteAdmin(id) {
+      if (!confirm('⚠️ هل أنت متأكد من حذف هذا المسؤول؟')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/platform/admins/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('✅ تم حذف المسؤول بنجاح!');
+          loadPlatformAdmins();
+        } else {
+          alert('❌ حدث خطأ: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Error deleting admin:', err);
+        alert('❌ فشل في حذف المسؤول');
+      }
+    }
+
+    // Add Admin Modal
+    function openAddAdminModal() {
+      const name = prompt('اسم المسؤول:');
+      if (!name) return;
+
+      const email = prompt('البريد الإلكتروني:');
+      if (!email) return;
+
+      const password = prompt('كلمة المرور:');
+      if (!password) return;
+
+      const role = confirm('هل تريد جعله مدير أعلى؟ (اضغط OK للموافقة)') ? 'superadmin' : 'admin';
+
+      addAdmin({ name, email, password, role });
+    }
+
+    async function addAdmin(data) {
+      try {
+        const response = await fetch(`${API_URL}/platform/admins`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('✅ تم إضافة المسؤول بنجاح!');
+          loadPlatformAdmins();
+        } else {
+          alert('❌ ' + (result.message || result.error));
+        }
+      } catch (err) {
+        console.error('Error adding admin:', err);
+        alert('❌ فشل في إضافة المسؤول');
+      }
+    }
+
+    // Logout
+    function logout() {
+      if (confirm('هل تريد تسجيل الخروج؟')) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('platformAdmin');
+        adminToken = null;
+        document.getElementById('loginModal').classList.add('show');
+      }
+    }
+
+    // Load initial data only if logged in
+    // loadDashboardStats() is called conditionally after login
+  </script>
+</body>
+</html>

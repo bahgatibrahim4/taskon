@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل الدخول</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Tajawal', Arial, sans-serif;
+      background: linear-gradient(135deg, #c5d6db 0%, #2e8ca3 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px #0001;
+      padding: 32px 22px 22px 22px;
+      max-width: 340px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-items: center;
+    }
+    .login-logo {
+      font-size: 2.2rem;
+      color: #2e8ca3;
+      margin-bottom: 10px;
+      margin-top: 2px;
+    }
+    h2 {
+      text-align: center;
+      color: #1a3b50;
+      margin-bottom: 18px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+    input {
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1px solid #c5d6db;
+      font-size: 1.01rem;
+      background: #f7fafc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      color: #1a3b50;
+    }
+    input:focus {
+      border-color: #2e8ca3;
+      background: #fff;
+      box-shadow: 0 0 0 2px #2e8ca322;
+    }
+    button {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1.08rem;
+      border-radius: 6px;
+      padding: 10px 0;
+      margin-top: 4px;
+      box-shadow: 0 1px 6px #2e8ca311;
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    button:hover {
+      background: #1a3b50;
+      box-shadow: 0 2px 12px #2e8ca322;
+    }
+    .error {
+      color: #e53935;
+      text-align: center;
+      margin-bottom: 0;
+      font-size: 0.98rem;
+      min-height: 20px;
+      letter-spacing: 0.2px;
+      margin-top: 2px;
+    }
+    .login-footer {
+      text-align: center;
+      margin-top: 14px;
+      color: #8c969a;
+      font-size: 0.93rem;
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 500px) {
+      .login-container {
+        padding: 18px 4px 12px 4px;
+        max-width: 98vw;
+      }
+      .login-logo {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-logo" style="font-family:'Tajawal',Arial,sans-serif; font-weight:900; letter-spacing:2px; font-size:2rem; color:#2e8ca3; text-transform:uppercase; margin-bottom:10px; margin-top:2px;">
+      TASK<span style="color:#1a3b50;">ON</span>
+    </div>
+    <h2>تسجيل الدخول</h2>
+    <form id="loginForm">
+      <input type="email" name="email" placeholder="الإيميل" required autocomplete="username">
+      <input type="password" name="password" placeholder="كلمة المرور" required autocomplete="current-password">
+      <button type="submit">دخول</button>
+      <div class="error" id="loginError"></div>
+    </form>
+    <div class="login-footer">
+      م بهجت ابراهيم
+      <br>
+      <small><a href="#" id="clearCache" style="color: #8c969a; text-decoration: none; font-size: 0.8rem;">مسح البيانات المحفوظة</a></small>
+    </div>
+  </div>
+  <script>
+    // Use appropriate API URL based on environment
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
+    
+    // دالة لإنشاء URL مع معامل الشركة
+    function createUrlWithCompany(baseUrl, companyParam = null) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const company = companyParam || urlParams.get('company') || localStorage.getItem('currentCompany');
+      
+      if (company) {
+        // حفظ معرف الشركة في localStorage
+        localStorage.setItem('currentCompany', company);
+        const separator = baseUrl.includes('?') ? '&' : '?';
+        return `${baseUrl}${separator}company=${company}`;
+      }
+      return baseUrl;
+    }
+    
+    // دالة للتوجيه مع الحفاظ على معامل الشركة
+    function redirectWithCompany(url, delay = 200) {
+      const finalUrl = createUrlWithCompany(url);
+      console.log('🔄 Redirecting to:', finalUrl);
+      setTimeout(() => window.location.replace(finalUrl), delay);
+    }
+    
+    // دالة للتحقق من تسجيل الدخول وإعداد الصفحة
+    (function initializePage() {
+      // Debug: طباعة محتويات localStorage
+      console.log('🔍 Debug localStorage:', {
+        currentUser: localStorage.getItem('currentUser'),
+        user: localStorage.getItem('user'),
+        currentProjectId: localStorage.getItem('currentProjectId'),
+        allKeys: Object.keys(localStorage)
+      });
+      
+      // التحقق من المعامل URL لمنع اللوب
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceLogin = urlParams.get('force') === 'true';
+      
+      // إذا كان المستخدم مسجل دخول بالفعل وليس هناك إجبار للدخول
+      const currentUser = localStorage.getItem('currentUser');
+      const user = localStorage.getItem('user');
+      
+      if ((currentUser || user) && !forceLogin) {
+        console.log('🔄 المستخدم مسجل دخول بالفعل، إعادة توجيه...');
+        
+        try {
+          const userData = JSON.parse(currentUser || user);
+          console.log('🔍 فحص بيانات المستخدم المحفوظة:', userData);
+          
+          if (userData && userData._id) {
+            // التحقق من نوع المستخدم
+            const isCompanyUser = !userData.projectId; // مستخدم على مستوى الشركة
+            const projectId = localStorage.getItem('currentProjectId');
+            
+            if (isCompanyUser) {
+              console.log('👑 مستخدم أساسي (شركة) - توجيه لصفحة المشاريع');
+              redirectWithCompany('projects.html');
+            } else if (projectId) {
+              console.log('📁 مستخدم عادي مع مشروع - توجيه للصفحة الرئيسية');
+              redirectWithCompany('index.html');
+            } else {
+              console.log('📂 مستخدم بدون مشروع - توجيه لصفحة المشاريع');
+              redirectWithCompany('projects.html');
+            }
+            return;
+          }
+        } catch (e) {
+          console.log('⚠️ خطأ في قراءة بيانات المستخدم، مسح البيانات التالفة');
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('user');
+          localStorage.removeItem('currentProjectId');
+          localStorage.removeItem('currentProjectName');
+        }
+      }
+    
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const email = this.email.value.trim();
+      const password = this.password.value;
+      
+      try {
+        // تسجيل دخول مستخدمي الشركات فقط
+        const res = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await res.json();
+
+        if (data.success) {
+          let user = data.user;
+          
+          // إذا كان هناك redirectUrl، نستخدمه لإعادة التوجيه
+          if (data.redirectUrl) {
+            // حفظ بيانات المستخدم أولاً
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            console.log('🔄 إعادة توجيه للرابط:', data.redirectUrl);
+            alert(`تم العثور على حسابك في شركة: ${data.company?.companyName || 'غير محدد'}\nسيتم إعادة توجيهك الآن...`);
+            
+            // إعادة توجيه فورية بدون انتظار
+            window.location.replace(data.redirectUrl);
+            return;
+          }
+          
+          // التحقق من وجود companyId وإنشاء شركة إذا لم يكن موجود
+          if (!user.companyId) {
+            console.warn('المستخدم لا يملك companyId، جاري إنشاء شركة...');
+            try {
+              // إنشاء شركة جديدة للمستخدم
+              const companyRes = await fetch(`${API_URL}/companies`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                  companyName: user.username ? `شركة ${user.username}` : 'شركة جديدة',
+                  email: user.email,
+                  subscription: 'active'
+                })
+              });
+              
+              const companyData = await companyRes.json();
+              
+              if (companyData.success && companyData.companyId) {
+                // تحديث المستخدم بـ companyId
+                const updateRes = await fetch(`${API_URL}/users/${user._id}`, {
+                  method: 'PUT',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({
+                    ...user,
+                    companyId: companyData.companyId
+                  })
+                });
+                
+                user.companyId = companyData.companyId;
+                console.log('تم إنشاء الشركة وتحديث المستخدم:', companyData.companyId);
+              }
+            } catch (err) {
+              console.error('خطأ في إنشاء الشركة:', err);
+              alert('تحذير: لم يتم إنشاء الشركة. قد تواجه مشاكل في استخدام النظام.');
+            }
+          }
+          
+          // حفظ بيانات المستخدم
+          console.log('💾 حفظ بيانات المستخدم:', user);
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('user', JSON.stringify(user)); // للتوافق مع الكود القديم
+          console.log('✅ تم حفظ البيانات في localStorage');
+          
+          // تحديد نوع المستخدم
+          const isCompanyUser = !user.projectId; // إذا لم يكن له projectId فهو مستخدم شركة
+          
+          if (isCompanyUser) {
+            console.log('👑 مستخدم أساسي (شركة) - توجيه مباشر لصفحة المشاريع');
+            redirectWithCompany('projects.html', 500);
+            return; // إيقاف باقي الكود
+          }
+          
+          // التحقق من المشاريع المتاحة للمستخدم العادي
+          try {
+            const projectsRes = await fetch(`${API_URL}/projects?companyId=${user.companyId}`);
+            const allProjects = await projectsRes.json();
+            
+            // فلترة المشاريع حسب صلاحيات المستخدم
+            let userProjects = allProjects;
+            
+            // إذا كان المستخدم ليس admin وله projectIds محددة
+            if (user.role !== 'admin' && user.projectIds && user.projectIds.length > 0) {
+              userProjects = allProjects.filter(p => user.projectIds.includes(p._id));
+              console.log(`👤 مستخدم عادي - المشاريع المخصصة: ${userProjects.length}`);
+            } else if (user.role === 'admin') {
+              console.log(`👑 Admin - الوصول لجميع المشاريع: ${allProjects.length}`);
+            } else {
+              // مستخدم بدون مشاريع - نعرض له جميع المشاريع للاختيار
+              console.log(`⚠️ مستخدم بدون مشاريع محددة - سيتم عرض جميع المشاريع`);
+            }
+            
+            if (userProjects && userProjects.length === 1) {
+              // فحص إذا كان المشروع الوحيد هو placeholder
+              const singleProject = userProjects[0];
+              if (singleProject._placeholder || !singleProject.projectName || singleProject.projectName === 'undefined') {
+                console.log('⚠️ المشروع الوحيد هو placeholder - توجيه لصفحة المشاريع');
+                redirectWithCompany('projects.html', 500);
+              } else {
+                // مشروع حقيقي واحد فقط - الدخول مباشرة
+                localStorage.setItem('currentProjectId', singleProject._id);
+                localStorage.setItem('currentProjectName', singleProject.projectName || singleProject.name);
+                console.log('✅ تم الدخول مباشرة للمشروع:', singleProject.projectName);
+                redirectWithCompany('index.html', 500);
+              }
+            } else if (userProjects && userProjects.length > 1) {
+              // فلترة المشاريع لإزالة placeholders
+              const realProjects = userProjects.filter(p => !p._placeholder && p.projectName && p.projectName !== 'undefined');
+              
+              if (realProjects.length === 1) {
+                // مشروع حقيقي واحد فقط بعد الفلترة
+                localStorage.setItem('currentProjectId', realProjects[0]._id);
+                localStorage.setItem('currentProjectName', realProjects[0].projectName || realProjects[0].name);
+                console.log('✅ تم الدخول مباشرة للمشروع:', realProjects[0].projectName);
+                redirectWithCompany('index.html', 500);
+              } else if (realProjects.length > 1) {
+                // أكثر من مشروع حقيقي - إظهار قائمة الاختيار
+                console.log(`📋 المستخدم لديه ${realProjects.length} مشاريع حقيقية`);
+                redirectWithCompany('projects.html', 500);
+              } else {
+                // لا توجد مشاريع حقيقية
+                console.log('⚠️ لا توجد مشاريع حقيقية - توجيه لصفحة المشاريع لإنشاء مشروع جديد');
+                redirectWithCompany('projects.html', 500);
+              }
+            } else {
+              // لا توجد مشاريع
+              console.warn('⚠️ لا توجد مشاريع متاحة لهذا المستخدم');
+              redirectWithCompany('projects.html', 500);
+            }
+          } catch (projectErr) {
+            console.error('خطأ في جلب المشاريع:', projectErr);
+            // في حالة الخطأ، الذهاب لصفحة المشاريع
+            redirectWithCompany('projects.html', 500);
+          }
+        } else {
+          const errorMsg = data.message || 'بيانات الدخول غير صحيحة';
+          document.getElementById('loginError').textContent = errorMsg;
+          
+          // إذا كان الخطأ متعلق بعدم العثور على الشركة، نقترح البحث
+          if (errorMsg.includes('تحديد الشركة') || errorMsg.includes('الشركة غير موجودة')) {
+            document.getElementById('loginError').innerHTML = `
+              ${errorMsg}<br>
+              <a href="company-finder.html" style="color: #667eea; font-weight: 600; text-decoration: none;">
+                🔍 البحث عن شركتك
+              </a>
+            `;
+          }
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        document.getElementById('loginError').textContent = 'خطأ في الاتصال بالسيرفر';
+      }
+    };
+    
+    // إضافة وظيفة مسح البيانات المحفوظة
+    document.addEventListener('DOMContentLoaded', function() {
+      const clearCacheLink = document.getElementById('clearCache');
+      if (clearCacheLink) {
+        clearCacheLink.onclick = function(e) {
+          e.preventDefault();
+          if (confirm('هل تريد مسح جميع البيانات المحفوظة؟')) {
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log('✅ تم مسح جميع البيانات المحفوظة');
+            alert('تم مسح البيانات المحفوظة بنجاح');
+            location.reload();
+          }
+        };
+      }
+    });
+    
+    })(); // إغلاق دالة initializePage وتنفيذها فوراً
+  </script>
+
+  <!-- Super Admin Button (للمطور فقط - مخفي) -->
+  <!-- يمكنك الوصول إليه عن طريق كتابة platform-landing.html في الرابط مباشرة -->
+  <!-- 
+  <a href="platform-landing.html" style="position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease; z-index: 999; text-decoration: none;" title="الصفحة الرئيسية للمنصة">
+    🏠
+  </a>
+  -->
+</body>
+</html>

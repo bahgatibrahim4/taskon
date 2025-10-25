@@ -1,0 +1,328 @@
+<!-- قالب Sections الصلاحيات مع Accordion -->
+<!-- انسخ هذا الكود وضعه مكان الـ sections القديمة في users.html -->
+
+<div style="max-height: 58vh; overflow-y: auto; padding: 10px; background: #f8f9fa; border-radius: 10px;">
+  
+  <!-- الصفحة الرئيسية -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-home"></i> كاردات الصفحة الرئيسية</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="dashboard.view"> عرض الصفحة الرئيسية</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.project"> كارد المشروع</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.drawings"> كارد المخططات</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.external"> كارد التعاملات الخارجية</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.contractors"> كارد عرض المقاولين</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.addExtract"> كارد إضافة مستخلص</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.extracts"> كارد قائمة المستخلصات</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.store"> كارد المخزن</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.supplies"> كارد التوريدات</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.purchases"> كارد المشتريات</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.workers"> كارد العمال</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.monthlyPay"> كارد الشهريات</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.suppliers"> كارد الموردين</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.equipment"> كارد المعدات</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.receipts"> كارد سندات الاستلام</label>
+      <label><input type="checkbox" name="permissions" value="dashboard.card.users"> كارد المستخدمين</label>
+    </div>
+  </div>
+
+  <!-- المستخلصات -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-file-invoice"></i> المستخلصات</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="extracts.view"> عرض المستخلصات</label>
+      <label><input type="checkbox" name="permissions" value="extracts.add"> إضافة مستخلص</label>
+      <label><input type="checkbox" name="permissions" value="extracts.edit_in_add"> تعديل كامل في إضافة مستخلص</label>
+      <label><input type="checkbox" name="permissions" value="extracts.edit"> تعديل مستخلص موجود</label>
+      <label><input type="checkbox" name="permissions" value="extracts.delete"> حذف مستخلص</label>
+      <label><input type="checkbox" name="permissions" value="extracts.print"> طباعة مستخلص</label>
+      <label><input type="checkbox" name="permissions" value="extracts.export"> تصدير المستخلصات</label>
+    </div>
+  </div>
+
+  <!-- المقاولون -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-hard-hat"></i> المقاولون</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="contractors.view"> عرض المقاولين</label>
+      <label><input type="checkbox" name="permissions" value="contractors.add"> إضافة مقاول</label>
+      <label><input type="checkbox" name="permissions" value="contractors.edit"> تعديل مقاول</label>
+      <label><input type="checkbox" name="permissions" value="contractors.delete"> حذف مقاول</label>
+      <label><input type="checkbox" name="permissions" value="contractors.materials"> إدارة مواد المقاول</label>
+      <label><input type="checkbox" name="permissions" value="contractors.export"> تصدير المقاولين</label>
+    </div>
+  </div>
+
+  <!-- صفحة المقاول - التفاصيل -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-file-contract"></i> صفحة المقاول - التفاصيل</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <strong style="color: #388e3c; display:block; margin: 8px 0;">📊 تبويب الملخص:</strong>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.view_summary"> عرض الملخص</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.edit_signed_works"> تعديل قيمة الأعمال الموقعة</label>
+      
+      <strong style="color: #2e8ca3; display:block; margin: 8px 0;">📋 تبويب العقود:</strong>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.view_contracts"> عرض العقود</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.add_contract"> إضافة عقد</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.edit_contract"> تعديل عقد</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.delete_contract"> حذف عقد</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.export_contracts"> تصدير العقود Excel</label>
+      
+      <strong style="color: #ff9800; display:block; margin: 8px 0;">🏗️ تبويب الأعمال:</strong>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.view_works"> عرض الأعمال</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.sort_works"> ترتيب حسب المبنى</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.pull_works"> سحب أعمال لمقاول آخر</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.export_works"> تصدير الأعمال Excel</label>
+      
+      <strong style="color: #9c27b0; display:block; margin: 8px 0;">📑 تبويب المستخلصات:</strong>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.view_extracts"> عرض المستخلصات</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.edit_extract_work"> تعديل عمل من المستخلص</label>
+      
+      <strong style="color: #f44336; display:block; margin: 8px 0;">💰 تبويب الخصومات:</strong>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.view_deductions"> عرض الخصومات</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.add_deduction"> إضافة خصم</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.delete_deduction"> حذف خصم</label>
+      
+      <strong style="color: #4caf50; display:block; margin: 8px 0;">📦 تبويب المواد:</strong>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.view_materials"> عرض المواد</label>
+      <label style="margin-right:15px;"><input type="checkbox" name="permissions" value="contractor.delete_material"> حذف مادة (إرجاع للمخزن)</label>
+    </div>
+  </div>
+
+  <!-- العمال -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-users"></i> العمال</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="workers.view"> عرض العمال</label>
+      <label><input type="checkbox" name="permissions" value="workers.add"> إضافة عامل</label>
+      <label><input type="checkbox" name="permissions" value="workers.edit"> تعديل عامل</label>
+      <label><input type="checkbox" name="permissions" value="workers.delete"> حذف عامل</label>
+      <label><input type="checkbox" name="permissions" value="workers.export"> تصدير العمال</label>
+    </div>
+  </div>
+
+  <!-- المخزن -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-warehouse"></i> المخزن</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="store.view"> عرض المخزن</label>
+      <label><input type="checkbox" name="permissions" value="store.issue"> صرف مواد</label>
+      <label><input type="checkbox" name="permissions" value="store.export"> تصدير المخزن</label>
+      <label><input type="checkbox" name="permissions" value="store.reports"> تقارير المخزن</label>
+      <label><input type="checkbox" name="permissions" value="store.update"> تحديث بيانات المخزن</label>
+    </div>
+  </div>
+
+  <!-- التوريدات -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-truck-loading"></i> التوريدات</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="supplies.view"> عرض التوريدات</label>
+      <label><input type="checkbox" name="permissions" value="supplies.add"> إضافة توريد</label>
+      <label><input type="checkbox" name="permissions" value="supplies.edit"> تعديل توريد</label>
+      <label><input type="checkbox" name="permissions" value="supplies.delete"> حذف توريد</label>
+      <label><input type="checkbox" name="permissions" value="supplies.return"> إرجاع توريدات</label>
+      <label><input type="checkbox" name="permissions" value="supplies.export"> تصدير التوريدات</label>
+    </div>
+  </div>
+
+  <!-- الموردين -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-store"></i> الموردين</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="suppliers.view"> عرض الموردين</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.add"> إضافة مورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.edit"> تعديل مورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.delete"> حذف مورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.details"> عرض تفاصيل المورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.view_supplies"> عرض توريدات المورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.view_accounts"> عرض حسابات المورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.view_returns"> عرض مرتجعات المورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.add_account"> إضافة حساب للمورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.delete_payment"> حذف دفعة مورد</label>
+      <label><input type="checkbox" name="permissions" value="suppliers.payments"> إدارة مدفوعات المورد</label>
+    </div>
+  </div>
+
+  <!-- المشتريات -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-shopping-cart"></i> المشتريات</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="purchases.view"> عرض المشتريات</label>
+      <label><input type="checkbox" name="permissions" value="purchases.add"> إضافة مشتريات</label>
+      <label><input type="checkbox" name="permissions" value="purchases.edit"> تعديل مشتريات</label>
+      <label><input type="checkbox" name="permissions" value="purchases.delete"> حذف مشتريات</label>
+      <label><input type="checkbox" name="permissions" value="purchases.returns"> إدارة المرتجعات</label>
+      <label><input type="checkbox" name="permissions" value="purchases.export"> تصدير المشتريات</label>
+    </div>
+  </div>
+
+  <!-- المعدات -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-tools"></i> المعدات</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="equipments.view"> عرض المعدات</label>
+      <label><input type="checkbox" name="permissions" value="equipments.add"> إضافة معدات</label>
+      <label><input type="checkbox" name="permissions" value="equipments.edit"> تعديل معدات</label>
+      <label><input type="checkbox" name="permissions" value="equipments.delete"> حذف معدات</label>
+      <label><input type="checkbox" name="permissions" value="equipments.export"> تصدير المعدات</label>
+    </div>
+  </div>
+
+  <!-- سندات الاستلام -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-receipt"></i> سندات الاستلام</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="receipts.view"> عرض سندات الاستلام</label>
+      <label><input type="checkbox" name="permissions" value="receipts.add"> إضافة سند</label>
+      <label><input type="checkbox" name="permissions" value="receipts.edit"> تعديل سند</label>
+      <label><input type="checkbox" name="permissions" value="receipts.delete"> حذف سند</label>
+      <label><input type="checkbox" name="permissions" value="receipts.print"> طباعة سند</label>
+      <label><input type="checkbox" name="permissions" value="receipts.export"> تصدير السندات</label>
+    </div>
+  </div>
+
+  <!-- المخططات -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-drafting-compass"></i> المخططات</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="drawings.view"> عرض المخططات</label>
+      <label><input type="checkbox" name="permissions" value="drawings.add"> إضافة مخطط</label>
+      <label><input type="checkbox" name="permissions" value="drawings.edit"> تعديل مخطط</label>
+      <label><input type="checkbox" name="permissions" value="drawings.delete"> حذف مخطط</label>
+      <label><input type="checkbox" name="permissions" value="drawings.download"> تحميل المخططات</label>
+    </div>
+  </div>
+
+  <!-- القبض الشهري -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-calendar-check"></i> القبض الشهري</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="monthly-pay.view"> عرض القبض الشهري</label>
+      <label><input type="checkbox" name="permissions" value="monthly-pay.add"> إضافة قبض</label>
+      <label><input type="checkbox" name="permissions" value="monthly-pay.edit"> تعديل قبض</label>
+      <label><input type="checkbox" name="permissions" value="monthly-pay.delete"> حذف قبض</label>
+      <label><input type="checkbox" name="permissions" value="monthly-pay.export"> تصدير القبض</label>
+    </div>
+  </div>
+
+  <!-- المشاريع -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-project-diagram"></i> المشاريع</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="projects.view"> عرض المشاريع</label>
+      <label><input type="checkbox" name="permissions" value="projects.add"> إضافة مشروع</label>
+      <label><input type="checkbox" name="permissions" value="projects.edit"> تعديل مشروع</label>
+      <label><input type="checkbox" name="permissions" value="projects.delete"> حذف مشروع</label>
+      <label><input type="checkbox" name="permissions" value="projects.switch"> التبديل بين المشاريع</label>
+    </div>
+  </div>
+
+  <!-- المستخدمين -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-users-cog"></i> المستخدمين</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="users.view"> عرض المستخدمين</label>
+      <label><input type="checkbox" name="permissions" value="users.add"> إضافة مستخدم</label>
+      <label><input type="checkbox" name="permissions" value="users.edit"> تعديل مستخدم</label>
+      <label><input type="checkbox" name="permissions" value="users.delete"> حذف مستخدم</label>
+      <label><input type="checkbox" name="permissions" value="users.manage_permissions"> إدارة صلاحيات المستخدمين</label>
+    </div>
+  </div>
+
+  <!-- التقارير -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-chart-bar"></i> التقارير</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="reports.view"> عرض التقارير</label>
+      <label><input type="checkbox" name="permissions" value="reports.export"> تصدير التقارير</label>
+      <label><input type="checkbox" name="permissions" value="reports.print"> طباعة التقارير</label>
+    </div>
+  </div>
+
+  <!-- الإعدادات -->
+  <div class="permission-section">
+    <div class="permission-section-header" onclick="toggleSection(this)">
+      <span><i class="fa fa-cog"></i> الإعدادات</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+    <div class="permission-section-body">
+      <label><input type="checkbox" name="permissions" value="settings.view"> عرض الإعدادات</label>
+      <label><input type="checkbox" name="permissions" value="settings.edit"> تعديل الإعدادات</label>
+      <label><input type="checkbox" name="permissions" value="settings.backup"> النسخ الاحتياطي</label>
+    </div>
+  </div>
+
+</div>
+
+<style>
+/* Add these styles for labels */
+.permission-section-body label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.permission-section-body label:hover {
+  background: white;
+}
+
+.permission-section-body input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+</style>
