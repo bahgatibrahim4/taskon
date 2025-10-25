@@ -1879,12 +1879,16 @@
     // دالة فحص الصلاحيات
     function hasPermission(permission) {
       // للمشرف الأساسي، جميع الصلاحيات متاحة
-      if (user.role === 'admin' || user.role === 'superadmin') {
+      if (user.role === 'admin' || user.role === 'superadmin' || user.role === 'owner' || user.jobTitle === 'مدير المشروع') {
         return true;
       }
       
       // فحص الصلاحيات المحددة للمستخدم
       if (user.permissions && Array.isArray(user.permissions)) {
+        // التحقق من صلاحية "*" أو "all"
+        if (user.permissions.includes('*') || user.permissions.includes('all')) {
+          return true;
+        }
         return user.permissions.includes(permission);
       }
       

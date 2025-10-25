@@ -303,19 +303,45 @@ function getCurrentUserPermissions() {
 
 // التحقق من صلاحية معينة
 function hasPermission(permission) {
-  const userPermissions = getCurrentUserPermissions();
-  const hasAccess = userPermissions.includes(permission);
-  
-  // للتصحيح - يمكن إزالته لاحقاً
-  if (!hasAccess) {
-    console.log(`❌ لا توجد صلاحية: ${permission}`);
-    console.log('الصلاحيات المتاحة:', userPermissions);
-    console.log('نوع البيانات:', typeof userPermissions, Array.isArray(userPermissions));
-  } else {
-    console.log(`✅ تم العثور على صلاحية: ${permission}`);
+  try {
+    // التحقق السريع من بيانات المستخدم مباشرة
+    const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+    const user = JSON.parse(userStr || '{}');
+    
+    // التحقق من الأدوار الإدارية
+    if (user.role === 'admin' || user.role === 'owner' || user.jobTitle === 'مدير المشروع') {
+      console.log(`✅ صلاحية Admin: ${permission}`);
+      return true;
+    }
+    
+    // التحقق من صلاحية "*" أو "all"
+    if (user.permissions) {
+      if (user.permissions.includes('*') || user.permissions.includes('all')) {
+        console.log(`✅ صلاحية كاملة (*): ${permission}`);
+        return true;
+      }
+    }
+    
+    // استخدام الدالة الأصلية للحصول على الصلاحيات
+    const userPermissions = getCurrentUserPermissions();
+    const hasAccess = userPermissions.includes(permission) || 
+                      userPermissions.includes('*') || 
+                      userPermissions.includes('all');
+    
+    // للتصحيح - يمكن إزالته لاحقاً
+    if (!hasAccess) {
+      console.log(`❌ لا توجد صلاحية: ${permission}`);
+      console.log('الصلاحيات المتاحة:', userPermissions);
+      console.log('نوع البيانات:', typeof userPermissions, Array.isArray(userPermissions));
+    } else {
+      console.log(`✅ تم العثور على صلاحية: ${permission}`);
+    }
+    
+    return hasAccess;
+  } catch (error) {
+    console.error('خطأ في التحقق من الصلاحية:', error);
+    return false;
   }
-  
-  return hasAccess;
 }
 
 // التحقق من عدة صلاحيات (أي صلاحية منها)
