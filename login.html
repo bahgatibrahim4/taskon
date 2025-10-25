@@ -278,7 +278,28 @@
           console.log('✅ تم حفظ البيانات في localStorage');
           
           // تحديد نوع المستخدم
-          const isCompanyUser = !user.projectId; // إذا لم يكن له projectId فهو مستخدم شركة
+          const isCompanyUser = !user.projectId && !user.projectIds; // إذا لم يكن له projectId فهو مستخدم شركة
+          
+          // إذا كان للمستخدم projectId واحد محدد - الدخول مباشرة
+          if (user.projectId && typeof user.projectId === 'string') {
+            console.log('✅ المستخدم لديه projectId محدد - الدخول مباشرة');
+            localStorage.setItem('currentProjectId', user.projectId);
+            
+            // جلب اسم المشروع
+            try {
+              const projectRes = await fetch(`${API_URL}/projects/${user.projectId}`);
+              if (projectRes.ok) {
+                const project = await projectRes.json();
+                localStorage.setItem('currentProjectName', project.projectName || project.name || 'المشروع');
+                console.log('✅ تم تعيين المشروع:', project.projectName);
+              }
+            } catch (err) {
+              console.warn('تعذر جلب اسم المشروع:', err);
+            }
+            
+            redirectWithCompany('index.html', 500);
+            return;
+          }
           
           if (isCompanyUser) {
             console.log('👑 مستخدم أساسي (شركة) - توجيه مباشر لصفحة المشاريع');
