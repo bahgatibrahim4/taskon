@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>TASKON - نظام إدارة المشاريع</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Tajawal', Arial, sans-serif;
+      background: linear-gradient(135deg, #c5d6db 0%, #2e8ca3 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .splash-container {
+      text-align: center;
+      color: white;
+    }
+    .logo {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin: 20px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .loading {
+      font-size: 1.2rem;
+      margin: 20px 0;
+    }
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-container">
+    <div class="logo">🏗️</div>
+    <h1>TASKON</h1>
+    <p class="loading">جاري تحميل النظام...</p>
+    <div class="spinner"></div>
+  </div>
+
+  <script>
+    // الانتظار قليلاً ثم الدخول مباشرة
+    setTimeout(() => {
+      // الحصول على بيانات الشركة الافتراضية من السيرفر
+      fetch('http://localhost:4000/companies?subdomain=mycompany')
+        .then(res => res.json())
+        .then(companies => {
+          const company = companies[0];
+          
+          if (!company) {
+            alert('خطأ: لم يتم العثور على الشركة. الرجاء تشغيل: npm run setup');
+            return;
+          }
+          
+          // إنشاء مستخدم افتراضي
+          const defaultUser = {
+            _id: 'default-user',
+            username: 'المدير',
+            email: 'admin@taskon.local',
+            role: 'admin',
+            permissions: ['*'],
+            companyId: company._id,
+            company: company
+          };
+          
+          // حفظ بيانات المستخدم
+          localStorage.setItem('currentUser', JSON.stringify(defaultUser));
+          localStorage.setItem('user', JSON.stringify(defaultUser));
+          localStorage.setItem('currentCompany', 'mycompany');
+          localStorage.setItem('currentCompanyId', company._id);
+          
+          console.log('✅ تم تسجيل الدخول التلقائي');
+          console.log('📋 الشركة:', company);
+          
+          // الذهاب لصفحة المشاريع
+          window.location.href = `projects.html?company=mycompany&companyId=${company._id}`;
+        })
+        .catch(err => {
+          console.error('❌ خطأ:', err);
+          alert('خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر أولاً.');
+        });
+    }, 2000);
+  </script>
+</body>
+</html>
