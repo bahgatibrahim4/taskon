@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>سعيد أحمد بالبيد | الرئيسية</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="js/permissions.js"></script>
   <style>
     :root {
       direction: rtl;
@@ -233,161 +235,188 @@
   </style>
 </head>
 <body>
-  <div id="mainNavbarContainer"></div>
+  <!-- ربط الشريط العلوي الموحد -->
+  <div id="main-navbar"></div>
+  <script src="js/projectUtils.js"></script>
   <script>
-    // دالة للتحقق من صحة URL والتوجيه للشركة الصحيحة
-    function ensureCompanyURL() {
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      if (!currentUser.companyId) return true;
+    // إعداد API_URL
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
 
-      const hostname = window.location.hostname;
-      const currentDomain = window.location.origin;
-      
-      // إذا كنا في localhost أو production domain بدون subdomain
-      if (hostname === 'localhost' || hostname.includes('render.com') || hostname.includes('onrender.com')) {
-        // تحقق إذا كان لدينا معرف شركة في URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const companyParam = urlParams.get('company') || urlParams.get('companyId');
-        
-        if (!companyParam && currentUser.companyId !== 'default-company-001') {
-          // إعادة توجيه مع معرف الشركة
-          const newUrl = `${currentDomain}/index.html?company=${currentUser.companyId}`;
-          console.log('🔄 Redirecting to company URL:', newUrl);
-          window.location.replace(newUrl);
-          return false;
+    // دالة لتحميل معرف الشركة
+    async function loadCompanyId(companyName) {
+      try {
+        const response = await fetch(`${API_URL}/companies?subdomain=${companyName}`);
+        if (response.ok) {
+          const companies = await response.json();
+          if (companies.length > 0) {
+            const companyId = companies[0]._id;
+            localStorage.setItem('currentCompanyId', companyId);
+            console.log('تم حفظ معرف الشركة:', companyId);
+            return companyId;
+          }
         }
+      } catch (error) {
+        console.log('خطأ في جلب معرف الشركة:', error);
       }
-      
-      return true;
+      return null;
     }
 
-    // حماية الصفحة - يجب أن يتم قبل تحميل أي شيء آخر
-    (function() {
-      // التحقق من URL الصحيح أولاً
-      if (!ensureCompanyURL()) {
-        return; // إيقاف التنفيذ إذا تم التوجيه
-      }
+    // التحقق من معامل الشركة في URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const companyParam = urlParams.get('company');
+    
+    if (companyParam) {
+      // حفظ معرف الشركة في localStorage للاستخدام عبر التطبيق
+      localStorage.setItem('currentCompany', companyParam);
+      console.log('تم تحديد الشركة:', companyParam);
       
-      const user = localStorage.getItem('user');
-      const currentProjectId = localStorage.getItem('currentProjectId');
+      // تحميل معرف الشركة من API
+      loadCompanyId(companyParam);
       
-      if (!user) {
-        // إضافة company parameter للـ login page أيضاً
-        const urlParams = new URLSearchParams(window.location.search);
-        const companyParam = urlParams.get('company') || urlParams.get('companyId');
-        const loginUrl = companyParam ? `login.html?company=${companyParam}` : 'login.html';
-        window.location.replace(loginUrl);
-        return;
+      // تحديث عنوان الصفحة ليتضمن اسم الشركة
+      document.title = `${companyParam} | الرئيسية - TASKON`;
+    } else {
+      // إذا لم يكن هناك معامل company، تحقق من وجود شركة محفوظة
+      const savedCompany = localStorage.getItem('currentCompany');
+      if (savedCompany) {
+        console.log('استخدام الشركة المحفوظة:', savedCompany);
+        // تحديث URL ليتضمن company parameter
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('company', savedCompany);
+        window.history.replaceState(null, '', newUrl.toString());
+        document.title = `${savedCompany} | الرئيسية - TASKON`;
+      } else {
+        document.title = 'TASKON | الرئيسية';
       }
-      
-      if (!currentProjectId) {
-        // إضافة company parameter للـ projects page أيضاً
-        const urlParams = new URLSearchParams(window.location.search);
-        const companyParam = urlParams.get('company') || urlParams.get('companyId');
-        const projectsUrl = companyParam ? `projects.html?company=${companyParam}` : 'projects.html';
-        window.location.replace(projectsUrl);
-        return;
-      }
+    }
 
-      // تحميل الـ Navbar بعد التحقق من المستخدم والمشروع
-      fetch('components/main-navbar.html')
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById('mainNavbarContainer').innerHTML = html;
-          // تنفيذ جميع السكربتات داخل الشريط العلوي بعد تحميله ديناميكياً
-          Array.from(document.getElementById('mainNavbarContainer').querySelectorAll('script')).forEach(oldScript => {
-            const newScript = document.createElement('script');
-            if (oldScript.src) {
-              newScript.src = oldScript.src;
-            } else {
-              newScript.textContent = oldScript.textContent;
-            }
-            document.body.appendChild(newScript);
-          });
-
-          // عرض اسم المستخدم (اسم المشروع يتم التعامل معه في main-navbar.html)
-          const userStr = localStorage.getItem('user');
-          if (userStr) {
-            try {
-              const userObj = JSON.parse(userStr);
-              const username = userObj.username || '';
-              const userNameElement = document.getElementById('userName');
-              if (userNameElement) {
-                userNameElement.textContent = username;
-              }
-            } catch (err) {
-              console.error('Error parsing user data:', err);
+    // دالة لجلب معلومات الشركة وتحديث العنوان
+    async function loadCompanyInfo() {
+      const currentCompany = localStorage.getItem('currentCompany');
+      if (currentCompany) {
+        try {
+          const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:4000' 
+            : 'https://taskon-qzj8.onrender.com';
+          
+          const response = await fetch(`${API_URL}/companies`);
+          if (response.ok) {
+            const companies = await response.json();
+            const company = companies.find(c => c.subdomain === currentCompany);
+            if (company) {
+              document.title = `${company.companyName} | الرئيسية - TASKON`;
+              console.log('تم تحديث العنوان بالاسم الحقيقي للشركة:', company.companyName);
             }
           }
-        })
-        .catch(err => console.error('Error loading navbar:', err));
-    })();
+        } catch (error) {
+          console.log('خطأ في جلب معلومات الشركة:', error);
+        }
+      }
+    }
+
+    // استدعاء دالة جلب معلومات الشركة
+    loadCompanyInfo();
+
+    // تحميل الشريط العلوي الموحد من components/main-navbar.html
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('main-navbar').innerHTML = html;
+        // نفذ جميع السكريبتات الموجودة في الشريط العلوي يدوياً
+        document.querySelectorAll('#main-navbar script').forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+        setTimeout(function() {
+          if (typeof window.initMainNavbar === 'function') window.initMainNavbar();
+          if (typeof window.updateNavbarUserName === 'function') window.updateNavbarUserName();
+        }, 100);
+      });
   </script>
   <div class="dashboard">
-    <div class="card" onclick="location.href='project.html'">
+    <div class="card" onclick="location.href='project.html'" data-permission="dashboard.card.project">
       <div class="card-icon">📁</div>
       <div class="card-title">المشروع</div>
       <div class="card-desc">إدارة بيانات المشروع الرئيسي</div>
     </div>
-    <div class="card" onclick="location.href='drawings.html'">
+    <div class="card" onclick="navigateWithCompany('drawings.html')" data-permission="dashboard.card.drawings">
       <div class="card-icon">🗂️</div>
       <div class="card-title">المخططات</div>
       <div class="card-desc">عرض وإدارة المخططات الهندسية</div>
     </div>
-    <div class="card" onclick="location.href='add-contractor.html'">
+    <div class="card" onclick="location.href='add-contractor.html'" data-permission="dashboard.card.external">
       <div class="card-icon">🤝</div>
       <div class="card-title">تعاملات خارجية</div>
       <div class="card-desc">إدارة الموردين والخدمات المساندة</div>
     </div>
-    <div class="card" onclick="location.href='list-contractors.html'">
+    <div class="card" onclick="navigateWithCompany('list-contractors.html')" data-permission="dashboard.card.contractors">
       <div class="card-icon">📋</div>
       <div class="card-title">عرض المقاولين</div>
       <div class="card-desc">استعراض وتعديل بيانات جميع المقاولين</div>
     </div>
-    <div class="card" onclick="location.href='add-extract.html'">
+    <div class="card" onclick="location.href='add-extract.html'" data-permission="dashboard.card.addExtract">
       <div class="card-icon">➕</div>
       <div class="card-title">إضافة مستخلص</div>
       <div class="card-desc">إدخال مستخلص جديد وربطه بالمقاول</div>
     </div>
-    <div class="card" onclick="location.href='list-extracts.html'">
+    <div class="card" onclick="location.href='list-extracts.html'" data-permission="dashboard.card.extracts">
       <div class="card-icon">📑</div>
       <div class="card-title">قائمة المستخلصات</div>
       <div class="card-desc">عرض جميع المستخلصات المسجلة</div>
     </div>
-    <div class="card" onclick="location.href='store.html'">
+    <div class="card" onclick="location.href='store.html'" data-permission="dashboard.card.store">
       <div class="card-icon">🏬</div>
       <div class="card-title">المخزن</div>
       <div class="card-desc">إدارة بيانات المخزن</div>
     </div>
-    <div class="card" onclick="location.href='supplies.html'">
+    <div class="card" onclick="location.href='supplies.html'" data-permission="dashboard.card.supplies">
       <div class="card-icon">🚚</div>
       <div class="card-title">التوريدات</div>
       <div class="card-desc">إدارة عمليات التوريد</div>
     </div>
-    <div class="card" onclick="location.href='purchases.html'">
+    <div class="card" onclick="location.href='purchases.html'" data-permission="dashboard.card.purchases">
       <div class="card-icon">🛒</div>
       <div class="card-title">المشتريات</div>
       <div class="card-desc">إدارة عمليات الشراء</div>
     </div>
     <!-- كارد العمال قبل المستخدمين -->
-    <div class="card" onclick="location.href='workers.html'">
+    <div class="card" onclick="location.href='workers.html'" data-permission="dashboard.card.workers">
       <div class="card-icon">🧑‍🔧</div>
       <div class="card-title">العمال</div>
       <div class="card-desc">إدارة بيانات العمال ومتابعتهم</div>
     </div>
+    <!-- كارد الشهريات -->
+    <div class="card" onclick="location.href='monthly-pay.html'" data-permission="dashboard.card.monthlyPay">
+      <div class="card-icon">💰</div>
+      <div class="card-title">الشهريات</div>
+      <div class="card-desc">إدارة القبض الشهري</div>
+    </div>
+    <!-- كارد الموردين -->
+    <div class="card" onclick="location.href='suppliers.html'" data-permission="dashboard.card.suppliers">
+      <div class="card-icon">🏪</div>
+      <div class="card-title">الموردين</div>
+      <div class="card-desc">إدارة بيانات الموردين</div>
+    </div>
     <!-- كارد المعدات -->
-    <div class="card" onclick="location.href='equipments.html'">
+    <div class="card" onclick="location.href='equipments.html'" data-permission="dashboard.card.equipment">
       <div class="card-icon">🚜</div>
       <div class="card-title">المعدات</div>
       <div class="card-desc">إدارة بيانات المعدات</div>
     </div>
     <!-- كارد سندات الاستلام -->
-    <div class="card" onclick="location.href='receipts.html'">
+    <div class="card" onclick="location.href='receipts.html'" data-permission="dashboard.card.receipts">
       <div class="card-icon">📝</div>
       <div class="card-title">سندات الاستلام</div>
       <div class="card-desc">إدارة سندات استلام المواد والخدمات</div>
     </div>
-    <div class="card" onclick="location.href='users.html'">
+    <div class="card" onclick="location.href='users.html'" data-permission="dashboard.card.users">
       <div class="card-icon">👤</div>
       <div class="card-title">المستخدمين</div>
       <div class="card-desc">إدارة مستخدمي المنصة وصلاحياتهم</div>
@@ -396,6 +425,122 @@
   <div class="footer">
     جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
   </div>
+
+  <script>
+    // تطبيق الصلاحيات عند تحميل الصفحة
+    window.addEventListener('DOMContentLoaded', () => {
+      // التحقق من وجود مستخدم مسجل دخول أولاً
+      const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+      if (!userStr) {
+        console.log('❌ لا يوجد مستخدم مسجل دخول');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      try {
+        const user = JSON.parse(userStr);
+        console.log('👤 فحص صلاحيات المستخدم:', user.username, 'Role:', user.role);
+        
+        // إذا كان admin أو مستخدم شركة، اسمح بالدخول مباشرة
+        if (user.role === 'admin' || !user.projectId) {
+          console.log('✅ مستخدم admin أو مستخدم شركة - السماح بالدخول');
+          // لا تتحقق من الصلاحيات، اسمح بالدخول
+        } else {
+          // للمستخدمين العاديين، تحقق من الصلاحيات
+          if (typeof hasPermission === 'function' && !hasPermission('dashboard.view')) {
+            console.log('❌ مستخدم عادي بدون صلاحية');
+            window.location.href = 'login.html';
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('خطأ في قراءة بيانات المستخدم:', e);
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // إخفاء الكاردات التي ليس للمستخدم صلاحية عليها
+      if (typeof hasPermission === 'function') {
+        const cards = document.querySelectorAll('.card[data-permission]');
+        let visibleCards = 0;
+        
+        cards.forEach(card => {
+          const permission = card.getAttribute('data-permission');
+          if (!hasPermission(permission)) {
+            card.style.display = 'none';
+          } else {
+            visibleCards++;
+          }
+        });
+        
+        // إذا لم يكن هناك كاردات مرئية، عرض رسالة
+        if (visibleCards === 0) {
+          const dashboard = document.querySelector('.dashboard');
+          dashboard.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; font-size: 1.2rem; color: #666;">
+              <i class="fa fa-lock" style="font-size: 4rem; margin-bottom: 20px; color: #999;"></i>
+              <br>
+              ليس لديك صلاحية لعرض أي كاردات في الصفحة الرئيسية
+              <br>
+              <small style="color: #999; font-size: 0.9rem;">يرجى التواصل مع المسؤول لمنحك الصلاحيات المناسبة</small>
+            </div>
+          `;
+        }
+      }
+      
+      // تطبيق الصلاحيات على العناصر الأخرى
+      if (typeof applyPagePermissions === 'function') {
+        applyPagePermissions();
+      }
+    });
+
+    // دالة للانتقال مع الحفاظ على company parameter
+    async function navigateWithCompany(page) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const company = urlParams.get('company');
+      const projectId = localStorage.getItem('currentProjectId');
+      let companyId = localStorage.getItem('currentCompanyId');
+      
+      // إذا مفيش companyId محفوظ، حاول تجيبه من company name
+      if (!companyId && company) {
+        try {
+          const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:4000' 
+            : 'https://taskon-qzj8.onrender.com';
+          
+          const response = await fetch(`${API_URL}/companies?subdomain=${company}`);
+          if (response.ok) {
+            const companies = await response.json();
+            if (companies.length > 0) {
+              companyId = companies[0]._id;
+              localStorage.setItem('currentCompanyId', companyId);
+            }
+          }
+        } catch (error) {
+          console.log('خطأ في جلب معرف الشركة:', error);
+        }
+      }
+      
+      let targetUrl = page;
+      const params = new URLSearchParams();
+      
+      if (company) {
+        params.append('company', company);
+      }
+      if (projectId) {
+        params.append('projectId', projectId);
+      }
+      if (companyId) {
+        params.append('companyId', companyId);
+      }
+      
+      if (params.toString()) {
+        targetUrl += '?' + params.toString();
+      }
+      
+      window.location.href = targetUrl;
+    }
+  </script>
 
   <!-- زر لوحة التحكم محذوف - كان يوجه لصفحة إدارة الشركات (Super Admin فقط) -->
   <!-- إذا أردت إضافة لوحة تحكم للمشروع، أضف كارد جديد في الأعلى -->

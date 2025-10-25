@@ -832,6 +832,10 @@
 
   <script>
     let currentUser = null;
+    // ضبط API_URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
 
     // تحميل Navbar
     document.addEventListener('DOMContentLoaded', async function() {
@@ -912,7 +916,7 @@
         // جلب اسم الشركة
         if (currentUser.companyId) {
           try {
-            const companyRes = await fetch(`${window.location.origin}/companies/${currentUser.companyId}`);
+            const companyRes = await fetch(`${API_URL}/companies/${currentUser.companyId}`);
             const company = await companyRes.json();
             document.getElementById('infoCompany').textContent = company.name || company.companyName || '-';
           } catch (err) {
@@ -929,7 +933,7 @@
         // جلب عدد المشاريع
         if (currentUser.companyId) {
           try {
-            const projectsRes = await fetch(`${window.location.origin}/projects?companyId=${currentUser.companyId}`);
+            const projectsRes = await fetch(`${API_URL}/projects?companyId=${currentUser.companyId}`);
             const projects = await projectsRes.json();
             document.getElementById('projectsCount').textContent = projects.length || 0;
           } catch (err) {
@@ -950,7 +954,7 @@
     async function loadActivities() {
       try {
         const userId = currentUser._id || currentUser.userId;
-        const response = await fetch(`${window.location.origin}/activities?userId=${userId}`);
+        const response = await fetch(`${API_URL}/activities?userId=${userId}`);
         const activities = await response.json();
         
         document.getElementById('activitiesCount').textContent = activities.length || 0;
@@ -1025,7 +1029,7 @@
       formData.append('userId', currentUser._id || currentUser.userId);
 
       try {
-        const response = await fetch(`${window.location.origin}/upload-avatar`, {
+        const response = await fetch(`${API_URL}/upload-avatar`, {
           method: 'POST',
           body: formData
         });
@@ -1064,7 +1068,7 @@
       const userId = currentUser._id || currentUser.userId;
 
       try {
-        const response = await fetch(`${window.location.origin}/users/${userId}/email`, {
+        const response = await fetch(`${API_URL}/users/${userId}/email`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -1108,7 +1112,7 @@
       const userId = currentUser._id || currentUser.userId;
 
       try {
-        const response = await fetch(`${window.location.origin}/users/${userId}/password`, {
+        const response = await fetch(`${API_URL}/users/${userId}/password`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -773,10 +773,16 @@
       }
     }
   </style>
+<script src="js/permissions.js"></script>
 </head>
 <body>
   <script src="js/projectUtils.js"></script>
   <script>
+    // ضبط API_URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
+
     if (!projectUtils.checkAuth()) throw new Error('No project selected');
   </script>
   <div id="navbar-container"></div>
@@ -851,13 +857,13 @@
               <span>تصفية</span>
             </button>
             
-            <button class="btn btn-success" id="exportExcelBtn" style="flex: 1; justify-content: center;">
+            <button class="btn btn-success" id="exportExcelBtn" data-permission="equipments.export" style="flex: 1; justify-content: center;">
               <span>📥</span>
               <span>Excel</span>
             </button>
           </div>
           
-          <button class="btn btn-primary" id="addEquipmentBtn" style="width: 100%; justify-content: center;">
+          <button class="btn btn-primary" id="addEquipmentBtn" data-permission="equipments.add" style="width: 100%; justify-content: center;">
             <span>➕</span>
             <span>إضافة معدات</span>
           </button>
@@ -1185,7 +1191,7 @@
         try {
           console.log('🔄 Loading equipments for projectId:', currentProjectId);
           showLoading();
-          const url = `${window.location.origin}/equipments?projectId=${currentProjectId}`;
+          const url = `${API_URL}/equipments?projectId=${currentProjectId}`;
           console.log('📡 Fetching from:', url);
           const response = await fetch(url);
           console.log('📥 Response status:', response.status);
@@ -1265,12 +1271,17 @@
             <td>${invoiceBadge}</td>
             <td>${invoiceLink}</td>
             <td>
-              <button class="btn btn-icon btn-sm" onclick="editEquipment('${eq._id}')" title="تعديل">✏️</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteEquipment('${eq._id}')" title="حذف">🗑️</button>
+              <button class="btn btn-icon btn-sm" data-permission="equipments.edit" onclick="editEquipment('${eq._id}')" title="تعديل">✏️</button>
+              <button class="btn btn-danger btn-sm" data-permission="equipments.delete" onclick="deleteEquipment('${eq._id}')" title="حذف">🗑️</button>
             </td>
           `;
           equipmentsTbody.appendChild(tr);
         });
+        
+        // Apply permissions to dynamically created buttons
+        if (typeof applyPermissionsToButtons === 'function') {
+          applyPermissionsToButtons();
+        }
       }
 
       function updateStats() {
@@ -1287,6 +1298,13 @@
 
       function openAddModal() {
         console.log('🔵 Opening Add Modal...');
+        
+        // Check permission before opening modal
+        if (!hasPermission('equipments.add')) {
+          alert('ليس لديك صلاحية إضافة معدات');
+          return;
+        }
+        
         editingId = null;
         modalTitle.textContent = 'إضافة معدات جديدة';
         submitBtnText.textContent = '💾 حفظ';
@@ -1299,6 +1317,13 @@
 
       window.editEquipment = async function(id) {
         console.log('🔵 Editing equipment:', id);
+        
+        // Check permission before editing
+        if (!hasPermission('equipments.edit')) {
+          alert('ليس لديك صلاحية تعديل المعدات');
+          return;
+        }
+        
         editingId = id;
         modalTitle.textContent = 'تعديل بيانات المعدة';
         submitBtnText.textContent = '💾 حفظ التعديلات';
@@ -1337,6 +1362,13 @@
         e.preventDefault();
         console.log('🔵 Submitting form...');
 
+        // Check permission before submitting
+        const permission = editingId ? 'equipments.edit' : 'equipments.add';
+        if (!hasPermission(permission)) {
+          alert(editingId ? 'ليس لديك صلاحية تعديل المعدات' : 'ليس لديك صلاحية إضافة معدات');
+          return;
+        }
+
         const formData = new FormData();
         formData.append('name', document.getElementById('equipmentName').value.trim());
         formData.append('owner', document.getElementById('equipmentOwner').value.trim());
@@ -1356,12 +1388,12 @@
           
           let response;
           if (editingId) {
-            response = await fetch(`${window.location.origin}/equipments/${editingId}`, {
+            response = await fetch(`${API_URL}/equipments/${editingId}`, {
               method: 'PUT',
               body: formData
             });
           } else {
-            response = await fetch(`${window.location.origin}/equipments`, {
+            response = await fetch(`${API_URL}/equipments`, {
               method: 'POST',
               body: formData
             });
@@ -1381,13 +1413,19 @@
       }
 
       window.deleteEquipment = async function(id) {
+        // Check permission before deleting
+        if (!hasPermission('equipments.delete')) {
+          alert('ليس لديك صلاحية حذف المعدات');
+          return;
+        }
+        
         const equipment = equipments.find(e => e._id === id);
         if (!equipment) return;
 
         if (!confirm(`هل أنت متأكد من حذف المعدة "${equipment.name}"؟`)) return;
 
         try {
-          const response = await fetch(`${window.location.origin}/equipments/${id}`, {
+          const response = await fetch(`${API_URL}/equipments/${id}?projectId=${currentProjectId}`, {
             method: 'DELETE'
           });
 
@@ -1459,6 +1497,12 @@
       }
 
       function exportToExcel() {
+        // Check permission before exporting
+        if (!hasPermission('equipments.export')) {
+          alert('ليس لديك صلاحية تصدير المعدات');
+          return;
+        }
+        
         if (filteredEquipments.length === 0) {
           alert('لا توجد بيانات للتصدير');
           return;
@@ -1663,12 +1707,17 @@
             <td>${invoiceBadge}</td>
             <td>${invoiceLink}</td>
             <td>
-              <button class="btn btn-icon btn-sm" onclick="editEquipment('${eq._id}')" title="تعديل">✏️</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteEquipment('${eq._id}')" title="حذف">🗑️</button>
+              <button class="btn btn-icon btn-sm" data-permission="equipments.edit" onclick="editEquipment('${eq._id}')" title="تعديل">✏️</button>
+              <button class="btn btn-danger btn-sm" data-permission="equipments.delete" onclick="deleteEquipment('${eq._id}')" title="حذف">🗑️</button>
             </td>
           `;
           monthDetailsTbody.appendChild(tr);
         });
+        
+        // Apply permissions to dynamically created buttons
+        if (typeof applyPermissionsToButtons === 'function') {
+          applyPermissionsToButtons();
+        }
         
         monthDetailsModal.classList.add('show');
       }

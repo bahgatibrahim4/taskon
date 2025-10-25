@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
@@ -452,6 +452,7 @@
       }
     }
   </style>
+<script src="js/permissions.js"></script>
 </head>
 <body>
   <div id="navbar-container"></div>
@@ -664,12 +665,30 @@
   <script>
     // جلب كل المقاولين
     async function fetchContractors() {
-      const res = await fetch('/contractors');
+      const currentProjectId = localStorage.getItem('currentProjectId');
+      if (!currentProjectId) {
+        console.error('No project selected');
+        return [];
+      }
+      const res = await fetch(`/contractors?projectId=${currentProjectId}`);
+      if (!res.ok) {
+        console.error('Failed to fetch contractors:', res.statusText);
+        return [];
+      }
       return await res.json();
     }
     // جلب كل التوريدات (المخزن)
     async function fetchSupplies() {
-      const res = await fetch('/supplies');
+      const currentProjectId = localStorage.getItem('currentProjectId');
+      if (!currentProjectId) {
+        console.error('No project selected');
+        return [];
+      }
+      const res = await fetch(`/supplies?projectId=${currentProjectId}`);
+      if (!res.ok) {
+        console.error('Failed to fetch supplies:', res.statusText);
+        return [];
+      }
       return await res.json();
     }
     // جلب كل عمليات الصرف من المخزن
@@ -682,7 +701,16 @@
     }
     // جلب بيانات مقاول واحد
     async function fetchContractorById(id) {
-      const res = await fetch('/contractors/' + id);
+      const currentProjectId = localStorage.getItem('currentProjectId');
+      if (!currentProjectId) {
+        console.error('No project selected');
+        return null;
+      }
+      const res = await fetch(`/contractors/${id}?projectId=${currentProjectId}`);
+      if (!res.ok) {
+        console.error('Failed to fetch contractor:', res.statusText);
+        return null;
+      }
       return await res.json();
     }
     // جلب كل المشتريات
@@ -1112,6 +1140,13 @@
 
     // عند تحميل الصفحة
     window.onload = async function() {
+      const currentProjectId = localStorage.getItem('currentProjectId');
+      if (!currentProjectId) {
+        alert('يجب اختيار مشروع أولاً');
+        window.location.href = 'projects.html';
+        return;
+      }
+      
       await fillContractorSelect();
       await fillMaterialUsageSelect();
       await renderContractorMaterials();

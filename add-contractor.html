@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -603,6 +603,7 @@
       }
     }
   </style>
+<script src="js/permissions.js"></script>
 </head>
 <body>
   <div id="main-navbar"></div>
@@ -811,6 +812,11 @@
 
   <script src="js/projectUtils.js"></script>
   <script>
+    // ضبط API_URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
+
     // التحقق من وجود مشروع محدد
     if (!projectUtils.checkAuth()) {
       throw new Error('No project selected');
@@ -937,12 +943,12 @@
         let response;
         if (editingIndex !== null) {
           const serviceId = services[editingIndex]._id;
-          response = await fetch(`http://localhost:4000/external-services/${serviceId}`, {
+          response = await fetch(`${API_URL}/external-services/${serviceId}`, {
             method: 'PUT',
             body: formData
           });
         } else {
-          response = await fetch('http://localhost:4000/external-services', {
+          response = await fetch(`${API_URL}/external-services`, {
             method: 'POST',
             body: formData
           });
@@ -964,7 +970,7 @@
     // Load Services
     async function loadServices() {
       try {
-        const response = await fetch(`http://localhost:4000/external-services?projectId=${currentProjectId}`);
+        const response = await fetch(`${API_URL}/external-services?projectId=${currentProjectId}`);
         
         if (!response.ok) {
           console.error('Server returned:', response.status, response.statusText);
@@ -1114,7 +1120,7 @@
       
       try {
         const serviceId = services[idx]._id;
-        const response = await fetch(`http://localhost:4000/external-services/${serviceId}`, {
+        const response = await fetch(`${API_URL}/external-services/${serviceId}`, {
           method: 'DELETE'
         });
         
@@ -1143,7 +1149,7 @@
     // Export to Excel
     exportBtn.addEventListener('click', async () => {
       try {
-        const response = await fetch('http://localhost:4000/external-services/export');
+        const response = await fetch(`${API_URL}/external-services/export`);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');

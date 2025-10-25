@@ -11,6 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files (JS/CSS/assets). Important for permissions.js, favicon, etc.
+app.use(express.static(path.join(__dirname)));
+
 // Subdomain Detection Middleware
 app.use((req, res, next) => {
   const host = req.get('host'); // مثال: company1.taskon.local:4000
@@ -45,6 +48,16 @@ app.use(async (req, res, next) => {
         if (company) {
           req.companyId = company._id.toString();
           req.company = company;
+          req.companyName = company.companyName;
+          
+          // إرفاق collection المشاريع الخاص بهذه الشركة
+          try {
+            req.companyProjectsCollection = getCompanyProjectsCollection(company.companyName);
+          } catch (err) {
+            console.error('❌ Error creating company projects collection:', err);
+            req.companyProjectsCollection = projectsCollection; // fallback
+          }
+          
           console.log(`✅ Company found: ${company.companyName} (ID: ${req.companyId})`);
         } else {
           console.log(`⚠️ No company found for subdomain: ${req.subdomain}`);
@@ -53,6 +66,32 @@ app.use(async (req, res, next) => {
     }
   } catch (err) {
     console.error('❌ Error in company context middleware:', err);
+  }
+  next();
+});
+
+// Project Context Middleware - يستخرج projectId ويرفق collections المشروع
+app.use(async (req, res, next) => {
+  try {
+    // محاولة استخراج projectId من query params أو body
+    const projectId = req.query.projectId || req.body?.projectId;
+    
+    if (projectId && req.companyName) {
+      req.projectId = projectId;
+      
+      // إرفاق collections الخاصة بهذا المشروع
+      try {
+        req.projectCollections = getProjectCollections(req.companyName, projectId);
+        if (req.projectCollections) {
+          console.log(`📁 Project collections attached for project: ${projectId}`);
+        }
+      } catch (err) {
+        console.error('❌ Error creating project collections:', err);
+        // لا نضع fallback هنا، سنتركه للـ endpoint نفسه
+      }
+    }
+  } catch (err) {
+    console.error('❌ Error in project context middleware:', err);
   }
   next();
 });
@@ -69,15 +108,107 @@ const client = new MongoClient(uri, {
   }
 });
 
-let extractsCollection, contractorsCollection, usersCollection, suppliesCollection, suppliersCollection, purchasesCollection, storeCollection, workersCollection, monthlyPaysCollection, paysCollection, chatsCollection, notificationsCollection, equipmentCollection, contractorIssuesCollection, purchaseReturnsCollection, draftsCollection, externalServicesCollection, receiptsCollection, drawingsCollection, companiesCollection, projectsCollection, platformAdminsCollection; // أضف platformAdminsCollection
+let extractsCollection, contractorsCollection, usersCollection, suppliesCollection, suppliersCollection, purchasesCollection, storeCollection, workersCollection, monthlyPaysCollection, paysCollection, chatsCollection, notificationsCollection, equipmentCollection, contractorIssuesCollection, purchaseReturnsCollection, draftsCollection, externalServicesCollection, receiptsCollection, drawingsCollection, companiesCollection, projectsCollection, platformAdminsCollection;
 // كولكشن بيانات المشروع
 let projectDataCollection, contractAddonsCollection, supplyAddonsCollection, lettersCollection, estimatesCollection;
+
+// Global database reference
+let db;
+
+// دالة للحصول على اسم الشركة المنظف (بدون مسافات أو رموز خاصة)
+function sanitizeCompanyName(companyName) {
+  if (!companyName) return 'unknown';
+  return companyName
+    .replace(/\s+/g, '_')  // استبدال المسافات بـ _
+    .replace(/[^\w\u0600-\u06FF_]/g, '')  // حذف أي رموز غير حروف/أرقام/عربي
+    .substring(0, 50);  // تحديد طول الاسم
+}
+
+// دالة للحصول على collection المشاريع الخاص بالشركة
+function getCompanyProjectsCollection(companyName) {
+  if (!db) {
+    console.error('❌ Database not connected in getCompanyProjectsCollection');
+    return null;
+  }
+  
+  if (!companyName) {
+    console.warn('⚠️ companyName is missing in getCompanyProjectsCollection');
+    return null;
+  }
+  
+  try {
+    const sanitized = sanitizeCompanyName(companyName);
+    return db.collection(`${sanitized}_projects`);
+  } catch (err) {
+    console.error('❌ Error in getCompanyProjectsCollection:', err);
+    return null;
+  }
+}
+
+// دالة للحصول على Collections خاصة بمشروع معين داخل شركة
+function getProjectCollections(companyName, projectId) {
+  if (!db) {
+    console.error('❌ Database not connected in getProjectCollections');
+    return null;
+  }
+  
+  if (!companyName) {
+    console.warn('⚠️ companyName is missing in getProjectCollections');
+    return null;
+  }
+  
+  if (!projectId) {
+    console.warn('⚠️ projectId is missing in getProjectCollections');
+    return null;
+  }
+  
+  try {
+    // إنشاء أسماء Collections مع prefix الشركة والمشروع
+    const sanitized = sanitizeCompanyName(companyName);
+    const prefix = `${sanitized}_project_${projectId}_`;
+    
+    return {
+      extractsCollection: db.collection(`${prefix}extracts`),
+      contractorsCollection: db.collection(`${prefix}contractors`),
+      usersCollection: db.collection(`${prefix}users`),
+      suppliesCollection: db.collection(`${prefix}supplies`),
+      suppliersCollection: db.collection(`${prefix}suppliers`),
+      purchasesCollection: db.collection(`${prefix}purchases`),
+      storeCollection: db.collection(`${prefix}store`),
+      workersCollection: db.collection(`${prefix}workers`),
+      monthlyPaysCollection: db.collection(`${prefix}monthlyPays`),
+      paysCollection: db.collection(`${prefix}pays`),
+      chatsCollection: db.collection(`${prefix}chats`),
+      notificationsCollection: db.collection(`${prefix}notifications`),
+      equipmentCollection: db.collection(`${prefix}equipment`),
+      contractorIssuesCollection: db.collection(`${prefix}contractor_issues`),
+      purchaseReturnsCollection: db.collection(`${prefix}purchase_returns`),
+      externalServicesCollection: db.collection(`${prefix}external_services`),
+      receiptsCollection: db.collection(`${prefix}receipts`),
+      drawingsCollection: db.collection(`${prefix}drawings`),
+      projectDataCollection: db.collection(`${prefix}project_data`),
+      contractAddonsCollection: db.collection(`${prefix}contract_addons`),
+      supplyAddonsCollection: db.collection(`${prefix}supply_addons`),
+      lettersCollection: db.collection(`${prefix}letters`),
+      estimatesCollection: db.collection(`${prefix}estimates`)
+    };
+  } catch (err) {
+    console.error('❌ Error in getProjectCollections:', err);
+    return null;
+  }
+}
 
 // الاتصال بقاعدة البيانات
 async function connectDB() {
   try {
     await client.connect();
-    const db = client.db('company_db');
+    db = client.db('company_db');
+    
+    // Collections مشتركة (للشركات والمسؤولين فقط)
+    companiesCollection = db.collection('companies');
+    platformAdminsCollection = db.collection('platform_admins');
+    
+    // Collections قديمة (للتوافق مع البيانات القديمة - سيتم إزالتها لاحقاً)
     extractsCollection = db.collection('extracts');
     contractorsCollection = db.collection('contractors');
     usersCollection = db.collection('users');
@@ -92,13 +223,11 @@ async function connectDB() {
     notificationsCollection = db.collection('notifications');
     equipmentCollection = db.collection('equipment');
     contractorIssuesCollection = db.collection('contractor_issues');
-    purchaseReturnsCollection = db.collection('purchase_returns'); // إضافة كولكشن مرتجعات المشتريات
-    externalServicesCollection = db.collection('external_services'); // كولكشن التعاملات الخارجية
-    receiptsCollection = db.collection('receipts'); // كولكشن سندات الاستلام
-    drawingsCollection = db.collection('drawings'); // كولكشن الرسومات
-    companiesCollection = db.collection('companies'); // كولكشن الشركات
-    projectsCollection = db.collection('projects'); // كولكشن المشاريع
-    platformAdminsCollection = db.collection('platform_admins'); // كولكشن مسؤولي المنصة
+    purchaseReturnsCollection = db.collection('purchase_returns');
+    externalServicesCollection = db.collection('external_services');
+    receiptsCollection = db.collection('receipts');
+    drawingsCollection = db.collection('drawings');
+    projectsCollection = db.collection('projects');
     projectDataCollection = db.collection('project_data');
     contractAddonsCollection = db.collection('contract_addons');
     supplyAddonsCollection = db.collection('supply_addons');
@@ -150,15 +279,45 @@ cloudinary.config({
   api_secret: 'qfLSlBcydXqctxqWdr3qzvSkI8k'
 });
 
+// إعداد التخزين المحلي كـ fallback
+const localStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const fs = require('fs');
+    const uploadDir = './uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname);
+  }
+});
+
 // إعداد التخزين على Cloudinary
-const storage = new CloudinaryStorage({
+const cloudinaryStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'uploads', // اسم المجلد في Cloudinary
-    allowed_formats: ['jpg', 'png', 'pdf', 'doc', 'docx', 'xlsx', 'xls']
+    allowed_formats: ['jpg', 'png', 'pdf', 'doc', 'docx', 'xlsx', 'xls', 'dwg', 'dxf'],
+    resource_type: 'auto' // يسمح برفع أي نوع ملف
   }
 });
-const upload = multer({ storage: storage });
+
+// استخدام local storage مؤقتاً لحل مشكلة Cloudinary
+const storage = localStorage;
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024 // 50MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    console.log('🔍 File filter check:', file.originalname, file.mimetype);
+    // قبول جميع أنواع الملفات
+    cb(null, true);
+  }
+});
 
 // API المقاولين
 
@@ -252,7 +411,24 @@ app.post('/contractors', async (req, res) => {
       return res.status(400).json({ error: 'projectId is required' });
     }
     contractor.createdAt = new Date();
-    const result = await contractorsCollection.insertOne(contractor);
+    
+    // استخدام collections الخاصة بالمشروع
+    // إذا لم يكن req.projectCollections موجود، حاول إنشائه من projectId و companyName
+    let contractorsCol;
+    
+    if (req.projectCollections) {
+      contractorsCol = req.projectCollections.contractorsCollection;
+    } else if (contractor.projectId && req.companyName) {
+      // إنشاء collections المشروع يدوياً
+      const projectColls = getProjectCollections(req.companyName, contractor.projectId);
+      contractorsCol = projectColls.contractorsCollection;
+    } else {
+      // fallback للـ collection القديم
+      contractorsCol = contractorsCollection;
+    }
+    
+    const result = await contractorsCol.insertOne(contractor);
+    console.log(`✅ تم إضافة مقاول في: ${contractorsCol.collectionName}`);
     res.status(201).json(result);
   } catch (err) {
     console.error('خطأ أثناء إضافة المقاول:', err); // لوج
@@ -262,12 +438,31 @@ app.post('/contractors', async (req, res) => {
 
 app.get('/contractors', async (req, res) => {
   try {
-    const { workItem, projectId } = req.query;
+    const { workItem, projectId, companyId } = req.query;
+    
+    // الأولوية لـ companyId من query أو من middleware
+    const finalCompanyId = companyId || req.companyId;
+    
+    console.log('📋 GET /contractors - Query params:', { workItem, projectId, companyId: finalCompanyId });
+    console.log('📋 GET /contractors - req.companyName:', req.companyName);
+    console.log('📋 GET /contractors - req.projectCollections:', req.projectCollections ? 'موجود' : 'غير موجود');
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId لمنع عرض مقاولين كل الشركات
+    if (!finalCompanyId && !projectId) {
+      console.error('❌ GET /contractors: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
+    
     let filter = {};
     
     // فلتر حسب المشروع
     if (projectId) {
       filter.projectId = projectId;
+    }
+    
+    // فلتر حسب الشركة
+    if (finalCompanyId) {
+      filter.companyId = finalCompanyId;
     }
     
     if (workItem) {
@@ -277,9 +472,50 @@ app.get('/contractors', async (req, res) => {
         { workItem: workItem } // إذا workItem نص
       ];
     }
-    const contractors = await contractorsCollection.find(filter).toArray();
+    
+    console.log('🔍 Filter used:', filter);
+    
+    // استخدام collections الخاصة بالمشروع
+    // إذا لم يكن req.projectCollections موجود، حاول إنشائه من projectId و companyName
+    let contractorsCol;
+    
+    if (req.projectCollections && req.projectCollections.contractorsCollection) {
+      contractorsCol = req.projectCollections.contractorsCollection;
+      console.log('✅ استخدام req.projectCollections');
+    } else if (projectId && req.companyName) {
+      // إنشاء collections المشروع يدوياً
+      const projectColls = getProjectCollections(req.companyName, projectId);
+      if (projectColls && projectColls.contractorsCollection) {
+        contractorsCol = projectColls.contractorsCollection;
+        console.log('✅ تم إنشاء project collections يدوياً');
+      } else {
+        contractorsCol = contractorsCollection;
+        console.log('⚠️ فشل إنشاء project collections - استخدام collection القديم');
+      }
+    } else if (projectId && req.company?.companyName) {
+      // محاولة أخيرة باستخدام req.company.companyName
+      const projectColls = getProjectCollections(req.company.companyName, projectId);
+      if (projectColls && projectColls.contractorsCollection) {
+        contractorsCol = projectColls.contractorsCollection;
+        console.log('✅ تم إنشاء project collections من req.company.companyName');
+      } else {
+        contractorsCol = contractorsCollection;
+        console.log('⚠️ فشل إنشاء project collections - استخدام collection القديم');
+      }
+    } else {
+      // fallback للـ collection القديم
+      contractorsCol = contractorsCollection;
+      console.log('⚠️ استخدام collection القديم (fallback) - لا يوجد companyName');
+    }
+    
+    console.log(`🗃️ Collection name: ${contractorsCol.collectionName}`);
+    
+    const contractors = await contractorsCol.find(filter).toArray();
+    console.log(`📊 Found ${contractors.length} contractors`);
+    
     res.json(contractors);
   } catch (err) {
+    console.error('❌ Error in GET /contractors:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -288,11 +524,15 @@ app.get('/contractors', async (req, res) => {
 app.get('/contractors/:id', async (req, res) => {
   try {
     const id = req.params.id;
+    
+    // استخدام collections الخاصة بالمشروع
+    const contractorsCol = req.projectCollections ? req.projectCollections.contractorsCollection : contractorsCollection;
+    
     let contractor;
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
-      contractor = await contractorsCollection.findOne({ _id: new ObjectId(id) });
+      contractor = await contractorsCol.findOne({ _id: new ObjectId(id) });
     } else {
-      contractor = await contractorsCollection.findOne({ _id: id });
+      contractor = await contractorsCol.findOne({ _id: id });
     }
     if (!contractor) return res.status(404).json({ error: 'Contractor not found' });
     if (!Array.isArray(contractor.materials)) contractor.materials = [];
@@ -531,14 +771,31 @@ app.delete('/extracts/:id/work-items/:workIndex', async (req, res) => {
 app.get('/contractors/work-items/unique', async (req, res) => {
   try {
     const { projectId } = req.query;
-    let filter = {};
     
-    // فلتر حسب المشروع
-    if (projectId) {
-      filter.projectId = projectId;
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId is required' });
     }
     
-    const contractors = await contractorsCollection.find(filter).toArray();
+    let filter = { projectId };
+    
+    // استخدام collections الخاصة بالمشروع
+    let contractorsCol;
+    
+    if (req.projectCollections) {
+      contractorsCol = req.projectCollections.contractorsCollection;
+      console.log('✅ استخدام req.projectCollections لجلب البنود');
+    } else if (projectId && req.companyName) {
+      // إنشاء collections المشروع يدوياً
+      const projectColls = getProjectCollections(req.companyName, projectId);
+      contractorsCol = projectColls.contractorsCollection;
+      console.log('✅ تم إنشاء project collections يدوياً لجلب البنود');
+    } else {
+      // fallback للـ collection القديم
+      contractorsCol = contractorsCollection;
+      console.log('⚠️ استخدام collection القديم لجلب البنود (fallback)');
+    }
+    
+    const contractors = await contractorsCol.find(filter).toArray();
     const uniqueWorkItems = new Set();
     
     contractors.forEach(contractor => {
@@ -548,6 +805,7 @@ app.get('/contractors/work-items/unique', async (req, res) => {
     });
     
     const workItemsArray = Array.from(uniqueWorkItems).sort();
+    console.log(`📋 تم العثور على ${workItemsArray.length} بنود فريدة`);
     res.json(workItemsArray);
   } catch (err) {
     console.error('خطأ في جلب البنود الفريدة:', err);
@@ -677,6 +935,12 @@ app.get('/extracts', async (req, res) => {
     const companyId = req.companyId || req.query.companyId;
     
     console.log('📋 طلب جلب مستخلصات - projectId:', projectId, 'companyId:', companyId);
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId لمنع عرض مستخلصات كل الشركات
+    if (!companyId && !projectId) {
+      console.error('❌ GET /extracts: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
     
     let filter = {};
     if (projectId) {
@@ -1089,11 +1353,18 @@ app.get('/users', async (req, res) => {
   try {
     // إعطاء الأولوية لـ query parameter إذا كان موجود
     const companyId = req.query.companyId || req.companyId;
-    const filter = companyId ? { companyId } : {};
+    
+    // ⚠️ إلزامي: يجب وجود companyId لمنع عرض مستخدمين كل الشركات
+    if (!companyId) {
+      console.error('❌ GET /users: companyId مفقود!');
+      return res.status(400).json({ error: 'companyId is required' });
+    }
+    
+    const filter = { companyId };
     
     console.log(`📋 جلب المستخدمين - CompanyId: ${companyId}`);
     const users = await usersCollection.find(filter).toArray();
-    console.log(`✅ Found ${users.length} users${companyId ? ' for company: ' + companyId : ''}`);
+    console.log(`✅ Found ${users.length} users for company: ${companyId}`);
     res.json(users);
   } catch (err) {
     console.error('❌ خطأ في جلب المستخدمين:', err);
@@ -1261,14 +1532,64 @@ app.delete('/platform/admins/:id', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    console.log(`🔐 محاولة تسجيل دخول: ${email}`);
+    
     const user = await usersCollection.findOne({ email, password });
+    
     if (user) {
-      // أرسل كل بيانات المستخدم مع تحويل _id لنص
-      res.json({ success: true, user: { ...user, _id: user._id.toString() } });
+      console.log(`✅ تم العثور على المستخدم: ${user.username} (CompanyId: ${user.companyId})`);
+      
+      // جلب بيانات الشركة الخاصة بالمستخدم
+      let company = null;
+      let redirectUrl = null;
+      
+      if (user.companyId) {
+        try {
+          company = await companiesCollection.findOne({ 
+            _id: new ObjectId(user.companyId) 
+          });
+          
+          if (company) {
+            console.log(`🏢 تم العثور على الشركة: ${company.companyName} (Subdomain: ${company.subdomain})`);
+            
+            // إنشاء رابط التوجيه الصحيح بناءً على subdomain الشركة
+            const baseUrl = process.env.NODE_ENV === 'production' ? 
+              'https://taskon-qzj8.onrender.com' : 
+              'http://localhost:4000';
+            
+            // توجيه المستخدم لصفحة المشاريع مع subdomain الشركة
+            redirectUrl = `${baseUrl}/projects.html?company=${company.subdomain}`;
+            
+            console.log(`🔗 رابط التوجيه: ${redirectUrl}`);
+          } else {
+            console.warn(`⚠️ لم يتم العثور على الشركة للمعرف: ${user.companyId}`);
+          }
+        } catch (err) {
+          console.error('❌ خطأ في جلب بيانات الشركة:', err);
+        }
+      } else {
+        console.warn(`⚠️ المستخدم ${user.username} لا يملك companyId!`);
+      }
+      
+      // إرجاع بيانات المستخدم مع معلومات الشركة ورابط التوجيه
+      res.json({ 
+        success: true, 
+        user: { ...user, _id: user._id.toString() },
+        company: company ? {
+          _id: company._id.toString(),
+          companyName: company.companyName,
+          subdomain: company.subdomain,
+          email: company.email
+        } : null,
+        redirectUrl: redirectUrl
+      });
     } else {
+      console.log(`❌ فشل تسجيل الدخول: ${email}`);
       res.json({ success: false, message: 'الإيميل أو كلمة المرور غير صحيحة' });
     }
   } catch (err) {
+    console.error('❌ خطأ في تسجيل الدخول:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -1767,9 +2088,20 @@ app.post('/suppliers', async (req, res) => {
 app.get('/suppliers', async (req, res) => {
   try {
     const { projectId } = req.query;
+    const companyId = req.companyId || req.query.companyId;
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId
+    if (!companyId && !projectId) {
+      console.error('❌ GET /suppliers: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
+    
     let filter = {};
     if (projectId) {
       filter.projectId = projectId;
+    }
+    if (companyId) {
+      filter.companyId = companyId;
     }
     const suppliers = await suppliersCollection.find(filter).toArray();
     res.json(suppliers);
@@ -2044,9 +2376,20 @@ app.post('/purchases', async (req, res) => {
 app.get('/purchases', async (req, res) => {
   try {
     const { projectId } = req.query;
+    const companyId = req.companyId || req.query.companyId;
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId
+    if (!companyId && !projectId) {
+      console.error('❌ GET /purchases: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
+    
     let filter = {};
     if (projectId) {
       filter.projectId = projectId;
+    }
+    if (companyId) {
+      filter.companyId = companyId;
     }
     const purchases = await purchasesCollection.find(filter).toArray();
     res.json(purchases);
@@ -2351,10 +2694,21 @@ app.get('/store', async (req, res) => {
   try {
     // جلب projectId من query parameters
     const { projectId } = req.query;
+    const companyId = req.companyId || req.query.companyId;
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId
+    if (!companyId && !projectId) {
+      console.error('❌ GET /store: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
+    
     let filter = {};
     if (projectId) {
       filter.projectId = projectId;
       console.log('📋 جلب سجلات المخزن لمشروع:', projectId);
+    }
+    if (companyId) {
+      filter.companyId = companyId;
     }
     
     // جلب جميع العمليات من كولكشن المخزن مع فلترة حسب المشروع
@@ -2578,9 +2932,20 @@ app.post('/workers', async (req, res) => {
 app.get('/workers', async (req, res) => {
   try {
     const { projectId } = req.query;
+    const companyId = req.companyId || req.query.companyId;
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId
+    if (!companyId && !projectId) {
+      console.error('❌ GET /workers: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
+    
     let filter = {};
     if (projectId) {
       filter.projectId = projectId;
+    }
+    if (companyId) {
+      filter.companyId = companyId;
     }
     const workers = await workersCollection.find(filter).toArray();
     res.json(workers);
@@ -2704,11 +3069,22 @@ app.get('/extract-operations/:extractId', async (req, res) => {
 app.get('/equipments', async (req, res) => {
   try {
     const { projectId } = req.query;
-    console.log('📦 جلب المعدات - projectId:', projectId);
+    const companyId = req.companyId || req.query.companyId;
+    
+    console.log('📦 جلب المعدات - projectId:', projectId, 'companyId:', companyId);
+    
+    // ⚠️ إلزامي: يجب وجود companyId أو projectId
+    if (!companyId && !projectId) {
+      console.error('❌ GET /equipments: companyId أو projectId مفقود!');
+      return res.status(400).json({ error: 'companyId or projectId is required' });
+    }
     
     let filter = {};
     if (projectId) {
       filter.projectId = projectId;
+    }
+    if (companyId) {
+      filter.companyId = companyId;
     }
     
     const equipments = await equipmentCollection.find(filter).sort({ rentDate: -1 }).toArray();
@@ -2953,6 +3329,118 @@ app.delete('/draft/:contractorId', async (req, res) => {
   } catch (err) {
     console.error('❌ خطأ في مسح المسودة:', err);
     res.status(500).json({ error: 'خطأ في مسح المسودة' });
+  }
+});
+
+// 🗑️ مسح جميع بيانات الشركات والمشاريع (خطير!)
+app.delete('/api/reset-all-data', async (req, res) => {
+  try {
+    const { confirmPassword } = req.body;
+    
+    // تأكيد بكلمة مرور خاصة للحماية
+    if (confirmPassword !== 'DELETE_ALL_DATA_123') {
+      return res.status(403).json({ 
+        error: 'كلمة المرور غير صحيحة. هذه العملية خطيرة جداً!' 
+      });
+    }
+
+    console.log('⚠️ بدء عملية مسح جميع البيانات...');
+    
+    // 1. الحصول على قائمة جميع الشركات
+    const companies = await companiesCollection.find({}).toArray();
+    console.log(`📊 عدد الشركات المكتشفة: ${companies.length}`);
+    
+    // 2. مسح collections الخاصة بكل شركة
+    let totalCollectionsDeleted = 0;
+    for (const company of companies) {
+      const sanitized = sanitizeCompanyName(company.companyName);
+      const prefix = `${sanitized}_`;
+      
+      console.log(`🗑️ مسح بيانات الشركة: ${company.companyName}`);
+      
+      // الحصول على قائمة جميع collections
+      const collections = await db.listCollections().toArray();
+      
+      // مسح كل collection خاص بالشركة
+      for (const coll of collections) {
+        if (coll.name.startsWith(prefix)) {
+          try {
+            await db.collection(coll.name).drop();
+            console.log(`  ✅ تم مسح: ${coll.name}`);
+            totalCollectionsDeleted++;
+          } catch (err) {
+            if (err.code !== 26) { // 26 = NamespaceNotFound
+              console.error(`  ❌ خطأ في مسح ${coll.name}:`, err.message);
+            }
+          }
+        }
+      }
+    }
+    
+    // 3. مسح Collections القديمة المشتركة
+    const oldCollections = [
+      'extracts', 'contractors', 'users', 'supplies', 'suppliers',
+      'purchases', 'store', 'workers', 'monthlyPays', 'pays',
+      'chats', 'notifications', 'equipment', 'contractor_issues',
+      'purchase_returns', 'external_services', 'receipts', 'drawings',
+      'projects', 'project_data', 'contract_addons', 'supply_addons',
+      'letters', 'estimates'
+    ];
+    
+    console.log('🗑️ مسح Collections القديمة...');
+    for (const collName of oldCollections) {
+      try {
+        await db.collection(collName).drop();
+        console.log(`  ✅ تم مسح: ${collName}`);
+      } catch (err) {
+        if (err.code !== 26) {
+          console.error(`  ❌ خطأ في مسح ${collName}:`, err.message);
+        }
+      }
+    }
+    
+    // 4. مسح جميع الشركات
+    const deletedCompanies = await companiesCollection.deleteMany({});
+    console.log(`✅ تم مسح ${deletedCompanies.deletedCount} شركة`);
+    
+    // 5. إعادة إنشاء Collections القديمة الفارغة للتوافق
+    extractsCollection = db.collection('extracts');
+    contractorsCollection = db.collection('contractors');
+    usersCollection = db.collection('users');
+    suppliesCollection = db.collection('supplies');
+    suppliersCollection = db.collection('suppliers');
+    purchasesCollection = db.collection('purchases');
+    storeCollection = db.collection('store');
+    workersCollection = db.collection('workers');
+    monthlyPaysCollection = db.collection('monthlyPays');
+    paysCollection = db.collection('pays');
+    chatsCollection = db.collection('chats');
+    notificationsCollection = db.collection('notifications');
+    equipmentCollection = db.collection('equipment');
+    contractorIssuesCollection = db.collection('contractor_issues');
+    purchaseReturnsCollection = db.collection('purchase_returns');
+    externalServicesCollection = db.collection('external_services');
+    receiptsCollection = db.collection('receipts');
+    drawingsCollection = db.collection('drawings');
+    projectsCollection = db.collection('projects');
+    projectDataCollection = db.collection('project_data');
+    contractAddonsCollection = db.collection('contract_addons');
+    supplyAddonsCollection = db.collection('supply_addons');
+    lettersCollection = db.collection('letters');
+    estimatesCollection = db.collection('estimates');
+    
+    console.log('🎉 تم مسح جميع البيانات بنجاح!');
+    
+    res.json({ 
+      success: true, 
+      message: 'تم مسح جميع بيانات الشركات والمشاريع بنجاح',
+      deletedCompanies: deletedCompanies.deletedCount,
+      collectionsDeleted: totalCollectionsDeleted,
+      note: 'مسؤولي المنصة (platform_admins) لم يتم مسحهم'
+    });
+  } catch (err) {
+    console.error('❌ خطأ في مسح البيانات:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -3985,21 +4473,47 @@ app.delete('/project-extracts/:id', async (req, res) => {
 });
 
 // API لرفع الملفات
-app.post('/upload', upload.single('file'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'لم يتم رفع أي ملف' });
+app.post('/upload', (req, res) => {
+  const uploadSingle = upload.single('file');
+  
+  uploadSingle(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      console.error('❌ Multer error:', err);
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'حجم الملف كبير جداً. الحد الأقصى 50MB' });
+      }
+      return res.status(400).json({ error: `خطأ في رفع الملف: ${err.message}` });
+    } else if (err) {
+      console.error('❌ Other upload error:', err);
+      return res.status(500).json({ error: `خطأ في رفع الملف: ${err.message}` });
     }
-    res.json({ 
-      success: true,
-      url: req.file.path, 
-      filename: req.file.filename,
-      name: req.file.originalname 
-    });
-  } catch (error) {
-    console.error('خطأ في رفع الملف:', error);
-    res.status(500).json({ error: error.message });
-  }
+    
+    try {
+      console.log('📤 Upload request received');
+      console.log('📋 File info:', req.file ? {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      } : 'No file');
+      
+      if (!req.file) {
+        console.log('❌ No file uploaded');
+        return res.status(400).json({ error: 'لم يتم رفع أي ملف' });
+      }
+      
+      console.log('✅ File uploaded successfully:', req.file.path);
+      res.json({ 
+        success: true,
+        url: req.file.path, 
+        filename: req.file.filename,
+        name: req.file.originalname 
+      });
+    } catch (error) {
+      console.error('❌ خطأ في رفع الملف:', error);
+      console.error('Error details:', error.stack);
+      res.status(500).json({ error: error.message });
+    }
+  });
 });
 
 // API المعدات
@@ -4170,6 +4684,39 @@ app.put('/extracts/mark-work-pulled/:contractorId/:workIndex', async (req, res) 
 });
 
 // API جديد لإضافة أعمال مسحوبة للمقاول الجديد
+// GET أعمال مسحوبة لمقاول محدد
+app.get('/contractors/:contractorId/pulled-works', async (req, res) => {
+  try {
+    const contractorId = req.params.contractorId;
+    const projectId = req.query.projectId;
+    
+    console.log('🔍 جلب الأعمال المسحوبة:', { contractorId, projectId });
+    
+    // تحويل معرف المقاول
+    let contractorObjectId;
+    if (/^[0-9a-fA-F]{24}$/.test(contractorId)) {
+      contractorObjectId = new ObjectId(contractorId);
+    } else {
+      contractorObjectId = contractorId;
+    }
+    
+    // العثور على المقاول
+    const contractor = await contractorsCollection.findOne({ _id: contractorObjectId });
+    if (!contractor) {
+      return res.status(404).json({ error: 'المقاول غير موجود' });
+    }
+    
+    // إرجاع الأعمال المسحوبة
+    const pulledWorks = contractor.pulledWorks || [];
+    console.log(`✅ تم العثور على ${pulledWorks.length} عمل مسحوب`);
+    
+    res.json(pulledWorks);
+  } catch (err) {
+    console.error('❌ خطأ في جلب الأعمال المسحوبة:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/contractors/:contractorId/add-pulled-works', async (req, res) => {
   try {
     const contractorId = req.params.contractorId;
@@ -4844,20 +5391,30 @@ app.get('/drawings/:id', async (req, res) => {
 // Create new drawing
 app.post('/drawings', upload.single('attachment'), async (req, res) => {
   try {
+    console.log('📝 POST /drawings - طلب إضافة مخطط جديد');
+    console.log('📋 Request body:', req.body);
+    console.log('📁 Request file:', req.file ? req.file.originalname : 'No file');
+    
     const {
       drawingNumber,
+      name,
       drawingName,
-      drawingDate,
-      contractorName,
+      buildingModel,
+      type,
       drawingType,
+      itemName,
+      statement,
       notes,
-      projectId
+      projectId,
+      companyId: bodyCompanyId,
+      dwgFile,
+      pdfFile
     } = req.body;
     
-    // استخدام companyId من middleware - التأكد من وجوده
-    let companyId = req.companyId;
+    // استخدام companyId من body أو middleware
+    let companyId = bodyCompanyId || req.companyId || req.query.companyId;
     
-    // إذا لم يكن موجود في middleware، حاول الحصول عليه من subdomain
+    // إذا لم يكن موجود، حاول الحصول عليه من subdomain
     if (!companyId && req.subdomain && companiesCollection) {
       const company = await companiesCollection.findOne({ subdomain: req.subdomain });
       if (company) {
@@ -4869,24 +5426,30 @@ app.post('/drawings', upload.single('attachment'), async (req, res) => {
       projectId: projectId,
       companyId: companyId,
       drawingNumber: drawingNumber,
-      drawingType: drawingType,
+      name: name || drawingName,
+      type: type || drawingType,
       subdomain: req.subdomain
     });
 
     const newDrawing = {
       drawingNumber,
-      drawingName,
-      drawingDate: new Date(drawingDate),
-      contractorName,
-      drawingType,
-      notes: notes || '',
+      name: name || drawingName,
+      drawingDate: new Date(),
+      buildingModel,
+      type: type || drawingType,
+      itemName,
+      statement: statement || notes || '',
       projectId: projectId,
       companyId: companyId,
+      dwgFile: dwgFile || null,
+      pdfFile: pdfFile || null,
       attachment: req.file ? req.file.path : null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
 
+    console.log('💾 Drawing to save:', newDrawing);
+    
     const result = await drawingsCollection.insertOne(newDrawing);
     console.log('✅ تم حفظ المخطط بنجاح - ID:', result.insertedId);
     
@@ -5089,18 +5652,27 @@ app.post('/companies', async (req, res) => {
       console.log(`⚠️  تنبيه: خطأ في إضافة النطاق تلقائياً: ${err.message}`);
     }
     
+    // تحديد الرابط حسب البيئة
+    const baseUrl = process.env.NODE_ENV === 'production' ? 
+      (req.get('host').includes('render.com') ? `https://${req.get('host')}` : 'https://taskon-qzj8.onrender.com') :
+      'http://localhost:4000';
+    
+    const fullUrl = `${baseUrl}/index.html?company=${companySubdomain}`;
+
     res.json({ 
       success: true, 
       message: 'تم إضافة الشركة بنجاح',
       companyId: companyId,
       subdomain: companySubdomain,
-      fullUrl: `http://${companySubdomain}.taskon.local:4000`,
+      fullUrl: fullUrl,
       adminUser: {
         username: adminUser.username,
         password: '123456',
         email: adminUser.email
       },
-      instructions: 'إذا لم يعمل الرابط، قم بتشغيل PowerShell كمسؤول وأضف النطاق يدوياً'
+      instructions: process.env.NODE_ENV === 'production' ? 
+        `يمكنك الوصول للشركة عبر: ${fullUrl}` :
+        'إذا لم يعمل الرابط محلياً، قم بتشغيل PowerShell كمسؤول وأضف النطاق يدوياً'
     });
   } catch (err) {
     console.error('Error creating company:', err);
@@ -5111,16 +5683,87 @@ app.post('/companies', async (req, res) => {
 // Delete company
 app.delete('/companies/:id', async (req, res) => {
   try {
-    const result = await companiesCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    // الحصول على بيانات الشركة قبل الحذف
+    const company = await companiesCollection.findOne({ _id: new ObjectId(req.params.id) });
     
-    if (result.deletedCount === 0) {
+    if (!company) {
       return res.status(404).json({ success: false, error: 'الشركة غير موجودة' });
     }
     
-    res.json({ success: true, message: 'تم حذف الشركة بنجاح' });
+    console.log(`🗑️ بدء حذف الشركة: ${company.companyName}`);
+    
+    // الحصول على اسم الشركة المنظف
+    const sanitized = sanitizeCompanyName(company.companyName);
+    const prefix = `${sanitized}_`;
+    
+    // الحصول على قائمة جميع collections
+    const collections = await db.listCollections().toArray();
+    
+    // حذف جميع collections التي تبدأ باسم الشركة
+    let deletedCount = 0;
+    for (const coll of collections) {
+      if (coll.name.startsWith(prefix)) {
+        try {
+          await db.collection(coll.name).drop();
+          console.log(`  ✅ تم حذف: ${coll.name}`);
+          deletedCount++;
+        } catch (err) {
+          console.error(`  ❌ خطأ في حذف ${coll.name}:`, err.message);
+        }
+      }
+    }
+    
+    // حذف سجل الشركة من collection الشركات
+    const result = await companiesCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    
+    console.log(`✅ تم حذف الشركة و ${deletedCount} collection(s)`);
+    
+    res.json({ 
+      success: true, 
+      message: `تم حذف الشركة و ${deletedCount} قاعدة بيانات بنجاح`,
+      collectionsDeleted: deletedCount
+    });
   } catch (err) {
     console.error('Error deleting company:', err);
     res.status(500).json({ success: false, error: 'خطأ في حذف الشركة' });
+  }
+});
+
+// Update company
+app.put('/companies/:id', async (req, res) => {
+  try {
+    const { companyName, contactInfo, subdomain } = req.body;
+    
+    // Check if subdomain already exists (excluding current company)
+    const existingCompany = await companiesCollection.findOne({ 
+      subdomain: subdomain,
+      _id: { $ne: new ObjectId(req.params.id) }
+    });
+    
+    if (existingCompany) {
+      return res.status(400).json({ success: false, error: 'النطاق الفرعي موجود بالفعل' });
+    }
+    
+    const updatedCompany = {
+      companyName,
+      contactInfo,
+      subdomain,
+      updatedAt: new Date()
+    };
+    
+    const result = await companiesCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updatedCompany }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ success: false, error: 'الشركة غير موجودة' });
+    }
+    
+    res.json({ success: true, message: 'تم تحديث الشركة بنجاح' });
+  } catch (err) {
+    console.error('Error updating company:', err);
+    res.status(500).json({ success: false, error: 'خطأ في تحديث الشركة' });
   }
 });
 
@@ -5137,7 +5780,16 @@ app.get('/projects', async (req, res) => {
     const companyId = req.companyId || req.query.companyId;
     const { userId, userRole } = req.query; // userId و role للفلترة
     
-    let filter = companyId ? { companyId } : {};
+    // ⚠️ إلزامي: يجب وجود companyId لمنع عرض بيانات كل الشركات
+    if (!companyId) {
+      console.error('❌ GET /projects: companyId مفقود!');
+      return res.status(400).json({ error: 'companyId is required' });
+    }
+    
+    let filter = { companyId };
+    
+    // استخدام collection المشاريع الخاص بالشركة
+    const projectsCol = req.companyProjectsCollection || projectsCollection;
     
     // إذا كان المستخدم عادي (ليس admin)، عرض المشاريع المخصصة له فقط
     if (userId && userRole !== 'admin') {
@@ -5154,7 +5806,7 @@ app.get('/projects', async (req, res) => {
       }
     }
     
-    const projects = await projectsCollection.find(filter).sort({ createdAt: -1 }).toArray();
+    const projects = await projectsCol.find(filter).sort({ createdAt: -1 }).toArray();
     
     console.log(`✅ Found ${projects.length} projects for companyId: ${companyId}${req.companyId ? ' (from subdomain)' : ''}${userRole !== 'admin' ? ' (user filtered)' : ' (admin - all projects)'}`);
     res.json(projects);
@@ -5167,7 +5819,8 @@ app.get('/projects', async (req, res) => {
 // Get single project
 app.get('/projects/:id', async (req, res) => {
   try {
-    const project = await projectsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    const projectsCol = req.companyProjectsCollection || projectsCollection;
+    const project = await projectsCol.findOne({ _id: new ObjectId(req.params.id) });
     
     if (!project) {
       return res.status(404).json({ error: 'المشروع غير موجود' });
@@ -5193,8 +5846,13 @@ app.post('/projects', async (req, res) => {
       endDate 
     } = req.body;
     
+    // التأكد من وجود companyName
+    if (!req.companyName && !companyId) {
+      return res.status(400).json({ error: 'Company information is required' });
+    }
+    
     const newProject = {
-      companyId,
+      companyId: companyId || req.companyId,
       projectName,
       projectCode,
       location: location || '',
@@ -5206,7 +5864,10 @@ app.post('/projects', async (req, res) => {
       updatedAt: new Date()
     };
     
-    const result = await projectsCollection.insertOne(newProject);
+    // استخدام collection المشاريع الخاص بالشركة
+    const projectsCol = req.companyProjectsCollection || projectsCollection;
+    const result = await projectsCol.insertOne(newProject);
+    
     res.json({ 
       success: true, 
       message: 'تم إضافة المشروع بنجاح',
@@ -5261,13 +5922,51 @@ app.put('/projects/:id', async (req, res) => {
 // Delete project
 app.delete('/projects/:id', async (req, res) => {
   try {
-    const result = await projectsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    // استخدام collection المشاريع الخاص بالشركة
+    const projectsCol = req.companyProjectsCollection || projectsCollection;
     
-    if (result.deletedCount === 0) {
+    // الحصول على بيانات المشروع قبل الحذف
+    const project = await projectsCol.findOne({ _id: new ObjectId(req.params.id) });
+    
+    if (!project) {
       return res.status(404).json({ error: 'المشروع غير موجود' });
     }
     
-    res.json({ success: true, message: 'تم حذف المشروع بنجاح' });
+    console.log(`🗑️ بدء حذف المشروع: ${project.projectName} (ID: ${req.params.id})`);
+    
+    // إذا كان هناك companyName، نحذف collections المشروع
+    if (req.companyName) {
+      const sanitized = sanitizeCompanyName(req.companyName);
+      const prefix = `${sanitized}_project_${req.params.id}_`;
+      
+      // الحصول على قائمة جميع collections
+      const collections = await db.listCollections().toArray();
+      
+      // حذف جميع collections التي تبدأ بـ prefix المشروع
+      let deletedCount = 0;
+      for (const coll of collections) {
+        if (coll.name.startsWith(prefix)) {
+          try {
+            await db.collection(coll.name).drop();
+            console.log(`  ✅ تم حذف: ${coll.name}`);
+            deletedCount++;
+          } catch (err) {
+            console.error(`  ❌ خطأ في حذف ${coll.name}:`, err.message);
+          }
+        }
+      }
+      
+      console.log(`✅ تم حذف ${deletedCount} collection(s) للمشروع`);
+    }
+    
+    // حذف سجل المشروع
+    const result = await projectsCol.deleteOne({ _id: new ObjectId(req.params.id) });
+    
+    res.json({ 
+      success: true, 
+      message: 'تم حذف المشروع وجميع بياناته بنجاح',
+      collectionsDeleted: req.companyName ? deletedCount : 0
+    });
   } catch (err) {
     console.error('Error deleting project:', err);
     res.status(500).json({ error: 'خطأ في حذف المشروع' });
@@ -5390,7 +6089,9 @@ app.post('/admin/fix-drawings-projectid', async (req, res) => {
 // ==================== End Projects API ====================
 
 // ==================== Static Files ====================
-// يجب أن يكون الـ static middleware في النهاية بعد كل الـ API routes
-app.use(express.static(__dirname));
+// ملاحظة: static files middleware تم نقله لأعلى الملف (بعد cors و json)
+// هذا يضمن خدمة permissions.js و favicon بشكل صحيح
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
 // ==================== End Static Files ====================
 

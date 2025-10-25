@@ -93,12 +93,12 @@
   }
 
   .navbar {
-    background: #1a3b50;
-    color: #fff;
-    padding: 8px 0 7px 0;
-    text-align: center;
-    font-size: 1.05rem;
-    font-weight: 900;
+  background: #1a3b50;
+  color: #fff;
+  padding: 3px 0 2px 0;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 900;
     letter-spacing: 2px;
     box-shadow: 0 2px 18px rgba(26, 59, 80, 0.13);
     border-radius: 0;
@@ -934,7 +934,8 @@
         localStorage.removeItem('currentUser');
         localStorage.removeItem('currentProjectId');
         localStorage.removeItem('currentProjectName');
-        window.location.replace('login.html');
+        // إضافة معامل force للتأكد من عدم الإعادة التوجيه التلقائي
+        window.location.replace('login.html?force=true');
       };
     }
   }
@@ -942,13 +943,13 @@
   // قائمة الصفحات (يمكنك تعديلها حسب صفحاتك في index.html)
   const NAVBAR_PAGES = [
     { name: "الرئيسية", href: "index.html" },
-    { name: "المستخلصات", href: "extracts.html" },
-    { name: "المقاولون", href: "contractors.html" },
+    { name: "المستخلصات", href: "list-extracts.html" },
+    { name: "المقاولون", href: "list-contractors.html" },
     { name: "الموردين", href: "suppliers.html" },
     { name: "المخزن", href: "store.html" },
     { name: "العمال", href: "workers.html" },
-    { name: "المعدات", href: "equipment.html" },
-    { name: "التوريدات", href: "deliveries.html" },
+    { name: "المعدات", href: "equipments.html" },
+    { name: "التوريدات", href: "supplies.html" },
     { name: "المشتريات", href: "purchases.html" },
     { name: "المستخدمون", href: "users.html" }
     // أضف أو عدل حسب صفحاتك
@@ -960,10 +961,16 @@
     const dropdown = document.getElementById('navbarMenuDropdown');
     if (!icon || !dropdown) return;
 
-    // تعبئة القائمة بخط صغير وأنيق
-    dropdown.innerHTML = NAVBAR_PAGES.map(page =>
-      `<a href="${page.href}">${page.name}</a>`
-    ).join('');
+    // تعبئة القائمة مع إضافة معامل الشركة للروابط
+    const currentCompany = new URLSearchParams(window.location.search).get('company') || localStorage.getItem('currentCompany');
+    
+    dropdown.innerHTML = NAVBAR_PAGES.map(page => {
+      let href = page.href;
+      if (currentCompany && !href.includes('?company=')) {
+        href += `?company=${currentCompany}`;
+      }
+      return `<a href="${href}">${page.name}</a>`;
+    }).join('');
 
     icon.onclick = function(e) {
       e.stopPropagation();
@@ -1092,7 +1099,8 @@
     }
     try {
       // جلب الإشعارات من السيرفر
-      const res = await fetch(`/notifications/${encodeURIComponent(username)}?t=${Date.now()}`);
+      const projectId = localStorage.getItem('currentProjectId') || 'default';
+      const res = await fetch(`/notifications/${encodeURIComponent(username)}?projectId=${projectId}&t=${Date.now()}`);
       const notifications = await res.json();
       // عدّ فقط إشعارات الرسائل غير المقروءة
       const unreadCount = Array.isArray(notifications)
@@ -1163,7 +1171,8 @@
     // جلب الإشعارات غير المقروءة للمستخدم الحالي
     let notifications = [];
     try {
-      const notifRes = await fetch(`/notifications/${encodeURIComponent(currentUser)}`);
+      const projectId = localStorage.getItem('currentProjectId') || 'default';
+      const notifRes = await fetch(`/notifications/${encodeURIComponent(currentUser)}?projectId=${projectId}`);
       notifications = await notifRes.json();
     } catch (e) {
       notifications = [];
@@ -1656,15 +1665,24 @@
       // يمكنك عرض رسالة خطأ هنا إذا أردت
     }
   }
-</script>
-</script>
-</script>
-</script>
-</script>
-</script>
-</script>
-</script>
-</script>
-</script>
-</script>
+
+  // تحديث الروابط لتتضمن معامل الشركة
+  function updateLinksWithCompany() {
+    const currentCompany = new URLSearchParams(window.location.search).get('company') || localStorage.getItem('currentCompany');
+    if (currentCompany) {
+      // تحديث رابط الملف التعريفي
+      const profileLink = document.querySelector('a[href="profile.html"]');
+      if (profileLink && !profileLink.href.includes('?company=')) {
+        profileLink.href = `profile.html?company=${currentCompany}`;
+      }
+    }
+  }
+
+  // استدعاء الدالة عند تحميل الـ navbar
+  document.addEventListener('DOMContentLoaded', function() {
+    updateLinksWithCompany();
+  });
+  
+  // إذا تم تحميل الـ navbar ديناميكياً، استدعي الدالة مباشرة
+  setTimeout(updateLinksWithCompany, 100);
 </script>

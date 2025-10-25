@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
@@ -478,6 +478,7 @@
       }
     }
   </style>
+<script src="js/permissions.js"></script>
 </head>
 <body>
   <script src="js/projectUtils.js"></script>
@@ -488,7 +489,7 @@
   <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
       <h2 style="margin-bottom:0;">📋 سجل الموردين</h2>
-      <button class="add-supplier-btn" id="openAddSupplierModalBtn">
+      <button class="add-supplier-btn" id="openAddSupplierModalBtn" data-permission="suppliers.add">
         <span>➕</span>
         إضافة مورد جديد
       </button>
@@ -565,11 +566,11 @@
         const card = document.createElement('div');
         card.className = 'supplier-card';
         card.innerHTML = `
-          <button class="delete-btn" title="حذف المورد" onclick="deleteSupplier('${s._id}')">
+          <button class="delete-btn" data-permission="suppliers.delete" title="حذف المورد" onclick="deleteSupplier('${s._id}')">
             <span style="font-size:1.1rem;">🗑️</span>
           </button>
           <div class="supplier-title">
-            <a href="supplier-details.html?id=${s._id}" style="color:inherit;text-decoration:underline;">${s.name}</a>
+            <a href="supplier-details.html?id=${s._id}&project_id=${currentProjectId}" style="color:inherit;text-decoration:underline;">${s.name}</a>
           </div>
           <div class="supplier-row"><span class="label">الممثل:</span> ${s.representative || ''}</div>
           <div class="supplier-row"><span class="label">الجوال:</span> ${s.phone || ''}</div>
@@ -577,43 +578,71 @@
         `;
         cardsContainer.appendChild(card);
       });
+      
+      // Apply permissions to dynamically created delete buttons
+      if (typeof applyPermissionsToButtons === 'function') {
+        applyPermissionsToButtons();
+      }
     }
 
     // حذف مورد
     window.deleteSupplier = async function(id) {
+      // Check permission before deleting
+      if (!hasPermission('suppliers.delete')) {
+        alert('ليس لديك صلاحية حذف الموردين');
+        return;
+      }
+      
       if (confirm('هل أنت متأكد من حذف هذا المورد؟')) {
-        await fetch(`/suppliers/${id}`, { method: 'DELETE' });
-        await loadSuppliers();
+        try {
+          await projectUtils.deleteWithProject(`/suppliers/${id}`);
+          await loadSuppliers();
+        } catch (error) {
+          console.error('خطأ في حذف المورد:', error);
+          alert('حدث خطأ أثناء حذف المورد');
+        }
       }
     }
 
     // تحميل الموردين من قاعدة البيانات
     async function loadSuppliers() {
-      const res = await fetch(`/suppliers?projectId=${currentProjectId}`);
-      suppliers = await res.json();
-      renderCards();
+      try {
+        suppliers = await projectUtils.getWithProject('/suppliers');
+        renderCards();
+      } catch (error) {
+        console.error('خطأ في تحميل الموردين:', error);
+        suppliers = [];
+        renderCards();
+      }
     }
 
     // إضافة مورد جديد
     form.onsubmit = async function(e) {
       e.preventDefault();
+      
+      // Check permission before submitting
+      if (!hasPermission('suppliers.add')) {
+        alert('ليس لديك صلاحية إضافة موردين');
+        return;
+      }
+      
       const data = {
         name: form.name.value,
         representative: form.representative.value,
         phone: form.phone.value,
-        item: form.item.value,
-        projectId: currentProjectId
+        item: form.item.value
       };
-      const res = await fetch('/suppliers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const result = await res.json();
-      // بعد الإضافة، أعد تحميل الموردين
-      await loadSuppliers();
-      form.reset();
-      closeAddSupplierModal();
+      
+      try {
+        const result = await projectUtils.postWithProject('/suppliers', data);
+        // بعد الإضافة، أعد تحميل الموردين
+        await loadSuppliers();
+        form.reset();
+        closeAddSupplierModal();
+      } catch (error) {
+        console.error('خطأ في إضافة المورد:', error);
+        alert('حدث خطأ أثناء إضافة المورد');
+      }
     };
 
     // عند تحميل الصفحة، جلب الموردين من قاعدة البيانات
@@ -629,6 +658,12 @@
         addSupplierModal.classList.remove('active');
       };
       function openAddSupplierModal() {
+        // Check permission before opening modal
+        if (!hasPermission('suppliers.add')) {
+          alert('ليس لديك صلاحية إضافة موردين');
+          return;
+        }
+        
         addSupplierModal.classList.add('active');
         setTimeout(() => {
           form.name.focus();

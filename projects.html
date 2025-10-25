@@ -710,13 +710,7 @@
     window.selectProject = function(projectId, projectName) {
       localStorage.setItem('currentProjectId', projectId);
       localStorage.setItem('currentProjectName', projectName);
-      
-      // الحصول على company parameter من URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const companyParam = urlParams.get('company') || urlParams.get('companyId');
-      const companyUrlParam = companyParam ? `?company=${companyParam}` : '';
-      
-      window.location.replace(`index.html${companyUrlParam}`);
+      window.location.replace('index.html');
     };
 
     // Open modal

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
@@ -422,6 +422,7 @@
       }
     }
   </style>
+<script src="js/permissions.js"></script>
 </head>
 <body>
   <script src="js/projectUtils.js"></script>
@@ -432,18 +433,18 @@
   <div class="container" style="margin-top:8px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
       <div style="display:flex;align-items:center;gap:6px;">
-        <button id="openAddSupplyModalBtn" style="background:#2e8ca3;color:#fff;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+        <button id="openAddSupplyModalBtn" data-permission="supplies.add" style="background:#2e8ca3;color:#fff;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
           + إضافة
         </button>
         <button onclick="location.href='suppliers.html'" style="background:#8d5524;color:#fff;border:2px solid #8d5524;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
           الموردين
         </button>
         <!-- زر أمر الإرجاع -->
-        <button id="openReturnOrderModalBtn" style="background:#d32f2f;color:#fff;border:2px solid #d32f2f;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+        <button id="openReturnOrderModalBtn" data-permission="supplies.return" style="background:#d32f2f;color:#fff;border:2px solid #d32f2f;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
           ↩ أمر إرجاع
         </button>
         <!-- زر تصدير إلى Excel -->
-        <button id="exportExcelBtn" style="background:#fff;color:#2e8ca3;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+        <button id="exportExcelBtn" data-permission="supplies.export" style="background:#fff;color:#2e8ca3;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
           تصدير Excel
         </button>
       </div>
@@ -639,6 +640,12 @@
     const supplyForm = document.getElementById('supplyForm');
     
     function openModal() {
+      // Check permission before opening modal
+      if (!hasPermission('supplies.add')) {
+        alert('ليس لديك صلاحية إضافة توريد');
+        return;
+      }
+      
       addSupplyModal.classList.add('show');
       setTimeout(() => {
         supplyForm.date.focus();
@@ -670,6 +677,12 @@
     const returnOrderForm = document.getElementById('returnOrderForm');
 
     function openReturnModal() {
+      // Check permission before opening modal
+      if (!hasPermission('supplies.return')) {
+        alert('ليس لديك صلاحية إرجاع توريدات');
+        return;
+      }
+      
       // تحديث قائمة التوريدات المتاحة للإرجاع
       populateSuppliesForReturn();
       returnOrderModal.classList.add('show');
@@ -687,7 +700,17 @@
     // ملء قائمة التوريدات المتاحة للإرجاع
     async function populateSuppliesForReturn() {
       try {
-        const response = await fetch('/supplies');
+        const currentProjectId = localStorage.getItem('currentProjectId');
+        if (!currentProjectId) {
+          console.error('No project selected');
+          return;
+        }
+        
+        const response = await fetch(`/supplies?projectId=${currentProjectId}`);
+        if (!response.ok) {
+          console.error('Failed to fetch supplies:', response.statusText);
+          return;
+        }
         allSupplies = await response.json();
         
         const suppliesSelect = returnOrderForm.originalSupplyId;
@@ -787,14 +810,27 @@
     returnOrderForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       
+      // Check permission before submitting
+      if (!hasPermission('supplies.return')) {
+        alert('ليس لديك صلاحية إرجاع توريدات');
+        return;
+      }
+      
       const formData = new FormData(returnOrderForm);
+      const currentProjectId = localStorage.getItem('currentProjectId');
+      if (!currentProjectId) {
+        alert('يجب اختيار مشروع أولاً');
+        return;
+      }
+      
       const returnData = {
         originalSupplyId: formData.get('originalSupplyId'),
         returnedQuantity: parseFloat(formData.get('returnedQuantity')),
         returnReason: formData.get('returnReason'),
         returnNotes: formData.get('returnNotes'),
         returnDate: formData.get('returnDate'),
-        refundAmount: parseFloat(formData.get('refundAmount'))
+        refundAmount: parseFloat(formData.get('refundAmount')),
+        projectId: currentProjectId
       };
 
       // التحقق من صحة البيانات
@@ -970,17 +1006,34 @@
           deleteBtn.className = 'delete-btn';
           deleteBtn.textContent = 'حذف';
           deleteBtn.dataset.id = s._id;
+          deleteBtn.dataset.permission = 'supplies.delete';
           tr.children[11].appendChild(deleteBtn);
         } else {
           tr.children[11].innerHTML = '<span style="color:#999;font-size:0.8rem;">محمي</span>';
         }
         tableBody.appendChild(tr);
       });
+      
+      // Apply permissions to dynamically created delete buttons
+      if (typeof applyPermissionsToButtons === 'function') {
+        applyPermissionsToButtons();
+      }
     }
 
     // تعبئة قائمة الموردين في القائمة المنسدلة
     async function fillSuppliersSelect() {
-      const res = await fetch('/suppliers');
+      const currentProjectId = localStorage.getItem('currentProjectId');
+      if (!currentProjectId) {
+        console.error('No project selected');
+        return;
+      }
+      
+      const res = await fetch(`/suppliers?projectId=${currentProjectId}`);
+      if (!res.ok) {
+        console.error('Failed to fetch suppliers:', res.statusText);
+        return;
+      }
+      
       const suppliers = await res.json();
       const select = document.getElementById('supplierSelect');
       select.innerHTML = '<option value="">اختر المورد</option>';
@@ -1001,6 +1054,13 @@
     // إضافة توريد جديد للقاعدة
     supplyForm.onsubmit = async function(e) {
       e.preventDefault();
+      
+      // Check permission before submitting
+      if (!hasPermission('supplies.add')) {
+        alert('ليس لديك صلاحية إضافة توريد');
+        return;
+      }
+      
       const data = {
         date: supplyForm.date.value,
         supplier: supplyForm.supplier.value,
@@ -1056,6 +1116,12 @@
     // حذف توريد من القاعدة
     tableBody.onclick = async function(e) {
       if (e.target.classList.contains('delete-btn')) {
+        // Check permission before deleting
+        if (!hasPermission('supplies.delete')) {
+          alert('ليس لديك صلاحية حذف التوريدات');
+          return;
+        }
+        
         const id = e.target.dataset.id;
         if (confirm('هل أنت متأكد من حذف التوريد؟')) {
           await fetch(`/supplies/${id}`, { method: 'DELETE' });
@@ -1077,6 +1143,12 @@
   <script>
     // زر تصدير التوريدات إلى Excel
     document.getElementById('exportExcelBtn').onclick = function() {
+      // Check permission before exporting
+      if (!hasPermission('supplies.export')) {
+        alert('ليس لديك صلاحية تصدير التوريدات');
+        return;
+      }
+      
       let supplies = allSupplies;
       // فلترة بالبحث
       const filter = searchBox.value.trim().toLowerCase();

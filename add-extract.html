@@ -1052,6 +1052,11 @@
   <div id="main-navbar"></div>
   <script src="js/projectUtils.js"></script>
   <script>
+    // ضبط API_URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-qzj8.onrender.com';
+
     // التحقق من وجود مشروع محدد
     if (!projectUtils.checkAuth()) {
       throw new Error('No project selected');
@@ -3091,7 +3096,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const value = parseFloat(this.value) || 100;
     if (!contractorId) return;
     try {
-      await fetch(`/contractors/${contractorId}`, {
+      await fetch(`${API_URL}/contractors/${contractorId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ maxTotalPercent: value })
@@ -3824,7 +3829,7 @@ function saveOperationToStorage(action, details, time, user) {
     
     // حفظ في السيرفر (اختياري للمستقبل)
     if (contractorId && contractorId !== 'unknown') {
-      fetch('/extract-operations', {
+      fetch(`${API_URL}/extract-operations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -4032,7 +4037,7 @@ function safeSaveDraft() {
         };
         
         // حفظ في السيرفر (بدون انتظار لعدم تعليق الواجهة)
-        fetch('/drafts', {
+        fetch(`${API_URL}/drafts`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(draftData)

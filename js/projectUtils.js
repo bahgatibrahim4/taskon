@@ -32,19 +32,25 @@ async function fetchWithProject(url, options = {}) {
   const projectId = getCurrentProjectId();
   const companyId = getCurrentCompanyId();
   
+  // تحديد API_URL بناءً على البيئة
+  const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:4000' 
+    : 'https://taskon-qzj8.onrender.com';
+  
+  // إضافة projectId و companyId كـ query parameters
+  const urlObj = new URL(url, API_URL);
+  if (projectId && !urlObj.searchParams.has('projectId')) {
+    urlObj.searchParams.set('projectId', projectId);
+  }
+  if (companyId && !urlObj.searchParams.has('companyId')) {
+    urlObj.searchParams.set('companyId', companyId);
+  }
+  
   // إضافة headers
   options.headers = {
     'Content-Type': 'application/json',
     ...options.headers
   };
-  
-  if (projectId) {
-    options.headers['X-Project-ID'] = projectId;
-  }
-  
-  if (companyId) {
-    options.headers['X-Company-ID'] = companyId;
-  }
   
   // إضافة projectId للـ body إذا كان POST أو PUT
   if ((options.method === 'POST' || options.method === 'PUT') && options.body) {
@@ -62,7 +68,7 @@ async function fetchWithProject(url, options = {}) {
     }
   }
   
-  return fetch(url, options);
+  return fetch(urlObj.toString(), options);
 }
 
 /**
@@ -72,8 +78,13 @@ async function getWithProject(url) {
   const projectId = getCurrentProjectId();
   const separator = url.includes('?') ? '&' : '?';
   
+  // تحديد API_URL بناءً على البيئة
+  const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:4000' 
+    : 'https://taskon-qzj8.onrender.com';
+  
   // إضافة origin إذا لم يكن موجود
-  const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
   const urlWithProject = projectId ? `${fullUrl}${separator}projectId=${projectId}` : fullUrl;
   
   const response = await fetchWithProject(urlWithProject, {
@@ -97,8 +108,13 @@ async function postWithProject(url, data = {}) {
   if (projectId) data.projectId = projectId;
   if (companyId) data.companyId = companyId;
   
+  // تحديد API_URL بناءً على البيئة
+  const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:4000' 
+    : 'https://taskon-qzj8.onrender.com';
+  
   // إضافة origin إذا لم يكن موجود
-  const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
   
   const response = await fetchWithProject(fullUrl, {
     method: 'POST',
@@ -118,8 +134,13 @@ async function putWithProject(url, data = {}) {
   if (projectId) data.projectId = projectId;
   if (companyId) data.companyId = companyId;
   
+  // تحديد API_URL بناءً على البيئة
+  const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:4000' 
+    : 'https://taskon-qzj8.onrender.com';
+  
   // إضافة origin إذا لم يكن موجود
-  const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
   
   const response = await fetchWithProject(fullUrl, {
     method: 'PUT',
@@ -133,8 +154,13 @@ async function putWithProject(url, data = {}) {
  * دالة DELETE محسّنة مع projectId
  */
 async function deleteWithProject(url) {
+  // تحديد API_URL بناءً على البيئة
+  const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:4000' 
+    : 'https://taskon-qzj8.onrender.com';
+  
   // إضافة origin إذا لم يكن موجود
-  const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
   
   const response = await fetchWithProject(fullUrl, {
     method: 'DELETE'
@@ -150,58 +176,9 @@ function checkProjectSelected() {
   const projectId = getCurrentProjectId();
   if (!projectId) {
     alert('الرجاء اختيار مشروع أولاً');
-    const companyParam = getCompanyUrlParam();
-    window.location.href = `projects.html${companyParam}`;
+    window.location.href = 'projects.html';
     return false;
   }
-  return true;
-}
-
-/**
- * الحصول على company parameter من URL
- */
-function getCompanyUrlParam() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const companyParam = urlParams.get('company') || urlParams.get('companyId');
-  return companyParam ? `?company=${companyParam}` : '';
-}
-
-/**
- * إنشاء URL مع company parameter
- */
-function createUrlWithCompany(baseUrl) {
-  const companyParam = getCompanyUrlParam();
-  return `${baseUrl}${companyParam}`;
-}
-
-/**
- * التحقق من صحة URL الشركة وإعادة التوجيه إذا لزم الأمر
- */
-function ensureCompanyURL() {
-  const currentUser = getCurrentUser();
-  if (!currentUser || !currentUser.companyId || currentUser.companyId === 'default-company-001') {
-    return true; // لا نحتاج للتحقق
-  }
-
-  const hostname = window.location.hostname;
-  const currentDomain = window.location.origin;
-  
-  // إذا كنا في localhost أو production domain بدون subdomain
-  if (hostname === 'localhost' || hostname.includes('render.com') || hostname.includes('onrender.com')) {
-    // تحقق إذا كان لدينا معرف شركة في URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const companyParam = urlParams.get('company') || urlParams.get('companyId');
-    
-    if (!companyParam) {
-      // إعادة توجيه مع معرف الشركة
-      const currentPath = window.location.pathname;
-      const newUrl = `${currentDomain}${currentPath}?company=${currentUser.companyId}`;
-      console.log('🔄 Redirecting to company URL:', newUrl);
-      window.location.replace(newUrl);
-      return false;
-    }
-  }
-  
   return true;
 }
 
@@ -250,9 +227,36 @@ if (typeof window !== 'undefined') {
     checkProjectSelected,
     checkAuth,
     checkSubdomain,
-    getCompanyUrlParam,
-    createUrlWithCompany,
-    ensureCompanyURL
+    // دوال معالجة معامل الشركة
+    getCurrentCompanyParam() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('company') || localStorage.getItem('currentCompany');
+    },
+    
+    setCompanyParam(company) {
+      if (company) {
+        localStorage.setItem('currentCompany', company);
+      }
+    },
+    
+    createUrlWithCompany(baseUrl, company = null) {
+      const companyParam = company || this.getCurrentCompanyParam();
+      if (companyParam && !baseUrl.includes('?company=')) {
+        const separator = baseUrl.includes('?') ? '&' : '?';
+        return `${baseUrl}${separator}company=${companyParam}`;
+      }
+      return baseUrl;
+    },
+    
+    ensureCompanyInUrl() {
+      const currentCompany = this.getCurrentCompanyParam();
+      if (currentCompany && !window.location.search.includes('company=')) {
+        const newUrl = this.createUrlWithCompany(window.location.href, currentCompany);
+        if (newUrl !== window.location.href) {
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
+    }
   };
 }
 

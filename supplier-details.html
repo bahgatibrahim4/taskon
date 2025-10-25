@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
@@ -549,6 +549,8 @@
       transform: translateY(0);
     }
   </style>
+<script src="js/permissions.js"></script>
+<script src="js/projectUtils.js"></script>
 </head>
 <body>
   <div id="navbar-container"></div>
@@ -572,9 +574,7 @@
       // جلب بيانات المورد من السيرفر
       let s;
       try {
-        const res = await fetch(`/suppliers/${id}`);
-        if (!res.ok) throw new Error('المورد غير موجود');
-        s = await res.json();
+        s = await projectUtils.getWithProject(`/suppliers/${id}`);
       } catch {
         container.innerHTML = '<div style="color:#e53935;font-weight:bold;">المورد غير موجود</div>';
         return;
@@ -586,9 +586,9 @@
           <div class="info-block"><span class="info-label">رقم الجوال:</span><span class="info-value">${s.phone || ''}</span></div>
         </div>
         <div class="action-buttons-row">
-          <button class="action-btn" id="showSuppliesBtn">التوريدات</button>
-          <button class="action-btn" id="showAccountsBtn">الحسابات</button>
-          <button class="action-btn" id="showReturnsBtn" style="background:#d32f2f;">↩ المرتجعات</button>
+          <button class="action-btn" id="showSuppliesBtn" data-permission="suppliers.view_supplies">التوريدات</button>
+          <button class="action-btn" id="showAccountsBtn" data-permission="suppliers.view_accounts">الحسابات</button>
+          <button class="action-btn" id="showReturnsBtn" data-permission="suppliers.view_returns" style="background:#d32f2f;">↩ المرتجعات</button>
         </div>
         <!-- نافذة إضافة حساب جديد المحسنة -->
         <div id="addAccountModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
@@ -684,7 +684,7 @@
           <!-- أزرار الفلترة المتقدمة -->
           <div class="advanced-filters" style="display:flex;justify-content:space-between;align-items:center;gap:4px;margin-bottom:8px;flex-wrap:wrap;">
             <!-- زر إضافة حساب في أقصى الشمال -->
-            <button class="action-btn modern-add-btn" id="addAccountBtn2" style="background:linear-gradient(135deg, #4caf50, #45a049);color:white;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:0.65rem;font-weight:600;display:flex;align-items:center;gap:4px;">
+            <button class="action-btn modern-add-btn" id="addAccountBtn2" data-permission="suppliers.add_account" style="background:linear-gradient(135deg, #4caf50, #45a049);color:white;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:0.65rem;font-weight:600;display:flex;align-items:center;gap:4px;">
               <span class="add-icon">💳</span>
               <span class="add-text">إضافة حساب</span>
             </button>
@@ -840,15 +840,13 @@
       // جلب بيانات التوريدات من السيرفر
       let supplies = [];
       try {
-        const res = await fetch(`/suppliers/${id}/supplies`);
-        supplies = await res.json();
+        supplies = await projectUtils.getWithProject(`/suppliers/${id}/supplies`);
       } catch { supplies = []; }
 
       // جلب بيانات الحسابات من السيرفر
       let accounts = [];
       try {
-        const res = await fetch(`/suppliers/${id}/accounts`);
-        accounts = await res.json();
+        accounts = await projectUtils.getWithProject(`/suppliers/${id}/accounts`);
       } catch { accounts = []; }
 
       const suppliesTableBody = document.getElementById('suppliesTableBody');
@@ -887,15 +885,11 @@
       async function loadAccountingData() {
         try {
           // جلب التوريدات والمرتجعات والمدفوعات
-          const [suppliesRes, returnsRes, paymentsRes] = await Promise.all([
-            fetch('/supplies'),
-            fetch('/supplies'), // نفس الـ endpoint للمرتجعات
-            fetch(`/suppliers/${id}/accounts`)
+          const [allSupplies, allReturns, payments] = await Promise.all([
+            projectUtils.getWithProject('/supplies'),
+            projectUtils.getWithProject('/supplies'), // نفس الـ endpoint للمرتجعات
+            projectUtils.getWithProject(`/suppliers/${id}/accounts`)
           ]);
-          
-          const allSupplies = await suppliesRes.json();
-          const allReturns = await returnsRes.json();
-          const payments = await paymentsRes.json();
           
           // فلترة البيانات للمورد الحالي
           const supplierSupplies = allSupplies.filter(s => s.supplier === supplierName && s.type !== 'return');
@@ -1099,7 +1093,7 @@
               <td style="text-align:center;"><span class="account-reference">${entry.reference}</span></td>
               <td style="text-align:center;">
                 ${entry.referenceType === 'payment' ? 
-                  `<button onclick="deletePayment('${entry.referenceId}')" style="background:#f44336;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.85rem;">🗑️ حذف</button>` : 
+                  `<button onclick="deletePayment('${entry.referenceId}')" data-permission="suppliers.delete_payment" style="background:#f44336;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.85rem;">🗑️ حذف</button>` : 
                   '<span style="color:#888;font-size:0.85rem;">-</span>'
                 }
               </td>
@@ -1110,6 +1104,11 @@
         // تحديث إجماليات الفلتر
         const filteredBalance = filteredTotalCredit - filteredTotalDebit;
         updateFilterTotals(filteredTotalCredit, filteredTotalDebit, filteredBalance);
+        
+        // Apply permissions to dynamically created delete buttons
+        if (typeof applyPermissionsToButtons === 'function') {
+          applyPermissionsToButtons();
+        }
         
         // إضافة تأثير التحديد للصفوف
         addRowHoverEffects();
@@ -1188,22 +1187,23 @@
       
       // حذف دفعة
       window.deletePayment = async function(paymentId) {
+        // Check permission before deleting
+        if (!hasPermission('suppliers.delete_payment')) {
+          alert('ليس لديك صلاحية حذف الدفعات');
+          return;
+        }
+        
         if (!confirm('هل أنت متأكد من حذف هذه الدفعة؟')) return;
         
         try {
           // حذف الدفعة من قاعدة البيانات
-          const res = await fetch(`/suppliers/${id}`);
-          const supplier = await res.json();
+          const supplier = await projectUtils.getWithProject(`/suppliers/${id}`);
           if (!supplier || !Array.isArray(supplier.accounts)) return;
           
           const paymentIndex = supplier.accounts.findIndex(p => p._id === paymentId);
           if (paymentIndex > -1) {
             supplier.accounts.splice(paymentIndex, 1);
-            await fetch(`/suppliers/${id}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ accounts: supplier.accounts })
-            });
+            await projectUtils.putWithProject(`/suppliers/${id}`, { accounts: supplier.accounts });
             
             // إعادة تحميل البيانات والحفاظ على الفلتر الحالي
             await loadAccountingData();
@@ -1312,8 +1312,7 @@
         console.log('بدء تحميل المرتجعات...');
         console.log('اسم المورد:', supplierName);
         try {
-          const response = await fetch('/supplies');
-          const supplies = await response.json();
+          const supplies = await projectUtils.getWithProject('/supplies');
           console.log('جميع التوريدات:', supplies);
           
           // فلترة التوريدات للحصول على المرتجعات الخاصة بالمورد
@@ -1454,16 +1453,31 @@
       };
 
       showSuppliesBtn.onclick = function() {
+        // Check permission before showing supplies
+        if (!hasPermission('suppliers.view_supplies')) {
+          alert('ليس لديك صلاحية عرض توريدات المورد');
+          return;
+        }
         showTable('supplies');
       };
       
       showAccountsBtn.onclick = function() {
+        // Check permission before showing accounts
+        if (!hasPermission('suppliers.view_accounts')) {
+          alert('ليس لديك صلاحية عرض حسابات المورد');
+          return;
+        }
         showTable('accounts');
       };
 
       // إضافة حدث لزر المرتجعات
       if (showReturnsBtn) {
         showReturnsBtn.onclick = function() {
+          // Check permission before showing returns
+          if (!hasPermission('suppliers.view_returns')) {
+            alert('ليس لديك صلاحية عرض مرتجعات المورد');
+            return;
+          }
           console.log('تم الضغط على زر المرتجعات');
           showTable('returns');
         };
@@ -1474,6 +1488,12 @@
       // إضافة event listener للزر الجديد
       if (addAccountBtn2) {
         addAccountBtn2.onclick = function() {
+          // Check permission before opening modal
+          if (!hasPermission('suppliers.add_account')) {
+            alert('ليس لديك صلاحية إضافة حسابات للموردين');
+            return;
+          }
+          
           addAccountModal.style.display = 'flex';
           setTimeout(() => {
             addAccountForm.date.focus();
@@ -1489,6 +1509,13 @@
       };
       addAccountForm.onsubmit = async function(e) {
         e.preventDefault();
+        
+        // Check permission before submitting
+        if (!hasPermission('suppliers.add_account')) {
+          alert('ليس لديك صلاحية إضافة حسابات للموردين');
+          return;
+        }
+        
         const data = {
           date: addAccountForm.date.value,
           type: addAccountForm.type.value,
@@ -1497,11 +1524,7 @@
           receipt: uploadedReceiptUrl // رابط مؤقت للملف
         };
         // أرسل الحساب الجديد إلى كولكشن حسابات المورد في السيرفر
-        await fetch(`/suppliers/${id}/accounts`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
+        await projectUtils.postWithProject(`/suppliers/${id}/accounts`, data);
         // أعد تحميل البيانات المحاسبية
         loadAccountingData();
         addAccountModal.style.display = 'none';

@@ -1,1491 +1,2487 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>إدراج مخطط هندسي</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      direction: rtl;
-      font-family: 'Cairo', Arial, sans-serif;
-      --primary-color: #2e8ca3;
-      --primary-dark: #197c91;
-      --secondary-color: #8c969a;
-      --background: #c5d6db;
-      --card-bg: #ffffff;
-      --border-color: #d1dfe4;
-      --text-primary: #2c3e50;
-      --text-secondary: #546e7a;
-      --hover-bg: #e8f4f7;
-      --success: #4caf50;
-      --danger: #e53935;
-      --warning: #ff9800;
-      --shadow-sm: 0 2px 8px rgba(46, 140, 163, 0.08);
-      --shadow-md: 0 4px 16px rgba(46, 140, 163, 0.12);
-      --shadow-lg: 0 8px 32px rgba(46, 140, 163, 0.16);
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      background: var(--background);
-      color: var(--text-primary);
-      font-family: 'Cairo', Arial, sans-serif;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    /* Header Section */
-    .page-header {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      padding: 0.8rem 0;
-      margin-bottom: 1rem;
-      box-shadow: var(--shadow-md);
-    }
-
-    .page-header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-
-    .page-title {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: #ffffff;
-    }
-
-    .page-title-icon {
-      font-size: 1.4rem;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    }
-
-    .page-title h1 {
-      font-size: 1.1rem;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .page-title p {
-      font-size: 0.7rem;
-      opacity: 0.95;
-      margin-top: 0.1rem;
-    }
-
-    /* Stats Cards */
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.7rem;
-      max-width: 1400px;
-      margin: 0 auto 1rem auto;
-      padding: 0 1rem;
-    }
-
-    .stat-card {
-      background: var(--card-bg);
-      padding: 0.6rem;
-      border-radius: 8px;
-      border: 2px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary-color);
-    }
-
-    .stat-icon {
-      font-size: 1.4rem;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-      color: #ffffff;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .stat-info {
-      flex: 1;
-    }
-
-    .stat-label {
-      font-size: 0.65rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.1rem;
-      font-weight: 500;
-    }
-
-    .stat-value {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: var(--primary-dark);
-      font-variant-numeric: lining-nums;
-      direction: ltr;
-      text-align: right;
-    }
-
-    /* Main Content */
-    .main-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 1rem 1.5rem 1rem;
-    }
-
-    /* Toolbar */
-    .toolbar {
-      background: var(--card-bg);
-      padding: 0.7rem;
-      border-radius: 8px;
-      margin-bottom: 0.8rem;
-      box-shadow: var(--shadow-sm);
-      border: 2px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .toolbar-right {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .search-box {
-      position: relative;
-      min-width: 220px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 0.5rem 0.8rem 0.5rem 2rem;
-      border: 2px solid var(--border-color);
-      border-radius: 7px;
-      font-size: 0.8rem;
-      font-family: 'Cairo', Arial, sans-serif;
-      transition: all 0.3s ease;
-      background: #f8fafc;
-    }
-
-    .search-box input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
-    }
-
-    .search-box::before {
-      content: "🔍";
-      position: absolute;
-      right: 0.7rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.9rem;
-      pointer-events: none;
-    }
-
-    .btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 7px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      font-family: 'Cairo', Arial, sans-serif;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-      color: #ffffff;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .btn-secondary {
-      background: #ffffff;
-      color: var(--primary-dark);
-      border: 2px solid var(--primary-color);
-    }
-
-    .btn-secondary:hover {
-      background: var(--hover-bg);
-    }
-
-    /* Section Groups */
-    .section-group {
-      background: var(--card-bg);
-      border-radius: 8px;
-      margin-bottom: 0.8rem;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      border: 2px solid var(--border-color);
-      transition: all 0.3s ease;
-    }
-
-    .section-group:hover {
-      box-shadow: var(--shadow-md);
-    }
-
-    .section-header {
-      background: linear-gradient(135deg, #e8f4f7 0%, #d4e9ef 100%);
-      padding: 0.7rem 1rem;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid var(--border-color);
-      transition: all 0.3s ease;
-    }
-
-    .section-header:hover {
-      background: linear-gradient(135deg, #d4e9ef 0%, #c0dfe8 100%);
-    }
-
-    .section-header.collapsed .section-toggle {
-      transform: rotate(-90deg);
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .section-icon {
-      font-size: 1.2rem;
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 7px;
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-      color: #ffffff;
-    }
-
-    .section-name {
-      font-size: 0.9rem;
-      font-weight: 900;
-      color: var(--primary-dark);
-      letter-spacing: 0.5px;
-    }
-
-    .section-count {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      margin-right: 0.3rem;
-    }
-
-    .section-toggle {
-      font-size: 1.1rem;
-      color: var(--primary-color);
-      transition: transform 0.3s ease;
-    }
-
-    /* Drawing Cards */
-    .drawings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 0.8rem;
-      padding: 0.8rem;
-    }
-
-    .drawing-card {
-      background: #ffffff;
-      border-radius: 7px;
-      padding: 0.8rem;
-      border: 2px solid var(--border-color);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .drawing-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 4px;
-      height: 100%;
-      background: linear-gradient(180deg, var(--primary-color), var(--primary-dark));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .drawing-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary-color);
-    }
-
-    .drawing-card:hover::before {
-      opacity: 1;
-    }
-
-    .drawing-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      margin-bottom: 0.6rem;
-      padding-bottom: 0.6rem;
-      border-bottom: 2px solid #f0f4f7;
-    }
-
-    .drawing-number {
-      font-size: 1rem;
-      font-weight: 900;
-      color: var(--primary-dark);
-      font-variant-numeric: lining-nums;
-      direction: ltr;
-    }
-
-    .drawing-actions {
-      display: flex;
-      gap: 0.3rem;
-    }
-
-    .action-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      background: #f8fafc;
-    }
-
-    .action-btn:hover {
-      transform: scale(1.1);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn-edit {
-      color: var(--primary-color);
-    }
-
-    .btn-edit:hover {
-      background: #e8f4f7;
-    }
-
-    .btn-delete {
-      color: var(--danger);
-    }
-
-    .btn-delete:hover {
-      background: #ffebee;
-    }
-
-    .drawing-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: start;
-      gap: 0.5rem;
-    }
-
-    .info-icon {
-      font-size: 0.9rem;
-      color: var(--primary-color);
-      min-width: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .info-content {
-      flex: 1;
-    }
-
-    .info-label {
-      font-size: 0.65rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.1rem;
-      font-weight: 500;
-    }
-
-    .info-value {
-      font-size: 0.8rem;
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .drawing-files {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.6rem;
-      padding-top: 0.6rem;
-      border-top: 2px solid #f0f4f7;
-    }
-
-    .file-link {
-      flex: 1;
-      padding: 0.4rem;
-      border-radius: 5px;
-      text-align: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-    }
-
-    .file-dwg {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 2px solid #a5d6a7;
-    }
-
-    .file-dwg:hover {
-      background: #c8e6c9;
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .file-pdf {
-      background: #ffebee;
-      color: #c62828;
-      border: 2px solid #ef9a9a;
-    }
-
-    .file-pdf:hover {
-      background: #ffcdd2;
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .file-link.disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    /* Table View */
-    .drawings-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #ffffff;
-      display: none; /* Hidden by default */
-    }
-
-    .drawings-table.active {
-      display: table;
-    }
-
-    .drawings-table thead {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-      color: #ffffff;
-    }
-
-    .drawings-table th {
-      padding: 0.7rem 0.8rem;
-      text-align: right;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .drawings-table tbody tr {
-      border-bottom: 1px solid var(--border-color);
-      transition: background 0.3s ease;
-    }
-
-    .drawings-table tbody tr:hover {
-      background: var(--hover-bg);
-    }
-
-    .drawings-table td {
-      padding: 0.7rem 0.8rem;
-      font-size: 0.8rem;
-      color: var(--text-primary);
-      border: 1px solid var(--border-color);
-    }
-
-    .drawings-table .table-actions {
-      display: flex;
-      gap: 0.4rem;
-      justify-content: center;
-    }
-
-    .drawings-table .action-btn {
-      width: 28px;
-      height: 28px;
-    }
-
-    .drawings-grid.hidden {
-      display: none !important;
-    }
-
-    /* View Toggle Buttons */
-    .view-toggle {
-      display: flex;
-      gap: 0.4rem;
-      background: #f0f4f7;
-      padding: 0.3rem;
-      border-radius: 7px;
-    }
-
-    .view-btn {
-      padding: 0.4rem 0.7rem;
-      border: none;
-      border-radius: 5px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background: transparent;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .view-btn.active {
-      background: #ffffff;
-      color: var(--primary-color);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .view-btn:hover:not(.active) {
-      color: var(--primary-color);
-    }
-
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background: rgba(24, 71, 90, 0.75);
-      backdrop-filter: blur(4px);
-      z-index: 10000;
-      align-items: center;
-      justify-content: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .modal-overlay.show {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal {
-      background: #ffffff;
-      border-radius: 14px;
-      box-shadow: var(--shadow-lg);
-      max-width: 500px;
-      width: 95%;
-      max-height: 90vh;
-      overflow-y: auto;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .modal-header {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-      color: #ffffff;
-      padding: 1rem 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 14px 14px 0 0;
-    }
-
-    .modal-title {
-      font-size: 1rem;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .modal-close {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 7px;
-      font-size: 1.4rem;
-      color: #ffffff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-close:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: rotate(90deg);
-    }
-
-    .modal-body {
-      padding: 1.2rem;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.3rem;
-    }
-
-    .form-input,
-    .form-select {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      border: 2px solid var(--border-color);
-      border-radius: 7px;
-      font-size: 0.8rem;
-      font-family: 'Cairo', Arial, sans-serif;
-      transition: all 0.3s ease;
-      background: #f8fafc;
-    }
-
-    .form-input:focus,
-    .form-select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
-    }
-
-    .form-input[type="file"] {
-      padding: 0.5rem;
-      cursor: pointer;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 0.6rem;
-      justify-content: flex-end;
-      margin-top: 1.2rem;
-      padding-top: 1rem;
-      border-top: 2px solid #f0f4f7;
-    }
-
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 2.5rem 1.2rem;
-      color: var(--text-secondary);
-    }
-
-    .empty-state-icon {
-      font-size: 3.5rem;
-      margin-bottom: 0.6rem;
-      opacity: 0.5;
-    }
-
-    .empty-state-text {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .page-header-content {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .stats-container {
-        grid-template-columns: 1fr;
-      }
-
-      .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .toolbar-right {
-        flex-direction: column;
-      }
-
-      .search-box {
-        min-width: 100%;
-      }
-
-      .drawings-grid {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-      }
-
-      .modal {
-        width: 98%;
-      }
-
-      .modal-body {
-        padding: 1.5rem;
-      }
-
-      /* Table responsive */
-      .drawings-table {
-        font-size: 0.7rem;
-      }
-
-      .drawings-table th,
-      .drawings-table td {
-        padding: 0.5rem 0.4rem;
-      }
-
-      .view-toggle {
-        width: 100%;
-      }
-
-      .view-btn {
-        flex: 1;
-        justify-content: center;
-      }
-    }
-  </style>
-  <script src="js/projectUtils.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المخططات الهندسية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            direction: rtl;
+            writing-mode: horizontal-tb;
+            text-orientation: mixed;
+        }
+        
+        /* تطبيق خط Cairo على جميع العناصر */
+        * {
+            font-family: 'Cairo', Arial, sans-serif !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: #c5d6db;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid #e1e8ed;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 10px 16px 10px 40px;
+            border: 1px solid #d1d9e0;
+            font-size: 13px;
+            border-radius: 25px;
+            width: 300px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2e8ca3;
+            box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .meta-model {
+            background: #9b59b6 !important;
+            color: white !important;
+        }
+
+        .meta-item {
+            background: #16a085 !important;
+            color: white !important;
+        }
+
+        .meta-folder {
+            background: #2980b9 !important;
+            color: white !important;
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid #d1d9e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            min-width: 140px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-select:focus {
+            border-color: #2e8ca3;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(46, 140, 163, 0.1);
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #d1d9e0;
+        }
+        
+        .view-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .view-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2e8ca3, #1a5f73);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #2e8ca3, #1a5f73);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #2e8ca3;
+            border: 2px solid #2e8ca3;
+        }
+        
+        .btn-outline:hover {
+            background: #2e8ca3;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .content-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+        
+        .sidebar {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .folder-item {
+            padding: 6px 8px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.2s;
+            position: relative;
+            font-size: 13px;
+        }
+        
+        .folder-item:hover {
+            background: #e9ecef;
+            border-color: #3498db;
+            transform: translateX(-5px);
+        }
+        
+        .folder-item.active {
+            background: #e8f4f6;
+            border-color: #2e8ca3;
+            transform: translateX(-5px);
+        }
+        
+        .folder-item.back-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .folder-item.back-button:hover {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            transform: translateX(-2px);
+        }
+        
+        .folder-stats {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 2px;
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .folder-progress {
+            width: 100%;
+            height: 4px;
+            background: #e1e8ed;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .folder-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            transition: width 0.3s;
+        }
+        
+        .drawings-table {
+            background: white;
+            border-radius: 10px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .drawings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+        
+        .drawing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drawing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+        
+        .drawing-card:hover {
+            transform: translateY(-5px);
+            border-color: #3498db;
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+        }
+        
+        .drawing-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .drawing-card-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .drawing-card-number {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .drawing-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .meta-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .meta-model {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .meta-folder {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .meta-type {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .drawing-card-files {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .file-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .file-dwg {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .file-pdf {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .file-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .drawing-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-edit {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .action-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .action-view {
+            background: #3498db;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+            font-size: 13px;
+        }
+        
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            text-align: right;
+            white-space: nowrap;
+            min-width: 80px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e1e8ed;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+        
+        /* تخصيص عرض الأعمدة */
+        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
+        th:nth-child(2), td:nth-child(2) { width: 90px; }
+        th:nth-child(3), td:nth-child(3) { width: 100px; }
+        th:nth-child(4), td:nth-child(4) { width: 110px; }
+        th:nth-child(5), td:nth-child(5) { width: 160px; white-space: normal; }
+        th:nth-child(6), td:nth-child(6) { width: 90px; }
+        th:nth-child(7), td:nth-child(7) { width: 110px; }
+        th:nth-child(8), td:nth-child(8) { width: 80px; text-align: center; }
+        th:nth-child(9), td:nth-child(9) { width: 80px; text-align: center; }
+        th:nth-child(10), td:nth-child(10) { width: 120px; text-align: center; }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .drawing-number {
+            font-weight: 700;
+            color: #3498db;
+            font-size: 16px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        
+        /* تصميم عنوان القسم */
+        .section-title-container {
+            margin-bottom: 8px;
+        }
+        
+        .section-title-box {
+            display: inline-block;
+            background: #f8f9fa;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title-box h2 {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 500;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .section-title-box h2::before {
+            content: "📋";
+            font-size: 9px;
+        }
+
+        /* إصلاح مشاكل الـ navbar */
+        #navbar-container {
+            position: relative;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        #navbar-container * {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #navbar-container .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* التأكد من أن جميع عناصر القائمة قابلة للنقر */
+        #navbar-container button,
+        #navbar-container a,
+        #navbar-container [onclick],
+        #navbar-container .user-avatar,
+        #navbar-container #navbarMenuIcon,
+        #navbar-container #chatIcon,
+        #navbar-container .project-selector {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative;
+            z-index: 1001;
+        }
+    </style>
 </head>
 <body>
-  <div id="main-navbar"></div>
-  
-  <!-- Page Header -->
-  <div class="page-header">
-    <div class="page-header-content">
-      <div class="page-title">
-        <div class="page-title-icon">📐</div>
-        <div>
-          <h1>المخططات الهندسية</h1>
-          <p>إدارة ومتابعة جميع المخططات الهندسية للمشروع</p>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="addDrawingBtn">
-        <span>➕</span>
-        إضافة مخطط جديد
-      </button>
-    </div>
-  </div>
+    <!-- الشريط العلوي للتنقل -->
+    <div id="navbar-container"></div>
 
-  <!-- Stats Section -->
-  <div class="stats-container">
-    <div class="stat-card">
-      <div class="stat-icon">📊</div>
-      <div class="stat-info">
-        <div class="stat-label">إجمالي المخططات</div>
-        <div class="stat-value" id="totalDrawings">0</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🏗️</div>
-      <div class="stat-info">
-        <div class="stat-label">المخططات الإنشائية</div>
-        <div class="stat-value" id="structuralDrawings">0</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🏛️</div>
-      <div class="stat-info">
-        <div class="stat-label">المخططات المعمارية</div>
-        <div class="stat-value" id="architecturalDrawings">0</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">⚡</div>
-      <div class="stat-info">
-        <div class="stat-label">الكهرباء والميكانيكا</div>
-        <div class="stat-value" id="electromechDrawings">0</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Container -->
-  <div class="main-container">
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="بحث في المخططات (رقم، اسم، نموذج المبنى...)">
-      </div>
-      <div class="toolbar-right">
-        <div class="view-toggle">
-          <button class="view-btn active" id="cardViewBtn" title="عرض كاردات">
-            <span>🔲</span>
-            <span>كاردات</span>
-          </button>
-          <button class="view-btn" id="tableViewBtn" title="عرض جدول">
-            <span>📋</span>
-            <span>جدول</span>
-          </button>
-        </div>
-        <button class="btn btn-secondary" id="expandAllBtn">
-          <span>📂</span>
-          فتح الكل
-        </button>
-        <button class="btn btn-secondary" id="collapseAllBtn">
-          <span>📁</span>
-          إغلاق الكل
-        </button>
-      </div>
-    </div>
-
-    <!-- Drawings Content -->
-    <div id="drawingsContent"></div>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal-overlay" id="drawingModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 class="modal-title">
-          <span>📐</span>
-          <span id="modalTitle">إضافة مخطط هندسي</span>
-        </h2>
-        <button class="modal-close" id="closeModalBtn">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="drawingForm">
-          <div class="form-group">
-            <label class="form-label">رقم المخطط</label>
-            <input type="text" class="form-input" id="drawingNumber" name="drawingNumber" required>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">نموذج المبنى</label>
-            <input type="text" class="form-input" id="buildingModel" name="buildingModel" required>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">اسم المخطط</label>
-            <input type="text" class="form-input" id="drawingName" name="drawingName" required>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">البند</label>
-            <select class="form-select" id="drawingSection" name="drawingSection" required>
-              <option value="">-- اختر البند --</option>
-              <option value="إنشائي">🏗️ إنشائي</option>
-              <option value="معماري">🏛️ معماري</option>
-              <option value="ميكانيكا">⚙️ ميكانيكا</option>
-              <option value="كهرباء">⚡ كهرباء</option>
-              <option value="مساحة">📏 مساحة</option>
-              <option value="موقع عام">🗺️ موقع عام</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">ملف المخطط DWG</label>
-            <input type="file" class="form-input" id="drawingFileDWG" name="drawingFileDWG" accept=".dwg">
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">ملف المخطط PDF</label>
-            <input type="file" class="form-input" id="drawingFilePDF" name="drawingFilePDF" accept=".pdf">
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" id="cancelBtn">إلغاء</button>
-            <button type="submit" class="btn btn-primary">
-              <span>💾</span>
-              حفظ المخطط
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <script>
-    // التحقق من URL الصحيح وإضافة company parameter
-    if (typeof projectUtils !== 'undefined' && projectUtils.ensureCompanyURL) {
-      if (!projectUtils.ensureCompanyURL()) {
-        // تم التوجيه، إيقاف تنفيذ الكود
-        throw new Error('Redirecting to correct company URL');
-      }
-    }
-    
-    // إدراج الشريط العلوي
-    fetch('components/main-navbar.html')
-      .then(response => response.text())
-      .then(html => {
-        const temp = document.createElement('div');
-        temp.innerHTML = html;
-        temp.querySelectorAll('style').forEach(style => {
-          document.head.appendChild(style.cloneNode(true));
-        });
-        document.getElementById('main-navbar').innerHTML = '';
-        temp.childNodes.forEach(node => {
-          if (node.nodeName !== 'STYLE' && node.nodeName !== 'SCRIPT') {
-            document.getElementById('main-navbar').appendChild(node.cloneNode(true));
-          }
-        });
-        temp.querySelectorAll('script').forEach(script => {
-          const newScript = document.createElement('script');
-          if (script.src) {
-            newScript.src = script.src;
-            newScript.onload = function() {
-              if (window.initMainNavbar) window.initMainNavbar();
-            };
-          } else {
-            newScript.textContent = script.textContent + "\nif(window.initMainNavbar) initMainNavbar();";
-          }
-          document.body.appendChild(newScript);
-        });
-        setTimeout(function() {
-          if (window.initMainNavbar) window.initMainNavbar();
-        }, 100);
-      });
-
-    // API Base URL
-    const API_URL = window.location.origin; // يستخدم النطاق الحالي (subdomain)
-    
-    // Data
-    let drawings = [];
-    let editingId = null;
-    let viewMode = 'cards'; // 'cards' or 'table'
-    
-    // التحقق من اختيار المشروع
-    const currentProjectId = localStorage.getItem('currentProjectId');
-    if (!currentProjectId) {
-      alert('الرجاء اختيار مشروع أولاً');
-      window.location.href = 'projects.html';
-    }
-
-    // DOM Elements
-    const drawingModal = document.getElementById('drawingModal');
-    const drawingForm = document.getElementById('drawingForm');
-    const addDrawingBtn = document.getElementById('addDrawingBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const searchInput = document.getElementById('searchInput');
-    const expandAllBtn = document.getElementById('expandAllBtn');
-    const collapseAllBtn = document.getElementById('collapseAllBtn');
-    const drawingsContent = document.getElementById('drawingsContent');
-    const modalTitle = document.getElementById('modalTitle');
-    const cardViewBtn = document.getElementById('cardViewBtn');
-    const tableViewBtn = document.getElementById('tableViewBtn');
-
-    // Section Icons
-    const sectionIcons = {
-      'إنشائي': '🏗️',
-      'معماري': '🏛️',
-      'ميكانيكا': '⚙️',
-      'كهرباء': '⚡',
-      'مساحة': '📏',
-      'موقع عام': '🗺️'
-    };
-
-    // Modal Functions
-    function openModal(isEdit = false) {
-      modalTitle.textContent = isEdit ? 'تعديل مخطط هندسي' : 'إضافة مخطط هندسي';
-      drawingModal.classList.add('show');
-    }
-
-    function closeModal() {
-      drawingModal.classList.remove('show');
-      drawingForm.reset();
-      editingId = null;
-    }
-
-    // Load drawings from API
-    async function loadDrawings() {
-      try {
-        console.log('📋 جلب المخططات - projectId:', currentProjectId);
-        drawings = await projectUtils.getWithProject('/drawings'); // استخدام المتغير العام بدل const
-        
-        console.log('✅ تم جلب المخططات:', drawings.length);
-        if (drawings.length > 0) {
-          console.log('📄 أول مخطط:', {
-            drawingNumber: drawings[0].drawingNumber,
-            projectId: drawings[0].projectId,
-            companyId: drawings[0].companyId
-          });
-        }
-        
-        if (!Array.isArray(drawings)) {
-          throw new Error('Response is not an array');
-        }
-        
-        window.drawings = drawings;
-        renderDrawings();
-        updateStats();
-      } catch (err) {
-        console.error('Error loading drawings:', err);
-        window.drawings = [];
-        renderDrawings();
-        updateStats();
-        
-        if (err.message && err.message.includes('Failed to fetch')) {
-          alert('⚠️ لا يمكن الاتصال بالسيرفر!\n\nتأكد من:\n1. تشغيل السيرفر: npm start\n2. السيرفر يعمل على المنفذ 4000');
-        }
-      }
-    }
-
-    // Event Listeners - Modal
-    addDrawingBtn.addEventListener('click', () => openModal(false));
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    
-    drawingModal.addEventListener('click', (e) => {
-      if (e.target === drawingModal) closeModal();
-    });
-
-    // Form Submit
-    drawingForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const number = document.getElementById('drawingNumber').value.trim();
-      const buildingModel = document.getElementById('buildingModel').value.trim();
-      const name = document.getElementById('drawingName').value.trim();
-      const section = document.getElementById('drawingSection').value;
-      
-      // إنشاء FormData لإرسال الملفات
-      const formData = new FormData();
-      console.log('📝 إرسال مخطط جديد:', {
-        projectId: currentProjectId,
-        drawingNumber: number,
-        drawingType: section
-      });
-      
-      formData.append('drawingNumber', number);
-      formData.append('drawingName', name);
-      formData.append('drawingDate', new Date().toISOString());
-      formData.append('contractorName', buildingModel); // استخدام buildingModel كـ contractorName
-      formData.append('drawingType', section);
-      formData.append('notes', '');
-      formData.append('projectId', currentProjectId); // إضافة projectId
-      
-      const fileDWGInput = document.getElementById('drawingFileDWG');
-      const filePDFInput = document.getElementById('drawingFilePDF');
-      
-      if (fileDWGInput.files.length) {
-        formData.append('attachment', fileDWGInput.files[0]);
-      }
-      
-      try {
-        console.log('🌐 API URL:', API_URL);
-        console.log('🔗 Full URL:', `${API_URL}/drawings`);
-        console.log('📦 FormData entries:');
-        for (let pair of formData.entries()) {
-          console.log('  ', pair[0], ':', pair[1]);
-        }
-        
-        let response;
-        if (editingId !== null) {
-          // Update
-          response = await fetch(`${API_URL}/drawings/${editingId}`, {
-            method: 'PUT',
-            body: formData
-          });
-        } else {
-          // Create - استخدام fetch عادي لأن FormData لا يعمل مع projectUtils
-          const url = `${API_URL}/drawings`;
-          console.log('📤 Sending POST to:', url);
-          response = await fetch(url, {
-            method: 'POST',
-            body: formData
-          });
-          console.log('✅ Response received:', response.status);
-        }
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        // التحقق من نوع المحتوى
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const text = await response.text();
-          console.error('Response is not JSON:', text);
-          alert('خطأ في الاتصال بالسيرفر! تأكد من تشغيل السيرفر على المنفذ 4000');
-          return;
-        }
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          alert(editingId ? 'تم تحديث المخطط بنجاح! ✅' : 'تم إضافة المخطط بنجاح! ✅');
-          await loadDrawings();
-          closeModal();
-        } else {
-          const errorMsg = result.error || 'خطأ غير معروف';
-          const details = result.details ? `\n\nتفاصيل: ${result.details}` : '';
-          alert('حدث خطأ: ' + errorMsg + details);
-        }
-      } catch (err) {
-        console.error('Error saving drawing:', err);
-        alert('فشل حفظ المخطط! تأكد من تشغيل السيرفر.\n\nالخطأ: ' + err.message);
-      }
-    });
-
-    // Search
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        renderDrawings(this.value.trim());
-      }, 300);
-    });
-
-    // Expand/Collapse All
-    expandAllBtn.addEventListener('click', () => {
-      document.querySelectorAll('.section-header').forEach(header => {
-        header.classList.remove('collapsed');
-        const content = header.nextElementSibling;
-        if (content) {
-          content.style.display = viewMode === 'cards' ? 'grid' : 'block';
-        }
-      });
-    });
-
-    collapseAllBtn.addEventListener('click', () => {
-      document.querySelectorAll('.section-header').forEach(header => {
-        header.classList.add('collapsed');
-        const content = header.nextElementSibling;
-        if (content) content.style.display = 'none';
-      });
-    });
-
-    // View Mode Toggle
-    cardViewBtn.addEventListener('click', () => {
-      viewMode = 'cards';
-      cardViewBtn.classList.add('active');
-      tableViewBtn.classList.remove('active');
-      expandAllBtn.style.display = 'flex';
-      collapseAllBtn.style.display = 'flex';
-      renderDrawings();
-    });
-
-    tableViewBtn.addEventListener('click', () => {
-      viewMode = 'table';
-      tableViewBtn.classList.add('active');
-      cardViewBtn.classList.remove('active');
-      expandAllBtn.style.display = 'none';
-      collapseAllBtn.style.display = 'none';
-      renderDrawings();
-    });
-
-    // Render Functions
-    function renderDrawings(searchTerm = '') {
-      if (drawings.length === 0) {
-        drawingsContent.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📐</div>
-            <div class="empty-state-text">لا توجد مخططات هندسية بعد</div>
-            <p style="margin-top: 1rem; opacity: 0.7;">ابدأ بإضافة مخطط جديد من خلال الزر أعلاه</p>
-          </div>
-        `;
-        return;
-      }
-
-      // Filter drawings
-      let filteredDrawings = drawings;
-      if (searchTerm) {
-        const term = searchTerm.toLowerCase();
-        filteredDrawings = drawings.filter(d => 
-          (d.drawingNumber && d.drawingNumber.toLowerCase().includes(term)) ||
-          (d.contractorName && d.contractorName.toLowerCase().includes(term)) ||
-          (d.drawingName && d.drawingName.toLowerCase().includes(term)) ||
-          (d.drawingType && d.drawingType.toLowerCase().includes(term))
-        );
-      }
-
-      if (filteredDrawings.length === 0) {
-        drawingsContent.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">🔍</div>
-            <div class="empty-state-text">لا توجد نتائج للبحث</div>
-          </div>
-        `;
-        return;
-      }
-
-      if (viewMode === 'table') {
-        renderTableView(filteredDrawings);
-      } else {
-        renderCardsView(filteredDrawings);
-      }
-    }
-
-    function renderCardsView(filteredDrawings) {
-      // Group by section
-      const grouped = {};
-      filteredDrawings.forEach((d, idx) => {
-        const section = d.drawingType || 'بدون بند';
-        if (!grouped[section]) grouped[section] = [];
-        grouped[section].push({ ...d, id: d._id });
-      });
-
-      let html = '';
-      Object.keys(grouped).forEach(section => {
-        const count = grouped[section].length;
-        const icon = sectionIcons[section] || '📋';
-        
-        html += `
-          <div class="section-group">
-            <div class="section-header collapsed" onclick="toggleSection(this)">
-              <div class="section-title">
-                <div class="section-icon">${icon}</div>
-                <div>
-                  <div class="section-name">${section}</div>
-                  <div class="section-count">${count} مخطط</div>
-                </div>
-              </div>
-              <div class="section-toggle">▼</div>
-            </div>
-            <div class="drawings-grid" style="display: none;">
-              ${grouped[section].map(d => `
-                <div class="drawing-card">
-                  <div class="drawing-header">
-                    <div class="drawing-number">${d.drawingNumber || '-'}</div>
-                    <div class="drawing-actions">
-                      <button class="action-btn btn-edit" onclick="editDrawing('${d.id}')" title="تعديل">
-                        ✏️
-                      </button>
-                      <button class="action-btn btn-delete" onclick="deleteDrawing('${d.id}')" title="حذف">
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div class="drawing-info">
-                    <div class="info-row">
-                      <div class="info-icon">🏢</div>
-                      <div class="info-content">
-                        <div class="info-label">نموذج المبنى</div>
-                        <div class="info-value">${d.contractorName || '-'}</div>
-                      </div>
+    <div class="container">
+        <div class="main-content">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="searchInput" 
+                               placeholder="البحث في المخططات والأقسام...">
                     </div>
                     
-                    <div class="info-row">
-                      <div class="info-icon">📝</div>
-                      <div class="info-content">
-                        <div class="info-label">اسم المخطط</div>
-                        <div class="info-value">${d.drawingName || '-'}</div>
-                      </div>
+                    <select class="filter-select" id="typeFilter">
+                        <option value="">جميع الأقسام</option>
+                        <option value="انشائي">انشائي</option>
+                        <option value="معماري">معماري</option>
+                        <option value="ميكانيكا">ميكانيكا</option>
+                        <option value="كهرباء">كهرباء</option>
+                        <option value="مساحة">مساحة</option>
+                        <option value="موقع عام">موقع عام</option>
+                    </select>
+                    
+                    <select class="filter-select" id="modelFilter">
+                        <option value="">جميع النماذج</option>
+                        <!-- سيتم ملء القائمة تلقائياً من النماذج الموجودة -->
+                    </select>
+                    
+                    <select class="filter-select" id="itemFilter">
+                        <option value="">جميع البنود</option>
+                        <!-- سيتم ملء القائمة تلقائياً من البنود الموجودة -->
+                    </select>
+                </div>
+                
+                <div class="toolbar-right">
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="tableViewBtn" onclick="switchView('table')">
+                            📋 جدول
+                        </button>
+                        <button class="view-btn" id="gridViewBtn" onclick="switchView('grid')">
+                            🔲 بطاقات
+                        </button>
                     </div>
                     
-                    <div class="info-row">
-                      <div class="info-icon">📅</div>
-                      <div class="info-content">
-                        <div class="info-label">تاريخ الإضافة</div>
-                        <div class="info-value">${d.drawingDate ? new Date(d.drawingDate).toLocaleDateString('ar-EG') : '-'}</div>
-                      </div>
+                    <button class="btn btn-info" id="exportBtn">
+                        📤 تصدير
+                    </button>
+                    
+                    <button class="btn btn-warning" id="importBtn">
+                        📥 استيراد
+                    </button>
+                    
+                    <button class="btn btn-success" id="addDrawingBtn">
+                        📋 إضافة مخطط
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-layout">
+                <div class="sidebar">
+                    <h3>📂 الاقسام</h3>
+                    
+
+                    
+                    <div id="foldersList">
+                        <!-- البنود هنا -->
                     </div>
-                  </div>
-                  
-                  <div class="drawing-files">
-                    ${d.attachment ? 
-                      `<a href="${API_URL}/${d.attachment}" target="_blank" class="file-link file-dwg">
-                        <span>�</span>
-                        تحميل المرفق
-                      </a>` :
-                      `<div class="file-link file-dwg disabled">
-                        <span>�</span>
-                        لا يوجد مرفق
-                      </div>`
-                    }
-                  </div>
+                    
+
                 </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      });
 
-      drawingsContent.innerHTML = html;
-    }
-
-    function renderTableView(filteredDrawings) {
-      // Group by section
-      const grouped = {};
-      filteredDrawings.forEach((d) => {
-        const section = d.drawingType || 'بدون بند';
-        if (!grouped[section]) grouped[section] = [];
-        grouped[section].push({ ...d, id: d._id });
-      });
-
-      let html = '';
-      Object.keys(grouped).forEach(section => {
-        const count = grouped[section].length;
-        const icon = sectionIcons[section] || '📋';
-        
-        html += `
-          <div class="section-group">
-            <div class="section-header collapsed" onclick="toggleSection(this)">
-              <div class="section-title">
-                <div class="section-icon">${icon}</div>
-                <div>
-                  <div class="section-name">${section}</div>
-                  <div class="section-count">${count} مخطط</div>
-                </div>
-              </div>
-              <div class="section-toggle">▼</div>
-            </div>
-            <div style="display: none; padding: 0.8rem;">
-              <table class="drawings-table active">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>رقم المخطط</th>
-                    <th>نموذج المبنى</th>
-                    <th>اسم المخطط</th>
-                    <th>التاريخ</th>
-                    <th>المرفق</th>
-                    <th>إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${grouped[section].map((d, idx) => `
-                    <tr>
-                      <td>${idx + 1}</td>
-                      <td><strong>${d.drawingNumber || '-'}</strong></td>
-                      <td>${d.contractorName || '-'}</td>
-                      <td>${d.drawingName || '-'}</td>
-                      <td>${d.drawingDate ? new Date(d.drawingDate).toLocaleDateString('ar-EG') : '-'}</td>
-                      <td>
-                        ${d.attachment ? 
-                          `<a href="${API_URL}/${d.attachment}" target="_blank" style="color: var(--primary-color); text-decoration: none;">📄 تحميل</a>` :
-                          `<span style="color: #999;">-</span>`
-                        }
-                      </td>
-                      <td>
-                        <div class="table-actions">
-                          <button class="action-btn btn-edit" onclick="editDrawing('${d.id}')" title="تعديل">✏️</button>
-                          <button class="action-btn btn-delete" onclick="deleteDrawing('${d.id}')" title="حذف">🗑️</button>
+                <div class="main-area">
+                    <div style="margin-bottom: 20px;">
+                        <div class="section-title-container">
+                            <div class="section-title-box">
+                                <h2 id="sectionTitle">جميع المخططات</h2>
+                            </div>
                         </div>
-                      </td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+                        
+
+                    </div>
+
+                    <!-- Table View -->
+                    <div class="drawings-table" id="tableView" style="display: block;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th>رقم المخطط</th>
+                                    <th>البيان</th>
+                                    <th>نموذج المبنى</th>
+                                    <th>اسم المخطط</th>
+                                    <th>القسم</th>
+                                    <th>البند</th>
+                                    <th>آخر تحديث</th>
+                                    <th>ملف DWG</th>
+                                    <th>ملف PDF</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drawingsTableBody">
+                                <!-- المخططات هنا -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Empty State -->
+                        <div class="empty-state" id="emptyState" style="display: none;">
+                            <div style="font-size: 4rem;">📋</div>
+                            <h3>لا توجد مخططات</h3>
+                            <p>ابدأ بإضافة مخططات جديدة</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Grid View -->
+                    <div class="drawings-grid" id="gridView" style="display: none;">
+                        <!-- المخططات كبطاقات هنا -->
+                    </div>
+                    
+                    <!-- Total Count at Bottom -->
+                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #e9ecef;">
+                        <div style="display: flex; gap: 20px; font-size: 14px; color: #666;">
+                            <span id="totalCount">المجموع: 0</span>
+                            <span id="selectedCount" style="display: none;">المحدد: 0</span>
+                            <span id="filteredCount" style="display: none;">المصفاة: 0</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <!-- يمكن إضافة أزرار ترتيب أو تصفح هنا -->
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        `;
-      });
+        </div>
+    </div>
 
-      drawingsContent.innerHTML = html;
-    }
+    <!-- Hidden Import File Input -->
+    <input type="file" id="importFile" accept=".csv" style="display: none;">
 
-    function updateStats() {
-      const total = drawings.length;
-      const structural = drawings.filter(d => d.drawingType === 'إنشائي').length;
-      const architectural = drawings.filter(d => d.drawingType === 'معماري').length;
-      const electromech = drawings.filter(d => d.drawingType === 'كهرباء' || d.drawingType === 'ميكانيكا').length;
+    <!-- Modal for Departments Info -->
+    <div class="modal" id="folderModal">
+        <div class="modal-content">
+            <h3>� معلومات الأقسام</h3>
+            <div style="padding: 20px 0;">
+                <p>الأقسام المتاحة في النظام:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">🏗️ انشائي</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">🏛️ معماري</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">⚙️ ميكانيكا</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">⚡ كهرباء</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">📐 مساحة</li>
+                    <li style="padding: 8px 0;">🏗️ موقع عام</li>
+                </ul>
+                <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                    يمكنك اختيار أي قسم من القائمة الجانبية لعرض المخططات الخاصة به
+                </p>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="closeModal()">إغلاق</button>
+        </div>
+    </div>
 
-      document.getElementById('totalDrawings').textContent = total;
-      document.getElementById('structuralDrawings').textContent = structural;
-      document.getElementById('architecturalDrawings').textContent = architectural;
-      document.getElementById('electromechDrawings').textContent = electromech;
-    }
+    <!-- Modal for Drawing -->
+    <div class="modal" id="drawingModal">
+        <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+            <h3 id="modalTitle">📋 إضافة مخطط جديد</h3>
+            <form id="drawingForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">رقم المخطط</label>
+                        <input type="text" class="form-input" id="drawingNumber" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">نموذج المبنى</label>
+                        <input type="text" class="form-input" id="buildingModel" placeholder="أدخل نموذج المبنى">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">اسم المخطط</label>
+                    <input type="text" class="form-input" id="drawingName" required>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">القسم</label>
+                        <select class="form-select" id="drawingType">
+                            <option value="">اختر القسم</option>
+                            <option value="انشائي">�️ انشائي</option>
+                            <option value="معماري">�️ معماري</option>
+                            <option value="ميكانيكا">⚙️ ميكانيكا</option>
+                            <option value="كهرباء">⚡ كهرباء</option>
+                            <option value="مساحة">� مساحة</option>
+                            <option value="موقع عام">🏗️ موقع عام</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">البند</label>
+                        <input type="text" class="form-input" id="drawingFolder" list="itemsList" placeholder="أدخل اسم البند أو اختر من القائمة">
+                        <datalist id="itemsList">
+                            <!-- سيتم ملء القائمة تلقائياً من البنود المحفوظة -->
+                        </datalist>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">البيان</label>
+                    <textarea class="form-input" id="drawingStatement" rows="2" placeholder="أدخل البيان..."></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">ملف DWG</label>
+                        <div class="file-upload" onclick="document.getElementById('dwgFile').click()">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">📁</div>
+                            <div>اضغط لاختيار ملف DWG</div>
+                            <input type="file" id="dwgFile" accept=".dwg" style="display: none;">
+                        </div>
+                        <div id="dwgFileInfo" style="display: none; margin-top: 10px; padding: 8px; background: #d4edda; border-radius: 4px; font-size: 12px;"></div>
+                        <div id="dwgUploadStatus" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px; font-size: 12px;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">ملف PDF</label>
+                        <div class="file-upload" onclick="document.getElementById('pdfFile').click()">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
+                            <div>اضغط لاختيار ملف PDF</div>
+                            <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+                        </div>
+                        <div id="pdfFileInfo" style="display: none; margin-top: 10px; padding: 8px; background: #d4edda; border-radius: 4px; font-size: 12px;"></div>
+                        <div id="pdfUploadStatus" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px; font-size: 12px;"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success">💾 حفظ المخطط</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">❌ إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    // Global Functions
-    window.toggleSection = function(header) {
-      header.classList.toggle('collapsed');
-      const content = header.nextElementSibling;
-      if (content) {
-        if (viewMode === 'cards') {
-          content.style.display = content.style.display === 'none' ? 'grid' : 'none';
-        } else {
-          content.style.display = content.style.display === 'none' ? 'block' : 'none';
-        }
-      }
-    };
+    <script>
+        // ضبط API_URL حسب البيئة
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+          ? 'http://localhost:4000' 
+          : 'https://taskon-qzj8.onrender.com';
 
-    window.editDrawing = async function(id) {
-      const d = drawings.find(drawing => drawing._id === id);
-      if (!d) return;
-      
-      editingId = id;
-      
-      document.getElementById('drawingNumber').value = d.drawingNumber || '';
-      document.getElementById('buildingModel').value = d.contractorName || '';
-      document.getElementById('drawingName').value = d.drawingName || '';
-      document.getElementById('drawingSection').value = d.drawingType || '';
-      
-      openModal(true);
-    };
-
-    window.deleteDrawing = async function(id) {
-      if (!confirm('هل أنت متأكد من حذف هذا المخطط؟\nلا يمكن التراجع عن هذا الإجراء.')) {
-        return;
-      }
-      
-      try {
-        const response = await projectUtils.deleteWithProject(`/drawings/${id}`);
+        // الحصول على projectId و companyId من URL parameters أو localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('projectId') || localStorage.getItem('currentProjectId') || "68f89815d8013418f5ab28d9";
+        const companyId = urlParams.get('companyId') || localStorage.getItem('currentCompanyId') || "68f86f97a05ae9ba3e2f1dde";
         
-        if (response.ok) {
-          const result = await response.json();
-          alert('تم حذف المخطط بنجاح! ✅');
-          await loadDrawings();
-        } else {
-          const result = await response.json();
-          alert('حدث خطأ: ' + (result.error || 'خطأ غير معروف'));
-        }
-      } catch (err) {
-        console.error('Error deleting drawing:', err);
-        alert('فشل حذف المخطط!');
-      }
-    };
+        console.log("🏗️ Project ID:", projectId);
+        console.log("🏢 Company ID:", companyId);
+        
+        let folders = [];
+        let drawings = [];
+        let currentFolderId = null;
+        let currentFolderName = "جميع المخططات";
+        let currentSearchTerm = "";
+        let currentTypeFilter = "";
+        let currentModelFilter = ""; // إضافة فلتر النموذج
+        let currentItemFilter = ""; // إضافة فلتر البند
+        let currentView = "table"; // 'grid' or 'table'
+        let selectedDrawings = [];
+        let filteredDrawings = [];
+        let currentEditingId = null;
 
-    // Initial load
-    loadDrawings();
-  </script>
+        // متغيرات التصفية الهرمية
+        let currentDepartment = null;
+        let currentModel = null;
+        let currentItem = null;
+        let hierarchicalMode = false;
+
+        // قائمة الأقسام الثابتة
+        const departments = [
+            { id: "structural", name: "انشائي", icon: "🏗️" },
+            { id: "architectural", name: "معماري", icon: "🏛️" },
+            { id: "mechanical", name: "ميكانيكا", icon: "⚙️" },
+            { id: "electrical", name: "كهرباء", icon: "⚡" },
+            { id: "surveying", name: "مساحة", icon: "📐" },
+            { id: "general", name: "موقع عام", icon: "🏗️" }
+        ];
+
+        // قائمة البنود المحفوظة محلياً
+        let savedItems = JSON.parse(localStorage.getItem('drawingItems') || '[]');
+
+        // API Helper
+        async function apiCall(endpoint, method = "GET", data = null) {
+            const url = `${API_URL}${endpoint}?projectId=${projectId}&companyId=${companyId}`;
+            console.log("🌐 API Call:", method, url);
+            console.log("📊 API_URL:", API_URL);
+            console.log("📋 Endpoint:", endpoint);
+            console.log("🏗️ Project ID:", projectId);
+            console.log("🏢 Company ID:", companyId);
+            
+            const options = {
+                method,
+                headers: { "Content-Type": "application/json" }
+            };
+            if (data && method !== "GET") {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                console.log("🌐 Sending request:", method, url);
+                console.log("📦 Request data:", data);
+                
+                const response = await fetch(url, options);
+                console.log("📨 Response status:", response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("❌ Response error:", errorText);
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                }
+                const result = await response.json();
+                console.log("✅ Response data:", result);
+                return result;
+            } catch (error) {
+                console.error("❌ API Call Error:", error);
+                throw error;
+            }
+        }
+
+        // Auto-generate drawing number based on department
+        function generateDrawingNumber(type) {
+            if (!drawings.length) return `${getDepartmentPrefix(type)}-001`;
+            
+            const departmentDrawings = drawings.filter(d => d.type === type);
+            const existingNumbers = departmentDrawings
+                .map(d => d.drawingNumber)
+                .filter(num => num && num.startsWith(getDepartmentPrefix(type)))
+                .map(num => {
+                    const match = num.match(/\d+$/);
+                    return match ? parseInt(match[0]) : 0;
+                })
+                .sort((a, b) => b - a);
+            
+            const nextNumber = existingNumbers.length > 0 ? existingNumbers[0] + 1 : 1;
+            return `${getDepartmentPrefix(type)}-${nextNumber.toString().padStart(3, '0')}`;
+        }
+
+        function getDepartmentPrefix(type) {
+            const prefixes = {
+                'انشائي': 'STR',
+                'معماري': 'ARC', 
+                'ميكانيكا': 'MEC',
+                'كهرباء': 'ELE',
+                'مساحة': 'SUR',
+                'موقع عام': 'GEN'
+            };
+            return prefixes[type] || 'DRW';
+        }
+
+        // View Management
+        function switchView(viewType) {
+            currentView = viewType;
+            const tableView = document.getElementById('tableView');
+            const gridView = document.getElementById('gridView');
+            const tableBtn = document.getElementById('tableViewBtn');
+            const gridBtn = document.getElementById('gridViewBtn');
+            
+            if (viewType === 'table') {
+                tableView.style.display = 'block';
+                gridView.style.display = 'none';
+                tableBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            } else {
+                tableView.style.display = 'none';
+                gridView.style.display = 'grid';
+                tableBtn.classList.remove('active');
+                gridBtn.classList.add('active');
+            }
+            
+            renderDrawings();
+        }
+
+        // Selection Management
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.drawing-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.drawing-checkbox:checked');
+            selectedDrawings = Array.from(checkboxes).map(cb => cb.value);
+            
+            const selectedCount = document.getElementById('selectedCount');
+            if (selectedDrawings.length > 0) {
+                selectedCount.style.display = 'inline';
+                selectedCount.textContent = `المحدد: ${selectedDrawings.length}`;
+            } else {
+                selectedCount.style.display = 'none';
+            }
+        }
+
+        // Statistics
+        function updateStats() {
+            const stats = {
+                total: drawings.length,
+                completed: drawings.filter(d => d.status === 'مكتمل').length,
+                inProgress: drawings.filter(d => d.status === 'قيد العمل').length,
+                review: drawings.filter(d => d.status === 'مراجعة').length,
+                approved: drawings.filter(d => d.status === 'معتمد').length
+            };
+            
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div style="font-size: 12px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>المجموع:</span>
+                        <span style="font-weight: 600;">${stats.total}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>مكتمل:</span>
+                        <span style="color: #27ae60; font-weight: 600;">${stats.completed}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>قيد العمل:</span>
+                        <span style="color: #f39c12; font-weight: 600;">${stats.inProgress}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>مراجعة:</span>
+                        <span style="color: #e74c3c; font-weight: 600;">${stats.review}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>معتمد:</span>
+                        <span style="color: #3498db; font-weight: 600;">${stats.approved}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load Data
+        async function loadFolders() {
+            // الأقسام محددة مسبقاً، لا نحتاج لتحميل من API
+            renderFolders();
+        }
+
+        async function loadDrawings() {
+            try {
+                console.log("🔄 Loading drawings from API...");
+                const response = await apiCall("/drawings");
+                console.log("📋 Response from drawings API:", response);
+                console.log("📋 Response type:", typeof response);
+                console.log("📋 Is array:", Array.isArray(response));
+                
+                drawings = Array.isArray(response) ? response : (response.data || []);
+                console.log("📋 Final drawings array:", drawings);
+                console.log("📋 Drawings count:", drawings.length);
+                
+                // Update filter options after loading drawings
+                updateModelFilterOptions();
+                updateItemFilterOptions();
+                
+                renderDrawings();
+                updateStatistics();
+            } catch (error) {
+                console.error("خطأ في تحميل المخططات:", error);
+                drawings = [];
+                renderDrawings();
+            }
+        }
+
+        // Render Functions
+        function renderFolders() {
+            const list = document.getElementById("foldersList");
+            
+            if (!hierarchicalMode) {
+                // عرض الأقسام الرئيسية
+                list.innerHTML = departments.map(dept => {
+                    const deptDrawings = drawings.filter(d => d.type === dept.name);
+                    const count = deptDrawings.length;
+                    const completedCount = deptDrawings.filter(d => d.status === 'مكتمل').length;
+                    const progress = count > 0 ? (completedCount / count) * 100 : 0;
+                    
+                    return `
+                        <div class="folder-item ${currentDepartment === dept.name ? "active" : ""}" 
+                             onclick="selectDepartment('${dept.name}')">
+                            <div><strong>${dept.icon} ${dept.name}</strong></div>
+                            <div class="folder-stats">
+                                <span>${count} مخطط</span>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+            } else if (currentDepartment && !currentModel) {
+                // عرض نماذج المباني في القسم المختار
+                const deptDrawings = drawings.filter(d => d.type === currentDepartment);
+                const models = [...new Set(deptDrawings.map(d => d.buildingModel).filter(Boolean))];
+                
+                if (models.length === 0) {
+                    list.innerHTML = `
+                        <div class="folder-item" onclick="goBackToDepartments()" style="background: #f8f9fa; border: 1px dashed #dee2e6;">
+                            <div><strong>↩️ العودة للأقسام</strong></div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; color: #666;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🏗️</div>
+                            <p>لا توجد نماذج مباني في هذا القسم</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                list.innerHTML = `
+                    <div class="folder-item" onclick="goBackToDepartments()" style="background: #f8f9fa; border: 1px dashed #dee2e6;">
+                        <div><strong>↩️ العودة للأقسام</strong></div>
+                    </div>
+                ` + models.map(model => {
+                    const modelDrawings = deptDrawings.filter(d => d.buildingModel === model);
+                    const count = modelDrawings.length;
+                    const completedCount = modelDrawings.filter(d => d.status === 'مكتمل').length;
+                    const progress = count > 0 ? (completedCount / count) * 100 : 0;
+                    
+                    return `
+                        <div class="folder-item ${currentModel === model ? "active" : ""}" 
+                             onclick="selectModel('${model}')">
+                            <div><strong>🏗️ ${model}</strong></div>
+                            <div class="folder-stats">
+                                <span>${count} مخطط</span>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+            } else if (currentDepartment && currentModel) {
+                // عرض البنود في النموذج المختار
+                const modelDrawings = drawings.filter(d => 
+                    d.type === currentDepartment && d.buildingModel === currentModel
+                );
+                const items = [...new Set(modelDrawings.map(d => d.itemName).filter(Boolean))];
+                
+                if (items.length === 0) {
+                    list.innerHTML = `
+                        <div class="folder-item" onclick="goBackToModels()" style="background: #f8f9fa; border: 1px dashed #dee2e6;">
+                            <div><strong>↩️ العودة للنماذج</strong></div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; color: #666;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📋</div>
+                            <p>لا توجد بنود في هذا النموذج</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                list.innerHTML = `
+                    <div class="folder-item" onclick="goBackToModels()" style="background: #f8f9fa; border: 1px dashed #dee2e6;">
+                        <div><strong>↩️ العودة للنماذج</strong></div>
+                    </div>
+                ` + items.map(item => {
+                    const itemDrawings = modelDrawings.filter(d => d.itemName === item);
+                    const count = itemDrawings.length;
+                    const completedCount = itemDrawings.filter(d => d.status === 'مكتمل').length;
+                    const progress = count > 0 ? (completedCount / count) * 100 : 0;
+                    
+                    return `
+                        <div class="folder-item ${currentItem === item ? "active" : ""}" 
+                             onclick="selectItem('${item}')">
+                            <div><strong>📋 ${item}</strong></div>
+                            <div class="folder-stats">
+                                <span>${count} مخطط</span>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+            } else if (currentDepartment && currentModel && !currentItem) {
+                // عرض البنود في النموذج المختار
+                const modelDrawings = drawings.filter(d => 
+                    d.type === currentDepartment && d.buildingModel === currentModel
+                );
+                const items = [...new Set(modelDrawings.map(d => d.itemName).filter(Boolean))];
+                
+                if (items.length === 0) {
+                    list.innerHTML = `
+                        <div class="folder-item" onclick="goBackToModels()" style="background: #f8f9fa; border: 1px dashed #dee2e6;">
+                            <div><strong>↩️ العودة للنماذج</strong></div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; color: #666;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📋</div>
+                            <p>لا توجد بنود في هذا النموذج</p>
+                        </div>
+                    `;
+                } else {
+                    let itemsHtml = `
+                        <div class="folder-item" onclick="goBackToModels()" style="background: #f8f9fa; border: 1px dashed #dee2e6;">
+                            <div><strong>↩️ العودة للنماذج</strong></div>
+                        </div>
+                    `;
+                    
+                    itemsHtml += items.map(item => {
+                        const itemDrawings = modelDrawings.filter(d => d.itemName === item);
+                        const count = itemDrawings.length;
+                        const completedCount = itemDrawings.filter(d => d.status === 'مكتمل').length;
+                        const progress = count > 0 ? (completedCount / count) * 100 : 0;
+                        
+                        return `
+                            <div class="folder-item ${currentItem === item ? "active" : ""}" 
+                                 onclick="selectItem('${item}')">
+                                <div><strong>📋 ${item}</strong></div>
+                                <div class="folder-stats">
+                                    <span>${count} مخطط</span>
+                                    <span>${completedCount} مكتمل</span>
+                                </div>
+                                <div class="folder-progress">
+                                    <div class="folder-progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                    
+                    list.innerHTML = itemsHtml;
+                }
+            } else if (currentDepartment && currentModel && currentItem) {
+                // عرض زر العودة للبنود
+                list.innerHTML = `
+                    <div class="folder-item back-button" onclick="goBackToItems()">
+                        <div><strong>← العودة للبنود</strong></div>
+                    </div>
+                    <div class="folder-item active">
+                        <div><strong>📋 ${currentItem}</strong></div>
+                        <div class="folder-stats">
+                            <span>عرض المخططات</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // دالة تحديث قائمة البنود
+        function updateItemsList() {
+            const itemsList = document.getElementById('itemsList');
+            if (itemsList) {
+                itemsList.innerHTML = savedItems.map(item => 
+                    `<option value="${item}">${item}</option>`
+                ).join('');
+            }
+        }
+
+        // دالة إضافة بند جديد إلى القائمة
+        function addItemToList(itemName) {
+            if (itemName && !savedItems.includes(itemName)) {
+                savedItems.push(itemName);
+                localStorage.setItem('drawingItems', JSON.stringify(savedItems));
+                updateItemsList();
+            }
+        }
+
+        // دالة عرض معلومات الأقسام
+        function showDepartmentsInfo() {
+            openModal('folderModal');
+        }
+
+        // دالة اختيار القسم
+        function selectDepartment(departmentName) {
+            currentDepartment = departmentName;
+            currentModel = null;
+            currentItem = null;
+            hierarchicalMode = true;
+            
+            // تحديث الفلاتر
+            currentTypeFilter = departmentName;
+            document.getElementById("typeFilter").value = departmentName;
+            
+            updateSectionTitle();
+            renderFolders();
+            renderDrawings();
+        }
+
+        // دالة اختيار نموذج المبنى
+        function selectBuildingModel(modelName) {
+            currentFolderName = modelName;
+            currentModelFilter = modelName;
+            
+            // تحديث فلتر النموذج
+            // document.getElementById("modelFilter").value = modelName; // معطل لأن الفلتر أصبح للبنود
+            
+            renderFolders();
+            renderDrawings();
+        }
+
+        // دالة اختيار النموذج
+        function selectModel(modelName) {
+            currentModel = modelName;
+            currentItem = null;
+            
+            // تحديث فلتر النموذج
+            currentModelFilter = modelName;
+            // document.getElementById("modelFilter").value = modelName; // معطل لأن الفلتر أصبح للبنود
+            
+            updateSectionTitle();
+            renderFolders();
+            renderDrawings();
+        }
+
+        // دالة اختيار البند
+        function selectItem(itemName) {
+            currentItem = itemName;
+            
+            updateSectionTitle();
+            
+            renderFolders();
+            renderDrawings();
+        }
+
+        // دوال العودة
+        function goBackToDepartments() {
+            currentDepartment = null;
+            currentModel = null;
+            currentItem = null;
+            hierarchicalMode = false;
+            
+            // إعادة تعيين الفلاتر
+            currentTypeFilter = "";
+            currentModelFilter = "";
+            document.getElementById("typeFilter").value = "";
+            document.getElementById("modelFilter").value = "";
+            document.getElementById("itemFilter").value = "";
+            
+            updateSectionTitle();
+            
+            renderFolders();
+            renderDrawings();
+        }
+
+        function goBackToModels() {
+            currentModel = null;
+            currentItem = null;
+            
+            // إعادة تعيين فلتر النموذج
+            currentModelFilter = "";
+            document.getElementById("modelFilter").value = "";
+            document.getElementById("itemFilter").value = "";
+            
+            
+            renderFolders();
+            renderDrawings();
+        }
+
+        function goBackToItems() {
+            currentItem = null;
+            
+            
+            renderFolders();
+            renderDrawings();
+        }
+
+        // دالة عرض جميع المخططات
+        function selectAllFolders() {
+            currentDepartment = null;
+            currentModel = null;
+            currentItem = null;
+            hierarchicalMode = false;
+            currentTypeFilter = "";
+            currentModelFilter = "";
+            
+            document.getElementById("typeFilter").value = "";
+            document.getElementById("modelFilter").value = "";
+            document.getElementById("itemFilter").value = "";
+            
+            
+            renderFolders();
+            renderDrawings();
+        }
+
+        function renderDrawings() {
+            const tableBody = document.getElementById("drawingsTableBody");
+            const gridView = document.getElementById("gridView");
+            const emptyState = document.getElementById("emptyState");
+            const totalCount = document.getElementById("totalCount");
+            
+            // Get filtered drawings using the utility function
+            const filteredDrawings = getFilteredDrawings();
+            
+            console.log("🔍 Debug renderDrawings:");
+            console.log("Total drawings:", drawings.length);
+            console.log("Filtered drawings:", filteredDrawings.length);
+            console.log("Drawings data:", drawings);
+            console.log("Filtered data:", filteredDrawings);
+            
+            totalCount.textContent = `المجموع: ${filteredDrawings.length}`;
+            
+            if (filteredDrawings.length === 0) {
+                console.log("⚠️ No drawings to show - showing empty state");
+                if (currentView === 'table') {
+                    tableBody.innerHTML = "";
+                } else {
+                    gridView.innerHTML = "";
+                }
+                emptyState.style.display = "block";
+                return;
+            }
+            
+            emptyState.style.display = "none";
+            
+            if (currentView === 'table') {
+                renderTableView(filteredDrawings);
+            } else {
+                renderGridView(filteredDrawings);
+            }
+        }
+
+        function renderTableView(drawingsToRender) {
+            const tableBody = document.getElementById("drawingsTableBody");
+            
+            tableBody.innerHTML = drawingsToRender.map((drawing, index) => {
+                const folder = folders.find(f => f._id === drawing.folderId);
+                const statusColors = {
+                    'مكتمل': '#27ae60',
+                    'قيد العمل': '#f39c12',
+                    'مراجعة': '#e74c3c',
+                    'معتمد': '#3498db'
+                };
+                
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="drawing-checkbox" value="${drawing._id}" 
+                                   onchange="updateSelectedCount()">
+                        </td>
+                        <td><div class="drawing-number">${drawing.drawingNumber || `D-${index + 1}`}</div></td>
+                        <td>${drawing.statement || "-"}</td>
+                        <td>${drawing.buildingModel || "-"}</td>
+                        <td><strong>${drawing.name}</strong></td>
+                        <td>${drawing.type || "-"}</td>
+                        <td>${drawing.itemName || "-"}</td>
+                        <td><small style="color: #666;">${drawing.lastModified ? new Date(drawing.lastModified).toLocaleDateString('ar-EG') : new Date().toLocaleDateString('ar-EG')}</small></td>
+                        <td>${drawing.dwgFile ? `<a href="${drawing.dwgFile}" target="_blank" style="color: #2563eb; text-decoration: none;">📁 DWG</a>` : "لا يوجد"}</td>
+                        <td>${drawing.pdfFile ? `<a href="${drawing.pdfFile}" target="_blank" style="color: #dc2626; text-decoration: none;">📄 PDF</a>` : "لا يوجد"}</td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="action-btn action-view" onclick="viewDrawing('${drawing._id}')" title="عرض">👁️</button>
+                                <button class="action-btn action-edit" onclick="editDrawing('${drawing._id}')" title="تعديل">✏️</button>
+                                <button class="action-btn action-delete" onclick="deleteDrawing('${drawing._id}')" title="حذف">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function renderGridView(drawingsToRender) {
+            const gridView = document.getElementById("gridView");
+            
+            gridView.innerHTML = drawingsToRender.map((drawing, index) => {
+                const folder = folders.find(f => f._id === drawing.folderId);
+                const statusColors = {
+                    'مكتمل': '#27ae60',
+                    'قيد العمل': '#f39c12',
+                    'مراجعة': '#e74c3c',
+                    'معتمد': '#3498db'
+                };
+                
+                return `
+                    <div class="drawing-card">
+                        <div class="drawing-card-header">
+                            <div>
+                                <div class="drawing-card-title">${drawing.name}</div>
+                                <div style="font-size: 12px; color: #666;">${drawing.description || 'بدون وصف'}</div>
+                            </div>
+                            <div class="drawing-card-number">${drawing.drawingNumber || `D-${index + 1}`}</div>
+                        </div>
+                        
+                        <div class="drawing-card-meta">
+                            ${drawing.type ? `<span class="meta-badge meta-type">${drawing.type}</span>` : ''}
+                            ${drawing.buildingModel ? `<span class="meta-badge meta-model">🏗️ ${drawing.buildingModel}</span>` : ''}
+                            ${drawing.itemName ? `<span class="meta-badge meta-item">📋 ${drawing.itemName}</span>` : ''}
+                            ${folder ? `<span class="meta-badge meta-folder">📁 ${folder.name}</span>` : ''}
+                            <span class="meta-badge" style="background: ${statusColors[drawing.status] || '#95a5a6'};">
+                                ${drawing.status || 'غير محدد'}
+                            </span>
+                        </div>
+                        
+                        <div class="drawing-card-files">
+                            ${drawing.dwgFile ? `<a href="${drawing.dwgFile}" target="_blank" class="file-badge file-dwg">📁 DWG</a>` : '<span style="color: #999;">لا يوجد DWG</span>'}
+                            ${drawing.pdfFile ? `<a href="${drawing.pdfFile}" target="_blank" class="file-badge file-pdf">📄 PDF</a>` : '<span style="color: #999;">لا يوجد PDF</span>'}
+                        </div>
+                        
+                        <div class="drawing-card-actions">
+                            <button class="action-btn action-view" onclick="viewDrawing('${drawing._id}')" title="عرض">�️</button>
+                            <button class="action-btn action-edit" onclick="editDrawing('${drawing._id}')" title="تعديل">✏️</button>
+                            <button class="action-btn action-delete" onclick="deleteDrawing('${drawing._id}')" title="حذف">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // Folder Functions
+        function selectFolder(folderId, folderName) {
+            currentFolderId = folderId;
+            document.getElementById("sectionTitle").textContent = `مخططات: ${folderName}`;
+            document.getElementById("breadcrumb").innerHTML = `🏠 <a href="#" onclick="selectAllFolders()">الرئيسية</a> > 📁 ${folderName}`;
+            renderFolders();
+            renderDrawings();
+        }
+        
+        function selectAllFolders() {
+            currentFolderId = null;
+            document.getElementById("sectionTitle").textContent = "جميع المخططات";
+            document.getElementById("breadcrumb").innerHTML = "🏠 الرئيسية";
+            renderFolders();
+            renderDrawings();
+        }
+
+        // Drawing Functions
+        function viewDrawing(drawingId) {
+            const drawing = drawings.find(d => d._id === drawingId);
+            if (!drawing) return;
+            
+            alert(`📋 تفاصيل المخطط:\n\nالاسم: ${drawing.name}\nالرقم: ${drawing.drawingNumber || 'غير محدد'}\nالقسم: ${drawing.type || 'غير محدد'}\nالحالة: ${drawing.status || 'غير محدد'}\nالوصف: ${drawing.description || 'بدون وصف'}`);
+        }
+        
+        function editDrawing(drawingId) {
+            const drawing = drawings.find(d => d._id === drawingId);
+            if (!drawing) {
+                alert('المخطط غير موجود!');
+                return;
+            }
+            
+            // ملء النموذج بالبيانات الحالية
+            document.getElementById('drawingName').value = drawing.name || '';
+            document.getElementById('drawingStatement').value = drawing.statement || '';
+            document.getElementById('buildingModel').value = drawing.buildingModel || '';
+            document.getElementById('drawingFolder').value = drawing.itemName || '';
+            document.getElementById('drawingType').value = drawing.type || '';
+            
+            // تعيين المعرف للتعديل
+            currentEditingId = drawingId;
+            
+            // إظهار النموذج بدون إعادة تعيين
+            document.getElementById('modalTitle').textContent = '✏️ تعديل المخطط';
+            document.getElementById('drawingModal').classList.add('show');
+            
+            // التركيز على حقل الاسم
+            document.getElementById('drawingName').focus();
+        }
+
+        // Export/Import Functions
+        function exportDrawings() {
+            const dataToExport = {
+                folders: folders,
+                drawings: currentFolderId ? drawings.filter(d => d.folderId === currentFolderId) : drawings,
+                exportDate: new Date().toISOString(),
+                totalCount: drawings.length
+            };
+            
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `drawings-export-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert('✅ تم تصدير البيانات بنجاح!');
+        }
+
+        function importDrawings() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        console.log('البيانات المستوردة:', importedData);
+                        alert('📥 تم استيراد البيانات بنجاح!\n(ملاحظة: هذه ميزة تجريبية)');
+                    } catch (error) {
+                        alert('❌ خطأ في قراءة الملف');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // File handling
+        function handleFileSelect(fileInput, infoElementId, fileType) {
+            const file = fileInput.files[0];
+            const infoElement = document.getElementById(infoElementId);
+            
+            if (file) {
+                infoElement.innerHTML = `
+                    <strong>✅ تم اختيار ${fileType}:</strong><br>
+                    📄 ${file.name}<br>
+                    📊 ${(file.size / 1024 / 1024).toFixed(2)} MB
+                `;
+                infoElement.style.display = 'block';
+            } else {
+                infoElement.style.display = 'none';
+            }
+        }
+
+        // إضافة event listeners لرفع الملفات
+        function setupFileUploads() {
+            const dwgFileInput = document.getElementById('dwgFile');
+            const pdfFileInput = document.getElementById('pdfFile');
+            
+            if (dwgFileInput) {
+                dwgFileInput.addEventListener('change', function() {
+                    handleFileSelect(this, 'dwgFileInfo', 'ملف DWG');
+                });
+            }
+            
+            if (pdfFileInput) {
+                pdfFileInput.addEventListener('change', function() {
+                    handleFileSelect(this, 'pdfFileInfo', 'ملف PDF');
+                });
+            }
+        }
+
+        // دالة رفع ملف إلى السيرفر
+        async function uploadFile(file, drawingId, fileType) {
+            try {
+                console.log(`🔄 رفع ملف ${fileType} للمخطط ${drawingId}`);
+                
+                // رفع الملف إلى السيرفر
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch(`${API_URL}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(`✅ تم رفع ${fileType} بنجاح:`, result.url);
+                    return result.url;
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`فشل في رفع الملف: ${errorText}`);
+                }
+            } catch (error) {
+                console.error(`❌ خطأ في رفع ${fileType}:`, error);
+                
+                // نظام بديل: حفظ اسم الملف فقط
+                const fileName = `${fileType}_${drawingId}_${file.name}`;
+                
+                // يمكنك هنا إضافة حفظ محلي أو في localStorage
+                // للتطوير المستقبلي
+                
+                return fileName;
+            }
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add("show");
+            if (modalId === "drawingModal") {
+                // تحديث قائمة البنود عند فتح مودال إضافة المخطط
+                updateItemsList();
+                // تنظيف النموذج
+                document.getElementById("drawingForm").reset();
+                // إعداد رقم تلقائي إذا كان هناك قسم محدد
+                const typeSelect = document.getElementById("drawingType");
+                if (typeSelect.value) {
+                    const generatedNumber = generateDrawingNumber(typeSelect.value);
+                    document.getElementById("drawingNumber").value = generatedNumber;
+                }
+            }
+        }
+
+        function closeModal() {
+            document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
+            // إعادة تعيين معرف التعديل عند إغلاق النموذج
+            currentEditingId = null;
+            
+            // تنظيف حقول الملفات
+            const dwgFileInput = document.getElementById('dwgFile');
+            const pdfFileInput = document.getElementById('pdfFile');
+            const dwgFileInfo = document.getElementById('dwgFileInfo');
+            const pdfFileInfo = document.getElementById('pdfFileInfo');
+            const dwgUploadStatus = document.getElementById('dwgUploadStatus');
+            const pdfUploadStatus = document.getElementById('pdfUploadStatus');
+            
+            if (dwgFileInput) dwgFileInput.value = '';
+            if (pdfFileInput) pdfFileInput.value = '';
+            if (dwgFileInfo) dwgFileInfo.style.display = 'none';
+            if (pdfFileInfo) pdfFileInfo.style.display = 'none';
+            if (dwgUploadStatus) dwgUploadStatus.style.display = 'none';
+            if (pdfUploadStatus) pdfUploadStatus.style.display = 'none';
+        }
+
+        // Export/Import Functions
+        function exportDrawingsToCSV() {
+            const filteredDrawings = getFilteredDrawings();
+            
+            if (filteredDrawings.length === 0) {
+                alert("⚠️ لا توجد مخططات للتصدير");
+                return;
+            }
+
+            const csvHeaders = ['رقم المخطط', 'اسم المخطط', 'القسم', 'الحالة', 'الأولوية', 'المجلد', 'تاريخ الإنشاء'];
+            const csvRows = filteredDrawings.map(drawing => [
+                drawing.drawingNumber || '',
+                drawing.name || '',
+                drawing.type || '',
+                drawing.status || '',
+                drawing.priority || '',
+                folders.find(f => f._id === drawing.folderId)?.name || '',
+                drawing.createdAt ? new Date(drawing.createdAt).toLocaleDateString('ar-EG') : ''
+            ]);
+
+            const csvContent = [csvHeaders, ...csvRows]
+                .map(row => row.map(field => `"${field}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `مخططات_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            alert(`✅ تم تصدير ${filteredDrawings.length} مخطط بنجاح`);
+        }
+
+        function importDrawingsFromCSV(file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n').filter(line => line.trim());
+                    
+                    if (lines.length < 2) {
+                        alert("⚠️ ملف CSV فارغ أو غير صحيح");
+                        return;
+                    }
+
+                    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+                    const data = lines.slice(1).map(line => {
+                        const values = line.split(',').map(v => v.replace(/"/g, '').trim());
+                        return {
+                            drawingNumber: values[0] || '',
+                            name: values[1] || '',
+                            type: values[2] || 'مخطط هندسي',
+                            status: values[3] || 'قيد التنفيذ',
+                            priority: values[4] || 'متوسطة',
+                            folderName: values[5] || ''
+                        };
+                    });
+
+                    let imported = 0;
+                    for (const drawing of data) {
+                        if (drawing.name && drawing.drawingNumber) {
+                            try {
+                                // Find folder by name if specified
+                                if (drawing.folderName) {
+                                    const folder = folders.find(f => f.name === drawing.folderName);
+                                    drawing.folderId = folder ? folder._id : null;
+                                }
+                                delete drawing.folderName;
+                                
+                                await apiCall("/drawings", "POST", drawing);
+                                imported++;
+                            } catch (error) {
+                                console.warn(`فشل في استيراد المخطط: ${drawing.name}`, error);
+                            }
+                        }
+                    }
+
+                    await loadDrawings();
+                    renderDrawings();
+                    alert(`✅ تم استيراد ${imported} مخطط من أصل ${data.length}`);
+                } catch (error) {
+                    alert("❌ خطأ في قراءة الملف");
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // Utility function for filtered drawings
+        function getFilteredDrawings() {
+            console.log("🔍 Debug getFilteredDrawings:");
+            console.log("hierarchicalMode:", hierarchicalMode);
+            console.log("currentDepartment:", currentDepartment);
+            console.log("currentModel:", currentModel);
+            console.log("currentItem:", currentItem);
+            console.log("currentFolderId:", currentFolderId);
+            console.log("currentSearchTerm:", currentSearchTerm);
+            console.log("currentTypeFilter:", currentTypeFilter);
+            console.log("currentModelFilter:", currentModelFilter);
+            console.log("currentItemFilter:", currentItemFilter);
+            
+            return drawings.filter(drawing => {
+                console.log("Checking drawing:", drawing.name || drawing.drawingNumber);
+                
+                // التصفية الهرمية
+                if (hierarchicalMode) {
+                    if (currentDepartment && drawing.type !== currentDepartment) {
+                        console.log("Filtered out by department");
+                        return false;
+                    }
+                    if (currentModel && drawing.buildingModel !== currentModel) {
+                        console.log("Filtered out by model");
+                        return false;
+                    }
+                    if (currentItem && drawing.itemName !== currentItem) {
+                        console.log("Filtered out by item");
+                        return false;
+                    }
+                }
+                
+                // التصفية العادية
+                if (currentFolderId && drawing.folderId !== currentFolderId) {
+                    console.log("Filtered out by folder");
+                    return false;
+                }
+                if (currentSearchTerm && !drawing.name.toLowerCase().includes(currentSearchTerm) && 
+                    !drawing.drawingNumber.toLowerCase().includes(currentSearchTerm)) {
+                    console.log("Filtered out by search");
+                    return false;
+                }
+                if (!hierarchicalMode && currentTypeFilter && drawing.type !== currentTypeFilter) {
+                    console.log("Filtered out by type");
+                    return false;
+                }
+                if (!hierarchicalMode && currentModelFilter && drawing.buildingModel !== currentModelFilter) {
+                    console.log("Filtered out by model filter");
+                    return false;
+                }
+                if (!hierarchicalMode && currentItemFilter && drawing.itemName !== currentItemFilter) {
+                    console.log("Filtered out by item filter");
+                    return false;
+                }
+                
+                console.log("✅ Drawing passed all filters");
+                return true;
+            });
+        }
+
+        // Update model filter options based on current folder
+        function updateModelFilterOptions() {
+            const modelFilter = document.getElementById("modelFilter");
+            const uniqueModels = [...new Set(drawings.map(d => d.buildingModel).filter(Boolean))];
+            
+            modelFilter.innerHTML = '<option value="">جميع النماذج</option>' +
+                uniqueModels.map(model => `<option value="${model}">${model}</option>`).join('');
+            
+            // Reset current filter if not available
+            if (currentModelFilter && !uniqueModels.includes(currentModelFilter)) {
+                currentModelFilter = "";
+                modelFilter.value = "";
+            }
+        }
+
+        // Update item filter options based on current folder
+        function updateItemFilterOptions() {
+            const itemFilter = document.getElementById("itemFilter");
+            const uniqueItems = [...new Set(drawings.map(d => d.itemName).filter(Boolean))];
+            
+            itemFilter.innerHTML = '<option value="">جميع البنود</option>' +
+                uniqueItems.map(item => `<option value="${item}">${item}</option>`).join('');
+            
+            // Reset current filter if not available
+            if (currentItemFilter && !uniqueItems.includes(currentItemFilter)) {
+                currentItemFilter = "";
+                itemFilter.value = "";
+            }
+        }
+
+        // Form Handlers
+        // تم تعطيل إضافة مجلدات جديدة لأن الأقسام محددة مسبقاً
+        /*
+        document.getElementById("folderForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("folderName").value;
+            try {
+                await apiCall("/folders", "POST", { name, color: "#3498db" });
+                await loadFolders();
+                closeModal();
+                alert("✅ تم إنشاء البند بنجاح!");
+            } catch (error) {
+                alert("❌ خطأ في إنشاء البند");
+            }
+        });
+        */
+
+        document.getElementById("drawingForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            // إظهار مؤشر التحميل
+            const submitButton = document.querySelector('#drawingForm button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '⏳ جاري الحفظ...';
+            submitButton.disabled = true;
+            
+            try {
+                const folderName = document.getElementById("drawingFolder").value;
+            
+            const data = {
+                drawingNumber: document.getElementById("drawingNumber").value,
+                buildingModel: document.getElementById("buildingModel").value,
+                name: document.getElementById("drawingName").value,
+                type: document.getElementById("drawingType").value,
+                itemName: folderName, // استخدام اسم البند بدلاً من ID
+                statement: document.getElementById("drawingStatement").value,
+                lastModified: new Date().toISOString(),
+                projectId: projectId, // إضافة project ID
+                companyId: companyId  // إضافة company ID
+            };
+            
+            let message, endpoint, method;
+            let savedDrawing = null;
+                
+                if (currentEditingId) {
+                    // تعديل مخطط موجود
+                    endpoint = `/drawings/${currentEditingId}`;
+                    method = "PUT";
+                    message = "✅ تم تعديل المخطط بنجاح!";
+                } else {
+                    // إضافة مخطط جديد
+                    endpoint = "/drawings";
+                    method = "POST";
+                    message = "✅ تم إضافة المخطط بنجاح!";
+                    
+                    // إضافة البند إلى القائمة المحفوظة
+                    if (folderName) {
+                        addItemToList(folderName);
+                    }
+                }
+                
+                // رفع الملفات أولاً إذا تم اختيارها
+                const dwgFileInput = document.getElementById('dwgFile');
+                const pdfFileInput = document.getElementById('pdfFile');
+                
+                // رفع ملف DWG إذا تم اختياره
+                if (dwgFileInput.files[0]) {
+                    try {
+                        console.log('📤 رفع ملف DWG...');
+                        const dwgPath = await uploadFile(dwgFileInput.files[0], 'temp', 'dwg');
+                        data.dwgFile = dwgPath;
+                        console.log('✅ تم رفع DWG:', dwgPath);
+                    } catch (error) {
+                        console.error('❌ فشل رفع DWG:', error);
+                    }
+                }
+                
+                // رفع ملف PDF إذا تم اختياره
+                if (pdfFileInput.files[0]) {
+                    try {
+                        console.log('📤 رفع ملف PDF...');
+                        const pdfPath = await uploadFile(pdfFileInput.files[0], 'temp', 'pdf');
+                        data.pdfFile = pdfPath;
+                        console.log('✅ تم رفع PDF:', pdfPath);
+                    } catch (error) {
+                        console.error('❌ فشل رفع PDF:', error);
+                    }
+                }
+                
+                // حفظ بيانات المخطط مع مسارات الملفات
+                const response = await apiCall(endpoint, method, data);
+                savedDrawing = response;
+                
+                // إعادة تحميل البيانات وإغلاق النافذة
+                await loadDrawings();
+                closeModal();
+                alert(message);
+                currentEditingId = null;
+                renderFolders();
+                renderDrawings();
+                updateStatistics();
+                
+                if (dwgFileInput.files[0]) {
+                    try {
+                        // إظهار حالة الرفع
+                        const dwgStatus = document.getElementById('dwgUploadStatus');
+                        dwgStatus.style.display = 'block';
+                        dwgStatus.style.background = '#fff3cd';
+                        dwgStatus.innerHTML = '📤 جاري رفع ملف DWG...';
+                        
+                        console.log('📤 بدء رفع ملف DWG...');
+                        const dwgPath = await uploadFile(dwgFileInput.files[0], drawingId, 'dwg');
+                        // تحديث المخطط بمسار الملف
+                        await apiCall(`/drawings/${drawingId}`, "PUT", { 
+                            ...data, 
+                            dwgFile: dwgPath 
+                        });
+                        filesUploaded = true;
+                        
+                        // إظهار نجاح الرفع
+                        dwgStatus.style.background = '#d4edda';
+                        dwgStatus.innerHTML = '✅ تم رفع ملف DWG بنجاح';
+                        console.log('✅ تم رفع ملف DWG بنجاح');
+                    } catch (error) {
+                        // إظهار خطأ الرفع
+                        const dwgStatus = document.getElementById('dwgUploadStatus');
+                        dwgStatus.style.display = 'block';
+                        dwgStatus.style.background = '#f8d7da';
+                        dwgStatus.innerHTML = '⚠️ تم حفظ المخطط، لكن فشل رفع ملف DWG';
+                        
+                        console.warn('⚠️ تعذر رفع ملف DWG:', error.message);
+                        // لا نعرض تحذير للمستخدم، فقط نسجل في وحدة التحكم
+                    }
+                }
+                
+                if (pdfFileInput.files[0]) {
+                    try {
+                        // إظهار حالة الرفع
+                        const pdfStatus = document.getElementById('pdfUploadStatus');
+                        pdfStatus.style.display = 'block';
+                        pdfStatus.style.background = '#fff3cd';
+                        pdfStatus.innerHTML = '📤 جاري رفع ملف PDF...';
+                        
+                        console.log('📤 بدء رفع ملف PDF...');
+                        const pdfPath = await uploadFile(pdfFileInput.files[0], drawingId, 'pdf');
+                        // تحديث المخطط بمسار الملف
+                        await apiCall(`/drawings/${drawingId}`, "PUT", { 
+                            ...data, 
+                            pdfFile: pdfPath 
+                        });
+                        filesUploaded = true;
+                        
+                        // إظهار نجاح الرفع
+                        pdfStatus.style.background = '#d4edda';
+                        pdfStatus.innerHTML = '✅ تم رفع ملف PDF بنجاح';
+                        console.log('✅ تم رفع ملف PDF بنجاح');
+                    } catch (error) {
+                        // إظهار خطأ الرفع
+                        const pdfStatus = document.getElementById('pdfUploadStatus');
+                        pdfStatus.style.display = 'block';
+                        pdfStatus.style.background = '#f8d7da';
+                        pdfStatus.innerHTML = '⚠️ تم حفظ المخطط، لكن فشل رفع ملف PDF';
+                        
+                        console.warn('⚠️ تعذر رفع ملف PDF:', error.message);
+                        // لا نعرض تحذير للمستخدم، فقط نسجل في وحدة التحكم
+                    }
+                }
+                
+                await loadDrawings();
+                closeModal();
+                
+                // رسالة نجاح محسنة
+                let successMessage = message;
+                if (filesUploaded) {
+                    if (currentEditingId) {
+                        successMessage = "✅ تم تعديل المخطط والملفات بنجاح!";
+                    } else {
+                        successMessage = "✅ تم إضافة المخطط والملفات بنجاح!";
+                    }
+                }
+                alert(successMessage);
+                
+                // إعادة تعيين معرف التعديل
+                currentEditingId = null;
+                
+                renderFolders();
+                renderDrawings();
+                updateStatistics();
+            } catch (error) {
+                alert(currentEditingId ? "❌ خطأ في تعديل المخطط" : "❌ خطأ في إضافة المخطط");
+            } finally {
+                // إعادة تعيين الزر
+                const submitButton = document.querySelector('#drawingForm button[type="submit"]');
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+
+        // Delete Function
+        async function deleteDrawing(id) {
+            if (!confirm("هل تريد حذف هذا المخطط؟")) return;
+            try {
+                console.log(`🗑️ محاولة حذف المخطط: ${id}`);
+                const response = await apiCall(`/drawings/${id}`, "DELETE");
+                console.log('Response from delete:', response);
+                
+                if (response.error) {
+                    throw new Error(response.error);
+                }
+                
+                await loadDrawings();
+                renderDrawings();
+                updateStatistics();
+                renderFolders();
+                alert("✅ تم حذف المخطط!");
+            } catch (error) {
+                console.error("Error deleting drawing:", error);
+                alert("❌ خطأ في حذف المخطط: " + (error.message || "خطأ غير معروف"));
+            }
+        }
+
+        // Event Listeners
+        document.getElementById("addDrawingBtn").addEventListener("click", () => {
+            // إعادة تعيين النموذج للإضافة
+            currentEditingId = null;
+            document.getElementById('modalTitle').textContent = '📋 إضافة مخطط جديد';
+            document.getElementById("drawingForm").reset();
+            openModal("drawingModal");
+        });
+
+        // Enhanced search and filter functionality
+        document.getElementById("searchInput").addEventListener("input", (e) => {
+            currentSearchTerm = e.target.value.toLowerCase();
+            renderDrawings();
+        });
+
+        document.getElementById("typeFilter").addEventListener("change", (e) => {
+            currentTypeFilter = e.target.value;
+            renderDrawings();
+        });
+
+        // Model filter functionality
+        document.getElementById("modelFilter").addEventListener("change", (e) => {
+            currentModelFilter = e.target.value;
+            renderDrawings();
+        });
+
+        // Item filter functionality
+        document.getElementById("itemFilter").addEventListener("change", (e) => {
+            currentItemFilter = e.target.value;
+            renderDrawings();
+        });
+
+        // Auto-generate drawing number when type changes
+        document.getElementById("drawingType").addEventListener("change", (e) => {
+            const selectedType = e.target.value;
+            if (selectedType) {
+                const generatedNumber = generateDrawingNumber(selectedType);
+                document.getElementById("drawingNumber").value = generatedNumber;
+            }
+        });
+
+        // View toggle functionality
+        document.getElementById("tableViewBtn").addEventListener("click", () => {
+            currentView = 'table';
+            document.getElementById("tableViewBtn").classList.add("active");
+            document.getElementById("gridViewBtn").classList.remove("active");
+            renderDrawings();
+        });
+
+        document.getElementById("gridViewBtn").addEventListener("click", () => {
+            currentView = 'grid';
+            document.getElementById("gridViewBtn").classList.add("active");
+            document.getElementById("tableViewBtn").classList.remove("active");
+            renderDrawings();
+        });
+
+        // Export functionality
+        document.getElementById("exportBtn").addEventListener("click", () => {
+            exportDrawingsToCSV();
+        });
+
+        // Import functionality
+        document.getElementById("importBtn").addEventListener("click", () => {
+            document.getElementById("importFile").click();
+        });
+
+        document.getElementById("importFile").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                importDrawingsFromCSV(file);
+            }
+        });
+
+        // Folder selection with hierarchical filtering
+        function selectFolder(folderId, folderName) {
+            currentFolderId = folderId;
+            currentFolderName = folderName || "جميع المخططات";
+            
+            // Reset filters when entering folder
+            currentSearchTerm = "";
+            currentTypeFilter = "";
+            currentStatusFilter = "";
+            currentModelFilter = "";
+            
+            // Update UI
+            document.getElementById("searchInput").value = "";
+            document.getElementById("typeFilter").value = "";
+            document.getElementById("modelFilter").value = "";
+            document.getElementById("itemFilter").value = "";
+            
+            // Update filter options based on folder content
+            updateModelFilterOptions();
+            updateItemFilterOptions();
+            
+            // Update breadcrumb
+            
+            
+            // Re-render
+            renderFolders();
+            renderDrawings();
+            
+            console.log(`📁 تم اختيار المجلد: ${folderName} (ID: ${folderId})`);
+        }
+
+        // Show all drawings (exit folder view)
+        function showAllDrawings() {
+            currentFolderId = null;
+            currentFolderName = "جميع المخططات";
+            
+            // Reset all filters
+            currentSearchTerm = "";
+            currentTypeFilter = "";
+            currentStatusFilter = "";
+            currentModelFilter = "";
+            
+            // Update UI
+            document.getElementById("searchInput").value = "";
+            document.getElementById("typeFilter").value = "";
+            document.getElementById("modelFilter").value = "";
+            document.getElementById("itemFilter").value = "";
+            
+            // Update filter options
+            updateModelFilterOptions();
+            updateItemFilterOptions();
+            
+            // Update breadcrumb
+            
+            
+            // Re-render
+            renderFolders();
+            renderDrawings();
+        }
+
+        // Update section title based on current navigation state
+        function updateSectionTitle() {
+            const sectionTitle = document.getElementById("sectionTitle");
+            if (hierarchicalMode) {
+                let title = "";
+                if (currentDepartment && currentModel && currentItem) {
+                    title = `${currentDepartment} > ${currentModel} > ${currentItem}`;
+                } else if (currentDepartment && currentModel) {
+                    title = `${currentDepartment} > ${currentModel}`;
+                } else if (currentDepartment) {
+                    title = currentDepartment;
+                } else {
+                    title = "جميع الأقسام";
+                }
+                sectionTitle.textContent = title;
+            } else {
+                sectionTitle.textContent = currentFolderName || "جميع المخططات";
+            }
+        }
+
+        function updateStatistics() {
+            const totalDrawings = drawings.length;
+            const completedDrawings = drawings.filter(d => d.status === 'مكتمل').length;
+            const inProgressDrawings = drawings.filter(d => d.status === 'قيد التنفيذ').length;
+            const reviewDrawings = drawings.filter(d => d.status === 'قيد المراجعة').length;
+            
+            // Only update elements that exist
+            const totalElement = document.getElementById("totalDrawings");
+            const completedElement = document.getElementById("completedDrawings");
+            const inProgressElement = document.getElementById("inProgressDrawings");
+            const reviewElement = document.getElementById("reviewDrawings");
+            const progressBar = document.getElementById("progressBar");
+            const progressPercentage = document.getElementById("progressPercentage");
+            
+            if (totalElement) totalElement.textContent = totalDrawings;
+            if (completedElement) completedElement.textContent = completedDrawings;
+            if (inProgressElement) inProgressElement.textContent = inProgressDrawings;
+            if (reviewElement) reviewElement.textContent = reviewDrawings;
+            
+            // Update progress bar if it exists
+            if (progressBar && progressPercentage) {
+                const percentage = totalDrawings > 0 ? (completedDrawings / totalDrawings) * 100 : 0;
+                progressBar.style.width = `${percentage}%`;
+                progressPercentage.textContent = `${Math.round(percentage)}%`;
+            }
+            
+            console.log(`📊 إحصائيات المخططات - الإجمالي: ${totalDrawings}, مكتمل: ${completedDrawings}, قيد التنفيذ: ${inProgressDrawings}, مراجعة: ${reviewDrawings}`);
+        }
+
+        // Initialize
+        document.addEventListener("DOMContentLoaded", () => {
+            // ضبط العرض الافتراضي
+            switchView('table');
+            
+            loadFolders();
+            loadDrawings();
+            updateItemsList(); // تحديث قائمة البنود عند تحميل الصفحة
+            setupFileUploads(); // تفعيل نظام رفع الملفات
+        });
+
+        console.log("🎯 تم تحميل نظام إدارة المخططات بنجاح");
+        
+        // تحميل الشريط العلوي وتفعيله
+        async function loadNavbar() {
+            try {
+                const response = await fetch('components/main-navbar.html');
+                const html = await response.text();
+                document.getElementById('navbar-container').innerHTML = html;
+                
+                // تفعيل وظائف الـ navbar يدوياً
+                initNavbarFunctions();
+            } catch (error) {
+                console.log('تعذر تحميل الشريط العلوي:', error);
+                // إضافة شريط علوي بسيط في حالة الخطأ
+                document.getElementById('navbar-container').innerHTML = `
+                    <div style="background: #1a3b50; color: #fff; padding: 10px 20px; text-align: center; font-weight: bold;">
+                        TASKON - إدارة المخططات
+                    </div>
+                `;
+            }
+        }
+        
+        // تفعيل وظائف الـ navbar
+        function initNavbarFunctions() {
+            // تحديث اسم المستخدم
+            const userNameSpan = document.getElementById('userName');
+            if (userNameSpan) {
+                const userStr = localStorage.getItem('user');
+                if (userStr) {
+                    try {
+                        const userObj = JSON.parse(userStr);
+                        userNameSpan.textContent = userObj.username || '';
+                    } catch (e) {
+                        userNameSpan.textContent = '';
+                    }
+                }
+            }
+            
+            // تحديث اسم المشروع
+            const currentProjectNameDisplay = document.getElementById('currentProjectNameDisplay');
+            const userProjectNameDisplay = document.getElementById('userProjectNameDisplay');
+            const currentProjectName = localStorage.getItem('currentProjectName');
+            
+            if (currentProjectNameDisplay) {
+                currentProjectNameDisplay.textContent = currentProjectName || 'لم يتم اختيار مشروع';
+            }
+            if (userProjectNameDisplay) {
+                userProjectNameDisplay.textContent = currentProjectName || 'لم يتم اختيار مشروع';
+            }
+            
+            // تفعيل قائمة TASKON
+            const menuIcon = document.getElementById('navbarMenuIcon');
+            const menuDropdown = document.getElementById('navbarMenuDropdown');
+            if (menuIcon && menuDropdown) {
+                // إضافة صفحات القائمة
+                const pages = [
+                    { name: "الرئيسية", href: "index.html" },
+                    { name: "المخططات", href: "drawings.html" },
+                    { name: "المستخلصات", href: "extract.html" },
+                    { name: "المقاولون", href: "contractor.html" },
+                    { name: "المشاريع", href: "projects.html" }
+                ];
+                
+                menuDropdown.innerHTML = pages.map(page => 
+                    `<a href="${page.href}">${page.name}</a>`
+                ).join('');
+                
+                menuIcon.onclick = function(e) {
+                    e.stopPropagation();
+                    menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+                };
+                
+                document.addEventListener('click', function(e) {
+                    if (!menuDropdown.contains(e.target) && e.target !== menuIcon) {
+                        menuDropdown.style.display = 'none';
+                    }
+                });
+            }
+            
+            // تفعيل قائمة المستخدم
+            const userAvatar = document.getElementById('userAvatar');
+            const userInfo = document.getElementById('userInfo');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (userAvatar && userInfo) {
+                userAvatar.onclick = function(e) {
+                    e.stopPropagation();
+                    userInfo.classList.toggle('show-logout');
+                };
+                
+                document.addEventListener('click', function(e) {
+                    if (!userInfo.contains(e.target)) {
+                        userInfo.classList.remove('show-logout');
+                    }
+                });
+            }
+            
+            if (logoutBtn) {
+                logoutBtn.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.clear();
+                    window.location.replace('login.html');
+                };
+            }
+            
+            // تفعيل اختيار المشروع
+            const projectSelector = document.getElementById('projectSelector');
+            const projectDropdown = document.getElementById('projectDropdown');
+            
+            if (projectSelector && projectDropdown) {
+                projectSelector.onclick = async function(e) {
+                    e.stopPropagation();
+                    
+                    if (projectDropdown.style.display === 'block') {
+                        projectDropdown.style.display = 'none';
+                        return;
+                    }
+                    
+                    try {
+                        const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+                        const companyId = userObj.companyId || 'default-company-001';
+                        const res = await fetch(`${API_URL}/projects?companyId=${companyId}`);
+                        const projects = await res.json();
+                        
+                        if (!projects || projects.length === 0) {
+                            projectDropdown.innerHTML = '<div class="no-projects">لا توجد مشاريع متاحة</div>';
+                            projectDropdown.style.display = 'block';
+                            return;
+                        }
+                        
+                        const currentProjectId = localStorage.getItem('currentProjectId');
+                        let projectsHTML = projects.map(project => {
+                            const isActive = project._id === currentProjectId;
+                            return `
+                                <div class="project-item ${isActive ? 'active' : ''}" data-project-id="${project._id}" data-project-name="${project.projectName || project.name}">
+                                    <span class="project-name">${project.projectName || project.name}</span>
+                                    ${isActive ? '<span class="check-icon">✓</span>' : ''}
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        projectDropdown.innerHTML = projectsHTML;
+                        projectDropdown.style.display = 'block';
+                        
+                        // تفعيل اختيار المشروع
+                        projectDropdown.querySelectorAll('.project-item').forEach(item => {
+                            item.onclick = function() {
+                                const projectId = this.getAttribute('data-project-id');
+                                const projectName = this.getAttribute('data-project-name');
+                                
+                                localStorage.setItem('currentProjectId', projectId);
+                                localStorage.setItem('currentProjectName', projectName);
+                                
+                                window.location.reload();
+                            };
+                        });
+                        
+                    } catch (err) {
+                        console.error('خطأ في جلب المشاريع:', err);
+                        projectDropdown.innerHTML = '<div class="no-projects">خطأ في تحميل المشاريع</div>';
+                        projectDropdown.style.display = 'block';
+                    }
+                };
+                
+                document.addEventListener('click', function(e) {
+                    if (!projectDropdown.contains(e.target) && !projectSelector.contains(e.target)) {
+                        projectDropdown.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // تحميل الـ navbar
+        loadNavbar();
+    </script>
 </body>
 </html>

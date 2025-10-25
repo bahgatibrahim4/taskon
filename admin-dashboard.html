@@ -784,24 +784,102 @@
     </div>
   </div>
 
-  <script>
-    const API_URL = 'http://localhost:4000';
+  <!-- Login Modal -->
+  <div class="modal show" id="loginModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>تسجيل دخول المسؤول</h3>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>البريد الإلكتروني *</label>
+          <input type="email" class="form-control" id="loginEmail" value="bahgatt55@outlook.com" required>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور *</label>
+          <input type="password" class="form-control" id="loginPassword" value="123456" required>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+          <button type="submit" class="btn btn-primary" style="width: 100%;">تسجيل الدخول</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    // التحقق من تسجيل الدخول كمسؤول منصة
-    const platformAdmin = localStorage.getItem('platformAdmin');
-    if (!platformAdmin) {
-      alert('⚠️ يجب تسجيل الدخول كمسؤول منصة أولاً');
-      window.location.replace('platform-login.html');
-      throw new Error('Unauthorized');
+  <script>
+    // تحديد API URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000'
+      : window.location.origin;
+    let adminToken = localStorage.getItem('adminToken');
+    
+    // Check if admin is logged in
+    if (!adminToken) {
+      // Show login modal
+      document.getElementById('loginModal').classList.add('show');
+    } else {
+      // Hide login modal and load dashboard
+      document.getElementById('loginModal').classList.remove('show');
+      loadDashboardStats();
     }
 
-    const admin = JSON.parse(platformAdmin);
-    console.log('✅ مسؤول المنصة:', admin.name);
+    // Login Form Submit
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        const response = await fetch(`${API_URL}/platform/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          adminToken = result.token;
+          localStorage.setItem('adminToken', adminToken);
+          localStorage.setItem('platformAdmin', JSON.stringify(result.admin));
+          
+          // Update UI with admin info
+          updateAdminUI(result.admin);
+          
+          document.getElementById('loginModal').classList.remove('show');
+          alert('مرحباً بك في لوحة التحكم! ✅');
+          loadDashboardStats();
+        } else {
+          alert('خطأ في تسجيل الدخول: ' + (result.error || 'بيانات غير صحيحة'));
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        alert('حدث خطأ في تسجيل الدخول');
+      }
+    });
 
-    // Update UI with admin info
-    document.getElementById('welcomeMessage').textContent = `مرحباً بك، ${admin.name} 👋`;
-    document.getElementById('adminName').textContent = admin.name;
-    document.getElementById('adminRole').textContent = admin.role === 'superadmin' ? 'مدير أعلى' : 'مسؤول المنصة';
+    // Show all sections by default
+
+    // Function to update UI with admin info
+    function updateAdminUI(adminData) {
+      if (adminData) {
+        document.getElementById('welcomeMessage').textContent = `مرحباً بك، ${adminData.name} 👋`;
+        document.getElementById('adminName').textContent = adminData.name;
+        document.getElementById('adminRole').textContent = adminData.role === 'superadmin' ? 'مدير أعلى' : 'مسؤول المنصة';
+      }
+    }
+
+    // Get admin data from localStorage if available
+    const platformAdmin = localStorage.getItem('platformAdmin');
+    if (platformAdmin) {
+      try {
+        const adminData = JSON.parse(platformAdmin);
+        updateAdminUI(adminData);
+      } catch (err) {
+        console.error('Error parsing admin data:', err);
+      }
+    }
 
     // Navigation
     function showSection(section) {
@@ -819,16 +897,27 @@
     // Load Dashboard Stats
     async function loadDashboardStats() {
       try {
-        const [companies, users, projects] = await Promise.all([
-          fetch(`${API_URL}/companies`).then(r => r.json()),
-          fetch(`${API_URL}/users`).then(r => r.json()),
-          fetch(`${API_URL}/projects`).then(r => r.json())
-        ]);
+        const companiesResponse = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!companiesResponse.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await companiesResponse.json();
+        console.log('Dashboard stats - companies:', companies);
 
-        document.getElementById('totalCompanies').textContent = companies.length || 0;
-        document.getElementById('totalUsers').textContent = users.length || 0;
-        document.getElementById('totalProjects').textContent = projects.length || 0;
-        document.getElementById('monthlyRevenue').textContent = '12,500 ج.م';
+        // Calculate stats
+        const totalCompanies = companies.length;
+        const activeCompanies = companies.filter(c => c.status === 'active').length;
+        const suspendedCompanies = companies.filter(c => c.status === 'suspended').length;
+        const expiredCompanies = companies.filter(c => c.status === 'expired').length;
+
+        document.getElementById('totalCompanies').textContent = totalCompanies;
+        document.getElementById('totalUsers').textContent = activeCompanies;
+        document.getElementById('totalProjects').textContent = suspendedCompanies;
+        document.getElementById('monthlyRevenue').textContent = expiredCompanies;
 
         // Recent Activity
         const activityHtml = `
@@ -856,18 +945,35 @@
     // Load Companies
     async function loadCompanies() {
       try {
-        const response = await fetch(`${API_URL}/companies`);
+        const response = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
         const companies = await response.json();
+        console.log('Loaded companies:', companies);
 
         const tbody = document.getElementById('companiesTableBody');
-        if (companies.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #718096;">لا توجد شركات بعد</td></tr>';
+        if (!companies || companies.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #718096;">لا توجد شركات بعد</td></tr>';
           return;
         }
 
         tbody.innerHTML = companies.map(company => {
           const subdomain = company.subdomain || 'غير محدد';
-          const fullUrl = subdomain !== 'غير محدد' ? `http://${subdomain}.taskon.local:4000` : '';
+          
+          // إنشاء الرابط حسب البيئة
+          const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+          const fullUrl = subdomain !== 'غير محدد' ? 
+            (isProduction ? 
+              `${window.location.origin}/index.html?company=${subdomain}` : 
+              `http://${subdomain}.taskon.local:4000`) : '';
+              
+          const statusBadge = company.status === 'active' ? 'badge-success' : 
+                            company.status === 'suspended' ? 'badge-warning' : 'badge-danger';
           
           return `
           <tr>
@@ -883,9 +989,10 @@
               ` : subdomain}
             </td>
             <td>${company.email}</td>
-            <td><span class="badge badge-success">${company.subscription || 'active'}</span></td>
+            <td><span class="badge ${statusBadge}">${company.status || 'active'}</span></td>
             <td>${new Date(company.createdAt).toLocaleDateString('ar-EG')}</td>
             <td>
+              ${fullUrl ? `<button class="btn btn-primary" onclick="window.open('${fullUrl}', '_blank')" style="padding: 0.5rem 1rem; margin-left: 0.5rem;" title="تصفح موقع الشركة">🌐</button>` : ''}
               <button class="btn btn-secondary" onclick="editCompany('${company._id}')" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">✏️</button>
               <button class="btn btn-danger" onclick="deleteCompany('${company._id}')" style="padding: 0.5rem 1rem;">🗑️</button>
             </td>
@@ -894,26 +1001,58 @@
         }).join('');
       } catch (err) {
         console.error('Error loading companies:', err);
+        document.getElementById('companiesTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #e53e3e;">حدث خطأ في تحميل البيانات</td></tr>';
       }
     }
 
     // Load Users
     async function loadUsers() {
       try {
-        const response = await fetch(`${API_URL}/users`);
-        const users = await response.json();
+        // First get all companies to get their user counts
+        const companiesResponse = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!companiesResponse.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await companiesResponse.json();
+        console.log('Users page - companies:', companies);
+        
+        // Get users from all companies
+        let allUsers = [];
+        for (const company of companies) {
+          try {
+            const usersResponse = await fetch(`${API_URL}/companies/${company._id}/users`, {
+              headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            
+            if (usersResponse.ok) {
+              const usersData = await usersResponse.json();
+              const users = usersData.success ? usersData.users : [];
+              users.forEach(user => {
+                user.companyName = company.companyName;
+                user.companyId = company._id;
+              });
+              allUsers = allUsers.concat(users);
+            }
+          } catch (err) {
+            console.error(`Error loading users for company ${company.companyName}:`, err);
+          }
+        }
 
         const tbody = document.getElementById('usersTableBody');
-        if (users.length === 0) {
+        if (allUsers.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #718096;">لا يوجد مستخدمون بعد</td></tr>';
           return;
         }
 
-        tbody.innerHTML = users.map(user => `
+        tbody.innerHTML = allUsers.map(user => `
           <tr>
-            <td>${user.username}</td>
+            <td>${user.username || user.email}</td>
             <td>${user.email}</td>
-            <td>${user.companyId || 'غير محدد'}</td>
+            <td>${user.companyName || 'غير محدد'}</td>
             <td>${user.role || 'مستخدم'}</td>
             <td><span class="badge badge-success">نشط</span></td>
             <td>
@@ -924,6 +1063,7 @@
         `).join('');
       } catch (err) {
         console.error('Error loading users:', err);
+        document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #e53e3e;">حدث خطأ في تحميل المستخدمين</td></tr>';
       }
     }
 
@@ -966,7 +1106,11 @@
 
     function closeCompanyModal() {
       document.getElementById('companyModal').classList.remove('show');
-      document.getElementById('companyForm').reset();
+      const form = document.getElementById('companyForm');
+      form.reset();
+      // Reset edit mode
+      form.dataset.editMode = 'false';
+      form.dataset.editId = '';
     }
 
     // Announcement Modal Functions
@@ -983,39 +1127,63 @@
     document.getElementById('companyForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
+      const form = e.target;
+      const isEditMode = form.dataset.editMode === 'true';
+      const editId = form.dataset.editId;
+
       const companyData = {
         companyName: document.getElementById('companyName').value,
         subdomain: document.getElementById('companySubdomain').value.trim() || undefined,
         email: document.getElementById('companyEmail').value,
         phone: document.getElementById('companyPhone').value,
         address: document.getElementById('companyAddress').value,
-        subscription: document.getElementById('companySubscription').value
+        status: document.getElementById('companySubscription').value
       };
 
       try {
-        const response = await fetch(`${API_URL}/companies`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const url = isEditMode 
+          ? `${API_URL}/companies/${editId}`
+          : `${API_URL}/companies`;
+        
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
           body: JSON.stringify(companyData)
         });
 
         const result = await response.json();
 
         if (result.success) {
-          // Show success message with full URL
-          const fullUrl = result.fullUrl || `http://${result.subdomain}.taskon.local:4000`;
-          alert(`تم إضافة الشركة بنجاح! ✅\n\nالنطاق الفرعي: ${result.subdomain}\nالرابط الكامل: ${fullUrl}\n\nيمكنك الآن الوصول للشركة من خلال هذا الرابط`);
+          if (isEditMode) {
+            alert('تم تحديث الشركة بنجاح! ✅');
+          } else {
+            // Show success message with full URL and admin user info for new companies
+            const fullUrl = result.fullUrl || `${window.location.origin}?company=${result.subdomain}`;
+            const userInfo = result.adminUser ? 
+              `\n\n👤 مستخدم المدير:\nالبريد الإلكتروني: ${result.adminUser.email}\nاسم المستخدم: ${result.adminUser.username}\nكلمة المرور: ${result.adminUser.password}` : '';
+            
+            alert(`تم إضافة الشركة بنجاح! ✅\n\nالنطاق الفرعي: ${result.subdomain}\nالرابط الكامل: ${fullUrl}${userInfo}\n\nيمكن للعميل الآن الدخول للنظام باستخدام هذه البيانات`);
+          }
           
           closeCompanyModal();
           document.getElementById('companyForm').reset();
+          // Reset edit mode
+          form.dataset.editMode = 'false';
+          form.dataset.editId = '';
+          
           loadCompanies();
           loadDashboardStats();
         } else {
           alert('حدث خطأ: ' + result.error);
         }
       } catch (err) {
-        console.error('Error creating company:', err);
-        alert('فشل في إضافة الشركة');
+        console.error('Error with company operation:', err);
+        alert(isEditMode ? 'فشل في تحديث الشركة' : 'فشل في إضافة الشركة');
       }
     });
 
@@ -1033,7 +1201,8 @@
 
       try {
         const response = await fetch(`${API_URL}/companies/${id}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${adminToken}` }
         });
 
         const result = await response.json();
@@ -1048,6 +1217,47 @@
       } catch (err) {
         console.error('Error deleting company:', err);
         alert('فشل في حذف الشركة');
+      }
+    }
+
+    // Edit Company
+    async function editCompany(id) {
+      try {
+        // Get company details first
+        const response = await fetch(`${API_URL}/companies`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load companies');
+        }
+        
+        const companies = await response.json();
+        const company = companies.find(c => c._id === id);
+        
+        if (!company) {
+          alert('لم يتم العثور على الشركة');
+          return;
+        }
+
+        // Open modal and fill with company data
+        document.getElementById('companyName').value = company.companyName || '';
+        document.getElementById('companySubdomain').value = company.subdomain || '';
+        document.getElementById('companyEmail').value = company.email || '';
+        document.getElementById('companyPhone').value = company.phone || '';
+        document.getElementById('companyAddress').value = company.address || '';
+        document.getElementById('companySubscription').value = company.status || 'active';
+        
+        // Change form to update mode
+        const form = document.getElementById('companyForm');
+        form.dataset.editId = id;
+        form.dataset.editMode = 'true';
+        
+        openCompanyModal();
+        
+      } catch (err) {
+        console.error('Error loading company for edit:', err);
+        alert('فشل في تحميل بيانات الشركة');
       }
     }
 
@@ -1207,13 +1417,15 @@
     // Logout
     function logout() {
       if (confirm('هل تريد تسجيل الخروج؟')) {
+        localStorage.removeItem('adminToken');
         localStorage.removeItem('platformAdmin');
-        window.location.replace('platform-login.html');
+        adminToken = null;
+        document.getElementById('loginModal').classList.add('show');
       }
     }
 
-    // Load initial data
-    loadDashboardStats();
+    // Load initial data only if logged in
+    // loadDashboardStats() is called conditionally after login
   </script>
 </body>
 </html>

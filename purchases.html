@@ -6,6 +6,8 @@
   <title>المشتريات | سعيد أحمد بالبيد</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="js/permissions.js"></script>
+  <script src="js/projectUtils.js"></script>
   <style>
     :root {
       --primary-color: #2e8ca3;
@@ -624,13 +626,13 @@
         <h2>إدارة المشتريات</h2>
       </div>
       <div class="header-actions">
-        <button class="btn btn-primary" onclick="openAddPurchaseModal()">
+        <button class="btn btn-primary" onclick="openAddPurchaseModal()" data-permission="purchases.add">
           <i class="fa fa-plus"></i> إضافة شراء جديد
         </button>
-        <button class="btn btn-warning" onclick="toggleReturnsView()">
+        <button class="btn btn-warning" onclick="toggleReturnsView()" data-permission="purchases.returns">
           <i class="fa fa-undo"></i> المرتجعات <span class="badge" id="returnsBadge" style="background: white; color: var(--warning-color); margin-right: 5px; padding: 2px 8px;">0</span>
         </button>
-        <button class="btn btn-secondary" onclick="exportToExcel()">
+        <button class="btn btn-secondary" onclick="exportToExcel()" data-permission="purchases.export">
           <i class="fa fa-file-excel"></i> تصدير Excel
         </button>
       </div>
@@ -982,16 +984,21 @@
     // Load Purchases from Server
     async function loadPurchases() {
       try {
-        const response = await fetch(`/purchases?projectId=${currentProjectId}`);
-        if (response.ok) {
-          purchases = await response.json();
-          renderPurchases();
-          updateStatistics();
-          populateReturnPurchasesList();
-        } else {
-          console.error('فشل في تحميل المشتريات');
-          showNotification('حدث خطأ في تحميل البيانات', 'error');
-        }
+        // Check permissions first
+        console.log('🔍 فحص صلاحيات المشتريات...');
+        console.log('المستخدم:', JSON.parse(localStorage.getItem('user') || '{}').username);
+        console.log('الدور:', JSON.parse(localStorage.getItem('user') || '{}').role);
+        console.log('صلاحية العرض (purchases.view):', hasPermission('purchases.view'));
+        console.log('صلاحية الإضافة (purchases.add):', hasPermission('purchases.add'));
+        console.log('صلاحية التعديل (purchases.edit):', hasPermission('purchases.edit'));
+        console.log('صلاحية الحذف (purchases.delete):', hasPermission('purchases.delete'));
+        console.log('صلاحية التصدير (purchases.export):', hasPermission('purchases.export'));
+        
+        const response = await projectUtils.getWithProject('/purchases');
+        purchases = response;
+        renderPurchases();
+        updateStatistics();
+        populateReturnPurchasesList();
       } catch (error) {
         console.error('خطأ في الاتصال:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
@@ -1001,18 +1008,14 @@
     // Load Returns from Server
     async function loadReturns() {
       try {
-        const response = await fetch('/returns');
-        if (response.ok) {
-          returns = await response.json();
-          updateReturnsBadge();
-          if (showingReturns) {
-            renderReturns();
-          }
-        } else {
-          console.error('فشل في تحميل المرتجعات');
+        returns = await projectUtils.getWithProject('/returns');
+        updateReturnsBadge();
+        if (showingReturns) {
+          renderReturns();
         }
       } catch (error) {
         console.error('خطأ في الاتصال:', error);
+        console.error('فشل في تحميل المرتجعات');
       }
     }
 
@@ -1063,13 +1066,13 @@
           <td>${purchase.invoice ? '<i class="fa fa-file-pdf" style="color: var(--danger-color);"></i>' : '-'}</td>
           <td>${storeStatus}</td>
           <td class="action-btns">
-            <button class="icon-btn edit" onclick="editPurchase('${purchase._id}')" title="تعديل">
+            <button class="icon-btn edit" onclick="editPurchase('${purchase._id}')" title="تعديل" data-permission="purchases.edit">
               <i class="fa fa-edit"></i>
             </button>
-            <button class="icon-btn" onclick="openReturnModal('${purchase._id}')" title="إرجاع" style="color: var(--warning-color); background: rgba(255, 152, 0, 0.1);">
+            <button class="icon-btn" onclick="openReturnModal('${purchase._id}')" title="إرجاع" style="color: var(--warning-color); background: rgba(255, 152, 0, 0.1);" data-permission="purchases.return">
               <i class="fa fa-undo"></i>
             </button>
-            <button class="icon-btn delete" onclick="deletePurchase('${purchase._id}')" title="حذف">
+            <button class="icon-btn delete" onclick="deletePurchase('${purchase._id}')" title="حذف" data-permission="purchases.delete">
               <i class="fa fa-trash"></i>
             </button>
           </td>
@@ -1079,6 +1082,11 @@
       });
 
       updateFooter(filtered, totalQty, totalAmount);
+      
+      // تطبيق الصلاحيات على الأزرار المُنشأة ديناميكياً
+      if (typeof applyPermissionsToButtons === 'function') {
+        applyPermissionsToButtons();
+      }
     }
 
     // Update Footer Totals
@@ -1151,6 +1159,10 @@
 
     // Toggle Returns View
     function toggleReturnsView() {
+      if (!hasPermission('purchases.returns')) {
+        showNotification('ليس لديك صلاحية لعرض المرتجعات', 'error');
+        return;
+      }
       showingReturns = !showingReturns;
       const purchasesSection = document.getElementById('purchasesSection');
       const returnsSection = document.getElementById('returnsSection');
@@ -1209,7 +1221,7 @@
           <td><span class="badge badge-warning">${ret.reason || '-'}</span></td>
           <td>${storeStatus}</td>
           <td class="action-btns">
-            <button class="icon-btn delete" onclick="deleteReturn('${ret._id}')" title="حذف">
+            <button class="icon-btn delete" onclick="deleteReturn('${ret._id}')" title="حذف" data-permission="purchases.deleteReturn">
               <i class="fa fa-trash"></i>
             </button>
           </td>
@@ -1219,6 +1231,11 @@
       });
 
       updateReturnsFooter(totalQty, totalAmount);
+      
+      // تطبيق الصلاحيات على الأزرار المُنشأة ديناميكياً
+      if (typeof applyPermissionsToButtons === 'function') {
+        applyPermissionsToButtons();
+      }
     }
 
     // Update Returns Footer
@@ -1248,6 +1265,10 @@
 
     // Open Return Modal
     function openReturnModal(purchaseId) {
+      if (!hasPermission('purchases.return')) {
+        showNotification('ليس لديك صلاحية لإرجاع المشتريات', 'error');
+        return;
+      }
       document.getElementById('returnModal').style.display = 'flex';
       document.getElementById('returnForm').reset();
       document.getElementById('returnDate').valueAsDate = new Date();
@@ -1345,20 +1366,10 @@
       };
 
       try {
-        const response = await fetch('/returns', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          await loadReturns();
-          closeReturnModal();
-          showNotification('تم تسجيل الإرجاع بنجاح وخصمه من المخزن', 'success');
-        } else {
-          const errorData = await response.json();
-          showNotification('حدث خطأ: ' + (errorData.error || 'خطأ غير معروف'), 'error');
-        }
+        await projectUtils.postWithProject('/returns', data);
+        await loadReturns();
+        closeReturnModal();
+        showNotification('تم تسجيل الإرجاع بنجاح وخصمه من المخزن', 'success');
       } catch (error) {
         console.error('خطأ:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
@@ -1370,18 +1381,16 @@
 
     // Delete Return
     async function deleteReturn(id) {
+      if (!hasPermission('purchases.deleteReturn')) {
+        showNotification('ليس لديك صلاحية لحذف المرتجعات', 'error');
+        return;
+      }
       if (!confirm('هل أنت متأكد من حذف هذا الإرجاع؟\nسيتم إعادة الكمية للمخزن.')) return;
 
       try {
-        const response = await fetch(`/returns/${id}`, { method: 'DELETE' });
-        
-        if (response.ok) {
-          await loadReturns();
-          showNotification('تم حذف الإرجاع بنجاح', 'success');
-        } else {
-          const errorData = await response.json();
-          showNotification('حدث خطأ: ' + (errorData.error || 'خطأ غير معروف'), 'error');
-        }
+        await projectUtils.deleteWithProject(`/returns/${id}`);
+        await loadReturns();
+        showNotification('تم حذف الإرجاع بنجاح', 'success');
       } catch (error) {
         console.error('خطأ:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
@@ -1441,6 +1450,10 @@
 
     // Open Add Purchase Modal
     function openAddPurchaseModal() {
+      if (!hasPermission('purchases.add')) {
+        showNotification('ليس لديك صلاحية لإضافة مشتريات جديدة', 'error');
+        return;
+      }
       currentEditId = null;
       document.getElementById('modalTitle').textContent = 'إضافة عملية شراء جديدة';
       document.getElementById('purchaseForm').reset();
@@ -1482,26 +1495,18 @@
       };
 
       try {
-        const url = currentEditId ? `/purchases/${currentEditId}` : '/purchases';
-        const method = currentEditId ? 'PUT' : 'POST';
-
-        const response = await fetch(url, {
-          method: method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          await loadPurchases();
-          closePurchaseModal();
-          showNotification(
-            currentEditId ? 'تم تحديث الشراء بنجاح' : 'تم إضافة الشراء بنجاح وإضافته للمخزن',
-            'success'
-          );
+        if (currentEditId) {
+          await projectUtils.putWithProject(`/purchases/${currentEditId}`, data);
         } else {
-          const errorData = await response.json();
-          showNotification('حدث خطأ: ' + (errorData.error || 'خطأ غير معروف'), 'error');
+          await projectUtils.postWithProject('/purchases', data);
         }
+
+        await loadPurchases();
+        closePurchaseModal();
+        showNotification(
+          currentEditId ? 'تم تحديث الشراء بنجاح' : 'تم إضافة الشراء بنجاح وإضافته للمخزن',
+          'success'
+        );
       } catch (error) {
         console.error('خطأ:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
@@ -1513,6 +1518,10 @@
 
     // Edit Purchase
     function editPurchase(id) {
+      if (!hasPermission('purchases.edit')) {
+        showNotification('ليس لديك صلاحية لتعديل المشتريات', 'error');
+        return;
+      }
       const purchase = purchases.find(p => p._id === id);
       if (!purchase) return;
 
@@ -1533,18 +1542,16 @@
 
     // Delete Purchase
     async function deletePurchase(id) {
+      if (!hasPermission('purchases.delete')) {
+        showNotification('ليس لديك صلاحية لحذف المشتريات', 'error');
+        return;
+      }
       if (!confirm('هل أنت متأكد من حذف هذا الشراء؟\nسيتم أيضاً حذفه من المخزن.')) return;
 
       try {
-        const response = await fetch(`/purchases/${id}`, { method: 'DELETE' });
-        
-        if (response.ok) {
-          await loadPurchases();
-          showNotification('تم حذف الشراء بنجاح', 'success');
-        } else {
-          const errorData = await response.json();
-          showNotification('حدث خطأ: ' + (errorData.error || 'خطأ غير معروف'), 'error');
-        }
+        await projectUtils.deleteWithProject(`/purchases/${id}`);
+        await loadPurchases();
+        showNotification('تم حذف الشراء بنجاح', 'success');
       } catch (error) {
         console.error('خطأ:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
@@ -1553,6 +1560,10 @@
 
     // Export to Excel
     function exportToExcel() {
+      if (!hasPermission('purchases.export')) {
+        showNotification('ليس لديك صلاحية لتصدير البيانات', 'error');
+        return;
+      }
       const filtered = getFilteredPurchases();
       
       if (filtered.length === 0) {
@@ -1647,6 +1658,13 @@
     document.getElementById('returnModal').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) {
         closeReturnModal();
+      }
+    });
+
+    // Apply permissions on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof applyPagePermissions === 'function') {
+        applyPagePermissions();
       }
     });
   </script>

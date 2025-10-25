@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار الصلاحيات</title>
+  <script src="js/permissions.js"></script>
+  <style>
+    body { font-family: 'Cairo', Arial, sans-serif; padding: 20px; direction: rtl; }
+    .test-section { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .success { color: green; }
+    .error { color: red; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🔍 اختبار نظام الصلاحيات</h1>
+  
+  <div class="test-section">
+    <h3>معلومات المستخدم الحالي</h3>
+    <div id="userInfo"></div>
+  </div>
+  
+  <div class="test-section">
+    <h3>الصلاحيات المتاحة</h3>
+    <div id="permissionsList"></div>
+  </div>
+  
+  <div class="test-section">
+    <h3>اختبار صلاحيات المشتريات</h3>
+    <button onclick="testPermission('purchases.view')">purchases.view</button>
+    <button onclick="testPermission('purchases.add')">purchases.add</button>
+    <button onclick="testPermission('purchases.edit')">purchases.edit</button>
+    <button onclick="testPermission('purchases.delete')">purchases.delete</button>
+    <button onclick="testPermission('purchases.export')">purchases.export</button>
+    <button onclick="testPermission('purchases.returns')">purchases.returns</button>
+    <div id="testResults"></div>
+  </div>
+  
+  <div class="test-section">
+    <h3>اختبار الأزرار</h3>
+    <button data-permission="purchases.add">زر تجريبي - إضافة</button>
+    <button data-permission="purchases.edit">زر تجريبي - تعديل</button>
+    <button data-permission="purchases.delete">زر تجريبي - حذف</button>
+    <button data-permission="workers.add">زر تجريبي - عمال</button>
+  </div>
+
+  <script>
+    // عرض معلومات المستخدم
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    document.getElementById('userInfo').innerHTML = `
+      <p><strong>الاسم:</strong> ${user.username || 'غير محدد'}</p>
+      <p><strong>الدور:</strong> ${user.role || 'غير محدد'}</p>
+      <p><strong>المسمى الوظيفي:</strong> ${user.jobTitle || 'غير محدد'}</p>
+      <p><strong>المشروع الحالي:</strong> ${localStorage.getItem('currentProjectId') || 'غير محدد'}</p>
+      <p><strong>الشركة الحالية:</strong> ${localStorage.getItem('currentCompanyId') || 'غير محدد'}</p>
+    `;
+    
+    // عرض الصلاحيات
+    const permissions = getCurrentUserPermissions();
+    document.getElementById('permissionsList').innerHTML = `
+      <p><strong>عدد الصلاحيات:</strong> ${permissions.length}</p>
+      <pre style="background: white; padding: 10px; max-height: 200px; overflow-y: auto;">${JSON.stringify(permissions, null, 2)}</pre>
+    `;
+    
+    // اختبار صلاحية
+    function testPermission(perm) {
+      const hasIt = hasPermission(perm);
+      const result = document.getElementById('testResults');
+      result.innerHTML += `<p class="${hasIt ? 'success' : 'error'}">
+        ${hasIt ? '✅' : '❌'} ${perm}
+      </p>`;
+    }
+    
+    // تطبيق الصلاحيات على الأزرار
+    setTimeout(() => {
+      console.log('تطبيق الصلاحيات...');
+      applyPermissionsToButtons();
+    }, 500);
+  </script>
+</body>
+</html>
