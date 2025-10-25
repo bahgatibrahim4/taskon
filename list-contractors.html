@@ -1535,11 +1535,27 @@ function hasPermission(permission) {
       const list = document.getElementById('contractorsList');
       list.innerHTML = '';
       
-      // Check permissions
-      if (!hasPermission('contractors.view')) {
+      // Check permissions - مع تفاصيل إضافية للتصحيح
+      console.log('🔍 فحص صلاحية عرض المقاولين...');
+      const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+      const user = JSON.parse(userStr || '{}');
+      console.log('👤 بيانات المستخدم:', {
+        role: user.role,
+        jobTitle: user.jobTitle,
+        permissions: user.permissions
+      });
+      
+      const canView = hasPermission('contractors.view');
+      console.log('✅ نتيجة فحص الصلاحية:', canView);
+      
+      if (!canView) {
+        console.error('❌ ليس لديك صلاحية لعرض المقاولين');
         showNotification('ليس لديك صلاحية لعرض قائمة المقاولين', 'error');
+        list.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#f44336;">❌ ليس لديك صلاحية لعرض قائمة المقاولين</td></tr>';
         return;
       }
+      
+      console.log(`📋 عرض ${contractors.length} مقاول`);
       
       contractors.forEach((c, index) => {
         const tr = document.createElement('tr');
