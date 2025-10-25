@@ -30,7 +30,7 @@ function createWindow() {
 
   // الانتظار قليلاً حتى يبدأ السيرفر
   setTimeout(() => {
-    mainWindow.loadURL('http://localhost:4000/auto-login.html');
+    mainWindow.loadURL('http://localhost:4000/company-setup.html');
   }, 3000);
 
   // فتح DevTools في وضع التطوير فقط

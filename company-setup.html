@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>TASKON - إعداد الشركة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Tajawal', Arial, sans-serif;
+      background: linear-gradient(135deg, #c5d6db 0%, #2e8ca3 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    .logo {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #2e8ca3;
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #c5d6db;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+      font-family: 'Tajawal', Arial, sans-serif;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2e8ca3;
+    }
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: #2e8ca3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-family: 'Tajawal', Arial, sans-serif;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background: #1a3b50;
+    }
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .divider {
+      margin: 30px 0;
+      text-align: center;
+      color: #999;
+      position: relative;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #ddd;
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+    .error {
+      color: #e53935;
+      margin-top: 10px;
+      display: none;
+    }
+    .success {
+      color: #4caf50;
+      margin-top: 10px;
+      display: none;
+    }
+    .info-box {
+      background: #e8f5e9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: right;
+      border-right: 4px solid #4caf50;
+    }
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #2e7d32;
+    }
+    .info-box p {
+      margin: 5px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🏗️</div>
+    <h1>TASKON</h1>
+    <p class="subtitle">نظام إدارة المشاريع والمقاولات</p>
+
+    <!-- قسم إنشاء شركة جديدة -->
+    <div id="newCompanySection">
+      <div class="info-box">
+        <h3>📋 إعداد أول مرة</h3>
+        <p>قم بإنشاء شركتك وحساب المدير</p>
+      </div>
+
+      <div class="form-group">
+        <label>اسم الشركة</label>
+        <input type="text" id="companyName" placeholder="مثال: شركة المقاولات المتحدة">
+      </div>
+
+      <div class="form-group">
+        <label>اسم المدير</label>
+        <input type="text" id="adminName" placeholder="مثال: أحمد محمد">
+      </div>
+
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="adminEmail" placeholder="admin@company.com">
+      </div>
+
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="adminPassword" placeholder="أدخل كلمة مرور قوية">
+      </div>
+
+      <button class="btn" onclick="createCompany()">🚀 إنشاء الشركة</button>
+      
+      <div class="divider">أو</div>
+      
+      <button class="btn" onclick="showLogin()" style="background: #7a5230;">
+        🔑 تسجيل الدخول (للموظفين)
+      </button>
+
+      <div class="error" id="error"></div>
+      <div class="success" id="success"></div>
+    </div>
+
+    <!-- قسم تسجيل الدخول (مخفي) -->
+    <div id="loginSection" style="display: none;">
+      <div class="info-box">
+        <h3>🔐 تسجيل الدخول</h3>
+        <p>للموظفين والمستخدمين العاديين</p>
+      </div>
+
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="email@company.com">
+      </div>
+
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="loginPassword" placeholder="كلمة المرور">
+      </div>
+
+      <button class="btn" onclick="login()">دخول</button>
+      
+      <div class="divider">أو</div>
+      
+      <button class="btn" onclick="showNewCompany()" style="background: #7a5230;">
+        رجوع لإنشاء شركة
+      </button>
+
+      <div class="error" id="loginError"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:4000';
+
+    function showLogin() {
+      document.getElementById('newCompanySection').style.display = 'none';
+      document.getElementById('loginSection').style.display = 'block';
+    }
+
+    function showNewCompany() {
+      document.getElementById('newCompanySection').style.display = 'block';
+      document.getElementById('loginSection').style.display = 'none';
+    }
+
+    async function createCompany() {
+      const companyName = document.getElementById('companyName').value.trim();
+      const adminName = document.getElementById('adminName').value.trim();
+      const adminEmail = document.getElementById('adminEmail').value.trim();
+      const adminPassword = document.getElementById('adminPassword').value;
+
+      const errorEl = document.getElementById('error');
+      const successEl = document.getElementById('success');
+      
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      // التحقق من البيانات
+      if (!companyName || !adminName || !adminEmail || !adminPassword) {
+        errorEl.textContent = 'جميع الحقول مطلوبة';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      if (adminPassword.length < 6) {
+        errorEl.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        // إنشاء subdomain من اسم الشركة
+        const subdomain = companyName
+          .toLowerCase()
+          .replace(/\s+/g, '')
+          .replace(/[^\w\u0600-\u06FF]/g, '')
+          .substring(0, 20);
+
+        // 1. إنشاء الشركة
+        const companyRes = await fetch(`${API_URL}/companies`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            companyName,
+            subdomain,
+            email: adminEmail,
+            phone: '',
+            address: '',
+            isActive: true
+          })
+        });
+
+        if (!companyRes.ok) {
+          const error = await companyRes.json();
+          throw new Error(error.error || 'فشل إنشاء الشركة');
+        }
+
+        const company = await companyRes.json();
+        console.log('✅ تم إنشاء الشركة:', company);
+
+        // 2. إنشاء مستخدم المدير
+        const userRes = await fetch(`${API_URL}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: adminName,
+            email: adminEmail,
+            password: adminPassword,
+            role: 'admin',
+            jobTitle: 'مدير الشركة',
+            permissions: ['*'],
+            companyId: company._id,
+            isActive: true
+          })
+        });
+
+        if (!userRes.ok) {
+          const error = await userRes.json();
+          throw new Error(error.error || 'فشل إنشاء المستخدم');
+        }
+
+        const user = await userRes.json();
+        console.log('✅ تم إنشاء المستخدم:', user);
+
+        // حفظ البيانات
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('currentCompany', subdomain);
+        localStorage.setItem('currentCompanyId', company._id);
+
+        successEl.textContent = '✅ تم إنشاء الشركة بنجاح! جاري التوجيه...';
+        successEl.style.display = 'block';
+
+        // الانتقال لصفحة المشاريع
+        setTimeout(() => {
+          window.location.href = `projects.html?company=${subdomain}&companyId=${company._id}`;
+        }, 1500);
+
+      } catch (error) {
+        console.error('❌ خطأ:', error);
+        errorEl.textContent = error.message || 'حدث خطأ أثناء الإنشاء';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errorEl = document.getElementById('loginError');
+      
+      errorEl.style.display = 'none';
+
+      if (!email || !password) {
+        errorEl.textContent = 'البريد الإلكتروني وكلمة المرور مطلوبان';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'فشل تسجيل الدخول');
+        }
+
+        const user = data.user;
+        
+        // حفظ بيانات المستخدم
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // جلب بيانات الشركة
+        const companyRes = await fetch(`${API_URL}/companies/${user.companyId}`);
+        const company = await companyRes.json();
+
+        localStorage.setItem('currentCompany', company.subdomain);
+        localStorage.setItem('currentCompanyId', company._id);
+
+        console.log('✅ تسجيل دخول ناجح');
+
+        // إذا كان له مشروع محدد
+        if (user.projectId) {
+          localStorage.setItem('currentProjectId', user.projectId);
+          window.location.href = `index.html?company=${company.subdomain}&companyId=${company._id}&projectId=${user.projectId}`;
+        } else {
+          // الذهاب لصفحة المشاريع
+          window.location.href = `projects.html?company=${company.subdomain}&companyId=${company._id}`;
+        }
+
+      } catch (error) {
+        console.error('❌ خطأ:', error);
+        errorEl.textContent = error.message || 'خطأ في تسجيل الدخول';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    // التحقق إذا كان المستخدم مسجل دخول بالفعل
+    window.onload = function() {
+      const user = localStorage.getItem('currentUser');
+      if (user) {
+        const userData = JSON.parse(user);
+        const company = localStorage.getItem('currentCompany');
+        const companyId = localStorage.getItem('currentCompanyId');
+        
+        if (userData.projectId) {
+          window.location.href = `index.html?company=${company}&companyId=${companyId}&projectId=${userData.projectId}`;
+        } else {
+          window.location.href = `projects.html?company=${company}&companyId=${companyId}`;
+        }
+      }
+    };
+  </script>
+</body>
+</html>
