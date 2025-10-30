@@ -33,27 +33,83 @@ app.get('/status', (req, res) => {
   });
 });
 
-// Simple drawings endpoint WITHOUT database dependency
-app.get('/drawings', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Drawings endpoint is working',
-    data: [],
-    count: 0,
-    note: 'Database will be connected after server starts',
-    timestamp: new Date().toISOString()
-  });
+// Drawings endpoint with proper database integration
+app.get('/drawings', async (req, res) => {
+  try {
+    console.log('🔍 GET /drawings called at:', new Date().toISOString());
+    
+    // If database not connected yet, return empty array
+    if (!drawingsCollection) {
+      console.log('⏳ Database not connected yet, returning empty array');
+      return res.json([]);
+    }
+    
+    const drawings = await drawingsCollection.find({}).sort({ drawingDate: -1 }).toArray();
+    console.log('✅ Found drawings:', drawings.length);
+    
+    // Return array directly (what frontend expects)
+    res.json(drawings);
+    
+  } catch (err) {
+    console.error('❌ Error fetching drawings:', err);
+    // Return empty array on error so frontend doesn't break
+    res.json([]);
+  }
 });
 
-// Simple POST drawings endpoint
-app.post('/drawings', (req, res) => {
-  res.json({
-    success: true,
-    message: 'POST drawings endpoint working',
-    received_data: req.body,
-    note: 'Will process after database connection',
-    timestamp: new Date().toISOString()
-  });
+// POST drawings endpoint with proper handling
+app.post('/drawings', async (req, res) => {
+  try {
+    console.log('📝 POST /drawings called at:', new Date().toISOString());
+    console.log('📄 Request body:', req.body);
+    
+    if (!drawingsCollection) {
+      return res.status(500).json({
+        success: false,
+        error: 'Database not connected yet'
+      });
+    }
+
+    const drawing = {
+      drawingNumber: req.body.drawingNumber,
+      drawingName: req.body.drawingName,
+      drawingDate: new Date(req.body.drawingDate || Date.now()),
+      contractorName: req.body.contractorName,
+      drawingType: req.body.drawingType,
+      drawingItem: req.body.drawingItem || '',
+      notes: req.body.notes || '',
+      createdAt: new Date(),
+      lastUpdated: new Date()
+    };
+
+    const result = await drawingsCollection.insertOne(drawing);
+    console.log('✅ Drawing created with ID:', result.insertedId);
+
+    res.json({
+      success: true,
+      message: 'تم إنشاء المخطط بنجاح',
+      id: result.insertedId
+    });
+
+  } catch (err) {
+    console.error('❌ Error creating drawing:', err);
+    res.status(500).json({
+      success: false,
+      error: 'فشل في إنشاء المخطط',
+      details: err.message
+    });
+  }
+});
+
+// Notifications endpoints to fix 404 errors
+app.get('/notifications/:userId', (req, res) => {
+  // Return empty notifications for now
+  res.json([]);
+});
+
+app.get('/notifications/:userId/unread-count', (req, res) => {
+  // Return zero unread count for now
+  res.json({ count: 0 });
 });
 
 console.log('✅ Basic endpoints registered');
