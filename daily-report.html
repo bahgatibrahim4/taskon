@@ -21,12 +21,12 @@
     .icon-btn{padding:0.4rem 0.8rem;border-radius:8px;border:none;cursor:pointer;font-size:0.85rem;transition:all 0.2s;font-family:'Cairo',sans-serif}
     .icon-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
     .equipment-table td{vertical-align:middle;border-bottom:1px solid #f0f7fa;font-family:'Cairo',sans-serif}
-    .equipment-table td:nth-child(odd){text-align:right;font-weight:600;background:#fafcfd}
-    .equipment-table td:nth-child(even){text-align:center;background:#fff}
-    .equipment-table input[type="number"]{width:90px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;transition:border-color 0.2s;font-family:'Cairo',sans-serif}
+    .equipment-table td:nth-child(1){text-align:right;font-weight:600;background:#fafcfd;padding:0.6rem}
+    .equipment-table td:nth-child(2){text-align:center;background:#fff;padding:0.4rem}
+    .equipment-table input[type="number"]{width:80px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;transition:border-color 0.2s;font-family:'Cairo',sans-serif}
     .equipment-table input[type="number"]:focus{border-color:#197c91;outline:none;box-shadow:0 0 0 3px rgba(25,124,145,0.1)}
-    .work-items-table th, .work-items-table td{text-align:center;font-family:'Cairo',sans-serif}
-    .work-items-table td:nth-child(3){text-align:right;max-width:200px}
+    .work-items-table th, .work-items-table td{text-align:center;font-family:'Cairo',sans-serif;font-size:0.85rem;padding:0.5rem}
+    .work-items-table td:nth-child(3){text-align:right}
     .btn{padding:0.6rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-weight:600;transition:all 0.2s;font-family:'Cairo',sans-serif}
     .btn-primary{background:linear-gradient(135deg, #197c91 0%, #1565c0 100%);color:#fff;box-shadow:0 4px 12px rgba(25,124,145,0.3)}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(25,124,145,0.4)}
@@ -41,22 +41,10 @@
     h1,h2,h3,h4,h5,h6{font-family:'Cairo',sans-serif}
     #addWorkBtn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 6px 20px rgba(25,124,145,0.4)}
     
-    /* Responsive design for add work form */
+    /* Responsive design for split layout */
     @media (max-width: 1000px) {
-      .add-work-form {
-        grid-template-columns: 1fr 1fr !important;
-      }
-      .add-work-form button {
-        grid-column: span 2 !important;
-        justify-self: center !important;
-      }
-    }
-    @media (max-width: 600px) {
-      .add-work-form {
+      .card > div[style*="grid-template-columns:1fr 1fr"] {
         grid-template-columns: 1fr !important;
-      }
-      .add-work-form button {
-        grid-column: 1 !important;
       }
     }
   </style>
@@ -81,76 +69,81 @@
   </script>
   
   <div class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
       <h2>تفاصيل التقرير</h2>
       <div><a href="daily-reports.html" class="small link">العودة لقائمة التقارير</a></div>
     </div>
 
     <div class="card" id="reportCard">
-      <div id="reportHeader" style="display:flex;justify-content:space-between;align-items:center"></div>
+      <div id="reportHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:3px solid #e1ecf4"></div>
 
-      <h4 class="small">جدول المعدات</h4>
-      <table class="equipment-table" id="equipmentTable" style="table-layout:fixed">
-        <thead>
-          <tr>
-            <th style="text-align:right;width:16.66%">المعدة</th>
-            <th style="text-align:center;width:16.66%">العدد</th>
-            <th style="text-align:right;width:16.66%">المعدة</th>
-            <th style="text-align:center;width:16.66%">العدد</th>
-            <th style="text-align:right;width:16.66%">المعدة</th>
-            <th style="text-align:center;width:16.66%">العدد</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-
-      <h4 class="small" style="margin-top:1rem">بيان الأعمال</h4>
-      <table class="work-items-table" id="workItemsTable">
-        <thead>
-          <tr>
-            <th>م</th>
-            <th>رقم المبني / الدور</th>
-            <th>بيان الاعمال</th>
-            <th>الصور</th>
-            <th>اسم المستخدم</th>
-            <th>حذف</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-
-      <div style="margin-top:1.5rem;background:linear-gradient(135deg, #f8fbfc 0%, #e8f4f8 100%);padding:1.2rem;border-radius:12px;border:2px solid #e1ecf4;box-shadow:0 4px 15px rgba(0,0,0,0.06)">
-        <div style="display:flex;align-items:center;margin-bottom:1rem">
-          <div style="background:#197c91;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin-left:10px;font-size:1rem">➕</div>
-          <h5 style="margin:0;color:#1a3b50;font-weight:700;font-size:1rem;font-family:'Cairo',sans-serif">إضافة بند عمل جديد</h5>
-        </div>
+      <!-- Split layout: Equipment on left, Work Items on right -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
         
-        <div class="add-work-form" style="display:grid;grid-template-columns:1fr 2fr 1fr auto;gap:1rem;align-items:end">
-          <div>
-            <label style="display:block;margin-bottom:0.3rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.85rem">رقم المبني</label>
-            <input id="newBuilding" 
-                   placeholder="مثال: A-2" 
-                   style="width:100%;padding:0.6rem;border:2px solid #e1ecf4;border-radius:8px;font-family:'Cairo',sans-serif;transition:all 0.3s;background:#fff;font-size:0.9rem" />
+        <!-- Left Section: Equipment -->
+        <div style="background:linear-gradient(135deg, #f8fbfc 0%, #ffffff 100%);padding:1.5rem;border-radius:12px;border:2px solid #e1ecf4">
+          <div style="display:flex;align-items:center;margin-bottom:1rem">
+            <div style="background:#197c91;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin-left:10px;font-size:1rem">🚜</div>
+            <h4 style="margin:0;color:#1a3b50;font-weight:700;font-size:1.1rem;font-family:'Cairo',sans-serif">جدول المعدات</h4>
           </div>
-          <div>
-            <label style="display:block;margin-bottom:0.3rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.85rem">بيان الأعمال *</label>
-            <input id="newDesc" 
-                   placeholder="وصف العمل المنجز..." 
-                   style="width:100%;padding:0.6rem;border:2px solid #e1ecf4;border-radius:8px;font-family:'Cairo',sans-serif;transition:all 0.3s;background:#fff;font-size:0.9rem" />
+          <table class="equipment-table" id="equipmentTable" style="table-layout:auto">
+            <thead>
+              <tr>
+                <th style="text-align:right">المعدة</th>
+                <th style="text-align:center">العدد</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Right Section: Work Items -->
+        <div style="background:linear-gradient(135deg, #f8fbfc 0%, #ffffff 100%);padding:1.5rem;border-radius:12px;border:2px solid #e1ecf4">
+          <div style="display:flex;align-items:center;margin-bottom:1rem">
+            <div style="background:#197c91;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin-left:10px;font-size:1rem">📋</div>
+            <h4 style="margin:0;color:#1a3b50;font-weight:700;font-size:1.1rem;font-family:'Cairo',sans-serif">بيان الأعمال</h4>
           </div>
-          <div>
-            <label style="display:block;margin-bottom:0.3rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.85rem">الصور</label>
-            <input id="newPhotos" 
-                   type="file" 
-                   accept="image/*" 
-                   multiple 
-                   style="width:100%;padding:0.6rem;border:2px dashed #197c91;border-radius:8px;font-family:'Cairo',sans-serif;background:#fff;cursor:pointer;font-size:0.85rem" />
+          <div style="max-height:400px;overflow-y:auto;margin-bottom:1rem">
+            <table class="work-items-table" id="workItemsTable">
+              <thead>
+                <tr>
+                  <th>م</th>
+                  <th>المبني</th>
+                  <th>بيان الاعمال</th>
+                  <th>الصور</th>
+                  <th>المستخدم</th>
+                  <th>حذف</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
-          <button id="addWorkBtn" 
-                  class="btn btn-primary" 
-                  style="padding:0.6rem 1.2rem;font-size:0.9rem;font-weight:700;border-radius:8px;background:linear-gradient(135deg, #197c91 0%, #1565c0 100%);color:#fff;border:none;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 4px 12px rgba(25,124,145,0.3);transition:all 0.3s;white-space:nowrap">
-            ✓ إضافة
-          </button>
+          
+          <!-- Add Work Item Form -->
+          <div style="background:#f8fbfc;padding:1rem;border-radius:8px;border:2px dashed #197c91;margin-top:1rem">
+            <div style="display:flex;align-items:center;margin-bottom:0.8rem">
+              <div style="background:#197c91;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-left:8px;font-size:0.85rem">➕</div>
+              <span style="color:#1a3b50;font-weight:600;font-size:0.9rem;font-family:'Cairo',sans-serif">إضافة بند جديد</span>
+            </div>
+            <div style="display:grid;gap:0.8rem">
+              <input id="newBuilding" 
+                     placeholder="رقم المبني (مثال: A-2)" 
+                     style="width:100%;padding:0.5rem;border:2px solid #e1ecf4;border-radius:6px;font-family:'Cairo',sans-serif;font-size:0.85rem" />
+              <input id="newDesc" 
+                     placeholder="بيان الأعمال *" 
+                     style="width:100%;padding:0.5rem;border:2px solid #e1ecf4;border-radius:6px;font-family:'Cairo',sans-serif;font-size:0.85rem" />
+              <input id="newPhotos" 
+                     type="file" 
+                     accept="image/*" 
+                     multiple 
+                     style="width:100%;padding:0.5rem;border:2px dashed #197c91;border-radius:6px;font-family:'Cairo',sans-serif;background:#fff;cursor:pointer;font-size:0.8rem" />
+              <button id="addWorkBtn" 
+                      class="btn btn-primary" 
+                      style="padding:0.5rem 1rem;font-size:0.85rem;font-weight:700;border-radius:6px;background:linear-gradient(135deg, #197c91 0%, #1565c0 100%);color:#fff;border:none;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 4px 12px rgba(25,124,145,0.3);transition:all 0.3s">
+                ✓ إضافة
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -184,27 +177,18 @@
 
     function renderEquipment(){
       const equipmentData = report?.equipment || {};
-      const equipmentRows = [];
       
-      // تقسيم المعدات إلى صفوف، كل صف 3 معدات
-      for (let i = 0; i < equipmentList.length; i += 3) {
-        const rowEquipment = equipmentList.slice(i, i + 3);
-        equipmentRows.push(rowEquipment);
-      }
-      
-      equipmentTable.querySelector('tbody').innerHTML = equipmentRows.map(row => `<tr>
-        ${row.map(e => `
-          <td style="padding:0.5rem 0.8rem;text-align:right;width:16.66%">${e}</td>
-          <td style="text-align:center;width:16.66%">
-            <input type="number" 
-                   min="0" 
-                   value="${equipmentData[e] || ''}" 
-                   style="width:80px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:0.3rem"
-                   onchange="updateEquipmentCount('${e}', this.value)"
-                   placeholder="0"/>
-          </td>
-        `).join('')}
-        ${row.length < 3 ? '<td colspan="' + (6 - row.length * 2) + '"></td>' : ''}
+      // عرض المعدات في صفوف عادية (صفين)
+      equipmentTable.querySelector('tbody').innerHTML = equipmentList.map(e => `<tr>
+        <td style="padding:0.6rem 0.8rem;text-align:right;font-weight:600">${e}</td>
+        <td style="text-align:center;padding:0.4rem">
+          <input type="number" 
+                 min="0" 
+                 value="${equipmentData[e] || ''}" 
+                 style="width:80px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;font-family:'Cairo',sans-serif"
+                 onchange="updateEquipmentCount('${e}', this.value)"
+                 placeholder="0"/>
+        </td>
       </tr>`).join('');
     }
 
