@@ -47,6 +47,7 @@
   
   const pagePermissions = {
     'add-extract': 'add-extract-access',
+    'extract': 'list-extracts-access',
     'list-extracts': 'list-extracts-access',
     'add-contractor': 'contractors-access',
     'list-contractors': 'contractors-access',
@@ -59,7 +60,8 @@
     'purchases': 'purchases-access',
     'receipts': 'receipts-access',
     'users': 'users-access',
-    'equipments': 'store-access'
+    'equipments': 'store-access',
+    'daily-reports': 'daily-reports-access'
   };
 
   // التحقق من صلاحية الوصول للصفحة
@@ -140,6 +142,7 @@
   window.checkPagePermission = function(page) {
     const pagePerms = {
       'add-extract': 'add-extract-access',
+      'extract': 'list-extracts-access',
       'list-extracts': 'list-extracts-access',
       'add-contractor': 'contractors-access',
       'list-contractors': 'contractors-access',
