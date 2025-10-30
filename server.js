@@ -72,6 +72,7 @@ let externalServicesCollection = null;
 let dailyReportsCollection = null;
 let usersCollection = null;
 let contractorsCollection = null;
+let extractsCollection = null;
 
 MongoClient.connect(uri)
   .then(client => {
@@ -82,12 +83,14 @@ MongoClient.connect(uri)
     dailyReportsCollection = db.collection('daily_reports');
     usersCollection = db.collection('users');
     contractorsCollection = db.collection('contractors');
+    extractsCollection = db.collection('extracts');
     console.log('🌐 Database collections initialized:', {
       drawings: !!drawingsCollection,
       externalServices: !!externalServicesCollection,
       dailyReports: !!dailyReportsCollection,
       users: !!usersCollection,
-      contractors: !!contractorsCollection
+      contractors: !!contractorsCollection,
+      extracts: !!extractsCollection
     });
   })
   .catch(err => {
@@ -786,7 +789,231 @@ app.delete('/contractors/:id', async (req, res) => {
   }
 });
 
+// Get contractor contracts
+app.get('/contractors/:id/contracts', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    res.json(contractor.contracts || []);
+  } catch (err) {
+    console.error('Error fetching contracts:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get contractor extracts
+app.get('/contractors/:id/extracts', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const contractorId = req.params.id;
+    const extracts = await extractsCollection.find({ contractorId }).toArray();
+    res.json(extracts);
+  } catch (err) {
+    console.error('Error fetching extracts:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get contractor pulled works
+app.get('/contractors/:id/pulled-works', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    res.json(contractor.pulledWorks || []);
+  } catch (err) {
+    console.error('Error fetching pulled works:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete contractor material
+app.delete('/contractors/:id/materials/:index', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const index = parseInt(req.params.index);
+    
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    const materials = contractor.materials || [];
+    if (index < 0 || index >= materials.length) {
+      return res.status(400).json({ error: 'Invalid material index' });
+    }
+    
+    materials.splice(index, 1);
+    
+    await contractorsCollection.updateOne(
+      { _id: id },
+      { $set: { materials, updatedAt: new Date() } }
+    );
+    
+    res.json({ success: true, message: 'Material deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting material:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ==================== End Contractors API ====================
+
+// ==================== Extracts API ====================
+
+// Get all extracts
+app.get('/extracts', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const extracts = await extractsCollection.find({}).toArray();
+    res.json(extracts);
+  } catch (err) {
+    console.error('Error fetching extracts:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get single extract
+app.get('/extracts/:id', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const extract = await extractsCollection.findOne({ _id: id });
+    
+    if (!extract) {
+      return res.status(404).json({ error: 'Extract not found' });
+    }
+    
+    res.json(extract);
+  } catch (err) {
+    console.error('Error fetching extract:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Add new extract
+app.post('/extracts', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const extractData = {
+      ...req.body,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    const result = await extractsCollection.insertOne(extractData);
+    res.json({ success: true, insertedId: result.insertedId });
+  } catch (err) {
+    console.error('Error adding extract:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update extract
+app.put('/extracts/:id', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+    delete updateData._id;
+    
+    const result = await extractsCollection.updateOne(
+      { _id: id },
+      { $set: updateData }
+    );
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error('Error updating extract:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete extract
+app.delete('/extracts/:id', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const result = await extractsCollection.deleteOne({ _id: id });
+    res.json({ success: true, deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error('Error deleting extract:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete work item from extract
+app.delete('/extracts/:id/work-items/:index', async (req, res) => {
+  try {
+    if (!extractsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const index = parseInt(req.params.index);
+    
+    const extract = await extractsCollection.findOne({ _id: id });
+    if (!extract) {
+      return res.status(404).json({ error: 'Extract not found' });
+    }
+    
+    const workItems = extract.workItems || [];
+    if (index < 0 || index >= workItems.length) {
+      return res.status(400).json({ error: 'Invalid work item index' });
+    }
+    
+    workItems.splice(index, 1);
+    
+    await extractsCollection.updateOne(
+      { _id: id },
+      { $set: { workItems, updatedAt: new Date() } }
+    );
+    
+    res.json({ success: true, message: 'Work item deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting work item:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==================== End Extracts API ====================
 
 // Serve static HTML files
 app.get('/', (req, res) => {
