@@ -2126,6 +2126,11 @@
       `;
 
       drawingsContent.innerHTML = html;
+      
+      // Apply permissions to buttons after rendering
+      if (typeof applyPermissions === 'function') {
+        applyPermissions();
+      }
     }
 
     // Event Listeners - Modal
@@ -2197,6 +2202,16 @@
 
     // Initialize
     loadDrawings();
+    
+    // Apply permissions to page elements
+    if (typeof applyPermissions === 'function') {
+      applyPermissions();
+    }
+    
+    // Check page permissions on load
+    if (typeof checkPagePermission === 'function') {
+      checkPagePermission('drawings');
+    }
   </script>
 </body>
 </html>
