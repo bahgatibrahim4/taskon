@@ -1189,7 +1189,17 @@
       contractsData.forEach((contract, index) => {
         // إعداد عمود ملف PDF
         let pdfCell = '';
-        if (contract.contractFileName) {
+        if (contract.attachments && contract.attachments.length > 0) {
+          // عرض أول ملف مرفق
+          const firstFile = contract.attachments[0];
+          pdfCell = `<a href="${firstFile.path}" target="_blank" style="color:#2e8ca3; font-weight:bold; text-decoration:underline;" title="عرض ملف العقد">📄 ${firstFile.filename}</a>`;
+          
+          // إذا كان هناك أكثر من ملف، إضافة عداد
+          if (contract.attachments.length > 1) {
+            pdfCell += ` <span style="color:#888; font-size:10px;">(+${contract.attachments.length - 1})</span>`;
+          }
+        } else if (contract.contractFileName) {
+          // دعم البيانات القديمة
           pdfCell = `<a href="/contracts/${contract.contractFileName}" target="_blank" style="color:#2e8ca3; font-weight:bold; text-decoration:underline;" title="عرض ملف العقد">📄 عرض</a>`;
         } else {
           pdfCell = '<span style="color:#888;">لا يوجد</span>';
