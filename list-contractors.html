@@ -1324,6 +1324,18 @@
     async function loadWorkItemsFilters() {
       try {
         const res = await fetch('/contractors/work-items/unique');
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Response is not JSON:', text);
+          throw new Error('Response is not JSON');
+        }
+        
         const workItems = await res.json();
         
         const filterContainer = document.getElementById('filterChipsContainer');
@@ -1355,6 +1367,18 @@
     async function fetchContractors() {
       try {
         const res = await fetch('/contractors');
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Response is not JSON:', text);
+          throw new Error('Response is not JSON');
+        }
+        
         const contractors = await res.json();
         allContractors = contractors;
         
@@ -1646,6 +1670,13 @@
         });
 
         if (res.ok) {
+          const contentType = res.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text();
+            console.error('Response is not JSON:', text);
+            throw new Error('Response is not JSON');
+          }
+          
           const result = await res.json();
           
           // إرسال إشعار بإضافة مقاول
@@ -1664,8 +1695,15 @@
           fetchContractors(); // تحديث القائمة
           alert('تم إضافة المقاول بنجاح');
         } else {
-          const error = await res.json();
-          alert('حدث خطأ أثناء إضافة المقاول: ' + (error.error || 'خطأ غير معروف'));
+          const text = await res.text();
+          let errorMsg = 'خطأ غير معروف';
+          try {
+            const error = JSON.parse(text);
+            errorMsg = error.error || errorMsg;
+          } catch (e) {
+            errorMsg = text || errorMsg;
+          }
+          alert('حدث خطأ أثناء إضافة المقاول: ' + errorMsg);
         }
       } catch (err) {
         console.error('خطأ في إضافة المقاول:', err);
