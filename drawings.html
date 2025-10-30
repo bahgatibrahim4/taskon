@@ -2050,7 +2050,8 @@
                 <th>نموذج المبنى</th>
                 <th>اسم المخطط</th>
                 <th>القسم</th>
-                <th>الملفات</th>
+                <th>ملف CAD</th>
+                <th>ملف PDF</th>
                 <th>آخر تحديث</th>
                 <th>ملاحظات</th>
                 <th>إجراءات</th>
@@ -2084,7 +2085,15 @@
                   <td style="text-align: center;">
                     ${d.attachment ? 
                       `<a href="${API_URL}/${d.attachment}" target="_blank" style="color: #27ae60; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
-                        📄 تحميل
+                        � CAD
+                      </a>` :
+                      `<span style="color: #95a5a6;">-</span>`
+                    }
+                  </td>
+                  <td style="text-align: center;">
+                    ${d.pdfAttachment ? 
+                      `<a href="${API_URL}/${d.pdfAttachment}" target="_blank" style="color: #e74c3c; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+                        �📄 PDF
                       </a>` :
                       `<span style="color: #95a5a6;">-</span>`
                     }
