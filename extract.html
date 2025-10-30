@@ -1661,10 +1661,12 @@
         document.getElementById('addDeductionRowBtn').style.display = 'flex';
         
         // تفعيل الحقول للتعديل
-        document.querySelectorAll('input[readonly]').forEach(input => {
+        document.querySelectorAll('input').forEach(input => {
           if (!input.id.includes('Username') && !input.id.includes('statementNumber')) {
             input.removeAttribute('readonly');
-            input.style.background = '#fff';
+            if (!input.name || !['prevPercent', 'totalPercent', 'prevAmount', 'totalAmount'].includes(input.name)) {
+              input.style.background = '#fff';
+            }
           }
         });
         
