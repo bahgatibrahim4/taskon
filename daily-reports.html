@@ -27,6 +27,19 @@
     .link{color:#197c91;text-decoration:none}
     .actions{display:flex;gap:0.4rem;justify-content:center}
     .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer}
+    
+    /* Report cards styles */
+    .reports-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1rem}
+    .report-card{background:#fff;border-radius:12px;padding:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #e9f0f2;transition:all 0.2s ease;cursor:pointer}
+    .report-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.12);border-color:#197c91}
+    .report-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.8rem}
+    .report-number{font-size:1.1rem;font-weight:bold;color:#197c91}
+    .report-date{font-size:0.85rem;color:#6c7a80}
+    .report-title{font-size:0.95rem;margin-bottom:0.5rem;color:#213140}
+    .report-meta{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:#6c7a80}
+    .report-actions{display:flex;gap:0.3rem;margin-top:0.8rem}
+    .report-actions .btn{font-size:0.8rem;padding:0.3rem 0.6rem}
+    .delete-btn{background:#e74c3c;color:#fff}
   </style>
 </head>
 <body>
@@ -51,16 +64,9 @@
       <h3 id="modalTitle">إضافة تقرير يومي جديد</h3>
       <div style="margin-top:0.8rem">
         <div class="form-row">
+          <input id="reportNumber" placeholder="رقم التقرير" readonly style="background:#f8f9fa"/>
           <input id="reportDate" type="date" />
           <input id="reportName" placeholder="عنوان التقرير (اختياري)" />
-        </div>
-
-        <!-- Fixed equipment table preview -->
-        <div style="margin-top:0.6rem">
-          <h4 class="small">جدول المعدات (ثابت)</h4>
-          <table class="equipment-table" id="equipmentPreview" style="width:100%">
-            <!-- populated by JS -->
-          </table>
         </div>
 
         <!-- Work items input -->
@@ -111,9 +117,9 @@
     const reportsList = document.getElementById('reportsList');
     const newReportBtn = document.getElementById('newReportBtn');
     const reportModal = document.getElementById('reportModal');
+    const reportNumber = document.getElementById('reportNumber');
     const reportDate = document.getElementById('reportDate');
     const reportName = document.getElementById('reportName');
-    const equipmentPreview = document.getElementById('equipmentPreview');
     const buildingNumber = document.getElementById('buildingNumber');
     const workDesc = document.getElementById('workDesc');
     const workPhotos = document.getElementById('workPhotos');
@@ -125,10 +131,6 @@
     function formatDateISO(d){
       const dt = new Date(d);
       return dt.toISOString().split('T')[0];
-    }
-
-    function renderEquipmentPreview(){
-      equipmentPreview.innerHTML = equipmentList.map(eq => `<tr><td style=\"padding:0.35rem 0.6rem;text-align:right\">${eq}</td></tr>`).join('');
     }
 
     function renderWorkItems(){
@@ -146,11 +148,13 @@
     }
 
     function openModal(){
+      // Generate next report number
+      const nextNumber = (reports.length + 1).toString().padStart(4, '0');
+      reportNumber.value = `DR-${nextNumber}`;
       reportDate.value = formatDateISO(new Date());
       reportName.value = '';
       workItems = [];
       renderWorkItems();
-      renderEquipmentPreview();
       reportModal.classList.add('show');
     }
     function closeModal(){ reportModal.classList.remove('show'); }
@@ -173,6 +177,7 @@
     saveReportBtn.addEventListener('click', async ()=>{
       // Prepare multipart form
       const fd = new FormData();
+      fd.append('reportNumber', reportNumber.value);
       fd.append('date', reportDate.value);
       fd.append('title', reportName.value || 'تقرير يومي');
 
@@ -204,29 +209,64 @@
         const res = await fetch(`${API_BASE_URL}/daily-reports`);
         if(!res.ok){ reportsList.innerHTML = `<div class="empty">لا يمكن تحميل التقارير (رمز: ${res.status})</div>`; return; }
         reports = await res.json();
-        if(!reports.length){ reportsList.innerHTML = '<div class="empty">لا توجد تقارير حتى الآن</div>'; return; }
-        reportsList.innerHTML = `<table><thead><tr><th>التاريخ</th><th>العنوان</th><th>عدد بنود العمل</th><th>المرفقات</th><th>عرض</th><th>حذف</th></tr></thead><tbody>${reports.map(r=>`<tr>
-          <td>${new Date(r.date).toLocaleDateString('ar-EG')}</td>
-          <td style=\"text-align:right\">${r.title||''}</td>
-          <td>${(r.workItems||[]).length}</td>
-          <td>${(r.photoCount||0) > 0 ? `<a class=\"link\" href=\"${API_BASE_URL}${r._photosArchive || r.photos?.[0]?.path || ''}\" target=\"_blank\">${r.photoCount} مرفق</a>` : '-'}</td>
-          <td><a class=\"link\" href=\"daily-report.html?id=${r._id}\" target=\"_blank\">فتح</a></td>
-          <td><button class=\"icon-btn delete-report\" data-id=\"${r._id}\">حذف</button></td>
-        </tr>`).join('')}</tbody></table>`;
+        if(!reports.length){ 
+          reportsList.innerHTML = '<div class="empty">لا توجد تقارير حتى الآن<br><small>اضغط على "إضافة تقرير جديد" لإنشاء أول تقرير</small></div>'; 
+          return; 
+        }
+        
+        // Display reports as cards
+        reportsList.innerHTML = `<div class="reports-grid">${reports.map(r=>{
+          const reportDate = new Date(r.date).toLocaleDateString('ar-EG');
+          const workItemsCount = (r.workItems||[]).length;
+          const photosCount = r.photoCount || 0;
+          
+          return `<div class="report-card" onclick="openReport('${r._id}')">
+            <div class="report-header">
+              <div class="report-number">${r.reportNumber || 'غير محدد'}</div>
+              <div class="report-date">${reportDate}</div>
+            </div>
+            <div class="report-title">${r.title || 'تقرير يومي'}</div>
+            <div class="report-meta">
+              <span>📋 ${workItemsCount} بند عمل</span>
+              <span>📷 ${photosCount} صورة</span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="event.stopPropagation(); openReport('${r._id}')">عرض</button>
+              <button class="btn delete-btn" onclick="event.stopPropagation(); deleteReport('${r._id}')">حذف</button>
+            </div>
+          </div>`;
+        }).join('')}</div>`;
 
-        // attach delete handlers
-        document.querySelectorAll('.delete-report').forEach(b=>b.addEventListener('click', async e=>{
-          if(!confirm('هل تريد حذف التقرير؟')) return;
-          const id = e.currentTarget.dataset.id;
-          const dres = await fetch(`${API_BASE_URL}/daily-reports/${id}`, { method:'DELETE' });
-          if(dres.ok) loadReports(); else alert('خطأ في الحذف');
-        }));
+      }catch(err){ 
+        console.error(err); 
+        reportsList.innerHTML = '<div class="empty">خطأ في الاتصال بالخادم</div>'; 
+      }
+    }
 
-      }catch(err){ console.error(err); reportsList.innerHTML = '<div class="empty">خطأ في الاتصال بالخادم</div>'; }
+    // Open report in new tab
+    function openReport(reportId) {
+      window.open(`daily-report.html?id=${reportId}`, '_blank');
+    }
+
+    // Delete report function
+    async function deleteReport(reportId) {
+      if(!confirm('هل تريد حذف التقرير؟')) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/daily-reports/${reportId}`, { method:'DELETE' });
+        if(res.ok) {
+          loadReports();
+          alert('تم حذف التقرير بنجاح');
+        } else {
+          alert('خطأ في الحذف');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('خطأ في الاتصال');
+      }
     }
 
     // init
-    renderEquipmentPreview(); loadReports();
+    loadReports();
   </script>
 </body>
 </html>

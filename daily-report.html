@@ -16,6 +16,10 @@
     .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer}
     .equipment-table td{text-align:right}
     .work-items-table th, .work-items-table td{text-align:center}
+    .btn{padding:0.5rem 0.9rem;border-radius:8px;border:none;cursor:pointer}
+    .btn-primary{background:#197c91;color:#fff}
+    input[type="text"], input[type="file"], input[type="number"]{padding:0.45rem;border:1px solid #dbe7ea;border-radius:6px}
+    .link{color:#197c91;text-decoration:none}
   </style>
 </head>
 <body>
@@ -28,8 +32,13 @@
     <div class="card" id="reportCard">
       <div id="reportHeader" style="display:flex;justify-content:space-between;align-items:center"></div>
 
-      <h4 class="small">جدول المعدات (ثابت)</h4>
-      <table class="equipment-table" id="equipmentTable"></table>
+      <h4 class="small">جدول المعدات</h4>
+      <table class="equipment-table" id="equipmentTable">
+        <thead>
+          <tr><th style="text-align:right">اسم المعدة</th><th style="text-align:center">العدد</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
       <h4 class="small" style="margin-top:1rem">بيان الأعمال</h4>
       <table class="work-items-table" id="workItemsTable">
@@ -48,6 +57,10 @@
 
       <div style="margin-top:1rem;display:flex;justify-content:flex-end;gap:0.5rem">
         <button id="saveBtn" class="btn btn-primary">حفظ التغييرات</button>
+      </div>
+
+      <div style="margin-top:2rem;padding-top:1rem;border-top:1px solid #eef5f7;text-align:left">
+        <div class="small">إعداد: <span id="currentUser">جاري التحميل...</span></div>
       </div>
     </div>
   </div>
@@ -71,7 +84,23 @@
     let report = null;
 
     function renderEquipment(){
-      equipmentTable.innerHTML = equipmentList.map(e=>`<tr><td style=\"padding:0.35rem 0.8rem;text-align:right\">${e}</td></tr>`).join('');
+      const equipmentData = report?.equipment || {};
+      equipmentTable.querySelector('tbody').innerHTML = equipmentList.map((e,idx)=>`<tr>
+        <td style="padding:0.5rem 0.8rem;text-align:right">${e}</td>
+        <td style="text-align:center">
+          <input type="number" 
+                 min="0" 
+                 value="${equipmentData[e] || ''}" 
+                 style="width:80px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:0.3rem"
+                 onchange="updateEquipmentCount('${e}', this.value)"
+                 placeholder="0"/>
+        </td>
+      </tr>`).join('');
+    }
+
+    function updateEquipmentCount(equipmentName, count) {
+      if (!report.equipment) report.equipment = {};
+      report.equipment[equipmentName] = count || '';
     }
 
     function renderWorkItems(){
@@ -103,13 +132,16 @@
         const fd = new FormData();
         fd.append('title', report.title || 'تقرير');
         fd.append('date', report.date || new Date().toISOString());
+        fd.append('reportNumber', report.reportNumber || '');
+        fd.append('equipment', JSON.stringify(report.equipment || {}));
+        
         // workItems meta and files grouping
         const itemsMeta = (report.workItems||[]).map((it,idx)=>({ building: it.building, desc: it.desc, photoFieldPrefix:`photos_${idx}_` }));
         fd.append('workItems', JSON.stringify(itemsMeta));
         report.workItems.forEach((it,idx)=>{ (it.photosFiles||[]).forEach((f,fi)=> fd.append(`photos_${idx}_`+fi, f)); });
 
         const res = await fetch(`${API_BASE_URL}/daily-reports/${report._id}`, { method:'PUT', body: fd });
-        if(res.ok){ alert('تم الحفظ'); const updated = await res.json(); report = updated; renderWorkItems(); }
+        if(res.ok){ alert('تم الحفظ'); const updated = await res.json(); report = updated; renderWorkItems(); renderEquipment(); }
         else{ alert('خطأ في الحفظ'); }
       }catch(e){ console.error(e); alert('خطأ في الاتصال'); }
     });
@@ -121,12 +153,20 @@
         const res = await fetch(`${API_BASE_URL}/daily-reports/${reportId}`);
         if(!res.ok){ document.getElementById('reportCard').innerHTML = '<div class="empty">تعذر تحميل التقرير</div>'; return; }
         report = await res.json();
-        document.getElementById('reportHeader').innerHTML = `<div><strong>${report.title||''}</strong></div><div class=\"small\">${new Date(report.date).toLocaleDateString('ar-EG')}</div>`;
+        document.getElementById('reportHeader').innerHTML = `<div><strong>${report.reportNumber || 'غير محدد'}</strong> - ${report.title||'تقرير يومي'}</div><div class=\"small\">${new Date(report.date).toLocaleDateString('ar-EG')}</div>`;
         renderWorkItems();
       }catch(e){ console.error(e); document.getElementById('reportCard').innerHTML = '<div class="empty">خطأ في الاتصال</div>'; }
     }
 
     load();
+
+    // Display current user
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      document.getElementById('currentUser').textContent = user.username || 'غير معرف';
+    } catch (e) {
+      document.getElementById('currentUser').textContent = 'غير معرف';
+    }
   </script>
 </body>
 </html>

@@ -244,7 +244,7 @@ app.get('/daily-reports', async (req, res) => {
 app.post('/daily-reports', upload.any(), async (req, res) => {
   try {
     if (!dailyReportsCollection) return res.status(500).json({ error: 'DB not ready' });
-    const { date, title } = req.body;
+    const { date, title, reportNumber, equipment } = req.body;
     const workItemsMeta = JSON.parse(req.body.workItems || '[]');
     const files = req.files || [];
 
@@ -259,7 +259,17 @@ app.post('/daily-reports', upload.any(), async (req, res) => {
       }
     });
 
-    const doc = { date: date || new Date().toISOString(), title: title || '', workItems, photoCount: files.length, createdAt: new Date(), updatedAt: new Date() };
+    const equipmentData = equipment ? JSON.parse(equipment) : {};
+    const doc = { 
+      date: date || new Date().toISOString(), 
+      title: title || '', 
+      reportNumber: reportNumber || '',
+      equipment: equipmentData,
+      workItems, 
+      photoCount: files.length, 
+      createdAt: new Date(), 
+      updatedAt: new Date() 
+    };
     const result = await dailyReportsCollection.insertOne(doc);
     res.json({ success: true, insertedId: result.insertedId });
   } catch (err) {
@@ -304,7 +314,16 @@ app.put('/daily-reports/:id', upload.any(), async (req, res) => {
     });
 
     const photoCount = files.length + (existing.photoCount || 0);
-    const update = { workItems, photoCount, updatedAt: new Date(), title: req.body.title || existing.title, date: req.body.date || existing.date };
+    const equipmentData = req.body.equipment ? JSON.parse(req.body.equipment) : (existing.equipment || {});
+    const update = { 
+      workItems, 
+      photoCount, 
+      equipment: equipmentData,
+      updatedAt: new Date(), 
+      title: req.body.title || existing.title, 
+      date: req.body.date || existing.date,
+      reportNumber: req.body.reportNumber || existing.reportNumber
+    };
     await dailyReportsCollection.updateOne({ _id: id }, { $set: update });
     const updated = await dailyReportsCollection.findOne({ _id: id });
     res.json(updated);
