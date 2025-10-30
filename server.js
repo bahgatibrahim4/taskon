@@ -1,3 +1,7 @@
+console.log('🚀 Starting Taskon Server...');
+console.log('📅 Deploy Date:', new Date().toISOString());
+console.log('🔧 Version: Railway Fix - October 30, 2025');
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -30,6 +34,20 @@ app.get('/dashboard.html', (req, res) => {
 
 app.get('/drawings.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'drawings.html'));
+});
+
+// Railway deployment test endpoint
+app.get('/railway-test', (req, res) => {
+  res.json({
+    status: 'Railway deployment successful!',
+    timestamp: new Date().toISOString(),
+    version: 'October 30, 2025 - Fixed version',
+    endpoints: {
+      drawings_get: '/drawings',
+      drawings_post: '/drawings',
+      test: '/api/test'
+    }
+  });
 });
 
 const uri = "mongodb+srv://admin:Bb100200@db.diskpwp.mongodb.net/?retryWrites=true&w=majority&appName=DB";
@@ -4982,16 +5000,44 @@ app.get('/receipts/export', async (req, res) => {
 // ==================== End Receipts API ====================
 
 
-// ==================== Drawings API ====================
+// ==================== Drawings API - UPDATED OCT 30, 2025 ====================
+
+// Test endpoint for Railway deployment check
+app.get('/api/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Railway deployment working!',
+    timestamp: new Date().toISOString(),
+    version: 'Oct 30, 2025 - Fix Complete'
+  });
+});
 
 // Get all drawings
 app.get('/drawings', async (req, res) => {
   try {
+    console.log('🔍 GET /drawings called at:', new Date().toISOString());
+    if (!drawingsCollection) {
+      console.error('❌ drawingsCollection not initialized');
+      return res.status(500).json({ 
+        success: false,
+        error: 'Database not connected' 
+      });
+    }
+    
     const drawings = await drawingsCollection.find({}).sort({ drawingDate: -1 }).toArray();
-    res.json(drawings);
+    console.log('✅ Found drawings:', drawings.length);
+    res.json({
+      success: true,
+      data: drawings,
+      count: drawings.length
+    });
   } catch (err) {
-    console.error('Error fetching drawings:', err);
-    res.status(500).json({ error: 'خطأ في جلب الرسومات' });
+    console.error('❌ Error fetching drawings:', err);
+    res.status(500).json({ 
+      success: false,
+      error: 'خطأ في جلب الرسومات',
+      details: err.message 
+    });
   }
 });
 
@@ -5007,12 +5053,23 @@ app.get('/drawings/:id', async (req, res) => {
   }
 });
 
-// Create new drawing
+// Create new drawing - UPDATED WITH ENHANCED LOGGING
 app.post('/drawings', upload.fields([
   { name: 'attachment', maxCount: 1 },
   { name: 'pdfAttachment', maxCount: 1 }
 ]), async (req, res) => {
   try {
+    console.log('📝 POST /drawings called at:', new Date().toISOString());
+    console.log('📄 Request body:', req.body);
+    console.log('📎 Files:', req.files);
+    
+    if (!drawingsCollection) {
+      console.error('❌ drawingsCollection not initialized');
+      return res.status(500).json({ 
+        success: false,
+        error: 'Database not connected' 
+      });
+    }
     console.log('📝 POST /drawings request received');
     console.log('Body:', req.body);
     console.log('Files:', req.files);
