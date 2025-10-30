@@ -71,6 +71,7 @@ let drawingsCollection = null;
 let externalServicesCollection = null;
 let dailyReportsCollection = null;
 let usersCollection = null;
+let contractorsCollection = null;
 
 MongoClient.connect(uri)
   .then(client => {
@@ -80,11 +81,13 @@ MongoClient.connect(uri)
     externalServicesCollection = db.collection('external-services');
     dailyReportsCollection = db.collection('daily_reports');
     usersCollection = db.collection('users');
+    contractorsCollection = db.collection('contractors');
     console.log('🌐 Database collections initialized:', {
       drawings: !!drawingsCollection,
       externalServices: !!externalServicesCollection,
       dailyReports: !!dailyReportsCollection,
-      users: !!usersCollection
+      users: !!usersCollection,
+      contractors: !!contractorsCollection
     });
   })
   .catch(err => {
@@ -670,6 +673,99 @@ app.post('/login', async (req, res) => {
 });
 
 // ==================== End Users API ====================
+
+// ==================== Contractors API ====================
+
+// Get all contractors
+app.get('/contractors', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const contractors = await contractorsCollection.find({}).toArray();
+    res.json(contractors);
+  } catch (err) {
+    console.error('Error fetching contractors:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get unique work items
+app.get('/contractors/work-items/unique', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const workItems = await contractorsCollection.distinct('workItem');
+    // Filter out empty/null values
+    const filtered = workItems.filter(item => item && item.trim() !== '');
+    res.json(filtered);
+  } catch (err) {
+    console.error('Error fetching work items:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Add new contractor
+app.post('/contractors', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const contractorData = {
+      ...req.body,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    const result = await contractorsCollection.insertOne(contractorData);
+    res.json({ success: true, insertedId: result.insertedId });
+  } catch (err) {
+    console.error('Error adding contractor:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update contractor
+app.put('/contractors/:id', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+    delete updateData._id; // Remove _id from update data
+    const result = await contractorsCollection.updateOne(
+      { _id: id },
+      { $set: updateData }
+    );
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error('Error updating contractor:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete contractor
+app.delete('/contractors/:id', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const result = await contractorsCollection.deleteOne({ _id: id });
+    res.json({ success: true, deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error('Error deleting contractor:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==================== End Contractors API ====================
 
 // Serve static HTML files
 app.get('/', (req, res) => {
