@@ -8,6 +8,10 @@
 
   // دالة للتحقق من وجود صلاحية معينة
   window.hasPermission = function(permission) {
+    // إذا كان لديه صلاحية * (كل الصلاحيات)
+    if (permissions.includes('*')) {
+      return true;
+    }
     return permissions.includes(permission);
   };
 

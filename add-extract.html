@@ -1430,13 +1430,23 @@
     // المقاولين من السيرفر (تعديل: جلب حسب بند الأعمال)
     async function loadContractors(workItem = null) {
       const select = document.getElementById('contractorSelect');
+      if (!select) {
+        console.error('❌ عنصر contractorSelect غير موجود!');
+        return;
+      }
+      
       const current = select.value;
       select.innerHTML = '<option value="">اختر المقاول</option>';
+      
       try {
         let url = '/contractors';
         if (workItem) {
           url += '?workItem=' + encodeURIComponent(workItem);
+          console.log('🔄 جلب المقاولين لبند الأعمال:', workItem);
+        } else {
+          console.log('🔄 جلب جميع المقاولين...');
         }
+        
         const res = await fetch(url);
         
         // التحقق من نجاح الطلب والمحتوى
@@ -1450,16 +1460,21 @@
         }
         
         const contractors = await res.json();
+        console.log('✅ تم جلب', contractors.length, 'مقاول');
+        
         contractors.forEach(c => {
           const option = document.createElement('option');
           option.value = c._id || c.name;
           option.textContent = c.name;
           select.appendChild(option);
         });
+        
         // إعادة اختيار المقاول الحالي إذا كان موجود
         if (current) select.value = current;
+        
+        console.log('✅ تم تعبئة قائمة المقاولين');
       } catch (err) {
-        console.error('Error loading contractors:', err);
+        console.error('❌ خطأ في تحميل المقاولين:', err);
         alert('تعذر تحميل قائمة المقاولين. تأكد من تشغيل السيرفر.');
       }
     }
@@ -1500,8 +1515,15 @@
     // جلب بنود الأعمال الفعلية من السيرفر وتعبئة القائمة
     async function loadWorkItemsOptions() {
       const select = document.getElementById('workItemFilterSelect');
+      if (!select) {
+        console.error('❌ عنصر workItemFilterSelect غير موجود!');
+        return;
+      }
+      
       select.innerHTML = '<option value="">اختر بند الأعمال</option>';
+      
       try {
+        console.log('🔄 جلب بنود الأعمال من السيرفر...');
         const res = await fetch('/contractors');
         
         // التحقق من نجاح الطلب والمحتوى
@@ -1515,6 +1537,8 @@
         }
         
         const contractors = await res.json();
+        console.log('✅ تم جلب', contractors.length, 'مقاول');
+        
         // استخرج جميع البنود الفريدة فقط
         const workItemsSet = new Set();
         contractors.forEach(c => {
@@ -1522,27 +1546,27 @@
             workItemsSet.add(c.workItem.trim());
           }
         });
+        
+        console.log('✅ تم استخراج', workItemsSet.size, 'بند أعمال فريد');
+        
         Array.from(workItemsSet).sort().forEach(workItem => {
           const option = document.createElement('option');
           option.value = workItem;
           option.textContent = workItem;
           select.appendChild(option);
         });
+        
+        console.log('✅ تم تعبئة قائمة بنود الأعمال');
       } catch (err) {
-        console.error('Error loading work items:', err);
+        console.error('❌ خطأ في تحميل بنود الأعمال:', err);
         // في حال الخطأ، أبقِ الخيار الافتراضي فقط
       }
     }
 
     // عند تحميل الصفحة، جلب جميع البنود الفريدة من السيرفر
     document.addEventListener('DOMContentLoaded', async function() {
-      // التحقق من صلاحيات الصفحة
-      if (typeof checkPagePermission === 'function') {
-        const hasPermission = await checkPagePermission('add-extract');
-        if (!hasPermission) {
-          return; // checkPagePermission ستقوم بالتوجيه تلقائياً
-        }
-      }
+      // ملاحظة: checkPagePermission يتم تنفيذها تلقائياً من permissions-check.js
+      // لذلك لا حاجة لتنفيذها هنا مرة أخرى
       
       await loadWorkItemsOptions();
       const workItem = document.getElementById('workItemFilterSelect').value;
