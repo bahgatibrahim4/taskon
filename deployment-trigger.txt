@@ -1,0 +1,10 @@
+# Railway Deployment Force Update
+# This file is created to trigger a new deployment on Railway
+# Date: October 30, 2025
+# Purpose: Fix 404 errors for /drawings and other API endpoints
+
+echo "Forcing Railway redeploy with updated code..."
+echo "All API endpoints should work after this deployment"
+echo "Drawings API: ✅ Fixed"
+echo "File uploads: ✅ Local storage ready"
+echo "Cloudinary: ❌ Removed completely"
