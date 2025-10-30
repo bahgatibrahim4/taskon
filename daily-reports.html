@@ -5,28 +5,33 @@
   <title>التقارير اليومية</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
+    * {
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
     body{font-family:'Cairo',sans-serif;background:#f1f6f8;color:#213140;padding:1rem}
     .container{max-width:1100px;margin:0 auto}
     .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-    h1{font-size:1.25rem}
-    .btn{padding:0.5rem 0.9rem;border-radius:8px;border:none;cursor:pointer}
+    h1{font-size:1.25rem;font-family:'Cairo',sans-serif}
+    .btn{padding:0.5rem 0.9rem;border-radius:8px;border:none;cursor:pointer;font-family:'Cairo',sans-serif}
     .btn-primary{background:#197c91;color:#fff}
     .card{background:#fff;padding:1rem;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
-    table{width:100%;border-collapse:collapse;margin-top:1rem}
-    th,td{padding:0.6rem;border-bottom:1px solid #eef5f7;text-align:center}
-    thead th{background:#f8fbfc;font-weight:800}
-    .empty{padding:2rem;text-align:center;color:#6c7a80}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;font-family:'Cairo',sans-serif}
+    th,td{padding:0.6rem;border-bottom:1px solid #eef5f7;text-align:center;font-family:'Cairo',sans-serif}
+    thead th{background:#f8fbfc;font-weight:800;font-family:'Cairo',sans-serif}
+    .empty{padding:2rem;text-align:center;color:#6c7a80;font-family:'Cairo',sans-serif}
     .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:9999}
     .modal.show{display:flex}
     .modal-card{width:900px;background:#fff;border-radius:8px;padding:1rem}
     .form-row{display:flex;gap:0.6rem;margin-bottom:0.6rem}
-    .form-row input,.form-row textarea{flex:1;padding:0.45rem;border:1px solid #dbe7ea;border-radius:6px}
-    .equipment-table td{text-align:right}
-    .work-items-table th, .work-items-table td{text-align:center}
-    .small{font-size:0.85rem;color:#6c7a80}
-    .link{color:#197c91;text-decoration:none}
+    .form-row input,.form-row textarea{flex:1;padding:0.45rem;border:1px solid #dbe7ea;border-radius:6px;font-family:'Cairo',sans-serif}
+    .equipment-table td{text-align:right;font-family:'Cairo',sans-serif}
+    .work-items-table th, .work-items-table td{text-align:center;font-family:'Cairo',sans-serif}
+    .small{font-size:0.85rem;color:#6c7a80;font-family:'Cairo',sans-serif}
+    .link{color:#197c91;text-decoration:none;font-family:'Cairo',sans-serif}
     .actions{display:flex;gap:0.4rem;justify-content:center}
-    .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer}
+    .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer;font-family:'Cairo',sans-serif}
+    h3,h4,h5{font-family:'Cairo',sans-serif}
+    input,textarea,button{font-family:'Cairo',sans-serif}
     
     /* Report cards styles */
     .reports-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1rem}
