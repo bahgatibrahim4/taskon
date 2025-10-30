@@ -10,7 +10,7 @@
       font-family: 'Cairo', Arial, sans-serif !important;
     }
     body{font-family:'Cairo',sans-serif;background:#f1f6f8;color:#213140;padding:0;margin:0}
-    .container{max-width:1200px;margin:2rem auto;padding:0 1rem}
+    .container{max-width:1600px;margin:2rem auto;padding:0 1rem}
     .card{background:#fff;padding:2rem;border-radius:15px;box-shadow:0 8px 32px rgba(0,0,0,0.1);border:1px solid #e1ecf4}
     table{width:100%;border-collapse:collapse;margin-top:1rem;background:#fff;border-radius:8px;overflow:hidden;font-family:'Cairo',sans-serif}
     th,td{padding:0.8rem;border-bottom:1px solid #f0f7fa;text-align:center;font-family:'Cairo',sans-serif}
@@ -44,7 +44,7 @@
     
     /* Responsive design for split layout */
     @media (max-width: 1000px) {
-      .card > div[style*="grid-template-columns:1fr 1fr"] {
+      .card > div[style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
       }
     }
@@ -79,7 +79,7 @@
       <div id="reportHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:3px solid #e1ecf4"></div>
 
       <!-- Split layout: Equipment on left, Work Items on right -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:2rem">
         
         <!-- Left Section: Equipment -->
         <div style="background:linear-gradient(135deg, #f8fbfc 0%, #ffffff 100%);padding:1.5rem;border-radius:12px;border:2px solid #e1ecf4">
