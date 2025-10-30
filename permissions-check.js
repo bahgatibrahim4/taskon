@@ -107,6 +107,58 @@
   // تصدير الصلاحيات للاستخدام في الصفحات
   window.userPermissions = permissions;
   
+  // دالة لتطبيق الصلاحيات على العناصر (يمكن استدعاؤها يدوياً)
+  window.applyPermissions = function() {
+    console.log('🔄 تطبيق الصلاحيات على العناصر...');
+    
+    const elementsWithPermissions = document.querySelectorAll('[data-permission]');
+    console.log(`📊 عدد العناصر: ${elementsWithPermissions.length}`);
+    
+    elementsWithPermissions.forEach(element => {
+      const permission = element.getAttribute('data-permission');
+      const hasIt = hasPermission(permission);
+      
+      if (!hasIt) {
+        element.style.display = 'none';
+        console.log(`❌ إخفاء: ${permission}`);
+      } else {
+        if (element.style.display === 'none') {
+          element.style.display = '';
+        }
+        console.log(`✅ إظهار: ${permission}`);
+      }
+    });
+    
+    console.log('✅ تم تطبيق الصلاحيات');
+  };
+  
+  // دالة للتحقق من صلاحية الصفحة
+  window.checkPagePermission = function(page) {
+    const pagePerms = {
+      'add-extract': 'add-extract-access',
+      'list-extracts': 'list-extracts-access',
+      'add-contractor': 'contractors-access',
+      'list-contractors': 'contractors-access',
+      'contractor': 'contractors-access',
+      'drawings': 'drawings-access',
+      'suppliers': 'suppliers-access',
+      'workers': 'workers-access',
+      'monthly-pay': 'workers-monthly-pay',
+      'store': 'store-access',
+      'purchases': 'purchases-access',
+      'receipts': 'receipts-access',
+      'users': 'users-access',
+      'equipments': 'store-access',
+      'daily-reports': 'daily-reports-access'
+    };
+    
+    const requiredPerm = pagePerms[page];
+    if (requiredPerm && !hasPermission(requiredPerm)) {
+      alert('⚠️ ليس لديك صلاحية للوصول إلى هذه الصفحة');
+      window.location.href = 'index.html';
+    }
+  };
+  
   console.log('✅ نظام الصلاحيات تم تحميله بنجاح');
   console.log('📋 عدد الصلاحيات:', permissions.length);
 })();
