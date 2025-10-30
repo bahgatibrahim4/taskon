@@ -118,11 +118,13 @@ app.post('/drawings', basicUpload.fields([
     // إضافة مسارات الملفات إذا تم رفعها
     if (req.files) {
       if (req.files.attachment && req.files.attachment[0]) {
-        drawing.attachmentPath = `/uploads/${req.files.attachment[0].filename}`;
+        drawing.attachment = `uploads/${req.files.attachment[0].filename}`; // للـ frontend
+        drawing.attachmentPath = `/uploads/${req.files.attachment[0].filename}`; // للـ backend
         drawing.attachmentOriginalName = req.files.attachment[0].originalname;
       }
       if (req.files.pdfAttachment && req.files.pdfAttachment[0]) {
-        drawing.pdfAttachmentPath = `/uploads/${req.files.pdfAttachment[0].filename}`;
+        drawing.pdfAttachment = `uploads/${req.files.pdfAttachment[0].filename}`; // للـ frontend
+        drawing.pdfAttachmentPath = `/uploads/${req.files.pdfAttachment[0].filename}`; // للـ backend
         drawing.pdfAttachmentOriginalName = req.files.pdfAttachment[0].originalname;
       }
     }
@@ -155,6 +157,22 @@ app.get('/notifications/:userId', (req, res) => {
 app.get('/notifications/:userId/unread-count', (req, res) => {
   // Return zero unread count for now
   res.json({ count: 0 });
+});
+
+// Add missing endpoints
+app.get('/notification-settings', (req, res) => {
+  res.json({
+    emailNotifications: true,
+    pushNotifications: true,
+    autoNotify: true
+  });
+});
+
+app.get('/users', (req, res) => {
+  // Return basic users array for notifications
+  res.json([
+    { id: 'admin', name: 'م بهجت ابراهيم', role: 'admin' }
+  ]);
 });
 
 console.log('✅ Basic endpoints registered');
