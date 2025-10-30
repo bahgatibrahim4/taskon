@@ -352,32 +352,53 @@ app.get('/external-services/export', async (req, res) => {
     app.post('/daily-reports', upload.any(), async (req, res) => {
       try {
         if (!dailyReportsCollection) return res.status(500).json({ error: 'DB not ready' });
-        const { date, title, reportNumber, equipment } = req.body;
-        const workItemsMeta = JSON.parse(req.body.workItems || '[]');
-        const files = req.files || [];
-        const workItems = workItemsMeta.map((m) => ({ 
-          building: m.building || '', 
-          desc: m.desc || '', 
-          photos: [],
-          addedBy: m.addedBy || 'غير محدد',
-          addedAt: new Date().toISOString()
-        }));
-        files.forEach(f => {
-          const m = f.fieldname.match(/^photos_(\d+)_/);
-          if (m) {
-            const idx = parseInt(m[1], 10);
-            workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [], addedBy: 'غير محدد', addedAt: new Date().toISOString() };
-            workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
-          }
-        });
-        const equipmentData = equipment ? JSON.parse(equipment) : {};
+        
+        // Handle both JSON and multipart/form-data
+        let workItems, equipmentData, date, title, reportNumber;
+        
+        if (req.is('application/json')) {
+          // Simple JSON request (no files)
+          const body = req.body;
+          date = body.date;
+          title = body.title;
+          reportNumber = body.reportNumber;
+          workItems = body.workItems || [];
+          equipmentData = body.equipment || {};
+        } else {
+          // Multipart form data (with files)
+          date = req.body.date;
+          title = req.body.title;
+          reportNumber = req.body.reportNumber;
+          const workItemsMeta = JSON.parse(req.body.workItems || '[]');
+          const files = req.files || [];
+          
+          workItems = workItemsMeta.map((m) => ({ 
+            building: m.building || '', 
+            desc: m.desc || '', 
+            photos: [],
+            addedBy: m.addedBy || 'غير محدد',
+            addedAt: new Date().toISOString()
+          }));
+          
+          files.forEach(f => {
+            const m = f.fieldname.match(/^photos_(\d+)_/);
+            if (m) {
+              const idx = parseInt(m[1], 10);
+              workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [], addedBy: 'غير محدد', addedAt: new Date().toISOString() };
+              workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
+            }
+          });
+          
+          equipmentData = req.body.equipment ? JSON.parse(req.body.equipment) : {};
+        }
+        
         const doc = { 
           date: date || new Date().toISOString(), 
           title: title || '', 
           reportNumber: reportNumber || '',
           equipment: equipmentData,
           workItems, 
-          photoCount: files.length, 
+          photoCount: (workItems.reduce((sum, item) => sum + (item.photos?.length || 0), 0)), 
           createdAt: new Date(), 
           updatedAt: new Date() 
         };

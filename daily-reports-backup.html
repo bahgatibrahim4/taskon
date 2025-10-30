@@ -65,28 +65,44 @@
 
   <!-- Modal: Create Report -->
   <div id="reportModal" class="modal">
-    <div class="modal-card" style="width:450px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #e9f0f2">
-        <h3 style="margin:0;color:#1a3b50">📋 إضافة تقرير يومي جديد</h3>
-        <button id="closeModalX" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#6c7a80;padding:0;width:30px;height:30px;border-radius:50%;transition:all 0.2s">×</button>
-      </div>
-      
-      <form id="reportForm">
-        <div style="margin-bottom:1.2rem">
-          <label style="display:block;margin-bottom:0.5rem;color:#1a3b50;font-weight:600;font-size:0.95rem">رقم التقرير</label>
-          <input id="reportNumber" type="text" placeholder="سيتم توليده تلقائياً" readonly style="width:100%;padding:0.7rem;border:2px solid #e1ecf4;border-radius:8px;font-family:'Cairo';font-size:0.95rem;background:#f8f9fa;cursor:not-allowed"/>
-        </div>
-        
-        <div style="margin-bottom:1.5rem">
-          <label style="display:block;margin-bottom:0.5rem;color:#1a3b50;font-weight:600;font-size:0.95rem">التاريخ</label>
-          <input id="reportDate" type="date" required style="width:100%;padding:0.7rem;border:2px solid #e1ecf4;border-radius:8px;font-family:'Cairo';font-size:0.95rem;transition:border-color 0.2s"/>
+    <div class="modal-card">
+      <h3 id="modalTitle">إضافة تقرير يومي جديد</h3>
+      <div style="margin-top:0.8rem">
+        <div class="form-row">
+          <input id="reportNumber" placeholder="رقم التقرير" readonly style="background:#f8f9fa"/>
+          <input id="reportDate" type="date" />
+          <input id="reportName" placeholder="عنوان التقرير (اختياري)" />
         </div>
 
-        <div style="display:flex;gap:0.8rem;justify-content:flex-end">
-          <button type="button" id="cancelReportBtn" class="btn" style="background:#6c7a80;color:#fff;padding:0.6rem 1.2rem">إلغاء</button>
-          <button type="submit" class="btn btn-primary" style="padding:0.6rem 1.2rem">✓ إنشاء التقرير</button>
+        <!-- Work items input -->
+        <div style="margin-top:0.8rem">
+          <h4 class="small">إضافة بيان الأعمال</h4>
+          <div class="form-row">
+            <input id="buildingNumber" placeholder="رقم المبني / الدور" />
+            <input id="workDesc" placeholder="بيان الاعمال" />
+            <input id="workPhotos" type="file" accept="image/*" multiple />
+            <button id="addWorkItemBtn" class="btn">إضافة</button>
+          </div>
+
+          <table class="work-items-table" id="workItemsTable" style="width:100%;margin-top:0.6rem">
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>رقم المبني / الدور</th>
+                <th>بيان الاعمال</th>
+                <th>الصور</th>
+                <th>حذف</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
-      </form>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.6rem;margin-top:0.8rem">
+          <button id="cancelReportBtn" class="btn">إلغاء</button>
+          <button id="saveReportBtn" class="btn btn-primary">حفظ التقرير</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -108,12 +124,32 @@
     const reportModal = document.getElementById('reportModal');
     const reportNumber = document.getElementById('reportNumber');
     const reportDate = document.getElementById('reportDate');
-    const reportForm = document.getElementById('reportForm');
+    const reportName = document.getElementById('reportName');
+    const buildingNumber = document.getElementById('buildingNumber');
+    const workDesc = document.getElementById('workDesc');
+    const workPhotos = document.getElementById('workPhotos');
+    const addWorkItemBtn = document.getElementById('addWorkItemBtn');
+    const workItemsTableBody = document.querySelector('#workItemsTable tbody');
     const cancelReportBtn = document.getElementById('cancelReportBtn');
+    const saveReportBtn = document.getElementById('saveReportBtn');
 
     function formatDateISO(d){
       const dt = new Date(d);
       return dt.toISOString().split('T')[0];
+    }
+
+    function renderWorkItems(){
+      workItemsTableBody.innerHTML = workItems.map((it,i)=>`<tr>
+        <td>${i+1}</td>
+        <td>${it.building || ''}</td>
+        <td style=\"text-align:right\">${it.desc}</td>
+        <td>${it.photos && it.photos.length ? it.photos.map(p=>`<a class=\"link\" href=\"${p.url}\" target=\"_blank\">صورة</a>`).join(' ') : '-'}</td>
+        <td><button class=\"icon-btn\" data-index=\"${i}\">حذف</button></td>
+      </tr>`).join('');
+
+      workItemsTableBody.querySelectorAll('.icon-btn').forEach(b=>b.addEventListener('click',e=>{
+        const idx = +e.currentTarget.dataset.index; workItems.splice(idx,1); renderWorkItems();
+      }));
     }
 
     function openModal(){
@@ -121,43 +157,73 @@
       const nextNumber = (reports.length + 1).toString().padStart(4, '0');
       reportNumber.value = `DR-${nextNumber}`;
       reportDate.value = formatDateISO(new Date());
+      reportName.value = '';
+      workItems = [];
+      renderWorkItems();
       reportModal.classList.add('show');
     }
     function closeModal(){ reportModal.classList.remove('show'); }
 
+    addWorkItemBtn.addEventListener('click',()=>{
+      const building = buildingNumber.value.trim();
+      const desc = workDesc.value.trim();
+      if(!desc){ alert('أدخل بيان الأعمال'); return; }
+      
+      // Get current user name
+      let currentUser = 'غير محدد';
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        currentUser = user.username || 'غير محدد';
+      } catch (e) {}
+      
+      const files = Array.from(workPhotos.files || []);
+      // We'll upload photos together when saving report; for preview store file objects temporarily
+      workItems.push({ 
+        building, 
+        desc, 
+        photosFiles: files,
+        addedBy: currentUser,
+        addedAt: new Date().toISOString()
+      });
+      buildingNumber.value=''; workDesc.value=''; workPhotos.value='';
+      renderWorkItems();
+    });
+
     newReportBtn.addEventListener('click', openModal);
     cancelReportBtn.addEventListener('click', closeModal);
-    closeModalX.addEventListener('click', closeModal);
 
-    // Save report with basic data and redirect to details page
-    reportForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      
-      const reportData = {
-        reportNumber: reportNumber.value,
-        date: reportDate.value,
-        title: `تقرير يومي - ${reportDate.value}`,
-        workItems: [],
-        equipment: {}
-      };
+    // Save report -> upload all photos grouped per work item
+    saveReportBtn.addEventListener('click', async ()=>{
+      // Prepare multipart form
+      const fd = new FormData();
+      fd.append('reportNumber', reportNumber.value);
+      fd.append('date', reportDate.value);
+      fd.append('title', reportName.value || 'تقرير يومي');
+
+      // Attach work items metadata as JSON
+      const itemsMeta = workItems.map((it, idx)=>({ 
+        building: it.building, 
+        desc: it.desc, 
+        photoFieldPrefix: `photos_${idx}_`,
+        addedBy: it.addedBy || 'غير محدد',
+        addedAt: it.addedAt || new Date().toISOString()
+      }));
+      fd.append('workItems', JSON.stringify(itemsMeta));
+
+      // Append files using generated field names so server can group them
+      let counter = 0;
+      workItems.forEach((it, idx)=>{
+        (it.photosFiles || []).forEach((file, fIndex)=>{
+          fd.append(`photos_${idx}_` + fIndex, file);
+          counter++;
+        });
+      });
 
       try{
-        const res = await fetch(`${API_BASE_URL}/daily-reports`, { 
-          method:'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(reportData)
-        });
-        
+        const res = await fetch(`${API_BASE_URL}/daily-reports`, { method:'POST', body: fd });
         if(res.ok){
-          const result = await res.json();
-          const newId = result.insertedId || result._id;
-          closeModal();
-          // Redirect to report details page
-          window.location.href = `daily-report.html?id=${newId}`;
-        } else { 
-          const txt = await res.text(); 
-          alert('خطأ في الحفظ: '+ (txt||res.status)); 
-        }
+          alert('تم حفظ التقرير'); closeModal(); loadReports();
+        } else { const txt = await res.text(); alert('خطأ في الحفظ: '+ (txt||res.status)); }
       }catch(err){ console.error(err); alert('خطأ في الاتصال'); }
     });
 
