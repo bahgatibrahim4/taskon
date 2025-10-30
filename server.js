@@ -70,6 +70,7 @@ let db = null;
 let drawingsCollection = null;
 let externalServicesCollection = null;
 let dailyReportsCollection = null;
+let usersCollection = null;
 
 MongoClient.connect(uri)
   .then(client => {
@@ -77,10 +78,13 @@ MongoClient.connect(uri)
     db = client.db('taskon');
     drawingsCollection = db.collection('drawings');
     externalServicesCollection = db.collection('external-services');
-  dailyReportsCollection = db.collection('daily_reports');
+    dailyReportsCollection = db.collection('daily_reports');
+    usersCollection = db.collection('users');
     console.log('🌐 Database collections initialized:', {
       drawings: !!drawingsCollection,
-      externalServices: !!externalServicesCollection
+      externalServices: !!externalServicesCollection,
+      dailyReports: !!dailyReportsCollection,
+      users: !!usersCollection
     });
   })
   .catch(err => {
@@ -485,6 +489,122 @@ app.get('/notifications/:userId', (req, res) => {
 app.get('/notifications/:userId/unread-count', (req, res) => {
   res.json({ count: 0 });
 });
+
+// ==================== Users API ====================
+
+// Get all users
+app.get('/users', async (req, res) => {
+  try {
+    if (!usersCollection) {
+      console.log('⚠️ Users collection not initialized, returning empty array');
+      return res.json([]);
+    }
+    const users = await usersCollection.find({}).toArray();
+    console.log(`✅ Fetched ${users.length} users`);
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'خطأ في جلب المستخدمين' });
+  }
+});
+
+// Add new user
+app.post('/users', async (req, res) => {
+  try {
+    if (!usersCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    const user = req.body;
+    const result = await usersCollection.insertOne(user);
+    console.log('✅ User added:', result.insertedId);
+    res.status(201).json(result);
+  } catch (err) {
+    console.error('Error adding user:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update user
+app.put('/users/:id', async (req, res) => {
+  try {
+    if (!usersCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = req.params.id;
+    let result;
+    
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: req.body }
+      );
+    } else {
+      result = await usersCollection.updateOne(
+        { _id: id },
+        { $set: req.body }
+      );
+    }
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على المستخدم' });
+    }
+    console.log('✅ User updated:', id);
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error('Error updating user:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete user
+app.delete('/users/:id', async (req, res) => {
+  try {
+    if (!usersCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = req.params.id;
+    let result;
+    
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+    } else {
+      result = await usersCollection.deleteOne({ _id: id });
+    }
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على المستخدم' });
+    }
+    console.log('✅ User deleted:', id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+  try {
+    if (!usersCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    const { email, password } = req.body;
+    const user = await usersCollection.findOne({ email, password });
+    
+    if (user) {
+      res.json({ success: true, user: { ...user, _id: user._id.toString() } });
+    } else {
+      res.status(401).json({ success: false, message: 'بيانات دخول غير صحيحة' });
+    }
+  } catch (err) {
+    console.error('Error during login:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==================== End Users API ====================
 
 // Serve static HTML files
 app.get('/', (req, res) => {
