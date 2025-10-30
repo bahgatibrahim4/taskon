@@ -263,8 +263,14 @@
         fd.append('reportNumber', report.reportNumber || '');
         fd.append('equipment', JSON.stringify(report.equipment || {}));
         
-        // workItems meta and files grouping
-        const itemsMeta = (report.workItems||[]).map((it,idx)=>({ building: it.building, desc: it.desc, photoFieldPrefix:`photos_${idx}_` }));
+        // workItems meta and files grouping (include addedBy and addedAt)
+        const itemsMeta = (report.workItems||[]).map((it,idx)=>({ 
+          building: it.building, 
+          desc: it.desc, 
+          addedBy: it.addedBy || 'غير محدد',
+          addedAt: it.addedAt || new Date().toISOString(),
+          photoFieldPrefix:`photos_${idx}_` 
+        }));
         fd.append('workItems', JSON.stringify(itemsMeta));
         report.workItems.forEach((it,idx)=>{ (it.photosFiles||[]).forEach((f,fi)=> fd.append(`photos_${idx}_`+fi, f)); });
 

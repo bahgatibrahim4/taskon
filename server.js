@@ -410,12 +410,18 @@ app.get('/external-services/export', async (req, res) => {
         if (!existing) return res.status(404).json({ error: 'Not found' });
         const workItemsMeta = JSON.parse(req.body.workItems || '[]');
         const files = req.files || [];
-        const workItems = workItemsMeta.map((m, idx) => ({ building: m.building || '', desc: m.desc || '', photos: (existing.workItems && existing.workItems[idx] && existing.workItems[idx].photos) ? existing.workItems[idx].photos.slice() : [] }));
+        const workItems = workItemsMeta.map((m, idx) => ({ 
+          building: m.building || '', 
+          desc: m.desc || '', 
+          addedBy: m.addedBy || 'غير محدد',
+          addedAt: m.addedAt || new Date().toISOString(),
+          photos: (existing.workItems && existing.workItems[idx] && existing.workItems[idx].photos) ? existing.workItems[idx].photos.slice() : [] 
+        }));
         files.forEach(f => {
           const m = f.fieldname.match(/^photos_(\d+)_/);
           if (m) {
             const idx = parseInt(m[1], 10);
-            workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [] };
+            workItems[idx] = workItems[idx] || { building: '', desc: '', addedBy: 'غير محدد', photos: [] };
             workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
           }
         });
