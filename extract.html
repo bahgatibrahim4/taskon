@@ -1645,7 +1645,8 @@
         // تفعيل وضع التعديل
         document.getElementById('editModeBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-block';
-        document.getElementById('saveBtn').style.display = 'inline-block';
+        // زرار الحفظ سيظهر فقط عند حدوث تعديل
+        document.getElementById('saveBtn').style.display = 'none';
         
         // حفظ النسخ الأصلية من البيانات للمقارنة لاحقاً
         originalWorkItems = JSON.parse(JSON.stringify(workItems));
@@ -1660,16 +1661,6 @@
         document.getElementById('addWorkItemRowBtn').style.display = 'flex';
         document.getElementById('addDeductionRowBtn').style.display = 'flex';
         
-        // تفعيل الحقول للتعديل
-        document.querySelectorAll('input').forEach(input => {
-          if (!input.id.includes('Username') && !input.id.includes('statementNumber')) {
-            input.removeAttribute('readonly');
-            if (!input.name || !['prevPercent', 'totalPercent', 'prevAmount', 'totalAmount'].includes(input.name)) {
-              input.style.background = '#fff';
-            }
-          }
-        });
-        
         // إعادة رسم البيانات في وضع التعديل
         renderWorkItemsInEditMode();
         renderDeductionsInEditMode();
@@ -1681,6 +1672,16 @@
         if (dailyRows && dailyRows.length > 0) {
           renderDailyRowsInEditMode();
         }
+        
+        // تفعيل الحقول للتعديل (بعد الرسم)
+        document.querySelectorAll('input').forEach(input => {
+          if (!input.id.includes('Username') && !input.id.includes('statementNumber')) {
+            input.removeAttribute('readonly');
+            if (!input.name || !['prevPercent', 'totalPercent', 'prevAmount', 'totalAmount'].includes(input.name)) {
+              input.style.background = '#fff';
+            }
+          }
+        });
         
       } else {
         // تفعيل وضع العرض
@@ -1696,7 +1697,7 @@
         // تعطيل الحقول
         document.querySelectorAll('input').forEach(input => {
           if (!input.id.includes('Username') && !input.id.includes('statementNumber')) {
-            input.setAttribute('readonly', true);
+            input.setAttribute('readonly', 'readonly');
             input.style.background = '#e8f5e9';
           }
         });
@@ -2288,6 +2289,9 @@
       if (e.target.dataset.idx !== undefined && e.target.dataset.field && isEditMode) {
         const idx = parseInt(e.target.dataset.idx);
         const field = e.target.dataset.field;
+        
+        // إظهار زرار الحفظ عند حدوث أي تعديل
+        document.getElementById('saveBtn').style.display = 'inline-block';
         
         if (e.target.closest('#workItemsBody') && workItems[idx] && !workItems[idx].isSeparator) {
           const oldValue = workItems[idx][field];
