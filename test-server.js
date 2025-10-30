@@ -53,12 +53,14 @@ app.use('/uploads', express.static(uploadsDir));
 const uri = "mongodb+srv://admin:Bb100200@db.diskpwp.mongodb.net/?retryWrites=true&w=majority&appName=DB";
 let db = null;
 let externalServicesCollection = null;
+let dailyReportsCollection = null;
 
 MongoClient.connect(uri)
   .then(client => {
     console.log('✅ Connected to MongoDB!');
     db = client.db('taskon');
     externalServicesCollection = db.collection('external-services');
+    dailyReportsCollection = db.collection('daily_reports');
   })
   .catch(err => {
     console.error('❌ MongoDB connection error:', err);
@@ -220,6 +222,114 @@ app.delete('/external-services/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// File serving endpoint
+// ==============================
+// DAILY REPORTS API ENDPOINTS
+// ==============================
+
+// Get all daily reports
+app.get('/daily-reports', async (req, res) => {
+  try {
+    if (!dailyReportsCollection) return res.json([]);
+    const docs = await dailyReportsCollection.find({}).sort({ date: -1 }).toArray();
+    res.json(docs);
+  } catch (err) {
+    console.error('Error fetching daily reports:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create daily report (accept any file fields)
+app.post('/daily-reports', upload.any(), async (req, res) => {
+  try {
+    if (!dailyReportsCollection) return res.status(500).json({ error: 'DB not ready' });
+    const { date, title } = req.body;
+    const workItemsMeta = JSON.parse(req.body.workItems || '[]');
+    const files = req.files || [];
+
+    // build workItems with photos grouped by fieldname prefix photos_{idx}_
+    const workItems = workItemsMeta.map((m) => ({ building: m.building || '', desc: m.desc || '', photos: [] }));
+    files.forEach(f => {
+      const m = f.fieldname.match(/^photos_(\d+)_/);
+      if (m) {
+        const idx = parseInt(m[1], 10);
+        workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [] };
+        workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
+      }
+    });
+
+    const doc = { date: date || new Date().toISOString(), title: title || '', workItems, photoCount: files.length, createdAt: new Date(), updatedAt: new Date() };
+    const result = await dailyReportsCollection.insertOne(doc);
+    res.json({ success: true, insertedId: result.insertedId });
+  } catch (err) {
+    console.error('Error creating daily report:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get single daily report
+app.get('/daily-reports/:id', async (req, res) => {
+  try {
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const doc = await dailyReportsCollection.findOne({ _id: id });
+    if (!doc) return res.status(404).json({ error: 'Not found' });
+    res.json(doc);
+  } catch (err) {
+    console.error('Error fetching report:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update report (append new photos if provided)
+app.put('/daily-reports/:id', upload.any(), async (req, res) => {
+  try {
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const existing = await dailyReportsCollection.findOne({ _id: id });
+    if (!existing) return res.status(404).json({ error: 'Not found' });
+
+    const workItemsMeta = JSON.parse(req.body.workItems || '[]');
+    const files = req.files || [];
+
+    const workItems = workItemsMeta.map((m, idx) => ({ building: m.building || '', desc: m.desc || '', photos: (existing.workItems && existing.workItems[idx] && existing.workItems[idx].photos) ? existing.workItems[idx].photos.slice() : [] }));
+    files.forEach(f => {
+      const m = f.fieldname.match(/^photos_(\d+)_/);
+      if (m) {
+        const idx = parseInt(m[1], 10);
+        workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [] };
+        workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
+      }
+    });
+
+    const photoCount = files.length + (existing.photoCount || 0);
+    const update = { workItems, photoCount, updatedAt: new Date(), title: req.body.title || existing.title, date: req.body.date || existing.date };
+    await dailyReportsCollection.updateOne({ _id: id }, { $set: update });
+    const updated = await dailyReportsCollection.findOne({ _id: id });
+    res.json(updated);
+  } catch (err) {
+    console.error('Error updating report:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete report
+app.delete('/daily-reports/:id', async (req, res) => {
+  try {
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const result = await dailyReportsCollection.deleteOne({ _id: id });
+    res.json({ success: true, deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error('Error deleting report:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================
+// END DAILY REPORTS API
+// ==============================
 
 // File serving endpoint
 app.get('/uploads/:filename', (req, res) => {

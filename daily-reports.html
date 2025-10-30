@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>التقارير اليومية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Cairo',sans-serif;background:#f1f6f8;color:#213140;padding:1rem}
+    .container{max-width:1100px;margin:0 auto}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    h1{font-size:1.25rem}
+    .btn{padding:0.5rem 0.9rem;border-radius:8px;border:none;cursor:pointer}
+    .btn-primary{background:#197c91;color:#fff}
+    .card{background:#fff;padding:1rem;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
+    table{width:100%;border-collapse:collapse;margin-top:1rem}
+    th,td{padding:0.6rem;border-bottom:1px solid #eef5f7;text-align:center}
+    thead th{background:#f8fbfc;font-weight:800}
+    .empty{padding:2rem;text-align:center;color:#6c7a80}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:9999}
+    .modal.show{display:flex}
+    .modal-card{width:900px;background:#fff;border-radius:8px;padding:1rem}
+    .form-row{display:flex;gap:0.6rem;margin-bottom:0.6rem}
+    .form-row input,.form-row textarea{flex:1;padding:0.45rem;border:1px solid #dbe7ea;border-radius:6px}
+    .equipment-table td{text-align:right}
+    .work-items-table th, .work-items-table td{text-align:center}
+    .small{font-size:0.85rem;color:#6c7a80}
+    .link{color:#197c91;text-decoration:none}
+    .actions{display:flex;gap:0.4rem;justify-content:center}
+    .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 التقارير اليومية</h1>
+      <div>
+        <button id="newReportBtn" class="btn btn-primary">إضافة تقرير جديد</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="reportsList">
+        <div class="empty">جاري تحميل التقارير...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Create Report -->
+  <div id="reportModal" class="modal">
+    <div class="modal-card">
+      <h3 id="modalTitle">إضافة تقرير يومي جديد</h3>
+      <div style="margin-top:0.8rem">
+        <div class="form-row">
+          <input id="reportDate" type="date" />
+          <input id="reportName" placeholder="عنوان التقرير (اختياري)" />
+        </div>
+
+        <!-- Fixed equipment table preview -->
+        <div style="margin-top:0.6rem">
+          <h4 class="small">جدول المعدات (ثابت)</h4>
+          <table class="equipment-table" id="equipmentPreview" style="width:100%">
+            <!-- populated by JS -->
+          </table>
+        </div>
+
+        <!-- Work items input -->
+        <div style="margin-top:0.8rem">
+          <h4 class="small">إضافة بيان الأعمال</h4>
+          <div class="form-row">
+            <input id="buildingNumber" placeholder="رقم المبني / الدور" />
+            <input id="workDesc" placeholder="بيان الاعمال" />
+            <input id="workPhotos" type="file" accept="image/*" multiple />
+            <button id="addWorkItemBtn" class="btn">إضافة</button>
+          </div>
+
+          <table class="work-items-table" id="workItemsTable" style="width:100%;margin-top:0.6rem">
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>رقم المبني / الدور</th>
+                <th>بيان الاعمال</th>
+                <th>الصور</th>
+                <th>حذف</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.6rem;margin-top:0.8rem">
+          <button id="cancelReportBtn" class="btn">إلغاء</button>
+          <button id="saveReportBtn" class="btn btn-primary">حفظ التقرير</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:4000' : 'https://taskon-production.up.railway.app';
+
+    // Fixed equipment list (rows as requested)
+    const equipmentList = [
+      'سيارة','سيارة موقع','بوكلين','كرين','قلاب','مقص حديد','ثناية حديد','صاروخ تقطيع','رصاصه','جريدر','وايت مياه','سطحة ونش','موتور لرفع المياه','ماكينة لحام','هزاز','بوب كات','مولد كهرباء','غطاس','رافعة','كومبروسر هواء','شيول','بلدوزر','جى سى بى'
+    ];
+
+    // State
+    let workItems = [];
+    let reports = [];
+
+    // Elements
+    const reportsList = document.getElementById('reportsList');
+    const newReportBtn = document.getElementById('newReportBtn');
+    const reportModal = document.getElementById('reportModal');
+    const reportDate = document.getElementById('reportDate');
+    const reportName = document.getElementById('reportName');
+    const equipmentPreview = document.getElementById('equipmentPreview');
+    const buildingNumber = document.getElementById('buildingNumber');
+    const workDesc = document.getElementById('workDesc');
+    const workPhotos = document.getElementById('workPhotos');
+    const addWorkItemBtn = document.getElementById('addWorkItemBtn');
+    const workItemsTableBody = document.querySelector('#workItemsTable tbody');
+    const cancelReportBtn = document.getElementById('cancelReportBtn');
+    const saveReportBtn = document.getElementById('saveReportBtn');
+
+    function formatDateISO(d){
+      const dt = new Date(d);
+      return dt.toISOString().split('T')[0];
+    }
+
+    function renderEquipmentPreview(){
+      equipmentPreview.innerHTML = equipmentList.map(eq => `<tr><td style=\"padding:0.35rem 0.6rem;text-align:right\">${eq}</td></tr>`).join('');
+    }
+
+    function renderWorkItems(){
+      workItemsTableBody.innerHTML = workItems.map((it,i)=>`<tr>
+        <td>${i+1}</td>
+        <td>${it.building || ''}</td>
+        <td style=\"text-align:right\">${it.desc}</td>
+        <td>${it.photos && it.photos.length ? it.photos.map(p=>`<a class=\"link\" href=\"${p.url}\" target=\"_blank\">صورة</a>`).join(' ') : '-'}</td>
+        <td><button class=\"icon-btn\" data-index=\"${i}\">حذف</button></td>
+      </tr>`).join('');
+
+      workItemsTableBody.querySelectorAll('.icon-btn').forEach(b=>b.addEventListener('click',e=>{
+        const idx = +e.currentTarget.dataset.index; workItems.splice(idx,1); renderWorkItems();
+      }));
+    }
+
+    function openModal(){
+      reportDate.value = formatDateISO(new Date());
+      reportName.value = '';
+      workItems = [];
+      renderWorkItems();
+      renderEquipmentPreview();
+      reportModal.classList.add('show');
+    }
+    function closeModal(){ reportModal.classList.remove('show'); }
+
+    addWorkItemBtn.addEventListener('click',()=>{
+      const building = buildingNumber.value.trim();
+      const desc = workDesc.value.trim();
+      if(!desc){ alert('أدخل بيان الأعمال'); return; }
+      const files = Array.from(workPhotos.files || []);
+      // We'll upload photos together when saving report; for preview store file objects temporarily
+      workItems.push({ building, desc, photosFiles: files });
+      buildingNumber.value=''; workDesc.value=''; workPhotos.value='';
+      renderWorkItems();
+    });
+
+    newReportBtn.addEventListener('click', openModal);
+    cancelReportBtn.addEventListener('click', closeModal);
+
+    // Save report -> upload all photos grouped per work item
+    saveReportBtn.addEventListener('click', async ()=>{
+      // Prepare multipart form
+      const fd = new FormData();
+      fd.append('date', reportDate.value);
+      fd.append('title', reportName.value || 'تقرير يومي');
+
+      // Attach work items metadata as JSON
+      const itemsMeta = workItems.map((it, idx)=>({ building: it.building, desc: it.desc, photoFieldPrefix: `photos_${idx}_` }));
+      fd.append('workItems', JSON.stringify(itemsMeta));
+
+      // Append files using generated field names so server can group them
+      let counter = 0;
+      workItems.forEach((it, idx)=>{
+        (it.photosFiles || []).forEach((file, fIndex)=>{
+          fd.append(`photos_${idx}_` + fIndex, file);
+          counter++;
+        });
+      });
+
+      try{
+        const res = await fetch(`${API_BASE_URL}/daily-reports`, { method:'POST', body: fd });
+        if(res.ok){
+          alert('تم حفظ التقرير'); closeModal(); loadReports();
+        } else { const txt = await res.text(); alert('خطأ في الحفظ: '+ (txt||res.status)); }
+      }catch(err){ console.error(err); alert('خطأ في الاتصال'); }
+    });
+
+    // Load reports list
+    async function loadReports(){
+      reportsList.innerHTML = '<div class="empty">جاري تحميل التقارير...</div>';
+      try{
+        const res = await fetch(`${API_BASE_URL}/daily-reports`);
+        if(!res.ok){ reportsList.innerHTML = `<div class="empty">لا يمكن تحميل التقارير (رمز: ${res.status})</div>`; return; }
+        reports = await res.json();
+        if(!reports.length){ reportsList.innerHTML = '<div class="empty">لا توجد تقارير حتى الآن</div>'; return; }
+        reportsList.innerHTML = `<table><thead><tr><th>التاريخ</th><th>العنوان</th><th>عدد بنود العمل</th><th>المرفقات</th><th>عرض</th><th>حذف</th></tr></thead><tbody>${reports.map(r=>`<tr>
+          <td>${new Date(r.date).toLocaleDateString('ar-EG')}</td>
+          <td style=\"text-align:right\">${r.title||''}</td>
+          <td>${(r.workItems||[]).length}</td>
+          <td>${(r.photoCount||0) > 0 ? `<a class=\"link\" href=\"${API_BASE_URL}${r._photosArchive || r.photos?.[0]?.path || ''}\" target=\"_blank\">${r.photoCount} مرفق</a>` : '-'}</td>
+          <td><a class=\"link\" href=\"daily-report.html?id=${r._id}\" target=\"_blank\">فتح</a></td>
+          <td><button class=\"icon-btn delete-report\" data-id=\"${r._id}\">حذف</button></td>
+        </tr>`).join('')}</tbody></table>`;
+
+        // attach delete handlers
+        document.querySelectorAll('.delete-report').forEach(b=>b.addEventListener('click', async e=>{
+          if(!confirm('هل تريد حذف التقرير؟')) return;
+          const id = e.currentTarget.dataset.id;
+          const dres = await fetch(`${API_BASE_URL}/daily-reports/${id}`, { method:'DELETE' });
+          if(dres.ok) loadReports(); else alert('خطأ في الحذف');
+        }));
+
+      }catch(err){ console.error(err); reportsList.innerHTML = '<div class="empty">خطأ في الاتصال بالخادم</div>'; }
+    }
+
+    // init
+    renderEquipmentPreview(); loadReports();
+  </script>
+</body>
+</html>
