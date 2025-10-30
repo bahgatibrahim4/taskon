@@ -352,6 +352,14 @@ app.get('/add-contractor.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'add-contractor.html'));
 });
 
+app.get('/daily-reports.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'daily-reports.html'));
+});
+
+app.get('/daily-report.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'daily-report.html'));
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log('🚀 Test server running on port', PORT);
@@ -360,4 +368,8 @@ app.listen(PORT, () => {
   console.log('   POST /external-services - إضافة تعامل خارجي');
   console.log('   PUT  /external-services/:id - تحديث تعامل خارجي');
   console.log('   DELETE /external-services/:id - حذف تعامل خارجي');
+  console.log('   GET  /daily-reports - جلب التقارير اليومية');
+  console.log('   POST /daily-reports - إضافة تقرير يومي');
+  console.log('   PUT  /daily-reports/:id - تحديث تقرير يومي');
+  console.log('   DELETE /daily-reports/:id - حذف تقرير يومي');
 });
