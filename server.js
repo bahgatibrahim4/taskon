@@ -14,11 +14,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// تعريف مجلد uploads مرة واحدة
+const uploadsDir = path.join(__dirname, 'uploads');
+
 // Basic multer setup for early endpoints
 const basicUpload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const uploadsDir = path.join(__dirname, 'uploads');
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
@@ -183,6 +185,29 @@ app.use(express.static(__dirname));
 // تقديم الملفات المرفوعة من مجلد uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Endpoint خاص لتقديم الملفات مع error handling
+app.get('/uploads/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
+  
+  console.log('🔍 Trying to serve file:', filePath);
+  
+  // التحقق من وجود الملف
+  if (fs.existsSync(filePath)) {
+    console.log('✅ File found, serving:', filename);
+    res.sendFile(filePath);
+  } else {
+    console.log('❌ File not found:', filename);
+    // إنشاء ملف placeholder إذا لم يوجد الملف
+    res.status(404).json({
+      success: false,
+      error: 'File not found',
+      message: 'الملف غير متوفر - قد يكون تم حذفه أثناء إعادة النشر',
+      filename: filename
+    });
+  }
+});
+
 // Routes للصفحات الرئيسية
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -215,6 +240,25 @@ app.get('/railway-test', (req, res) => {
 });
 
 const uri = "mongodb+srv://admin:Bb100200@db.diskpwp.mongodb.net/?retryWrites=true&w=majority&appName=DB";
+
+// التأكد من وجود مجلد uploads
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('📁 Created uploads directory:', uploadsDir);
+  
+  // إنشاء ملف README.md في المجلد
+  fs.writeFileSync(path.join(uploadsDir, 'README.md'), `# Uploads Directory
+
+This directory contains uploaded files for the Taskon application.
+
+**Note**: Files uploaded on Railway will be lost during redeployments.
+For production, consider using cloud storage like AWS S3, Google Cloud Storage, or Cloudinary.
+
+Created: ${new Date().toISOString()}
+`);
+} else {
+  console.log('📁 Uploads directory exists:', uploadsDir);
+}
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -431,13 +475,6 @@ app.use((req, res) => {
 });
 
 // ========= NOTE: API test endpoints moved to top of file =========
-
-// إنشاء مجلد uploads إذا لم يكن موجوداً
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log('📁 Created uploads directory:', uploadsDir);
-}
 
 // إعداد multer للحفظ المحلي
 const storage = multer.diskStorage({
