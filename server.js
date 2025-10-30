@@ -150,17 +150,6 @@ app.post('/drawings', basicUpload.fields([
   }
 });
 
-// Notifications endpoints to fix 404 errors
-app.get('/notifications/:userId', (req, res) => {
-  // Return empty notifications for now
-  res.json([]);
-});
-
-app.get('/notifications/:userId/unread-count', (req, res) => {
-  // Return zero unread count for now
-  res.json({ count: 0 });
-});
-
 // Add missing endpoints
 app.get('/notification-settings', (req, res) => {
   res.json({
@@ -510,6 +499,221 @@ const upload = multer({
     cb(null, true);
   }
 });
+
+// ================================
+// EXTERNAL SERVICES API ENDPOINTS
+// ================================
+
+// Get all external services
+app.get('/external-services', async (req, res) => {
+  try {
+    if (!externalServicesCollection) {
+      console.log('🔄 External services collection not initialized yet');
+      return res.json([]);
+    }
+    
+    const services = await externalServicesCollection.find({}).sort({ serviceDate: -1 }).toArray();
+    console.log('✅ Found external services:', services.length);
+    res.json(services);
+  } catch (error) {
+    console.error('❌ Error fetching external services:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add new external service
+app.post('/external-services', upload.single('attachment'), async (req, res) => {
+  try {
+    console.log('📝 POST /external-services called');
+    console.log('📄 Request body:', req.body);
+    console.log('📎 File:', req.file);
+    
+    if (!externalServicesCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    
+    const {
+      supplierName,
+      serviceType,
+      serviceDate,
+      amount,
+      paymentMethod,
+      receiverName,
+      description,
+      notes
+    } = req.body;
+    
+    const newService = {
+      supplierName,
+      serviceType,
+      serviceDate,
+      amount: parseFloat(amount),
+      paymentMethod,
+      receiverName: receiverName || '',
+      description,
+      notes: notes || '',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    // Handle file upload
+    if (req.file) {
+      newService.attachment = {
+        filename: req.file.filename,
+        originalname: req.file.originalname,
+        path: `/uploads/${req.file.filename}`,
+        size: req.file.size
+      };
+      console.log('📎 File attached:', newService.attachment);
+    }
+    
+    const result = await externalServicesCollection.insertOne(newService);
+    console.log('✅ External service added with ID:', result.insertedId);
+    
+    res.json({
+      success: true,
+      insertedId: result.insertedId,
+      message: 'Service added successfully'
+    });
+  } catch (error) {
+    console.error('❌ Error adding external service:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update external service
+app.put('/external-services/:id', upload.single('attachment'), async (req, res) => {
+  try {
+    if (!externalServicesCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    
+    const { ObjectId } = require('mongodb');
+    const serviceId = new ObjectId(req.params.id);
+    
+    const {
+      supplierName,
+      serviceType,
+      serviceDate,
+      amount,
+      paymentMethod,
+      receiverName,
+      description,
+      notes
+    } = req.body;
+    
+    const updateData = {
+      supplierName,
+      serviceType,
+      serviceDate,
+      amount: parseFloat(amount),
+      paymentMethod,
+      receiverName: receiverName || '',
+      description,
+      notes: notes || '',
+      updatedAt: new Date()
+    };
+    
+    // Handle file upload
+    if (req.file) {
+      updateData.attachment = {
+        filename: req.file.filename,
+        originalname: req.file.originalname,
+        path: `/uploads/${req.file.filename}`,
+        size: req.file.size
+      };
+    }
+    
+    const result = await externalServicesCollection.updateOne(
+      { _id: serviceId },
+      { $set: updateData }
+    );
+    
+    res.json({
+      success: true,
+      modifiedCount: result.modifiedCount,
+      message: 'Service updated successfully'
+    });
+  } catch (error) {
+    console.error('❌ Error updating external service:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete external service
+app.delete('/external-services/:id', async (req, res) => {
+  try {
+    if (!externalServicesCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    
+    const { ObjectId } = require('mongodb');
+    const serviceId = new ObjectId(req.params.id);
+    
+    const result = await externalServicesCollection.deleteOne({ _id: serviceId });
+    
+    res.json({
+      success: true,
+      deletedCount: result.deletedCount,
+      message: 'Service deleted successfully'
+    });
+  } catch (error) {
+    console.error('❌ Error deleting external service:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Export external services to Excel
+app.get('/external-services/export', async (req, res) => {
+  try {
+    if (!externalServicesCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    
+    const services = await externalServicesCollection.find({}).sort({ serviceDate: -1 }).toArray();
+    
+    // Create Excel data
+    const XLSX = require('xlsx');
+    const wb = XLSX.utils.book_new();
+    
+    // Prepare data for Excel
+    const excelData = services.map(service => ({
+      'التاريخ': new Date(service.serviceDate).toLocaleDateString('ar-EG'),
+      'اسم الجهة': service.supplierName,
+      'نوع الخدمة': service.serviceType,
+      'القيمة': service.amount,
+      'طريقة الدفع': service.paymentMethod,
+      'المستلم': service.receiverName || '',
+      'الوصف': service.description,
+      'ملاحظات': service.notes || '',
+      'تاريخ الإضافة': new Date(service.createdAt).toLocaleDateString('ar-EG')
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    XLSX.utils.book_append_sheet(wb, ws, 'التعاملات الخارجية');
+    
+    // Generate Excel file
+    const filename = `external-services-${Date.now()}.xlsx`;
+    const filepath = path.join(__dirname, 'uploads', filename);
+    XLSX.writeFile(wb, filepath);
+    
+    // Send file
+    res.download(filepath, `التعاملات_الخارجية_${new Date().toISOString().split('T')[0]}.xlsx`, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+      }
+      // Clean up temporary file
+      fs.unlink(filepath, () => {});
+    });
+  } catch (error) {
+    console.error('❌ Error exporting external services:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ================================
+// END EXTERNAL SERVICES ENDPOINTS
+// ================================
 
 // Test file upload endpoint - بعد تعريف upload
 app.post('/test/upload', upload.single('testFile'), (req, res) => {
@@ -2864,11 +3068,6 @@ app.put('/workers/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-// دعم الرجوع للصفحة الرئيسية من المسار /
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // معالج favicon لتجنب رسائل 404

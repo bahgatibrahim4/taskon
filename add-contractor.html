@@ -898,12 +898,13 @@
               <th>نوع الخدمة</th>
               <th>القيمة</th>
               <th>طريقة الدفع</th>
+              <th>المرفقات</th>
               <th>إجراءات</th>
             </tr>
           </thead>
           <tbody id="servicesTableBody">
             <tr>
-              <td colspan="6">
+              <td colspan="7">
                 <div class="empty-state">
                   <div class="empty-state-icon">🤝</div>
                   <div class="empty-state-text">لا توجد تعاملات بعد</div>
@@ -1057,6 +1058,11 @@
         }, 100);
       });
 
+    // API Configuration
+    const API_BASE_URL = window.location.hostname === 'localhost' 
+      ? 'http://localhost:4000' 
+      : 'https://taskon-production.up.railway.app';
+
     // Data
     let services = [];
     let editingIndex = null;
@@ -1141,12 +1147,12 @@
         let response;
         if (editingIndex !== null) {
           const serviceId = services[editingIndex]._id;
-          response = await fetch(`https://taskon-production.up.railway.app/external-services/${serviceId}`, {
+          response = await fetch(`${API_BASE_URL}/external-services/${serviceId}`, {
             method: 'PUT',
             body: formData
           });
         } else {
-          response = await fetch('https://taskon-production.up.railway.app/external-services', {
+          response = await fetch(`${API_BASE_URL}/external-services`, {
             method: 'POST',
             body: formData
           });
@@ -1188,7 +1194,7 @@
     // Load Services
     async function loadServices() {
       try {
-        const response = await fetch('https://taskon-production.up.railway.app/external-services');
+        const response = await fetch(`${API_BASE_URL}/external-services`);
         
         if (!response.ok) {
           console.error('Server returned:', response.status, response.statusText);
@@ -1273,7 +1279,7 @@
       if (filtered.length === 0) {
         servicesTableBody.innerHTML = `
           <tr>
-            <td colspan="6">
+            <td colspan="7">
               <div class="empty-state">
                 <div class="empty-state-icon">🔍</div>
                 <div class="empty-state-text">لا توجد نتائج</div>
@@ -1306,6 +1312,18 @@
               <span class="payment-badge ${paymentInfo.class}">
                 ${paymentInfo.icon} ${service.paymentMethod}
               </span>
+            </td>
+            <td>
+              ${service.attachment 
+                ? `<a href="${API_BASE_URL}${service.attachment.path}" target="_blank" 
+                     title="${service.attachment.originalname}" 
+                     style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem;">
+                     📎 ${service.attachment.originalname.length > 15 
+                         ? service.attachment.originalname.substring(0, 15) + '...' 
+                         : service.attachment.originalname}
+                   </a>`
+                : '<span style="color: var(--text-secondary); font-size: 0.8rem;">لا يوجد</span>'
+              }
             </td>
             <td>
               <div class="action-btns">
@@ -1352,7 +1370,7 @@
         const serviceName = services[idx].supplierName;
         const serviceType = services[idx].serviceType;
         
-        const response = await fetch(`https://taskon-production.up.railway.app/external-services/${serviceId}`, {
+        const response = await fetch(`${API_BASE_URL}/external-services/${serviceId}`, {
           method: 'DELETE'
         });
         
@@ -1401,7 +1419,7 @@
     // Export to Excel
     exportBtn.addEventListener('click', async () => {
       try {
-        const response = await fetch('https://taskon-production.up.railway.app/external-services/export');
+        const response = await fetch(`${API_BASE_URL}/external-services/export`);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
