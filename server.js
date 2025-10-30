@@ -935,6 +935,41 @@ app.post('/contractors/:id/contracts', upload.any(), async (req, res) => {
   }
 });
 
+// Delete contract from contractor
+app.delete('/contractors/:id/contracts/:contractIndex', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const contractIndex = parseInt(req.params.contractIndex);
+    
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    const contracts = contractor.contracts || [];
+    if (contractIndex < 0 || contractIndex >= contracts.length) {
+      return res.status(400).json({ error: 'Invalid contract index' });
+    }
+    
+    // Remove contract from array
+    contracts.splice(contractIndex, 1);
+    
+    await contractorsCollection.updateOne(
+      { _id: id },
+      { $set: { contracts, updatedAt: new Date() } }
+    );
+    
+    res.json({ success: true, message: 'Contract deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting contract:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ==================== End Contractors API ====================
 
 // ==================== Extracts API ====================

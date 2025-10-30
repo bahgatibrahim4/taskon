@@ -1231,28 +1231,24 @@
       
       if (confirm('هل أنت متأكد من حذف هذا العقد؟')) {
         try {
-          // حذف من المصفوفة المحلية
-          contractsData.splice(index, 1);
-          
-          // حفظ في السيرفر
-          const response = await fetch(`/contractors/${contractorId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ contracts: contractsData })
+          // استخدام endpoint مخصص للحذف
+          const response = await fetch(`/contractors/${contractorId}/contracts/${index}`, {
+            method: 'DELETE'
           });
           
           if (response.ok) {
+            // حذف من المصفوفة المحلية
+            contractsData.splice(index, 1);
             // إعادة عرض الجدول
             renderContractsTable();
             alert('تم حذف العقد بنجاح!');
           } else {
-            alert('حدث خطأ أثناء حذف العقد');
+            const errorData = await response.json();
+            alert('حدث خطأ أثناء حذف العقد: ' + (errorData.error || 'خطأ غير معروف'));
           }
         } catch (error) {
           console.error('خطأ في حذف العقد:', error);
-          alert('حدث خطأ أثناء حذف العقد');
+          alert('حدث خطأ أثناء حذف العقد: ' + error.message);
         }
       }
     }
