@@ -14,7 +14,9 @@
     .small{font-size:0.85rem;color:#6c7a80}
     .actions{display:flex;gap:0.4rem;justify-content:center}
     .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer}
-    .equipment-table td{text-align:right}
+    .equipment-table td{vertical-align:middle}
+    .equipment-table td:nth-child(odd){text-align:right;font-weight:600}
+    .equipment-table td:nth-child(even){text-align:center}
     .work-items-table th, .work-items-table td{text-align:center}
     .btn{padding:0.5rem 0.9rem;border-radius:8px;border:none;cursor:pointer}
     .btn-primary{background:#197c91;color:#fff}
@@ -33,9 +35,16 @@
       <div id="reportHeader" style="display:flex;justify-content:space-between;align-items:center"></div>
 
       <h4 class="small">جدول المعدات</h4>
-      <table class="equipment-table" id="equipmentTable">
+      <table class="equipment-table" id="equipmentTable" style="table-layout:fixed">
         <thead>
-          <tr><th style="text-align:right">اسم المعدة</th><th style="text-align:center">العدد</th></tr>
+          <tr>
+            <th style="text-align:right;width:16.66%">المعدة</th>
+            <th style="text-align:center;width:16.66%">العدد</th>
+            <th style="text-align:right;width:16.66%">المعدة</th>
+            <th style="text-align:center;width:16.66%">العدد</th>
+            <th style="text-align:right;width:16.66%">المعدة</th>
+            <th style="text-align:center;width:16.66%">العدد</th>
+          </tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -85,16 +94,27 @@
 
     function renderEquipment(){
       const equipmentData = report?.equipment || {};
-      equipmentTable.querySelector('tbody').innerHTML = equipmentList.map((e,idx)=>`<tr>
-        <td style="padding:0.5rem 0.8rem;text-align:right">${e}</td>
-        <td style="text-align:center">
-          <input type="number" 
-                 min="0" 
-                 value="${equipmentData[e] || ''}" 
-                 style="width:80px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:0.3rem"
-                 onchange="updateEquipmentCount('${e}', this.value)"
-                 placeholder="0"/>
-        </td>
+      const equipmentRows = [];
+      
+      // تقسيم المعدات إلى صفوف، كل صف 3 معدات
+      for (let i = 0; i < equipmentList.length; i += 3) {
+        const rowEquipment = equipmentList.slice(i, i + 3);
+        equipmentRows.push(rowEquipment);
+      }
+      
+      equipmentTable.querySelector('tbody').innerHTML = equipmentRows.map(row => `<tr>
+        ${row.map(e => `
+          <td style="padding:0.5rem 0.8rem;text-align:right;width:16.66%">${e}</td>
+          <td style="text-align:center;width:16.66%">
+            <input type="number" 
+                   min="0" 
+                   value="${equipmentData[e] || ''}" 
+                   style="width:80px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:0.3rem"
+                   onchange="updateEquipmentCount('${e}', this.value)"
+                   placeholder="0"/>
+          </td>
+        `).join('')}
+        ${row.length < 3 ? '<td colspan="' + (6 - row.length * 2) + '"></td>' : ''}
       </tr>`).join('');
     }
 
