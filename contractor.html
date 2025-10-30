@@ -923,26 +923,29 @@
       
       const modal = document.getElementById('newContractModal');
       const form = document.getElementById('newContractForm');
-      const addBtn = document.querySelector('.add-contract-btn-new');
+      const addBtn = document.getElementById('btnAddNewContract');
       
       console.log('🔍 الزر:', addBtn);
       console.log('🔍 المودال:', modal);
       console.log('🔍 الفورم:', form);
       
-      if (!modal || !form || !addBtn) {
+      if (!modal || !form) {
         console.error('❌ أحد العناصر مفقود!', {modal, form, addBtn});
         return;
       }
       
       const cancelBtn = modal.querySelector('.btn-cancel');
       
-      // فتح المودال
-      addBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('🎯 تم الضغط على زر إضافة عقد!');
-        modal.classList.add('active');
-        console.log('✅ تم إضافة class active للمودال');
-      });
+      // فتح المودال (الزر له onclick="openNewContractModal()" في HTML)
+      // لكن سنضيف event listener احتياطي
+      if (addBtn) {
+        addBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('🎯 تم الضغط على زر إضافة عقد!');
+          modal.classList.add('active');
+          console.log('✅ تم إضافة class active للمودال');
+        });
+      }
       
       // إغلاق المودال
       if (cancelBtn) {
@@ -3003,21 +3006,11 @@
 
         // ربط زر إضافة عقد
         try {
-          const addContractBtn = document.getElementById('addContractBtn');
-          console.log('🔍 الزر addContractBtn:', addContractBtn);
+          const addContractBtn = document.getElementById('btnAddNewContract');
+          console.log('🔍 الزر btnAddNewContract:', addContractBtn);
           if (addContractBtn) {
-            addContractBtn.onclick = function() {
-              console.log('✅✅✅ تم الضغط على زر إضافة عقد!');
-              const modal = document.getElementById('addContractModal');
-              console.log('🔍 المودال:', modal);
-              if (modal) {
-                modal.style.display = 'flex';
-                console.log('✅ تم فتح المودال - display:', modal.style.display);
-              } else {
-                console.error('❌ المودال غير موجود!');
-              }
-            };
-            console.log('✅ تم ربط زر إضافة عقد بنجاح');
+            // الزر له onclick="openNewContractModal()" في HTML
+            console.log('✅ زر إضافة عقد موجود ومربوط من خلال onclick في HTML');
           } else {
             console.error('❌ زر إضافة عقد غير موجود في الصفحة!');
           }
