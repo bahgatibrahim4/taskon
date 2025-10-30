@@ -880,6 +880,61 @@ app.delete('/contractors/:id/materials/:index', async (req, res) => {
   }
 });
 
+// Add contract to contractor
+app.post('/contractors/:id/contracts', upload.any(), async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    // Prepare contract data
+    const contractData = {
+      contractNumber: req.body.contractNumber || '',
+      contractDate: req.body.contractDate || new Date().toISOString(),
+      contractType: req.body.contractType || '',
+      workItem: req.body.workItem || '',
+      contractValue: parseFloat(req.body.contractValue) || 0,
+      executionDuration: req.body.executionDuration || '',
+      notes: req.body.notes || '',
+      attachments: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    // Handle file uploads
+    if (req.files && req.files.length > 0) {
+      contractData.attachments = req.files.map(file => ({
+        filename: file.filename,
+        originalname: file.originalname,
+        path: `/uploads/${file.filename}`,
+        size: file.size,
+        mimetype: file.mimetype
+      }));
+    }
+    
+    // Add contract to contractor's contracts array
+    const contracts = contractor.contracts || [];
+    contracts.push(contractData);
+    
+    await contractorsCollection.updateOne(
+      { _id: id },
+      { $set: { contracts, updatedAt: new Date() } }
+    );
+    
+    res.json({ success: true, message: 'Contract added successfully', contractData });
+  } catch (err) {
+    console.error('Error adding contract:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ==================== End Contractors API ====================
 
 // ==================== Extracts API ====================

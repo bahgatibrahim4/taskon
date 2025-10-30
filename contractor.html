@@ -3191,16 +3191,33 @@
               });
               
               if (response.ok) {
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                  const result = await response.json();
+                  console.log('✅ نتيجة الحفظ:', result);
+                }
+                
                 alert('✅ تم إضافة العقد بنجاح!');
                 closeNewContractModal();
                 
                 // إعادة تحميل العقود
                 if (typeof fetchContracts === 'function') {
                   fetchContracts();
+                } else {
+                  // Reload page if function not available
+                  window.location.reload();
                 }
               } else {
-                const error = await response.text();
-                alert('❌ خطأ: ' + error);
+                const text = await response.text();
+                let errorMsg = 'خطأ غير معروف';
+                try {
+                  const error = JSON.parse(text);
+                  errorMsg = error.error || error.message || text;
+                } catch (e) {
+                  errorMsg = text || `خطأ ${response.status}`;
+                }
+                alert('❌ خطأ: ' + errorMsg);
               }
             } catch (err) {
               console.error('❌ خطأ:', err);
