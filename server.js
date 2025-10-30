@@ -557,6 +557,44 @@ app.put('/users/:id', async (req, res) => {
   }
 });
 
+// Update user permissions
+app.put('/users/:id/permissions', async (req, res) => {
+  try {
+    if (!usersCollection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = req.params.id;
+    const { permissions } = req.body;
+    
+    if (!Array.isArray(permissions)) {
+      return res.status(400).json({ error: 'Permissions must be an array' });
+    }
+    
+    let result;
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { permissions: permissions } }
+      );
+    } else {
+      result = await usersCollection.updateOne(
+        { _id: id },
+        { $set: { permissions: permissions } }
+      );
+    }
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'لم يتم العثور على المستخدم' });
+    }
+    console.log('✅ User permissions updated:', id, permissions);
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error('Error updating user permissions:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Delete user
 app.delete('/users/:id', async (req, res) => {
   try {
