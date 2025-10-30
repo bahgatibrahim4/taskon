@@ -249,12 +249,18 @@ app.post('/daily-reports', upload.any(), async (req, res) => {
     const files = req.files || [];
 
     // build workItems with photos grouped by fieldname prefix photos_{idx}_
-    const workItems = workItemsMeta.map((m) => ({ building: m.building || '', desc: m.desc || '', photos: [] }));
+    const workItems = workItemsMeta.map((m) => ({ 
+      building: m.building || '', 
+      desc: m.desc || '', 
+      photos: [],
+      addedBy: m.addedBy || 'غير محدد',
+      addedAt: new Date().toISOString()
+    }));
     files.forEach(f => {
       const m = f.fieldname.match(/^photos_(\d+)_/);
       if (m) {
         const idx = parseInt(m[1], 10);
-        workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [] };
+        workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [], addedBy: 'غير محدد', addedAt: new Date().toISOString() };
         workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
       }
     });

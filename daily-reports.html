@@ -163,9 +163,23 @@
       const building = buildingNumber.value.trim();
       const desc = workDesc.value.trim();
       if(!desc){ alert('أدخل بيان الأعمال'); return; }
+      
+      // Get current user name
+      let currentUser = 'غير محدد';
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        currentUser = user.username || 'غير محدد';
+      } catch (e) {}
+      
       const files = Array.from(workPhotos.files || []);
       // We'll upload photos together when saving report; for preview store file objects temporarily
-      workItems.push({ building, desc, photosFiles: files });
+      workItems.push({ 
+        building, 
+        desc, 
+        photosFiles: files,
+        addedBy: currentUser,
+        addedAt: new Date().toISOString()
+      });
       buildingNumber.value=''; workDesc.value=''; workPhotos.value='';
       renderWorkItems();
     });
@@ -182,7 +196,13 @@
       fd.append('title', reportName.value || 'تقرير يومي');
 
       // Attach work items metadata as JSON
-      const itemsMeta = workItems.map((it, idx)=>({ building: it.building, desc: it.desc, photoFieldPrefix: `photos_${idx}_` }));
+      const itemsMeta = workItems.map((it, idx)=>({ 
+        building: it.building, 
+        desc: it.desc, 
+        photoFieldPrefix: `photos_${idx}_`,
+        addedBy: it.addedBy || 'غير محدد',
+        addedAt: it.addedAt || new Date().toISOString()
+      }));
       fd.append('workItems', JSON.stringify(itemsMeta));
 
       // Append files using generated field names so server can group them

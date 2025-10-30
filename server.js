@@ -351,12 +351,18 @@ app.get('/external-services/export', async (req, res) => {
         const { date, title, reportNumber, equipment } = req.body;
         const workItemsMeta = JSON.parse(req.body.workItems || '[]');
         const files = req.files || [];
-        const workItems = workItemsMeta.map((m) => ({ building: m.building || '', desc: m.desc || '', photos: [] }));
+        const workItems = workItemsMeta.map((m) => ({ 
+          building: m.building || '', 
+          desc: m.desc || '', 
+          photos: [],
+          addedBy: m.addedBy || 'غير محدد',
+          addedAt: new Date().toISOString()
+        }));
         files.forEach(f => {
           const m = f.fieldname.match(/^photos_(\d+)_/);
           if (m) {
             const idx = parseInt(m[1], 10);
-            workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [] };
+            workItems[idx] = workItems[idx] || { building: '', desc: '', photos: [], addedBy: 'غير محدد', addedAt: new Date().toISOString() };
             workItems[idx].photos.push({ filename: f.filename, originalname: f.originalname, path: `/uploads/${f.filename}`, size: f.size });
           }
         });

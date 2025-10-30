@@ -4,27 +4,56 @@
   <meta charset="utf-8" />
   <title>تفاصيل التقرير</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="permissions-check.js"></script>
   <style>
-    body{font-family:'Cairo',sans-serif;background:#f1f6f8;color:#213140;padding:1rem}
-    .container{max-width:1100px;margin:0 auto}
-    .card{background:#fff;padding:1rem;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
-    table{width:100%;border-collapse:collapse;margin-top:1rem}
-    th,td{padding:0.6rem;border-bottom:1px solid #eef5f7;text-align:center}
-    thead th{background:#f8fbfc;font-weight:800}
-    .small{font-size:0.85rem;color:#6c7a80}
-    .actions{display:flex;gap:0.4rem;justify-content:center}
-    .icon-btn{padding:0.35rem 0.5rem;border-radius:6px;border:none;background:#f3f8f9;cursor:pointer}
-    .equipment-table td{vertical-align:middle}
-    .equipment-table td:nth-child(odd){text-align:right;font-weight:600}
-    .equipment-table td:nth-child(even){text-align:center}
+    body{font-family:'Cairo',sans-serif;background:#f1f6f8;color:#213140;padding:0;margin:0}
+    .container{max-width:1200px;margin:2rem auto;padding:0 1rem}
+    .card{background:#fff;padding:2rem;border-radius:15px;box-shadow:0 8px 32px rgba(0,0,0,0.1);border:1px solid #e1ecf4}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;background:#fff;border-radius:8px;overflow:hidden}
+    th,td{padding:0.8rem;border-bottom:1px solid #f0f7fa;text-align:center}
+    thead th{background:linear-gradient(135deg, #f8fbfc 0%, #e8f4f8 100%);font-weight:800;color:#1a3b50;font-size:0.95rem}
+    tbody tr:hover{background:#f8fbfc;transition:background 0.2s}
+    .small{font-size:0.9rem;color:#6c7a80;margin-bottom:0.5rem;font-weight:600}
+    .actions{display:flex;gap:0.6rem;justify-content:center}
+    .icon-btn{padding:0.4rem 0.8rem;border-radius:8px;border:none;cursor:pointer;font-size:0.85rem;transition:all 0.2s}
+    .icon-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+    .equipment-table td{vertical-align:middle;border-bottom:1px solid #f0f7fa}
+    .equipment-table td:nth-child(odd){text-align:right;font-weight:600;background:#fafcfd}
+    .equipment-table td:nth-child(even){text-align:center;background:#fff}
+    .equipment-table input[type="number"]{width:90px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;transition:border-color 0.2s}
+    .equipment-table input[type="number"]:focus{border-color:#197c91;outline:none;box-shadow:0 0 0 3px rgba(25,124,145,0.1)}
     .work-items-table th, .work-items-table td{text-align:center}
-    .btn{padding:0.5rem 0.9rem;border-radius:8px;border:none;cursor:pointer}
-    .btn-primary{background:#197c91;color:#fff}
-    input[type="text"], input[type="file"], input[type="number"]{padding:0.45rem;border:1px solid #dbe7ea;border-radius:6px}
-    .link{color:#197c91;text-decoration:none}
+    .work-items-table td:nth-child(3){text-align:right;max-width:200px}
+    .btn{padding:0.6rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-weight:600;transition:all 0.2s}
+    .btn-primary{background:linear-gradient(135deg, #197c91 0%, #1565c0 100%);color:#fff;box-shadow:0 4px 12px rgba(25,124,145,0.3)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(25,124,145,0.4)}
+    .btn:hover{transform:translateY(-1px)}
+    input[type="text"], input[type="file"], input[type="number"]{padding:0.6rem;border:2px solid #e1ecf4;border-radius:8px;transition:all 0.2s}
+    input[type="text"]:focus, input[type="file"]:focus{border-color:#197c91;outline:none;box-shadow:0 0 0 3px rgba(25,124,145,0.1)}
+    .link{color:#197c91;text-decoration:none;font-weight:600}
+    .link:hover{text-decoration:underline}
+    .navbar{margin-bottom:0}
   </style>
 </head>
 <body>
+  <div id="mainNavbarContainer"></div>
+  <script>
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('mainNavbarContainer').innerHTML = html;
+        Array.from(document.getElementById('mainNavbarContainer').querySelectorAll('script')).forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+  
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h2>تفاصيل التقرير</h2>
@@ -52,16 +81,26 @@
       <h4 class="small" style="margin-top:1rem">بيان الأعمال</h4>
       <table class="work-items-table" id="workItemsTable">
         <thead>
-          <tr><th>م</th><th>رقم المبني / الدور</th><th>بيان الاعمال</th><th>الصور</th><th>حذف</th></tr>
+          <tr>
+            <th>م</th>
+            <th>رقم المبني / الدور</th>
+            <th>بيان الاعمال</th>
+            <th>الصور</th>
+            <th>اسم المستخدم</th>
+            <th>حذف</th>
+          </tr>
         </thead>
         <tbody></tbody>
       </table>
 
-      <div style="margin-top:1rem;display:flex;gap:0.5rem;align-items:center">
-        <input id="newBuilding" placeholder="رقم المبني / الدور" />
-        <input id="newDesc" placeholder="بيان الاعمال" />
-        <input id="newPhotos" type="file" accept="image/*" multiple />
-        <button id="addWorkBtn" class="btn">أضف بند</button>
+      <div style="margin-top:1.5rem;background:#f8fbfc;padding:1.5rem;border-radius:12px;border:2px dashed #e1ecf4">
+        <h5 style="margin:0 0 1rem 0;color:#1a3b50;font-weight:700">إضافة بند عمل جديد</h5>
+        <div style="display:grid;grid-template-columns:1fr 2fr 1fr auto;gap:1rem;align-items:end">
+          <input id="newBuilding" placeholder="رقم المبني / الدور" style="grid-column:1" />
+          <input id="newDesc" placeholder="بيان الاعمال" style="grid-column:2" />
+          <input id="newPhotos" type="file" accept="image/*" multiple style="grid-column:3" />
+          <button id="addWorkBtn" class="btn btn-primary" style="grid-column:4">إضافة بند</button>
+        </div>
       </div>
 
       <div style="margin-top:1rem;display:flex;justify-content:flex-end;gap:0.5rem">
@@ -125,11 +164,12 @@
 
     function renderWorkItems(){
       workItemsTbody.innerHTML = (report.workItems||[]).map((it,i)=>`<tr>
-        <td>${i+1}</td>
-        <td>${it.building||''}</td>
-        <td style=\"text-align:right\">${it.desc}</td>
-        <td>${(it.photos||[]).length ? it.photos.map(p=>`<a href=\"${API_BASE_URL}${p.path}\" target=\"_blank\">صورة</a>`).join(' ') : '-'}</td>
-        <td><button class=\"icon-btn del-item\" data-index=\"${i}\">حذف</button></td>
+        <td style="font-weight:600">${i+1}</td>
+        <td style="padding:0.7rem">${it.building||''}</td>
+        <td style="text-align:right;padding:0.7rem">${it.desc}</td>
+        <td style="padding:0.5rem">${(it.photos||[]).length ? it.photos.map(p=>`<a href="${API_BASE_URL}${p.path}" target="_blank" style="color:#197c91;text-decoration:none;margin:0 3px">📷</a>`).join('') : '-'}</td>
+        <td style="color:#6c7a80;font-size:0.9rem">${it.addedBy || 'غير محدد'}</td>
+        <td><button class="icon-btn del-item" data-index="${i}" style="background:#ffe6e6;color:#d32f2f">حذف</button></td>
       </tr>`).join('');
 
       document.querySelectorAll('.del-item').forEach(b=>b.addEventListener('click',e=>{
@@ -138,12 +178,29 @@
     }
 
     addWorkBtn.addEventListener('click', ()=>{
-      const building = newBuilding.value.trim(); const desc = newDesc.value.trim();
+      const building = newBuilding.value.trim(); 
+      const desc = newDesc.value.trim();
       if(!desc){ alert('أدخل البيان'); return; }
+      
+      // Get current user name
+      let currentUser = 'غير محدد';
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        currentUser = user.username || 'غير محدد';
+      } catch (e) {}
+      
       const files = Array.from(newPhotos.files || []);
       // Temporarily store files in memory for upload on save
-      (report.workItems = report.workItems || []).push({ building, desc, photosFiles: files, photos: [] });
-      newBuilding.value=''; newDesc.value=''; newPhotos.value=''; renderWorkItems();
+      (report.workItems = report.workItems || []).push({ 
+        building, 
+        desc, 
+        photosFiles: files, 
+        photos: [],
+        addedBy: currentUser,
+        addedAt: new Date().toISOString()
+      });
+      newBuilding.value=''; newDesc.value=''; newPhotos.value=''; 
+      renderWorkItems();
     });
 
     saveBtn.addEventListener('click', async ()=>{
