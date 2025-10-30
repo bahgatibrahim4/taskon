@@ -2400,11 +2400,28 @@
     let allUsers = []; // لحفظ كل المستخدمين
 
     async function fetchUsers() {
-      const res = await fetch('/users');
-      const users = await res.json();
-      allUsers = users; // حفظ في المتغير العام
-      updateStatistics(users); // تحديث الإحصائيات
-      return users;
+      try {
+        const res = await fetch('/users');
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Expected JSON, got:', text);
+          throw new Error('Response is not JSON');
+        }
+        const users = await res.json();
+        allUsers = users; // حفظ في المتغير العام
+        updateStatistics(users); // تحديث الإحصائيات
+        return users;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        // إرجاع مصفوفة فارغة في حالة الخطأ
+        allUsers = [];
+        updateStatistics([]);
+        return [];
+      }
     }
 
     // تحديث الإحصائيات
@@ -2674,33 +2691,38 @@
       let checked = Array.from(this.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
 
       try {
-        await fetch('/users/' + currentPermissionsUserId + '/permissions', {
+        const response = await fetch('/users/' + currentPermissionsUserId + '/permissions', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ permissions: checked })
         });
         
-        // تحديث بيانات المستخدم الحالي في localStorage إذا كان هو نفسه
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        if (currentUser && currentUser._id === currentPermissionsUserId) {
-          currentUser.permissions = checked;
-          localStorage.setItem('user', JSON.stringify(currentUser));
+        if (response.ok) {
+          // تحديث بيانات المستخدم الحالي في localStorage إذا كان هو نفسه
+          const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+          if (currentUser && currentUser._id === currentPermissionsUserId) {
+            currentUser.permissions = checked;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+          }
+          
+          closePermissionsModal();
+          renderUsers();
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            const user = allUsers.find(u => u._id === currentPermissionsUserId);
+            const username = user ? user.username : 'مستخدم';
+            await window.sendNotification('user-permissions', `تم تحديث صلاحيات: ${username}`, 'users', currentPermissionsUserId);
+          }
+        } else {
+          const errorData = await response.text();
+          console.error('Permissions update error:', errorData);
+          alert('فشل في تحديث الصلاحيات: ' + (errorData || response.status));
         }
-        
-        closePermissionsModal();
-        renderUsers();
-        
-        // إرسال إشعار
-        await window.waitForNotificationSystem();
-        if (window.sendNotification) {
-          const user = allUsers.find(u => u._id === currentPermissionsUserId);
-          const username = user ? user.username : 'مستخدم';
-          await window.sendNotification('user-permissions', `تم تحديث صلاحيات: ${username}`, 'users', currentPermissionsUserId);
-        }
-        
-        showNotification('تم تحديث الصلاحيات بنجاح ✓', 'success');
       } catch (error) {
-        showNotification('حدث خطأ أثناء تحديث الصلاحيات', 'error');
+        console.error('Error updating permissions:', error);
+        alert('حدث خطأ أثناء تحديث الصلاحيات');
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
@@ -2747,9 +2769,12 @@
           // إظهار رسالة نجاح عصرية
           showNotification('تمت إضافة المستخدم بنجاح', 'success');
         } else {
-          showNotification('حدث خطأ أثناء إضافة المستخدم', 'error');
+          const errorData = await response.text(); // استخدام text() بدلاً من json()
+          console.error('Error response:', errorData);
+          showNotification('فشل في إضافة المستخدم: ' + (errorData || response.status), 'error');
         }
       } catch (error) {
+        console.error('Error adding user:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
       } finally {
         submitBtn.disabled = false;
@@ -2777,9 +2802,12 @@
           
           showNotification('تم حذف المستخدم بنجاح', 'success');
         } else {
-          showNotification('حدث خطأ أثناء حذف المستخدم', 'error');
+          const errorData = await response.text();
+          console.error('Delete error:', errorData);
+          showNotification('حدث خطأ أثناء حذف المستخدم: ' + (errorData || response.status), 'error');
         }
       } catch (error) {
+        console.error('Error deleting user:', error);
         showNotification('خطأ في الاتصال بالخادم', 'error');
       }
     }
