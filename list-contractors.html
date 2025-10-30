@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>قائمة المقاولين | سعيد أحمد بالبيد</title>
+  <!-- إضافة خط Cairo من Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome للأيقونات -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Backup Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.2/css/all.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      direction: rtl;
+      --primary-color: #2e8ca3;
+      --secondary-color: #7a5230;
+      --accent-color: #c5d6db;
+      --success-color: #176c3a;
+      --warning-color: #f9ca24;
+      --danger-color: #e53935;
+      --info-color: #3498db;
+      --dark-color: #2c3e50;
+      --light-color: #f8f9fa;
+      --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      --hover-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      --border-radius: 0px;
+      --transition: all 0.2s ease;
+    }
+    
+    [data-theme="dark"] {
+      --primary-color: #2e8ca3;
+      --secondary-color: #7a5230;
+      --accent-color: #c5d6db;
+      --dark-color: #1a1a1a;
+      --light-color: #2d3436;
+      --card-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Cairo', Arial, sans-serif !important;
+      font-variant-numeric: tabular-nums !important; /* أرقام إنجليزية */
+    }
+    
+    body {
+      font-family: 'Cairo', Arial, sans-serif !important;
+      background: linear-gradient(135deg, #c5d6db 0%, #a8bdc5 50%, #c5d6db 100%);
+      min-height: 100vh;
+      direction: rtl;
+      margin: 0;
+      padding: 0;
+      font-variant-numeric: tabular-nums !important; /* أرقام إنجليزية */
+    }
+    /* Header Styles */
+    .header {
+      background: #fff;
+      border-radius: var(--border-radius);
+      margin-bottom: 8px;
+      padding: 10px 15px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border: 2px solid #8c969a;
+    }
+    
+    .header h1 {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+    
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .theme-toggle {
+      background: var(--primary-color);
+      border: none;
+      border-radius: 6px;
+      width: 30px;
+      height: 30px;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+    
+    .theme-toggle:hover {
+      background: #1a3b50;
+    }
+    .navbar-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .nav-btn {
+      background: #fff;
+      color: #2e8ca3;
+      border: 2px solid #2e8ca3;
+      font-size: 1.08rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 7px 18px;
+      border-radius: 0px;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      box-shadow: 0 2px 10px #0001;
+    }
+    .nav-btn:hover {
+      background: #1a3b50;
+      color: #fff;
+      border-color: #2e8ca3;
+    }
+    #username {
+      font-size: 1.08rem;
+      font-weight: bold;
+      margin-left: 8px;
+      color: #fff;
+      background: #2e8ca3;
+      padding: 4px 14px;
+      border-radius: 0px;
+      box-shadow: 0 1px 6px #0001;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+    }
+    .logout-btn {
+      background: #7a5230;
+      color: #fff;
+      border: none;
+      border-radius: 0px;
+      padding: 7px 18px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1.08rem;
+      transition: background 0.2s;
+      box-shadow: 0 2px 10px #0001;
+    }
+    .logout-btn:hover {
+      background: #8c969a;
+    }
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 25px;
+      position: relative;
+    }
+    
+    /* Main Layout Grid */
+    .main-content-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 12px;
+      height: calc(100vh - 160px);
+    }
+    
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+    
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    /* Stats Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 12px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+      border: 2px solid var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .stat-card .icon {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .stat-card .value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--dark-color);
+      font-family: 'Cairo', Arial, sans-serif;
+      margin-bottom: 2px;
+    }
+    
+    .stat-card .label {
+      color: #666;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    /* Search and Filters */
+    .search-filters {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 12px;
+      box-shadow: var(--card-shadow);
+      border: 2px solid var(--primary-color);
+      flex-shrink: 0;
+    }
+    
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1.5px solid var(--accent-color);
+      border-radius: var(--border-radius);
+      font-size: 0.9rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: var(--transition);
+      background: #f7fafd;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: var(--accent-color);
+    }
+    
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .filter-chip {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+    
+    .filter-chip.active {
+      background: var(--secondary-color);
+    }
+    
+    .filter-chip:hover {
+      background: #1a3b50;
+    }
+    /* Modern Buttons */
+    .modern-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: var(--card-shadow);
+      text-decoration: none;
+      font-family: 'Cairo', Arial, sans-serif;
+      letter-spacing: 0.5px;
+    }
+    
+    .modern-btn:hover {
+      background: #1a3b50;
+    }
+    
+    .modern-btn.success {
+      background: var(--success-color);
+    }
+    
+    .modern-btn.success:hover {
+      background: #14562e;
+    }
+    
+    .modern-btn.warning {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .modern-btn.warning:hover {
+      background: #14562e;
+    }
+    
+    .modern-btn.danger {
+      background: var(--danger-color);
+    }
+    
+    .modern-btn.danger:hover {
+      background: #d32f2f;
+    }
+    
+    .modern-btn.outline {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .modern-btn.outline:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+
+    
+    /* Table Container */
+    .table-container {
+      background: white;
+      border-radius: var(--border-radius);
+      overflow-y: auto;
+      box-shadow: var(--card-shadow);
+      border: 2px solid var(--primary-color);
+      flex: 1;
+      min-height: 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 12px 10px;
+      text-align: right;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-variant-numeric: tabular-nums !important; /* أرقام إنجليزية */
+    }
+    
+    th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    /* عرض العناوين المحددة */
+    th:nth-child(1) { width: 60px; min-width: 60px; } /* م */
+    th:nth-child(2) { min-width: 150px; max-width: 200px; } /* الاسم */
+    th:nth-child(3) { min-width: 120px; max-width: 150px; } /* الهاتف */
+    th:nth-child(4) { min-width: 150px; max-width: 200px; } /* بند العمل */
+    th:nth-child(5) { min-width: 120px; max-width: 150px; } /* قيمة العقد */
+    th:nth-child(6) { width: 100px; min-width: 100px; } /* عدد المستخلصات */
+    th:nth-child(7) { width: 140px; min-width: 140px; } /* الإجراءات */
+    
+    td {
+      background: white;
+      transition: var(--transition);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 120px;
+    }
+
+    /* أعمدة مخصصة العرض */
+    td:nth-child(1) { /* رقم الصف */
+      width: 60px;
+      min-width: 60px;
+    }
+    
+    td:nth-child(2) { /* الاسم */
+      min-width: 150px;
+      max-width: 200px;
+    }
+    
+    td:nth-child(3) { /* الهاتف */
+      min-width: 120px;
+      max-width: 150px;
+    }
+    
+    td:nth-child(4) { /* بند العمل */
+      min-width: 150px;
+      max-width: 200px;
+    }
+    
+    td:nth-child(5) { /* قيمة العقد */
+      min-width: 120px;
+      max-width: 150px;
+    }
+    
+    td:nth-child(6) { /* عدد المستخلصات */
+      width: 100px;
+      min-width: 100px;
+    }
+    
+    td:nth-child(7) { /* الإجراءات */
+      width: 140px;
+      min-width: 140px;
+    }
+    
+    /* أرقام إنجليزية للأعمدة الرقمية */
+    td:nth-child(1), /* رقم الصف */
+    td:nth-child(3), /* الهاتف */
+    td:nth-child(5), /* قيمة العقد */
+    td:nth-child(6) { /* عدد المستخلصات */
+      font-variant-numeric: tabular-nums !important;
+      direction: ltr;
+      text-align: center;
+    }
+    
+    tr:hover td {
+      background: var(--accent-color);
+      cursor: pointer;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Modern Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      backdrop-filter: blur(5px);
+    }
+    
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 40px;
+      max-width: 650px;
+      width: 95%;
+      box-shadow: var(--hover-shadow);
+      transform: scale(0.8);
+      transition: var(--transition);
+      position: relative;
+      border: 2px solid var(--primary-color);
+    }
+    
+    .modal.show .modal-content {
+      transform: scale(1);
+    }
+    
+    .modal-content h3 {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: var(--dark-color);
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid var(--accent-color);
+      border-radius: var(--border-radius);
+      font-size: 1.05rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: var(--transition);
+      background: #f7fafd;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: var(--accent-color);
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 25px;
+    }
+    
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 15px 20px;
+      box-shadow: var(--hover-shadow);
+      border-right: 4px solid var(--success-color);
+      transform: translateX(400px);
+      transition: var(--transition);
+      z-index: 10000;
+      min-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.error {
+      border-right-color: var(--danger-color);
+    }
+    
+    .notification.warning {
+      border-right-color: var(--warning-color);
+    }
+    
+    /* Loading Animation */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(46, 140, 163, 0.3);
+      border-top: 3px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-content-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      
+      .left-panel {
+        height: auto;
+      }
+      
+      .right-panel {
+        height: 70vh;
+      }
+      
+      .stats-container {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 6px;
+      }
+      
+      .stat-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 8px;
+      }
+      
+      .stat-card .icon {
+        font-size: 1.4rem;
+        min-width: auto;
+      }
+      
+      .stat-card .value {
+        font-size: 1.1rem;
+      }
+      
+      .stat-card .label {
+        font-size: 0.75rem;
+      }
+      
+      .search-row {
+        flex-direction: column;
+      }
+      
+      .filter-chips {
+        justify-content: center;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .header h1 {
+        font-size: 1rem;
+      }
+      
+      th, td {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .stat-card .value {
+        font-size: 1rem;
+      }
+      
+      th, td {
+        padding: 6px 4px;
+        font-size: 0.75rem;
+      }
+      
+      .modern-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+    }
+    
+    /* Dark Theme Support */
+    [data-theme="dark"] {
+      background: linear-gradient(135deg, #2d3436 0%, #1a1a1a 50%, #2d3436 100%);
+    }
+    
+    [data-theme="dark"] .stat-card,
+    [data-theme="dark"] .search-section,
+    [data-theme="dark"] .table-container,
+    [data-theme="dark"] .modal-content {
+      background: var(--light-color);
+      color: #e2e8f0;
+    }
+    
+    [data-theme="dark"] .form-input {
+      background: #374151;
+      border-color: #4b5563;
+      color: #e2e8f0;
+    }
+    
+    [data-theme="dark"] .form-input:focus {
+      background: #4b5563;
+      border-color: var(--primary-color);
+    }
+    
+    [data-theme="dark"] td {
+      background: var(--light-color);
+      color: #e2e8f0;
+    }
+    
+    [data-theme="dark"] tr:hover td {
+      background: #374151;
+    }
+
+    #editContractorModal h3 {
+      text-align: center;
+      color: #2e8ca3;
+      margin-bottom: 18px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      border-bottom: 1.5px solid #7a5230;
+      padding-bottom: 8px;
+    }
+    #editContractorForm label {
+      font-size: 1.02rem;
+      color: #2e8ca3;
+      font-weight: bold;
+      margin-bottom: 4px;
+      display: block;
+    }
+    #editContractorForm input[type="text"] {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 0px;
+      border: 1.5px solid #c5d6db;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      background: #f7fafd;
+      transition: border 0.2s, background 0.2s;
+    }
+    #editContractorForm input[type="text"]:focus {
+      border-color: #2e8ca3;
+      background: #c5d6db;
+    }
+    #editContractorForm .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    #editContractorForm button {
+      padding: 7px 18px;
+      border-radius: 0px;
+      font-weight: bold;
+      font-size: 1.05rem;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 8px #0001;
+    }
+    #editContractorForm button[type="submit"] {
+      background: #2e8ca3;
+      color: #fff;
+    }
+    #editContractorForm button[type="submit"]:hover {
+      background: #1a3b50;
+    }
+    #editContractorForm button[type="button"] {
+      background: #7a5230;
+      color: #fff;
+    }
+    #editContractorForm button[type="button"]:hover {
+      background: #8c969a;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px; }
+      th, td { padding: 8px; font-size: .95rem; }
+      #editContractorModal .modal-content { padding: 18px 8px; }
+    }
+    .search-export-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+      margin: 0 auto 18px auto;
+      width: 100%;
+      max-width: 600px;
+    }
+    .search-export-row input[type="text"] {
+      flex: 1;
+      padding: 5px 12px;
+      font-size: 1.02rem;
+      border: 1.5px solid #2e8ca3;
+      border-radius: 0px;
+      background: #fff;
+      color: #2e8ca3;
+      font-family: inherit;
+      height: 32px;
+    }
+    #exportExcelBtn {
+      background: #176c3a;
+      color: #fff;
+      border: none;
+      padding: 4px 12px;
+      font-weight: 900;
+      font-size: 0.93rem;
+      cursor: pointer;
+      border-radius: 0px;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px #0001;
+      transition: background 0.2s, color 0.2s;
+      margin-left: auto;
+      min-width: 0;
+    }
+    #exportExcelBtn {
+      font-size: 0.8rem !important;
+      padding: 8px 16px !important;
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+    
+    #exportExcelBtn i {
+      margin-left: 6px !important;
+      font-size: 0.9rem !important;
+    }
+    
+    #addContractorBtn {
+      font-size: 0.8rem !important;
+      padding: 8px 16px !important;
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+
+    #addContractorBtn i {
+      margin-left: 6px !important;
+      font-size: 0.9rem !important;
+    }
+
+    .modern-btn {
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+
+    .modern-btn i {
+      margin-left: 6px !important;
+      font-size: 0.9rem !important;
+      color: inherit !important;
+      display: inline !important;
+    }
+
+    /* ضمان ظهور أيقونات action buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .action-btn {
+      border: none;
+      background: #f8f9fa;
+      color: #6c757d;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .edit-btn {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .edit-btn:hover {
+      background: #bbdefb;
+      color: #0d47a1;
+    }
+
+    .view-btn {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+
+    .view-btn:hover {
+      background: #e1bee7;
+      color: #4a148c;
+    }
+
+    .delete-btn {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
+    .delete-btn:hover {
+      background: #ffcdd2;
+      color: #b71c1c;
+    }
+
+    .action-btn i {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* CSS عام لضمان ظهور جميع أيقونات Font Awesome */
+    .fas, .far, .fab, .fal, .fad {
+      font-family: "Font Awesome 6 Free" !important;
+      font-weight: 900 !important;
+      display: inline !important;
+      font-style: normal !important;
+      font-variant: normal !important;
+      text-rendering: auto !important;
+      line-height: 1 !important;
+    }
+
+    /* Fallback إذا Font Awesome مش شغال */
+    .fa-plus::before { content: "+" !important; }
+    .fa-file-excel::before { content: "📊" !important; }
+    .fa-list::before { content: "📋" !important; }
+    .fa-hammer::before { content: "🔨" !important; }
+    .fa-pencil::before { content: "✏️" !important; }
+    .fa-file-lines::before { content: "📄" !important; }
+    .fa-xmark::before { content: "✕" !important; }
+    .fa-edit::before { content: "✏️" !important; }
+    .fa-trash::before { content: "🗑️" !important; }
+
+    /* ضمان خط Cairo لجميع العناصر */
+    input, select, textarea, button, .filter-chip, .stat-card, .table-row, .modal-content {
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+
+    /* ضمان ظهور الأيقونات في filter chips */
+    .filter-chip {
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+
+    .filter-chip i {
+      margin-left: 6px !important;
+      font-size: 0.8rem !important;
+      color: inherit !important;
+      display: inline !important;
+    }
+
+    /* ضمان خط Cairo لعناصر الجدول */
+    th, td, .table-header, .table-container {
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+
+    /* ضمان خط Cairo للنصوص والعناوين */
+    h1, h2, h3, h4, h5, h6, p, span, div, label {
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+
+    #exportExcelBtn:hover {
+      background: #14562e;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <!-- Header Section -->
+  <div class="container">
+    <div class="header">
+      <h1>
+        <i class="fas fa-users"></i>
+        قائمة المقاولين
+      </h1>
+      <div class="header-controls">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button onclick="window.location.href='index.html'" class="modern-btn">
+          <i class="fas fa-arrow-right"></i>
+          العودة للرئيسية
+        </button>
+      </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="main-content-grid">
+      <!-- Left Panel: Stats + Search -->
+      <div class="left-panel">
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="value" id="totalContractors">0</div>
+            <div class="label">إجمالي المقاولين</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div class="value" id="activeContractors">0</div>
+            <div class="label">مقاولين نشطين</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">
+              <i class="fas fa-project-diagram"></i>
+            </div>
+            <div class="value" id="totalProjects">0</div>
+            <div class="label">المشاريع الحالية</div>
+          </div>
+        </div>
+        
+        <!-- Search and Filters -->
+        <div class="search-filters">
+          <div class="search-row">
+            <input type="text" id="searchBox" class="search-input" placeholder="🔍 البحث السريع...">
+            <button id="addContractorBtn" class="modern-btn success">
+              <i class="fas fa-plus"></i>
+              إضافة مقاول
+            </button>
+          </div>
+          
+          <div class="filter-chips" id="filterChipsContainer">
+            <div class="filter-chip active" data-filter="">
+              <i class="fas fa-list"></i>
+              الكل
+            </div>
+            <!-- البنود ستتم إضافتها ديناميكياً من قاعدة البيانات -->
+          </div>
+          
+          <div style="display: flex; gap: 6px; justify-content: center; margin-top: 8px;">
+            <button id="exportExcelBtn" class="modern-btn warning">
+              <i class="fas fa-file-excel"></i>
+              تصدير Excel
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Panel: Table -->
+      <div class="right-panel">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>بند العمل</th>
+                <th>قيمة العقد</th>
+                <th>عدد المستخلصات</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="contractorsList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Edit Modal -->
+  <div id="editContractorModal" class="modal">
+    <div class="modal-content">
+      <h3>تعديل بيانات المقاول</h3>
+      <form id="editContractorForm">
+        <input type="hidden" name="id">
+        <div class="form-group">
+          <label>الاسم:</label>
+          <input type="text" name="name" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>الهاتف:</label>
+          <input type="text" name="phone" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>بند العمل:</label>
+          <input type="text" name="address" class="form-input">
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="modern-btn success">حفظ</button>
+          <button type="button" class="modern-btn outline" onclick="closeModal()">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notifications Container -->
+  <div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000;"></div>
+  
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: none; align-items: center; justify-content: center;">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+    </div>
+  </div>
+
+    <!-- نافذة إضافة مقاول جديد -->
+    <div id="addContractorModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0005; z-index:1000; align-items:center; justify-content:center;">
+      <div class="modal-content" style="background:#fff; padding:45px 40px; border-radius:16px; max-width:800px; min-height:380px; margin:0 auto; box-shadow:0 2px 24px #0003; border:2px solid #2e8ca3; position:relative; width:95%;">
+        <h3 style="text-align:center; color:#2e8ca3; margin-bottom:25px; font-size:1.3rem; font-weight:bold; border-bottom:1.5px solid #7a5230; padding-bottom:12px; font-family: 'Cairo', Arial, sans-serif !important;">إضافة مقاول جديد</h3>
+        <form id="addContractorForm">
+          <div>
+            <label style="font-size:1.02rem; color:#2e8ca3; font-weight:bold; margin-bottom:4px; display:block;">الاسم:</label>
+            <input type="text" name="name" required style="width:100%; padding:7px 10px; border-radius:0px; border:1.5px solid #c5d6db; font-size:1.05rem; margin-bottom:12px; background:#f7fafd; transition:border 0.2s, background 0.2s;">
+          </div>
+          <div>
+            <label style="font-size:1.02rem; color:#2e8ca3; font-weight:bold; margin-bottom:4px; display:block;">الهاتف:</label>
+            <input type="text" name="phone" required style="width:100%; padding:7px 10px; border-radius:0px; border:1.5px solid #c5d6db; font-size:1.05rem; margin-bottom:12px; background:#f7fafd; transition:border 0.2s, background 0.2s;">
+          </div>
+          <div>
+            <label style="font-size:1.02rem; color:#2e8ca3; font-weight:bold; margin-bottom:4px; display:block;">بند العمل:</label>
+            <input type="text" name="workItem" style="width:100%; padding:7px 10px; border-radius:0px; border:1.5px solid #c5d6db; font-size:1.05rem; margin-bottom:12px; background:#f7fafd; transition:border 0.2s, background 0.2s;">
+          </div>
+          <div style="display:flex; gap:12px; justify-content:center; margin-top:10px;">
+            <button type="submit" style="padding:7px 18px; border-radius:0px; font-weight:bold; font-size:1.05rem; cursor:pointer; border:none; transition:background 0.2s, color 0.2s; box-shadow:0 2px 8px #0001; background:#2e8ca3; color:#fff;">إضافة</button>
+            <button type="button" id="cancelAddBtn" style="padding:7px 18px; border-radius:0px; font-weight:bold; font-size:1.05rem; cursor:pointer; border:none; transition:background 0.2s, color 0.2s; box-shadow:0 2px 8px #0001; background:#7a5230; color:#fff;">إلغاء</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="pulledWorksInfo" style="text-align:center; margin-top:16px; display:none;">
+      <p style="color:#f44336; font-weight:bold; font-size:1.1rem;">
+        يوجد أعمال مسحوبة لهذا المقاول. <a href="#" id="viewPulledWorksLink" style="color:#2e8ca3; text-decoration:underline;">عرض الأعمال المسحوبة</a>
+      </p>
+    </div>
+  </div>
+  
+  <script>
+    // Modern JavaScript for Enhanced UI
+    
+    // Theme Management
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      const themeIcon = document.querySelector('.theme-toggle i');
+      themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      
+      showNotification(`تم تغيير المظهر إلى ${newTheme === 'dark' ? 'الداكن' : 'الفاتح'}`, 'success');
+    }
+    
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      
+      const themeIcon = document.querySelector('.theme-toggle i');
+      if (themeIcon) {
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      }
+    });
+    
+    // Notification System
+    function showNotification(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('notificationContainer');
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icons = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+      };
+      
+      notification.innerHTML = `
+        <i class="${icons[type]}"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      // Auto remove after duration
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.classList.add('notification-exit');
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, duration);
+    }
+    
+    // Loading Overlay
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+    
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
+    
+    // Modal Management
+    function closeModal() {
+      const modal = document.getElementById('editContractorModal');
+      modal.classList.remove('show');
+    }
+    
+    // Search and Filter Functions
+    function clearSearch() {
+      document.getElementById('searchBox').value = '';
+      document.getElementById('workTypeFilter').value = '';
+      filterContractors();
+    }
+    
+
+    
+
+    
+
+    
+    // Statistics Update
+    function updateStatistics() {
+      const total = allContractors.length;
+      const active = allContractors.filter(c => c.status !== 'inactive').length;
+      
+      // Animate counter updates
+      animateCounter('totalContractors', total);
+      animateCounter('activeContractors', active);
+      animateCounter('totalProjects', Math.floor(total * 0.7)); // Estimated projects
+    }
+    
+    function animateCounter(elementId, target) {
+      const element = document.getElementById(elementId);
+      const duration = 1000;
+      const start = parseInt(element.textContent) || 0;
+      const increment = (target - start) / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (
+          (increment > 0 && current >= target) ||
+          (increment < 0 && current <= target)
+        ) {
+          element.textContent = target.toLocaleString('en-US');
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current).toLocaleString('en-US');
+        }
+      }, 16);
+    }
+  </script>
+  
+  <script>
+    // عرض اسم المستخدم
+    let pageUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!pageUser.username) window.location.href = 'login.html';
+    // تسجيل الخروج
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+    // Enhanced page initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      
+      // Setup navbar username
+      setTimeout(function() {
+        const usernameEl = document.getElementById('username');
+        if (usernameEl && pageUser.username) {
+          usernameEl.textContent = pageUser.username;
+          usernameEl.style.fontFamily = "'Tajawal', 'Cairo', sans-serif";
+        }
+      }, 200);
+      
+      // Add keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        // Escape key to close modal
+        if (e.key === 'Escape') {
+          closeModal();
+        }
+        
+        // Ctrl+F to focus search
+        if (e.ctrlKey && e.key === 'f') {
+          e.preventDefault();
+          document.getElementById('searchBox').focus();
+        }
+      });
+    });
+
+    let allContractors = [];
+
+    // دالة لحساب قيمة العقد
+    function getContractValue(contractor) {
+      if (contractor.contracts && contractor.contracts.length > 0) {
+        return contractor.contracts.reduce((total, contract) => {
+          return total + (contract.contractValue || 0);
+        }, 0);
+      }
+      return 0;
+    }
+
+    // دالة لعدد المستخلصات
+    function getExtractCount(contractor) {
+      if (contractor.lastExtractNumber) {
+        return contractor.lastExtractNumber;
+      }
+      return 0;
+    }
+
+    // دالة لتنسيق العملة
+    function formatCurrency(amount) {
+      if (amount === 0) return '-';
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'SAR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount).replace('SAR', 'ريال');
+    }
+
+    // جلب البنود الفريدة وإنشاء الفلاتر ديناميكياً
+    async function loadWorkItemsFilters() {
+      try {
+        const res = await fetch('/contractors/work-items/unique');
+        const workItems = await res.json();
+        
+        const filterContainer = document.getElementById('filterChipsContainer');
+        
+        // احتفظ بزرار "الكل" والمساحة للبنود الجديدة
+        const allFilter = filterContainer.querySelector('.filter-chip[data-filter=""]');
+        filterContainer.innerHTML = '';
+        filterContainer.appendChild(allFilter);
+        
+        // إضافة بند لكل عنصر في البنود المسجلة
+        workItems.forEach(item => {
+          const chip = document.createElement('div');
+          chip.className = 'filter-chip';
+          chip.setAttribute('data-filter', item);
+          chip.innerHTML = `
+            <i class="fas fa-hammer"></i>
+            ${item}
+          `;
+          filterContainer.appendChild(chip);
+        });
+        
+        console.log(`تم تحميل ${workItems.length} بند فريد من قاعدة البيانات`);
+      } catch (error) {
+        console.error('خطأ في تحميل البنود:', error);
+        showNotification('تعذر تحميل فلاتر البنود', 'warning');
+      }
+    }
+
+    async function fetchContractors() {
+      try {
+        const res = await fetch('/contractors');
+        const contractors = await res.json();
+        allContractors = contractors;
+        
+        // Update statistics
+        updateStatistics();
+        
+        // Render contractors
+        renderContractors(contractors);
+        
+        showNotification('تم تحميل قائمة المقاولين بنجاح', 'success');
+      } catch (error) {
+        showNotification('خطأ في تحميل البيانات', 'error');
+        console.error('Error fetching contractors:', error);
+      }
+    }
+
+    // Render contractors function
+    function renderContractors(contractors) {
+      const list = document.getElementById('contractorsList');
+      list.innerHTML = '';
+      
+      contractors.forEach((c, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'table-row';
+        tr.setAttribute('data-id', c._id);
+        
+        // حساب عدد الأعمال المسحوبة
+        let pulledWorksCount = 0;
+        if (Array.isArray(c.manualWorks)) {
+          pulledWorksCount = c.manualWorks.filter(work => work.pulledFrom).length;
+        }
+        
+        // تحديد حالة المقاول
+        const status = c.status || 'active';
+        const statusInfo = {
+          active: { text: 'نشط', class: 'status-active', icon: 'fa-check-circle' },
+          inactive: { text: 'غير نشط', class: 'status-inactive', icon: 'fa-times-circle' },
+          suspended: { text: 'معلق', class: 'status-suspended', icon: 'fa-pause-circle' }
+        };
+        
+        // إضافة رمز للأعمال المسحوبة
+        let workItemDisplay = c.workItem || '';
+        if (pulledWorksCount > 0) {
+          workItemDisplay += ` <span style="color:#f44336; font-size:0.8rem;" title="يحتوي على ${pulledWorksCount} عمل مسحوب">⤴${pulledWorksCount}</span>`;
+        }
+        
+        tr.innerHTML = `
+          <td>${(index + 1).toLocaleString('en-US')}</td>
+          <td>${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${workItemDisplay}</td>
+          <td style="text-align:center;">${formatCurrency(getContractValue(c))}</td>
+          <td style="text-align:center;">${getExtractCount(c)}</td>
+          <td style="text-align:center;">
+            <div class="action-buttons">
+              <button class="action-btn edit-btn" data-id="${c._id}" title="تعديل">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="action-btn view-btn" onclick="window.location.href='contractor.html?id=${c._id}'" title="عرض">
+                <i class="fas fa-file-lines"></i>
+              </button>
+              <button class="action-btn delete-btn" data-id="${c._id}" title="حذف">
+                <i class="fas fa-xmark"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        
+        tr.addEventListener('click', function(e) {
+          if (e.target.closest('.action-btn')) return;
+          window.location.href = `contractor.html?id=${c._id}`;
+        });
+        
+        list.appendChild(tr);
+      });
+    }
+
+    // Search and filter functionality
+    function filterContractors() {
+      const searchQuery = document.getElementById('searchBox').value.trim().toLowerCase();
+      
+      let filtered = allContractors;
+      
+      // Apply search filter
+      if (searchQuery) {
+        filtered = filtered.filter(c =>
+          (c.name && c.name.toLowerCase().includes(searchQuery)) ||
+          (c.workItem && c.workItem.toLowerCase().includes(searchQuery)) ||
+          (c.phone && c.phone.includes(searchQuery))
+        );
+      }
+      
+      renderContractors(filtered);
+    }
+
+    // Event listeners for search and filter
+    document.getElementById('searchBox').addEventListener('input', filterContractors);
+    
+    // Filter chips event listener
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('filter-chip')) {
+        // Remove active class from all chips
+        document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+        
+        // Add active class to clicked chip
+        e.target.classList.add('active');
+        
+        // Filter contractors
+        const filterValue = e.target.getAttribute('data-filter');
+        filterContractorsByType(filterValue);
+      }
+    });
+    
+    function filterContractorsByType(filterValue) {
+      let filtered = allContractors;
+      
+      if (filterValue) {
+        filtered = filtered.filter(c => 
+          c.workItem && c.workItem.includes(filterValue)
+        );
+      }
+      
+      renderContractors(filtered);
+    }
+
+    // Event handling for action icons
+    document.addEventListener('click', async function(e) {
+      // Handle delete
+      if (e.target.closest('.delete-btn')) {
+        const btn = e.target.closest('.delete-btn');
+        const id = btn.getAttribute('data-id');
+        
+        if (confirm('هل أنت متأكد من حذف هذا المقاول؟')) {
+          showLoading();
+          try {
+            await fetch(`/contractors/${id}`, { method: 'DELETE' });
+            showNotification('تم حذف المقاول بنجاح', 'success');
+            fetchContractors();
+          } catch (error) {
+            showNotification('خطأ في حذف المقاول', 'error');
+          } finally {
+            hideLoading();
+          }
+        }
+      }
+      
+      // Handle edit
+      if (e.target.closest('.edit-btn')) {
+        const btn = e.target.closest('.edit-btn');
+        const id = btn.getAttribute('data-id');
+        const contractor = allContractors.find(c => c._id === id);
+        
+        if (contractor) {
+          openEditModal(contractor);
+        }
+      }
+    });
+    
+    // Open edit modal with contractor data
+    function openEditModal(contractor) {
+      const modal = document.getElementById('editContractorModal');
+      const form = document.getElementById('editContractorForm');
+      
+      form.id.value = contractor._id;
+      form.name.value = contractor.name || '';
+      form.phone.value = contractor.phone || '';
+      form.address.value = contractor.workItem || '';
+      
+      modal.classList.add('show');
+      
+      // Focus on first input
+      setTimeout(() => {
+        form.name.focus();
+      }, 100);
+    }
+
+    // Enhanced form submission with modern UI feedback
+    document.getElementById('editContractorForm').onsubmit = async function(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const originalText = submitButton.innerHTML;
+      
+      // Show loading state
+      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+      submitButton.disabled = true;
+      
+      try {
+        const id = form.id.value;
+        const name = form.name.value.trim();
+        const phone = form.phone.value.trim();
+        const address = form.address.value.trim();
+        const status = form.status.value;
+        
+        // Validation
+        if (!name || !phone) {
+          throw new Error('يرجى ملء جميع الحقول المطلوبة');
+        }
+        
+        const res = await fetch(`/contractors/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, address })
+        });
+        
+        if (res.ok) {
+          // إرسال إشعار بالتعديل
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'contractor-edit',
+              `تم تعديل بيانات المقاول: ${name} - ${address}`,
+              'contractors',
+              id
+            );
+          }
+          
+          closeModal();
+          showNotification('تم تحديث بيانات المقاول بنجاح', 'success');
+          loadWorkItemsFilters(); // تحديث فلاتر البنود
+          fetchContractors();
+        } else if (res.status === 404) {
+          throw new Error('المقاول غير موجود أو رقم المعرف غير صحيح');
+        } else {
+          throw new Error('حدث خطأ أثناء تعديل المقاول');
+        }
+      } catch (error) {
+        showNotification(error.message, 'error');
+      } finally {
+        // Reset button state
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+      }
+    };
+    
+    // Close modal when clicking outside
+    document.getElementById('editContractorModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // --- إضافة مقاول جديد ---
+    
+    // فتح مودال إضافة مقاول
+    document.getElementById('addContractorBtn').onclick = function() {
+      document.getElementById('addContractorModal').style.display = 'flex';
+      document.getElementById('addContractorForm').reset();
+      // التركيز على حقل الاسم
+      setTimeout(() => {
+        document.querySelector('#addContractorForm input[name="name"]').focus();
+      }, 100);
+    };
+
+    // إغلاق مودال إضافة مقاول
+    document.getElementById('cancelAddBtn').onclick = function() {
+      document.getElementById('addContractorModal').style.display = 'none';
+    };
+
+    // إغلاق المودال عند الضغط خارجه
+    document.getElementById('addContractorModal').onclick = function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+      }
+    };
+
+    // حفظ المقاول الجديد
+    document.getElementById('addContractorForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const contractorData = {
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        workItem: form.workItem.value.trim()
+      };
+
+      // التحقق من البيانات المطلوبة
+      if (!contractorData.name || !contractorData.phone) {
+        alert('الاسم والهاتف مطلوبان');
+        return;
+      }
+
+      try {
+        const res = await fetch('/contractors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(contractorData)
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          
+          // إرسال إشعار بإضافة مقاول
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'contractor-add',
+              `تم إضافة مقاول جديد: ${contractorData.name} - ${contractorData.workItem}`,
+              'contractors',
+              result.insertedId || ''
+            );
+          }
+          
+          document.getElementById('addContractorModal').style.display = 'none';
+          loadWorkItemsFilters(); // تحديث فلاتر البنود
+          fetchContractors(); // تحديث القائمة
+          alert('تم إضافة المقاول بنجاح');
+        } else {
+          const error = await res.json();
+          alert('حدث خطأ أثناء إضافة المقاول: ' + (error.error || 'خطأ غير معروف'));
+        }
+      } catch (err) {
+        console.error('خطأ في إضافة المقاول:', err);
+        alert('حدث خطأ أثناء إضافة المقاول');
+      }
+    };
+
+    // تحميل البنود والمقاولين عند تحميل الصفحة
+    loadWorkItemsFilters();
+    fetchContractors();
+  </script>
+  <!-- أضف مكتبة SheetJS قبل سكريبتاتك -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script>
+    // تصدير المقاولين إلى Excel
+    document.getElementById('exportExcelBtn').onclick = function() {
+      // إعداد البيانات
+      const data = [
+        ["م", "الاسم", "الهاتف", "بند العمل", "قيمة العقد", "عدد المستخلصات"]
+      ];
+      allContractors.forEach((c, i) => {
+        data.push([
+          i + 1,
+          c.name,
+          c.phone,
+          c.workItem || '',
+          formatCurrency(getContractValue(c)), // عملة بالريال
+          getExtractCount(c)
+        ]);
+      });
+      // إنشاء ملف Excel
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "المقاولين");
+      XLSX.writeFile(wb, "contractors.xlsx");
+    };
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    // دالة مساعدة للانتظار حتى يتم تحميل sendNotification
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+        
+        // Load contractors after navbar is ready
+        fetchContractors();
+      });
+  </script>
+</body>
+</html>

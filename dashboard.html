@@ -1,0 +1,2701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - نظام إدارة المشاريع</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      padding: 0;
+      color: #1a3b50;
+      direction: rtl;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(46, 140, 163, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(40, 167, 69, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 15px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, rgba(26, 59, 80, 0.95) 0%, rgba(46, 140, 163, 0.95) 100%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 15px;
+      color: white;
+      padding: 20px 25px;
+      margin-bottom: 20px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.03) 10px,
+        rgba(255, 255, 255, 0.03) 20px
+      );
+      animation: slide 20s linear infinite;
+    }
+    
+    @keyframes slide {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
+    }
+    
+    .header .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header .last-update {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Dashboard Sections */
+    .dashboard-section {
+      margin-bottom: 30px;
+      animation: fadeInUp 0.5s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border-right: 4px solid #2e8ca3;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .section-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 150px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(46, 140, 163, 0.08));
+      pointer-events: none;
+    }
+    
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #1a3b50;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-header h2 i {
+      color: #2e8ca3;
+      font-size: 1.2rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+    
+    .section-badge {
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(46, 140, 163, 0.3);
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Top Controls */
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+      padding: 10px 14px;
+      border: 2px solid rgba(46, 140, 163, 0.2);
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.85rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .filter-group select:focus,
+    .filter-group input:focus {
+      outline: none;
+      border-color: #2e8ca3;
+      box-shadow: 0 0 0 4px rgba(46, 140, 163, 0.1),
+                  0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+    
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #2e8ca3 0%, #1a3b50 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(46, 140, 163, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      color: white;
+    }
+    
+    .btn-info:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(23, 162, 184, 0.4);
+    }
+    
+    /* Stats Cards - Modern Glass Design */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 18px;
+      border-radius: 15px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--card-color), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+    
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--card-color) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    
+    .stat-card:hover::after {
+      opacity: 0.05;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(var(--card-color-rgb), 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    
+    .stat-card.blue { 
+      --card-color: #2e8ca3;
+      --card-color-rgb: 46, 140, 163;
+    }
+    .stat-card.green { 
+      --card-color: #28a745;
+      --card-color-rgb: 40, 167, 69;
+    }
+    .stat-card.orange { 
+      --card-color: #fd7e14;
+      --card-color-rgb: 253, 126, 20;
+    }
+    .stat-card.teal { 
+      --card-color: #20c997;
+      --card-color-rgb: 32, 201, 151;
+    }
+    .stat-card.red { 
+      --card-color: #dc3545;
+      --card-color-rgb: 220, 53, 69;
+    }
+    .stat-card.purple { 
+      --card-color: #6f42c1;
+      --card-color-rgb: 111, 66, 193;
+    }
+    .stat-card.yellow { 
+      --card-color: #ffc107;
+      --card-color-rgb: 255, 193, 7;
+    }
+    .stat-card.indigo { 
+      --card-color: #1a3b50;
+      --card-color-rgb: 26, 59, 80;
+    }
+    .stat-card.pink { 
+      --card-color: #e83e8c;
+      --card-color-rgb: 232, 62, 140;
+    }
+    
+    .stat-card .icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: white;
+      background: linear-gradient(135deg, var(--card-color), rgba(var(--card-color-rgb), 0.7));
+      margin-bottom: 12px;
+      box-shadow: 
+        0 4px 15px rgba(var(--card-color-rgb), 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .stat-card .icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s linear infinite;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+    
+    .stat-card .title {
+      font-size: 0.8rem;
+      color: #6c757d;
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #1a3b50;
+      margin-bottom: 6px;
+      direction: ltr;
+      text-align: right;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #1a3b50, var(--card-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-card .subtitle {
+      font-size: 0.75rem;
+      color: #868e96;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .stat-card .trend {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 15px;
+      display: inline-block;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .trend.up {
+      background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(32, 201, 151, 0.15));
+      color: #28a745;
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    
+    .trend.down {
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(253, 126, 20, 0.15));
+      color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+    
+    .trend.neutral {
+      background: linear-gradient(135deg, rgba(108, 117, 125, 0.15), rgba(173, 181, 189, 0.15));
+      color: #6c757d;
+      border: 1px solid rgba(108, 117, 125, 0.2);
+    }
+    
+    /* Charts Section - Glass Morphism */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 15px;
+    }
+    
+    .chart-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .chart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    
+    .chart-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: #1a3b50;
+      font-weight: 800;
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(90deg, #2e8ca3, transparent) 1;
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .chart-card h3 .chart-controls {
+      display: flex;
+      gap: 6px;
+      font-size: 0.75rem;
+    }
+    
+    .chart-card h3 .chart-controls button {
+      padding: 5px 12px;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, rgba(46, 140, 163, 0.1), rgba(46, 140, 163, 0.05));
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.7rem;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      color: #2e8ca3;
+    }
+    
+    .chart-card h3 .chart-controls button:hover {
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 140, 163, 0.3);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 280px;
+    }
+    
+    /* Tables Section - Modern Glass */
+    .tables-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 15px;
+    }
+    
+    .table-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .table-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    
+    .table-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: #1a3b50;
+      font-weight: 800;
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(90deg, #2e8ca3, transparent) 1;
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+      max-height: 350px;
+      overflow-y: auto;
+      border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+      border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #1a3b50, #2e8ca3);
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    
+    .data-table thead {
+      background: linear-gradient(135deg, #1a3b50 0%, #2e8ca3 100%);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 12px;
+      text-align: right;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .data-table th {
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .data-table tbody tr {
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    .data-table tbody tr:hover {
+      background: linear-gradient(90deg, rgba(46, 140, 163, 0.05), transparent);
+      transform: scale(1.01);
+    }
+    
+    .data-table tbody tr:nth-child(even) {
+      background: rgba(248, 249, 250, 0.5);
+    }
+    
+    .data-table tbody tr:nth-child(even):hover {
+      background: linear-gradient(90deg, rgba(46, 140, 163, 0.05), rgba(248, 249, 250, 0.5));
+    }
+    
+    .badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid transparent;
+    }
+    
+    .badge-success {
+      background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(32, 201, 151, 0.15));
+      color: #28a745;
+      border-color: rgba(40, 167, 69, 0.2);
+    }
+    
+    .badge-warning {
+      background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(253, 126, 20, 0.15));
+      color: #ffc107;
+      border-color: rgba(255, 193, 7, 0.2);
+    }
+    
+    .badge-danger {
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(231, 76, 60, 0.15));
+      color: #dc3545;
+      border-color: rgba(220, 53, 69, 0.2);
+    }
+    
+    .badge-info {
+      background: linear-gradient(135deg, rgba(23, 162, 184, 0.15), rgba(46, 140, 163, 0.15));
+      color: #17a2b8;
+      border-color: rgba(23, 162, 184, 0.2);
+    }
+    
+    /* Recent Activities - Glass Design */
+    .activities-section {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+    }
+    
+    .activities-section h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: #1a3b50;
+      font-weight: 800;
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(90deg, #2e8ca3, transparent) 1;
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    #recentActivities {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    
+    .activity-item {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      border-bottom: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 12px;
+      margin-bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .activity-item:hover {
+      background: rgba(255, 255, 255, 1);
+      padding-right: 14px;
+      transform: translateY(-3px) translateX(0);
+      box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 12px;
+      font-size: 1rem;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .activity-icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s linear infinite;
+    }
+    
+    .activity-icon.add { 
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+    .activity-icon.edit { 
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+    }
+    .activity-icon.delete { 
+      background: linear-gradient(135deg, #dc3545, #fd7e14);
+    }
+    .activity-icon.payment { 
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+    }
+    .activity-icon.notification { 
+      background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    }
+    
+    .activity-content {
+      flex: 1;
+    }
+    
+    .activity-title {
+      font-weight: 700;
+      color: #1a3b50;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .activity-time {
+      font-size: 0.75rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+    
+    .activity-details {
+      font-size: 0.75rem;
+      color: #868e96;
+      margin-top: 3px;
+    }
+    
+    /* Notifications Panel - Glass Design */
+    .notifications-panel {
+      position: fixed;
+      top: 70px;
+      left: 20px;
+      max-width: 350px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .notification-item {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      border-right: 3px solid #2e8ca3;
+      animation: slideIn 0.3s ease-out;
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .notification-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 0;
+      background: linear-gradient(90deg, transparent, rgba(46, 140, 163, 0.05));
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .notification-item:hover::before {
+      width: 100%;
+    }
+    
+    .notification-item:hover {
+      transform: translateX(-5px);
+      box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .notification-item.success {
+      border-right-color: #28a745;
+      background: rgba(40, 167, 69, 0.03);
+    }
+    
+    .notification-item.warning {
+      border-right-color: #ffc107;
+      background: rgba(255, 193, 7, 0.03);
+    }
+    
+    .notification-item.error {
+      border-right-color: #dc3545;
+      background: rgba(220, 53, 69, 0.03);
+    }
+    
+    .notification-icon {
+      font-size: 1.2rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .notification-icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s linear infinite;
+    }
+    
+    .notification-item.success .notification-icon {
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+    
+    .notification-item.warning .notification-icon {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+    }
+    
+    .notification-item.error .notification-icon {
+      background: linear-gradient(135deg, #dc3545, #fd7e14);
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #1a3b50;
+      font-size: 0.9rem;
+    }
+    
+    .notification-message {
+      font-size: 0.8rem;
+      color: #495057;
+      line-height: 1.5;
+    }
+    
+    /* Loading Spinner - Glass Design */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 15px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      margin: 20px 0;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(46, 140, 163, 0.1);
+      border-top: 4px solid #2e8ca3;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+      margin: 0 auto 15px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(46, 140, 163, 0.3);
+    }
+    
+    .spinner::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border: 4px solid transparent;
+      border-top-color: #1a3b50;
+      border-radius: 50%;
+      animation: spin 2s linear reverse infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive - Optimized for Glass Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      body::before {
+        opacity: 0.5;
+      }
+      
+      .header {
+        padding: 15px 10px;
+      }
+      
+      .header::before {
+        animation: none; /* Disable animation on mobile for performance */
+      }
+      
+      .header h1 {
+        font-size: 1.4rem;
+      }
+      
+      .dashboard-section {
+        margin-bottom: 20px;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 15px;
+      }
+      
+      .section-header h2 {
+        font-size: 1rem;
+      }
+      
+      .section-header h2 i {
+        font-size: 1rem;
+      }
+      
+      .section-badge {
+        font-size: 0.7rem;
+        padding: 5px 12px;
+      }
+      
+      .top-controls {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .filter-section select,
+      .filter-section input {
+        width: 100%;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+        gap: 10px;
+      }
+      
+      .stat-card {
+        padding: 15px;
+      }
+      
+      .stat-card .icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+      
+      .stat-card .value {
+        font-size: 1.4rem;
+      }
+      
+      .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .chart-card {
+        padding: 15px;
+      }
+      
+      .chart-container {
+        height: 250px;
+      }
+      
+      .chart-controls {
+        flex-wrap: wrap;
+      }
+      
+      .tables-section {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .table-card {
+        padding: 15px;
+      }
+      
+      .table-wrapper {
+        max-height: 300px;
+      }
+      
+      .notifications-panel {
+        top: 60px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+        padding: 15px;
+        /* Reduce blur on mobile for better performance */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+      
+      .notification-item {
+        padding: 12px;
+      }
+      
+      .notification-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+      
+      .activities-section {
+        padding: 15px;
+      }
+      
+      .activity-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+      }
+      
+      /* Reduce backdrop blur on mobile for performance */
+      .stat-card,
+      .chart-card,
+      .table-card,
+      .activities-section {
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+    }
+    
+    /* Extra small screens */
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stat-card .value {
+        font-size: 1.2rem;
+      }
+      
+      .chart-container {
+        height: 220px;
+      }
+      
+      .table-wrapper {
+        max-height: 250px;
+      }
+      
+      /* Further reduce effects on very small screens */
+      .stat-card .icon::before,
+      .notification-icon::before,
+      .activity-icon::before {
+        animation: none; /* Disable shine animation */
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <!-- Notifications Panel -->
+  <div class="notifications-panel" id="notificationsPanel"></div>
+
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header" style="text-align: center;">
+      <h1><i class="fas fa-chart-line"></i> لوحة التحكم</h1>
+      <div class="subtitle">نظرة شاملة على المشروع والإحصائيات المباشرة</div>
+      <div class="last-update" id="lastUpdate">آخر تحديث: جاري التحميل...</div>
+    </div>
+
+    <!-- Filters & Controls Section -->
+    <div class="top-controls">
+      <div class="filter-group">
+        <select id="timeFilter">
+          <option value="all">كل الفترات</option>
+          <option value="today">اليوم</option>
+          <option value="week">هذا الأسبوع</option>
+          <option value="month" selected>هذا الشهر</option>
+          <option value="year">هذه السنة</option>
+        </select>
+        <select id="contractorFilter">
+          <option value="all">كل المقاولين</option>
+        </select>
+        <input type="date" id="dateFrom" placeholder="من تاريخ">
+        <input type="date" id="dateTo" placeholder="إلى تاريخ">
+        <button class="btn btn-primary" onclick="applyFilters()">
+          <i class="fas fa-filter"></i> تطبيق الفلاتر
+        </button>
+      </div>
+      <div class="filter-group">
+        <button class="btn btn-success" onclick="refreshDashboard()">
+          <i class="fas fa-sync-alt"></i> تحديث
+        </button>
+        <button class="btn btn-info" onclick="exportDashboard()">
+          <i class="fas fa-download"></i> تصدير Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Section: Financial Statistics -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-money-bill-wave"></i> الإحصائيات المالية</h2>
+        <span class="section-badge">3 مؤشرات</span>
+      </div>
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <div class="stat-card green">
+          <div class="icon"><i class="fas fa-coins"></i></div>
+          <div class="title">إجمالي المبالغ</div>
+          <div class="value" id="totalAmount"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">ريال</div>
+          <div class="trend up" id="amountTrend">
+            <i class="fas fa-arrow-up"></i> +0%
+          </div>
+        </div>
+
+        <div class="stat-card red">
+          <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
+          <div class="title">إجمالي المدفوعات</div>
+          <div class="value" id="totalPayments"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">ريال</div>
+          <div class="trend up" id="paymentsTrend">
+            <i class="fas fa-arrow-up"></i> +0%
+          </div>
+        </div>
+
+        <div class="stat-card indigo">
+          <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="title">المشتريات</div>
+          <div class="value" id="totalPurchases"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">عملية شراء</div>
+          <div class="trend up" id="purchasesTrend">
+            <i class="fas fa-arrow-up"></i> +0%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Project Statistics -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-project-diagram"></i> إحصائيات المشروع</h2>
+        <span class="section-badge">3 مؤشرات</span>
+      </div>
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <div class="stat-card blue">
+          <div class="icon"><i class="fas fa-file-invoice"></i></div>
+          <div class="title">إجمالي المستخلصات</div>
+          <div class="value" id="totalExtracts"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">مستخلص</div>
+          <div class="trend up" id="extractsTrend">
+            <i class="fas fa-arrow-up"></i> +0%
+          </div>
+        </div>
+
+        <div class="stat-card orange">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <div class="title">عدد المقاولين</div>
+          <div class="value" id="totalContractors"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">مقاول نشط</div>
+          <div class="trend neutral" id="contractorsTrend">
+            <i class="fas fa-minus"></i> 0%
+          </div>
+        </div>
+
+        <div class="stat-card purple">
+          <div class="icon"><i class="fas fa-user-hard-hat"></i></div>
+          <div class="title">عدد العمال</div>
+          <div class="value" id="totalWorkers"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">عامل</div>
+          <div class="trend up" id="workersTrend">
+            <i class="fas fa-arrow-up"></i> +0%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Resources & Assets -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-boxes"></i> الموارد والأصول</h2>
+        <span class="section-badge">3 مؤشرات</span>
+      </div>
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <div class="stat-card teal">
+          <div class="icon"><i class="fas fa-box"></i></div>
+          <div class="title">مواد المخزن</div>
+          <div class="value" id="totalStoreItems"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">صنف</div>
+          <div class="trend down" id="storeTrend">
+            <i class="fas fa-arrow-down"></i> -0%
+          </div>
+        </div>
+
+        <div class="stat-card yellow">
+          <div class="icon"><i class="fas fa-tools"></i></div>
+          <div class="title">المعدات المؤجرة</div>
+          <div class="value" id="totalEquipment"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">معدة</div>
+          <div class="trend neutral" id="equipmentTrend">
+            <i class="fas fa-minus"></i> 0%
+          </div>
+        </div>
+
+        <div class="stat-card pink">
+          <div class="icon"><i class="fas fa-bell"></i></div>
+          <div class="title">الإشعارات الجديدة</div>
+          <div class="value" id="totalNotifications"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="subtitle">إشعار</div>
+          <div class="trend neutral" id="notificationsTrend">
+            <i class="fas fa-minus"></i> 0%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Financial Charts -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-chart-line"></i> الرسوم البيانية المالية</h2>
+        <span class="section-badge">2 رسوم</span>
+      </div>
+      <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));">
+        <!-- Extracts by Contractor -->
+        <div class="chart-card">
+          <h3>
+            <span><i class="fas fa-chart-bar"></i> المستخلصات حسب المقاول</span>
+            <div class="chart-controls">
+              <button onclick="changeChartType('contractorChart', 'bar')">عمود</button>
+              <button onclick="changeChartType('contractorChart', 'line')">خط</button>
+            </div>
+          </h3>
+          <div class="chart-container">
+            <canvas id="contractorChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly Expenses -->
+        <div class="chart-card">
+          <h3>
+            <span><i class="fas fa-chart-line"></i> المصروفات الشهرية</span>
+            <div class="chart-controls">
+              <button onclick="changeChartType('monthlyExpensesChart', 'line')">خط</button>
+              <button onclick="changeChartType('monthlyExpensesChart', 'bar')">عمود</button>
+            </div>
+          </h3>
+          <div class="chart-container">
+            <canvas id="monthlyExpensesChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Progress & Performance Charts -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-tasks"></i> الأداء والإنجاز</h2>
+        <span class="section-badge">2 رسوم</span>
+      </div>
+      <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));">
+        <!-- Project Progress -->
+        <div class="chart-card">
+          <h3><i class="fas fa-tasks"></i> نسبة الإنجاز</h3>
+          <div class="chart-container">
+            <canvas id="progressChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Payments Chart -->
+        <div class="chart-card">
+          <h3><i class="fas fa-credit-card"></i> المدفوعات الشهرية</h3>
+          <div class="chart-container">
+            <canvas id="paymentsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Resources Charts -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-warehouse"></i> رسوم الموارد</h2>
+        <span class="section-badge">2 رسوم</span>
+      </div>
+      <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));">
+        <!-- Store Status -->
+        <div class="chart-card">
+          <h3><i class="fas fa-warehouse"></i> حالة المخزن</h3>
+          <div class="chart-container">
+            <canvas id="storeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Workers Distribution -->
+        <div class="chart-card">
+          <h3><i class="fas fa-users"></i> توزيع العمال حسب المقاول</h3>
+          <div class="chart-container">
+            <canvas id="workersChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Payments Timeline -->
+      <div class="chart-card">
+        <h3><i class="fas fa-money-bill-wave"></i> جدول المدفوعات الزمني</h3>
+        <div class="chart-container">
+          <canvas id="paymentsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="tables-section">
+      <!-- Top Contractors Table -->
+      <div class="table-card">
+        <h3>
+          <span><i class="fas fa-trophy"></i> أعلى المقاولين</span>
+          <button class="btn btn-sm btn-info" onclick="exportTable('topContractorsTable')">
+            <i class="fas fa-file-excel"></i>
+          </button>
+        </h3>
+        <div class="table-responsive">
+          <table class="data-table" id="topContractorsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم المقاول</th>
+                <th>عدد المستخلصات</th>
+                <th>إجمالي المبلغ</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody id="topContractorsBody">
+              <tr>
+                <td colspan="5" style="text-align: center;">جاري التحميل...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Extracts Table -->
+      <div class="table-card">
+        <h3>
+          <span><i class="fas fa-file-invoice"></i> أحدث المستخلصات</span>
+          <button class="btn btn-sm btn-info" onclick="exportTable('recentExtractsTable')">
+            <i class="fas fa-file-excel"></i>
+          </button>
+        </h3>
+        <div class="table-responsive">
+          <table class="data-table" id="recentExtractsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>رقم المستخلص</th>
+                <th>المقاول</th>
+                <th>التاريخ</th>
+                <th>المبلغ</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody id="recentExtractsBody">
+              <tr>
+                <td colspan="6" style="text-align: center;">جاري التحميل...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Data Tables -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-table"></i> الجداول التفصيلية</h2>
+        <span class="section-badge">4 جداول</span>
+      </div>
+      <div class="tables-section">
+        <!-- Top Contractors -->
+        <div class="table-card">
+          <h3>
+            <span><i class="fas fa-trophy"></i> أفضل المقاولين</span>
+            <button class="btn btn-sm btn-info" onclick="exportTable('topContractorsTable')">
+              <i class="fas fa-file-excel"></i>
+            </button>
+          </h3>
+          <div class="table-responsive">
+            <table class="data-table" id="topContractorsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>اسم المقاول</th>
+                  <th>المستخلصات</th>
+                  <th>المبلغ (ريال)</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="topContractorsBody">
+                <tr>
+                  <td colspan="5" style="text-align: center;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Extracts -->
+        <div class="table-card">
+          <h3>
+            <span><i class="fas fa-file-invoice"></i> آخر المستخلصات</span>
+            <button class="btn btn-sm btn-info" onclick="exportTable('recentExtractsTable')">
+              <i class="fas fa-file-excel"></i>
+            </button>
+          </h3>
+          <div class="table-responsive">
+            <table class="data-table" id="recentExtractsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>رقم المستخلص</th>
+                  <th>المقاول</th>
+                  <th>التاريخ</th>
+                  <th>المبلغ (ريال)</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="recentExtractsBody">
+                <tr>
+                  <td colspan="6" style="text-align: center;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Low Stock Items -->
+        <div class="table-card">
+          <h3>
+            <span><i class="fas fa-exclamation-triangle"></i> أصناف منخفضة المخزون</span>
+            <button class="btn btn-sm btn-info" onclick="exportTable('lowStockTable')">
+              <i class="fas fa-file-excel"></i>
+            </button>
+          </h3>
+          <div class="table-responsive">
+            <table class="data-table" id="lowStockTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>اسم الصنف</th>
+                  <th>الكمية الحالية</th>
+                  <th>الحد الأدنى</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="lowStockBody">
+                <tr>
+                  <td colspan="5" style="text-align: center;">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pending Payments -->
+        <div class="table-card">
+          <h3>
+            <span><i class="fas fa-clock"></i> المدفوعات المعلقة</span>
+            <button class="btn btn-sm btn-info" onclick="exportTable('pendingPaymentsTable')">
+              <i class="fas fa-file-excel"></i>
+            </button>
+          </h3>
+        <div class="table-responsive">
+          <table class="data-table" id="pendingPaymentsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المقاول/العامل</th>
+                <th>نوع الدفعة</th>
+                <th>المبلغ</th>
+                <th>تاريخ الاستحقاق</th>
+              </tr>
+            </thead>
+            <tbody id="pendingPaymentsBody">
+              <tr>
+                <td colspan="5" style="text-align: center;">جاري التحميل...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- Section: Recent Activities -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2><i class="fas fa-history"></i> آخر الأنشطة</h2>
+        <span class="section-badge">مباشر</span>
+      </div>
+      <div class="activities-section">
+        <div id="recentActivities">
+          <div class="loading">
+            <div class="spinner"></div>
+            <div>جاري تحميل الأنشطة...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global Variables
+    let allData = {
+      extracts: [],
+      contractors: [],
+      workers: [],
+      store: [],
+      equipment: [],
+      payments: [],
+      purchases: [],
+      notifications: []
+    };
+    
+    let charts = {};
+    let refreshInterval;
+
+    // Load Navbar
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+      });
+
+    // Check authentication
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.username) {
+      window.location.href = 'login.html';
+    }
+
+    // Initialize Dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardData();
+      loadContractorsFilter();
+      startAutoRefresh();
+    });
+
+    // Auto Refresh Dashboard every 30 seconds
+    function startAutoRefresh() {
+      refreshInterval = setInterval(() => {
+        refreshDashboard();
+      }, 30000);
+    }
+
+    // Load Contractors for Filter
+    async function loadContractorsFilter() {
+      try {
+        const response = await fetch('/contractors');
+        const contractors = await response.json();
+        const select = document.getElementById('contractorFilter');
+        
+        contractors.forEach(contractor => {
+          const option = document.createElement('option');
+          option.value = contractor._id;
+          option.textContent = contractor.name || 'مقاول غير محدد';
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error('خطأ في تحميل المقاولين:', error);
+      }
+    }
+
+    // Fetch Dashboard Data from Server
+    async function loadDashboardData() {
+      try {
+        console.log('🔄 بدء تحميل بيانات Dashboard...');
+        showNotification('جاري تحميل البيانات...', 'info');
+        
+        // Fetch all data in parallel from server
+        console.log('📡 جاري الاتصال بالسيرفر...');
+        const [extracts, contractors, workers, store, equipment, payments, purchases, notifications] = await Promise.all([
+          fetch('/extracts').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل المستخلصات:', err); return []; }),
+          fetch('/contractors').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل المقاولين:', err); return []; }),
+          fetch('/workers').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل العمال:', err); return []; }),
+          fetch('/store').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل المخزن:', err); return []; }),
+          fetch('/equipments').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل المعدات:', err); return []; }),
+          fetch('/pays').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل المدفوعات:', err); return []; }),
+          fetch('/purchases').then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل المشتريات:', err); return []; }),
+          fetch(`/notifications?username=${user.username}`).then(r => r.json()).catch(err => { console.error('❌ خطأ في تحميل الإشعارات:', err); return []; })
+        ]);
+
+        console.log('✅ تم تحميل البيانات من السيرفر:', {
+          extracts: extracts.length,
+          contractors: contractors.length,
+          workers: workers.length,
+          store: store.length,
+          equipment: equipment.length,
+          payments: payments.length,
+          purchases: purchases.length,
+          notifications: notifications.length
+        });
+
+        // Store data globally
+        allData = { extracts, contractors, workers, store, equipment, payments, purchases, notifications };
+
+        // Update last update time
+        const now = new Date();
+        document.getElementById('lastUpdate').textContent = 
+          `آخر تحديث: ${now.toLocaleString('ar-EG')}`;
+
+        console.log('📊 بدء تحديث واجهة المستخدم...');
+
+        // Update Stats Cards with trends
+        updateStatsCards();
+
+        // Create Charts
+        console.log('📈 إنشاء الرسوم البيانية...');
+        createAllCharts();
+
+        // Update Tables
+        console.log('📋 تحديث الجداول...');
+        updateAllTables();
+
+        // Load Recent Activities from server
+        console.log('🕐 تحميل الأنشطة الأخيرة...');
+        loadRecentActivities();
+
+        showNotification('تم تحميل البيانات بنجاح ✅', 'success');
+        console.log('✅ تم تحميل Dashboard بنجاح!');
+
+      } catch (error) {
+        console.error('❌ خطأ حرج في تحميل البيانات:', error);
+        showNotification('حدث خطأ في تحميل البيانات', 'error');
+      }
+    }
+
+    // Update Stats Cards with Trends
+    function updateStatsCards() {
+      const { extracts, contractors, workers, store, equipment, payments, purchases, notifications } = allData;
+
+      console.log('📊 تحديث الإحصائيات:', {
+        extracts: extracts.length,
+        contractors: contractors.length,
+        workers: workers.length,
+        store: store.length,
+        equipment: equipment.length,
+        payments: payments.length,
+        purchases: purchases.length,
+        notifications: notifications.length
+      });
+
+      // Total Extracts
+      const extractsCount = extracts.length;
+      document.getElementById('totalExtracts').textContent = extractsCount.toLocaleString('ar-EG');
+      console.log('✅ المستخلصات:', extractsCount);
+      
+      // Total Amount
+      const totalAmount = extracts.reduce((sum, e) => sum + (parseFloat(e.afterDeductions) || 0), 0);
+      document.getElementById('totalAmount').textContent = totalAmount.toLocaleString('ar-EG', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      console.log('✅ إجمالي المبالغ:', totalAmount);
+      
+      // Total Contractors
+      const contractorsCount = contractors.length;
+      document.getElementById('totalContractors').textContent = contractorsCount.toLocaleString('ar-EG');
+      console.log('✅ المقاولين:', contractorsCount);
+      
+      // Total Workers
+      const workersCount = workers.length;
+      document.getElementById('totalWorkers').textContent = workersCount.toLocaleString('ar-EG');
+      console.log('✅ العمال:', workersCount);
+      
+      // Total Store Items
+      const storeCount = store.length;
+      document.getElementById('totalStoreItems').textContent = storeCount.toLocaleString('ar-EG');
+      console.log('✅ أصناف المخزن:', storeCount);
+      
+      // Total Equipment
+      const equipmentCount = equipment.length;
+      document.getElementById('totalEquipment').textContent = equipmentCount.toLocaleString('ar-EG');
+      console.log('✅ المعدات:', equipmentCount);
+      
+      // Total Payments
+      const totalPayments = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+      document.getElementById('totalPayments').textContent = totalPayments.toLocaleString('ar-EG', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      console.log('✅ إجمالي المدفوعات:', totalPayments);
+      
+      // Total Purchases
+      const purchasesCount = purchases.length;
+      document.getElementById('totalPurchases').textContent = purchasesCount.toLocaleString('ar-EG');
+      console.log('✅ المشتريات:', purchasesCount);
+      
+      // Total Notifications
+      const unreadNotifications = notifications.filter(n => !n.read).length;
+      document.getElementById('totalNotifications').textContent = unreadNotifications.toLocaleString('ar-EG');
+      console.log('✅ الإشعارات الجديدة:', unreadNotifications);
+
+      // Calculate trends (comparing to last month)
+      calculateTrends();
+      
+      console.log('✅ تم تحديث جميع الإحصائيات بنجاح');
+    }
+
+    // Calculate Trends
+    function calculateTrends() {
+      const { extracts, contractors, workers, store, equipment, payments, purchases, notifications } = allData;
+      
+      const now = new Date();
+      const thisMonth = now.getMonth();
+      const thisYear = now.getFullYear();
+      const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+      const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear;
+      
+      // Filter data by month
+      const filterByMonth = (items, month, year, dateField = 'date') => {
+        return items.filter(item => {
+          if (!item[dateField]) return false;
+          const date = new Date(item[dateField]);
+          return date.getMonth() === month && date.getFullYear() === year;
+        });
+      };
+
+      // Extracts Trend
+      const thisMonthExtracts = filterByMonth(extracts, thisMonth, thisYear);
+      const lastMonthExtracts = filterByMonth(extracts, lastMonth, lastMonthYear);
+      const extractsChange = calculatePercentageChange(thisMonthExtracts.length, lastMonthExtracts.length);
+      updateTrendElement('extractsTrend', extractsChange);
+      
+      // Amount Trend
+      const thisMonthAmount = thisMonthExtracts.reduce((sum, e) => sum + (parseFloat(e.afterDeductions) || 0), 0);
+      const lastMonthAmount = lastMonthExtracts.reduce((sum, e) => sum + (parseFloat(e.afterDeductions) || 0), 0);
+      const amountChange = calculatePercentageChange(thisMonthAmount, lastMonthAmount);
+      updateTrendElement('amountTrend', amountChange);
+
+      // Contractors Trend - Compare total contractors this month vs last month
+      const thisMonthContractors = contractors.filter(c => {
+        if (!c.createdAt) return true; // Include if no date
+        return filterByMonth([c], thisMonth, thisYear, 'createdAt').length > 0;
+      });
+      const lastMonthContractors = contractors.filter(c => {
+        if (!c.createdAt) return true;
+        return filterByMonth([c], lastMonth, lastMonthYear, 'createdAt').length > 0;
+      });
+      const contractorsChange = calculatePercentageChange(thisMonthContractors.length, lastMonthContractors.length);
+      updateTrendElement('contractorsTrend', contractorsChange);
+
+      // Workers Trend
+      const thisMonthWorkers = filterByMonth(workers, thisMonth, thisYear, 'createdAt');
+      const lastMonthWorkers = filterByMonth(workers, lastMonth, lastMonthYear, 'createdAt');
+      const workersChange = calculatePercentageChange(thisMonthWorkers.length, lastMonthWorkers.length);
+      updateTrendElement('workersTrend', workersChange);
+
+      // Store Items Trend
+      const thisMonthStore = filterByMonth(store, thisMonth, thisYear, 'createdAt');
+      const lastMonthStore = filterByMonth(store, lastMonth, lastMonthYear, 'createdAt');
+      const storeChange = calculatePercentageChange(thisMonthStore.length, lastMonthStore.length);
+      updateTrendElement('storeTrend', storeChange);
+
+      // Equipment Trend
+      const thisMonthEquipment = filterByMonth(equipment, thisMonth, thisYear, 'createdAt');
+      const lastMonthEquipment = filterByMonth(equipment, lastMonth, lastMonthYear, 'createdAt');
+      const equipmentChange = calculatePercentageChange(thisMonthEquipment.length, lastMonthEquipment.length);
+      updateTrendElement('equipmentTrend', equipmentChange);
+
+      // Payments Trend
+      const thisMonthPayments = filterByMonth(payments, thisMonth, thisYear);
+      const lastMonthPayments = filterByMonth(payments, lastMonth, lastMonthYear);
+      const thisMonthPaymentsAmount = thisMonthPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+      const lastMonthPaymentsAmount = lastMonthPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+      const paymentsChange = calculatePercentageChange(thisMonthPaymentsAmount, lastMonthPaymentsAmount);
+      updateTrendElement('paymentsTrend', paymentsChange);
+
+      // Purchases Trend
+      const thisMonthPurchases = filterByMonth(purchases, thisMonth, thisYear);
+      const lastMonthPurchases = filterByMonth(purchases, lastMonth, lastMonthYear);
+      const purchasesChange = calculatePercentageChange(thisMonthPurchases.length, lastMonthPurchases.length);
+      updateTrendElement('purchasesTrend', purchasesChange);
+
+      // Notifications Trend
+      const thisMonthNotifications = filterByMonth(notifications, thisMonth, thisYear, 'createdAt');
+      const lastMonthNotifications = filterByMonth(notifications, lastMonth, lastMonthYear, 'createdAt');
+      const notificationsChange = calculatePercentageChange(thisMonthNotifications.length, lastMonthNotifications.length);
+      updateTrendElement('notificationsTrend', notificationsChange);
+    }
+
+    // Calculate Percentage Change
+    function calculatePercentageChange(current, previous) {
+      if (previous === 0) {
+        return current > 0 ? 100 : 0;
+      }
+      return ((current - previous) / previous * 100).toFixed(1);
+    }
+
+    // Update Trend Element
+    function updateTrendElement(id, change) {
+      const element = document.getElementById(id);
+      const value = parseFloat(change);
+      
+      if (value > 0) {
+        element.className = 'trend up';
+        element.innerHTML = `<i class="fas fa-arrow-up"></i> +${Math.abs(value)}%`;
+      } else if (value < 0) {
+        element.className = 'trend down';
+        element.innerHTML = `<i class="fas fa-arrow-down"></i> -${Math.abs(value)}%`;
+      } else {
+        element.className = 'trend neutral';
+        element.innerHTML = `<i class="fas fa-minus"></i> ${value}%`;
+      }
+    }
+
+    // Create All Charts
+    function createAllCharts() {
+      const { extracts, contractors, workers, store, payments } = allData;
+      
+      createContractorChart(extracts, contractors);
+      createMonthlyExpensesChart(extracts);
+      createProgressChart(extracts);
+      createStoreChart(store);
+      createWorkersChart(workers, contractors);
+      createPaymentsChart(payments);
+    }
+
+    // Create Contractor Chart
+    function createContractorChart(extracts, contractors) {
+      const contractorData = {};
+      
+      extracts.forEach(extract => {
+        const contractorId = extract.contractorId || extract.contractor;
+        if (!contractorData[contractorId]) {
+          contractorData[contractorId] = {
+            count: 0,
+            amount: 0,
+            name: ''
+          };
+        }
+        contractorData[contractorId].count++;
+        contractorData[contractorId].amount += parseFloat(extract.afterDeductions) || 0;
+      });
+
+      contractors.forEach(contractor => {
+        const id = contractor._id;
+        if (contractorData[id]) {
+          contractorData[id].name = contractor.name || 'مقاول غير محدد';
+        }
+      });
+
+      const sortedData = Object.values(contractorData)
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 10);
+
+      const labels = sortedData.map(d => d.name);
+      const data = sortedData.map(d => d.amount);
+
+      if (charts.contractorChart) {
+        charts.contractorChart.destroy();
+      }
+
+      const ctx = document.getElementById('contractorChart');
+      charts.contractorChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'المبلغ (ريال)',
+            data: data,
+            backgroundColor: 'rgba(46, 140, 163, 0.7)',
+            borderColor: 'rgba(46, 140, 163, 1)',
+            borderWidth: 2,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'المبلغ: ' + context.parsed.y.toLocaleString('ar-EG') + ' ريال';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value.toLocaleString('ar-EG');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Create Monthly Expenses Chart
+    function createMonthlyExpensesChart(extracts) {
+      const monthlyData = {};
+      
+      extracts.forEach(extract => {
+        if (extract.date) {
+          const month = extract.date.substring(0, 7);
+          if (!monthlyData[month]) monthlyData[month] = 0;
+          monthlyData[month] += parseFloat(extract.afterDeductions) || 0;
+        }
+      });
+
+      const sortedMonths = Object.keys(monthlyData).sort().slice(-12);
+      const data = sortedMonths.map(m => monthlyData[m]);
+
+      if (charts.monthlyExpensesChart) {
+        charts.monthlyExpensesChart.destroy();
+      }
+
+      const ctx = document.getElementById('monthlyExpensesChart');
+      charts.monthlyExpensesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: sortedMonths,
+          datasets: [{
+            label: 'المصروفات (ريال)',
+            data: data,
+            borderColor: 'rgba(40, 167, 69, 1)',
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: 'rgba(40, 167, 69, 1)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'المبلغ: ' + context.parsed.y.toLocaleString('ar-EG') + ' ريال';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value.toLocaleString('ar-EG');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Create Progress Chart
+    function createProgressChart(extracts) {
+      const totalExtracts = extracts.length;
+      const completedExtracts = extracts.filter(e => e.status === 'completed' || e.afterDeductions > 0).length;
+      const percentage = totalExtracts > 0 ? Math.round((completedExtracts / totalExtracts) * 100) : 0;
+
+      if (charts.progressChart) {
+        charts.progressChart.destroy();
+      }
+
+      const ctx = document.getElementById('progressChart');
+      charts.progressChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['مكتمل', 'متبقي'],
+          datasets: [{
+            data: [percentage, 100 - percentage],
+            backgroundColor: [
+              'rgba(40, 167, 69, 0.8)',
+              'rgba(236, 240, 241, 0.8)'
+            ],
+            borderWidth: 3,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + context.parsed + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Create Store Chart
+    function createStoreChart(storeItems) {
+      const categories = {};
+      
+      storeItems.forEach(item => {
+        const cat = item.category || 'غير مصنف';
+        if (!categories[cat]) categories[cat] = 0;
+        categories[cat]++;
+      });
+
+      const labels = Object.keys(categories).slice(0, 8);
+      const data = Object.values(categories).slice(0, 8);
+
+      if (charts.storeChart) {
+        charts.storeChart.destroy();
+      }
+
+      const ctx = document.getElementById('storeChart');
+      charts.storeChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              'rgba(46, 140, 163, 0.8)',
+              'rgba(40, 167, 69, 0.8)',
+              'rgba(26, 59, 80, 0.8)',
+              'rgba(255, 193, 7, 0.8)',
+              'rgba(220, 53, 69, 0.8)',
+              'rgba(23, 162, 184, 0.8)',
+              'rgba(253, 126, 20, 0.8)',
+              'rgba(108, 117, 125, 0.8)'
+            ],
+            borderWidth: 3,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    // Create Workers Chart
+    function createWorkersChart(workers, contractors) {
+      const contractorWorkers = {};
+      
+      workers.forEach(worker => {
+        const contractorId = worker.contractorId;
+        if (!contractorWorkers[contractorId]) {
+          contractorWorkers[contractorId] = {
+            count: 0,
+            name: ''
+          };
+        }
+        contractorWorkers[contractorId].count++;
+      });
+
+      contractors.forEach(contractor => {
+        const id = contractor._id;
+        if (contractorWorkers[id]) {
+          contractorWorkers[id].name = contractor.name || 'مقاول غير محدد';
+        }
+      });
+
+      const sortedData = Object.values(contractorWorkers)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+      const labels = sortedData.map(d => d.name);
+      const data = sortedData.map(d => d.count);
+
+      if (charts.workersChart) {
+        charts.workersChart.destroy();
+      }
+
+      const ctx = document.getElementById('workersChart');
+      charts.workersChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'عدد العمال',
+            data: data,
+            backgroundColor: 'rgba(26, 59, 80, 0.7)',
+            borderColor: 'rgba(26, 59, 80, 1)',
+            borderWidth: 2,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Create Payments Chart
+    function createPaymentsChart(payments) {
+      const monthlyPayments = {};
+      
+      payments.forEach(payment => {
+        if (payment.date) {
+          const month = payment.date.substring(0, 7);
+          if (!monthlyPayments[month]) monthlyPayments[month] = 0;
+          monthlyPayments[month] += parseFloat(payment.amount) || 0;
+        }
+      });
+
+      const sortedMonths = Object.keys(monthlyPayments).sort().slice(-12);
+      const data = sortedMonths.map(m => monthlyPayments[m]);
+
+      if (charts.paymentsChart) {
+        charts.paymentsChart.destroy();
+      }
+
+      const ctx = document.getElementById('paymentsChart');
+      charts.paymentsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sortedMonths,
+          datasets: [{
+            label: 'المدفوعات (ريال)',
+            data: data,
+            backgroundColor: 'rgba(255, 193, 7, 0.7)',
+            borderColor: 'rgba(255, 193, 7, 1)',
+            borderWidth: 2,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'المبلغ: ' + context.parsed.y.toLocaleString('ar-EG') + ' ريال';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value.toLocaleString('ar-EG');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Change Chart Type
+    function changeChartType(chartId, newType) {
+      const chart = charts[chartId];
+      if (chart) {
+        chart.config.type = newType;
+        chart.update();
+      }
+    }
+
+    // Update All Tables
+    function updateAllTables() {
+      updateTopContractorsTable();
+      updateRecentExtractsTable();
+      updateLowStockTable();
+      updatePendingPaymentsTable();
+    }
+
+    // Update Top Contractors Table
+    function updateTopContractorsTable() {
+      const { extracts, contractors } = allData;
+      const contractorStats = {};
+
+      extracts.forEach(extract => {
+        const cId = extract.contractorId || extract.contractor;
+        if (!contractorStats[cId]) {
+          contractorStats[cId] = { count: 0, amount: 0, name: '' };
+        }
+        contractorStats[cId].count++;
+        contractorStats[cId].amount += parseFloat(extract.afterDeductions) || 0;
+      });
+
+      contractors.forEach(c => {
+        if (contractorStats[c._id]) {
+          contractorStats[c._id].name = c.name || 'غير محدد';
+        }
+      });
+
+      const sorted = Object.values(contractorStats)
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 10);
+
+      const tbody = document.getElementById('topContractorsBody');
+      tbody.innerHTML = sorted.map((c, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${c.name}</td>
+          <td>${c.count}</td>
+          <td>${c.amount.toLocaleString('ar-EG')} ريال</td>
+          <td><span class="badge badge-success">نشط</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" style="text-align: center;">لا توجد بيانات</td></tr>';
+    }
+
+    // Update Recent Extracts Table
+    function updateRecentExtractsTable() {
+      const { extracts, contractors } = allData;
+      const contractorMap = {};
+      
+      contractors.forEach(c => {
+        contractorMap[c._id] = c.name || 'غير محدد';
+      });
+
+      const recent = [...extracts]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+
+      const tbody = document.getElementById('recentExtractsBody');
+      tbody.innerHTML = recent.map((e, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${e.number || 'غير محدد'}</td>
+          <td>${contractorMap[e.contractorId || e.contractor] || 'غير محدد'}</td>
+          <td>${new Date(e.date).toLocaleDateString('ar-EG')}</td>
+          <td>${parseFloat(e.afterDeductions || 0).toLocaleString('ar-EG')} ريال</td>
+          <td><span class="badge badge-success">مكتمل</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" style="text-align: center;">لا توجد مستخلصات</td></tr>';
+    }
+
+    // Update Low Stock Table
+    function updateLowStockTable() {
+      const { store } = allData;
+      const lowStock = store.filter(item => {
+        const current = parseFloat(item.quantity) || 0;
+        const min = parseFloat(item.minQuantity) || 0;
+        return current <= min && min > 0;
+      }).slice(0, 10);
+
+      const tbody = document.getElementById('lowStockBody');
+      tbody.innerHTML = lowStock.map((item, i) => {
+        const current = parseFloat(item.quantity) || 0;
+        const min = parseFloat(item.minQuantity) || 0;
+        const badge = current === 0 ? 'badge-danger' : 'badge-warning';
+        const status = current === 0 ? 'نفذ' : 'منخفض';
+        
+        return `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${item.name || 'غير محدد'}</td>
+            <td>${current.toLocaleString('ar-EG')}</td>
+            <td>${min.toLocaleString('ar-EG')}</td>
+            <td><span class="badge ${badge}">${status}</span></td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="5" style="text-align: center;">جميع الأصناف متوفرة</td></tr>';
+    }
+
+    // Update Pending Payments Table
+    function updatePendingPaymentsTable() {
+      const { payments } = allData;
+      const pending = payments
+        .filter(p => p.status === 'pending' || !p.status)
+        .slice(0, 10);
+
+      const tbody = document.getElementById('pendingPaymentsBody');
+      tbody.innerHTML = pending.map((p, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${p.name || p.workerName || 'غير محدد'}</td>
+          <td>${p.type || 'دفعة'}</td>
+          <td>${parseFloat(p.amount || 0).toLocaleString('ar-EG')} ريال</td>
+          <td>${p.dueDate ? new Date(p.dueDate).toLocaleDateString('ar-EG') : '-'}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" style="text-align: center;">لا توجد مدفوعات معلقة</td></tr>';
+    }
+
+    // Load Recent Activities from Server
+    async function loadRecentActivities() {
+      try {
+        // Fetch notifications as activities
+        const response = await fetch(`/notifications?username=${user.username}`);
+        const notifications = await response.json();
+
+        const activities = notifications
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 15)
+          .map(notif => {
+            const type = notif.type === 'success' ? 'add' : 
+                        notif.type === 'info' ? 'edit' : 
+                        notif.type === 'warning' ? 'payment' : 'notification';
+            
+            return {
+              type: type,
+              title: notif.message || 'نشاط جديد',
+              time: getTimeAgo(notif.createdAt),
+              user: notif.username || user.username,
+              details: notif.details || ''
+            };
+          });
+
+        const html = activities.map(activity => `
+          <div class="activity-item">
+            <div class="activity-icon ${activity.type}">
+              <i class="fas fa-${getIconForType(activity.type)}"></i>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">${activity.title}</div>
+              <div class="activity-time">${activity.time}${activity.user ? ' • ' + activity.user : ''}</div>
+              ${activity.details ? `<div class="activity-details">${activity.details}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+
+        document.getElementById('recentActivities').innerHTML = html || 
+          '<div style="text-align: center; padding: 20px; color: #95a5a6;">لا توجد أنشطة حديثة</div>';
+
+      } catch (error) {
+        console.error('خطأ في تحميل الأنشطة:', error);
+        document.getElementById('recentActivities').innerHTML = 
+          '<div style="text-align: center; padding: 20px; color: #e74c3c;">حدث خطأ في تحميل الأنشطة</div>';
+      }
+    }
+
+    // Get Icon for Activity Type
+    function getIconForType(type) {
+      const icons = {
+        add: 'plus',
+        edit: 'edit',
+        delete: 'trash',
+        payment: 'dollar-sign',
+        notification: 'bell'
+      };
+      return icons[type] || 'info-circle';
+    }
+
+    // Get Time Ago
+    function getTimeAgo(dateString) {
+      if (!dateString) return 'منذ وقت قريب';
+      
+      const now = new Date();
+      const date = new Date(dateString);
+      const seconds = Math.floor((now - date) / 1000);
+      
+      if (seconds < 60) return 'منذ لحظات';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `منذ ${minutes} دقيقة`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `منذ ${hours} ساعة`;
+      const days = Math.floor(hours / 24);
+      if (days < 30) return `منذ ${days} يوم`;
+      const months = Math.floor(days / 30);
+      if (months < 12) return `منذ ${months} شهر`;
+      const years = Math.floor(months / 12);
+      return `منذ ${years} سنة`;
+    }
+
+    // Apply Filters
+    function applyFilters() {
+      const timeFilter = document.getElementById('timeFilter').value;
+      const contractorFilter = document.getElementById('contractorFilter').value;
+      const dateFrom = document.getElementById('dateFrom').value;
+      const dateTo = document.getElementById('dateTo').value;
+
+      let filteredExtracts = [...allData.extracts];
+
+      // Time filter
+      if (timeFilter !== 'all') {
+        const now = new Date();
+        filteredExtracts = filteredExtracts.filter(e => {
+          const date = new Date(e.date);
+          if (timeFilter === 'today') {
+            return date.toDateString() === now.toDateString();
+          } else if (timeFilter === 'week') {
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return date >= weekAgo;
+          } else if (timeFilter === 'month') {
+            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+          } else if (timeFilter === 'year') {
+            return date.getFullYear() === now.getFullYear();
+          }
+          return true;
+        });
+      }
+
+      // Contractor filter
+      if (contractorFilter !== 'all') {
+        filteredExtracts = filteredExtracts.filter(e => 
+          (e.contractorId || e.contractor) === contractorFilter
+        );
+      }
+
+      // Date range filter
+      if (dateFrom) {
+        filteredExtracts = filteredExtracts.filter(e => 
+          new Date(e.date) >= new Date(dateFrom)
+        );
+      }
+      if (dateTo) {
+        filteredExtracts = filteredExtracts.filter(e => 
+          new Date(e.date) <= new Date(dateTo)
+        );
+      }
+
+      // Update with filtered data
+      allData.extracts = filteredExtracts;
+      updateStatsCards();
+      createAllCharts();
+      updateAllTables();
+
+      showNotification('تم تطبيق الفلاتر بنجاح', 'success');
+    }
+
+    // Refresh Dashboard
+    function refreshDashboard() {
+      showNotification('جاري تحديث البيانات...', 'info');
+      loadDashboardData();
+    }
+
+    // Export Table to Excel
+    function exportTable(tableId) {
+      const table = document.getElementById(tableId);
+      const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+      XLSX.writeFile(wb, `${tableId}_${new Date().getTime()}.xlsx`);
+      showNotification('تم تصدير الجدول بنجاح', 'success');
+    }
+
+    // Export Dashboard to Excel
+    function exportDashboard() {
+      try {
+        const wb = XLSX.utils.book_new();
+        
+        // Export Stats
+        const stats = [
+          ['الإحصائية', 'القيمة'],
+          ['إجمالي المستخلصات', document.getElementById('totalExtracts').textContent],
+          ['إجمالي المبالغ', document.getElementById('totalAmount').textContent],
+          ['عدد المقاولين', document.getElementById('totalContractors').textContent],
+          ['عدد العمال', document.getElementById('totalWorkers').textContent],
+          ['مواد المخزن', document.getElementById('totalStoreItems').textContent],
+          ['المعدات المؤجرة', document.getElementById('totalEquipment').textContent]
+        ];
+        const ws1 = XLSX.utils.aoa_to_sheet(stats);
+        XLSX.utils.book_append_sheet(wb, ws1, 'الإحصائيات');
+
+        // Export Tables
+        ['topContractorsTable', 'recentExtractsTable', 'lowStockTable', 'pendingPaymentsTable'].forEach(tableId => {
+          const table = document.getElementById(tableId);
+          if (table) {
+            const ws = XLSX.utils.table_to_sheet(table);
+            XLSX.utils.book_append_sheet(wb, ws, tableId.replace('Table', ''));
+          }
+        });
+
+        XLSX.writeFile(wb, `Dashboard_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showNotification('تم تصدير لوحة التحكم بنجاح', 'success');
+      } catch (error) {
+        console.error('خطأ في التصدير:', error);
+        showNotification('حدث خطأ في التصدير', 'error');
+      }
+    }
+
+    // Show Notification
+    function showNotification(message, type = 'info') {
+      const panel = document.getElementById('notificationsPanel');
+      const notif = document.createElement('div');
+      notif.className = `notification-item ${type}`;
+      
+      const icons = {
+        success: 'check-circle',
+        error: 'exclamation-circle',
+        warning: 'exclamation-triangle',
+        info: 'info-circle'
+      };
+      
+      notif.innerHTML = `
+        <div class="notification-icon">
+          <i class="fas fa-${icons[type] || 'info-circle'}"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">${type === 'success' ? 'نجاح' : type === 'error' ? 'خطأ' : 'إشعار'}</div>
+          <div class="notification-message">${message}</div>
+        </div>
+      `;
+      
+      panel.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => notif.remove(), 300);
+      }, 3000);
+    }
+
+    // Initialize Dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardData();
+      loadContractorsFilter();
+      startAutoRefresh();
+    });
+  </script>
+</body>
+</html>

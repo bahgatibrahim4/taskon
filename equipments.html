@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>المعدات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      writing-mode: horizontal-tb;
+      direction: rtl;
+      text-orientation: mixed;
+      --primary-color: #2e8ca3;
+      --secondary-color: #1a3b50;
+      --success-color: #388e3c;
+      --danger-color: #e74c3c;
+      --warning-color: #ff9800;
+      --bg-light: #f7fafd;
+      --bg-card: #ffffff;
+      --border-color: #c5d6db;
+      --text-primary: #2c3e50;
+      --text-secondary: #546e7a;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      min-height: 100vh;
+      direction: rtl;
+      color: var(--text-primary);
+    }
+    
+    /* Force English numbers */
+    .stat-value,
+    table td,
+    .month-count,
+    .month-total,
+    input[type="number"],
+    input[type="date"] {
+      font-variant-numeric: lining-nums;
+      direction: ltr;
+    }
+    
+    .stat-value {
+      direction: rtl;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 5px auto;
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      padding: 10px;
+      border: 2px solid #8c969a;
+    }
+    
+    /* Main Content Grid */
+    .main-content-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+    
+    /* Left Panel (Stats + View Toggle + Search) */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    /* Right Panel (Table/Cards/Months View) */
+    .right-panel {
+      min-height: 350px;
+    }
+    
+    /* Header Section */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding: 10px 15px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      border: 2px solid #8c969a;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .equipments-title {
+      font-size: 1.2rem;
+      color: var(--primary-color);
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    /* Statistics Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    
+    .stat-card {
+      background: #fff;
+      border: 2px solid #8c969a;
+      border-radius: 12px;
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Month Cards */
+    .month-card {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      border: 2px solid #8c969a;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      color: white;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .month-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      border-color: var(--primary-color);
+    }
+    
+    .month-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .month-count {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+    
+    .month-total {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    /* Cards Container */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .stat-icon {
+      font-size: 1.3rem;
+      color: var(--primary-color);
+      margin-bottom: 3px;
+    }
+    
+    .stat-content {
+      text-align: center;
+      width: 100%;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-weight: 600;
+      font-size: 0.75rem;
+      margin-bottom: 2px;
+    }
+    
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark-color);
+    }
+    
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding: 8px;
+      background: #fff;
+      border-radius: 12px;
+      border: 2px solid #8c969a;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border: 2px solid #8c969a;
+      border-radius: 6px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      background: #fff;
+    }
+    
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(46, 140, 163, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+    
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary {
+      background: var(--primary-color);
+      color: #fff;
+    }
+    
+    .btn-primary:hover {
+      background: #1a3b50;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-success {
+      background: var(--success-color);
+      color: #fff;
+    }
+    
+    .btn-success:hover {
+      background: #2e7d32;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-danger {
+      background: var(--danger-color);
+      color: #fff;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+    }
+    
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+    
+    .btn-icon {
+      background: transparent;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      padding: 6px 10px;
+    }
+    
+    .btn-icon:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 0.8rem;
+    }
+    
+    /* Filter Dropdown */
+    .filter-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    
+    .filter-menu {
+      position: relative;
+      left: 0;
+      top: 0;
+      background: #fff;
+      border: 2px solid #8c969a;
+      border-radius: 6px;
+      box-shadow: var(--shadow-sm);
+      padding: 12px;
+      z-index: 10;
+      width: 100%;
+      display: none;
+      margin-top: 8px;
+    }
+    
+    .filter-menu.show {
+      display: block;
+    }
+    
+    .filter-menu.active {
+      display: block;
+    }
+    
+    .filter-title {
+      font-weight: 700;
+      color: var(--secondary-color);
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+    
+    .filter-group {
+      margin-bottom: 10px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 2px solid #8c969a;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+    
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      border: 2px solid #8c969a;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 0.9rem;
+    }
+    
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    th {
+      background: var(--primary-color) !important;
+      color: #fff !important;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 8px 6px;
+      text-align: center;
+      border: none;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    td {
+      padding: 7px 5px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: center;
+      vertical-align: middle;
+      color: var(--text-primary);
+      font-size: 0.75rem;
+    }
+    
+    tbody tr {
+      transition: var(--transition);
+    }
+    
+    tbody tr:hover {
+      background: var(--bg-light);
+      box-shadow: inset 0 0 0 1px var(--primary-color);
+    }
+    
+    tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+    
+    tbody tr:nth-child(even):hover {
+      background: var(--bg-light);
+    }
+    
+    /* Badge Styles */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background: #e8f5e9;
+      color: var(--success-color);
+    }
+    
+    .badge-info {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .badge-warning {
+      background: #fff3e0;
+      color: var(--warning-color);
+    }
+    
+    .badge-danger {
+      background: #ffebee;
+      color: var(--danger-color);
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    
+    .modal-overlay.show {
+      display: flex;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal {
+      background: #fff;
+      border-radius: 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      padding: 24px;
+      min-width: 400px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+    
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: var(--transition);
+    }
+    
+    .modal-close:hover {
+      background: var(--bg-light);
+      color: var(--danger-color);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .form-group label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(46, 140, 163, 0.1);
+    }
+    
+    .form-group input[readonly] {
+      background: var(--bg-light);
+      cursor: not-allowed;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 0.9rem;
+      margin-top: 40px;
+      padding: 16px 0;
+      opacity: 0.8;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+    
+    .empty-state-text {
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    
+    /* Loading Spinner */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--bg-light);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 900px) {
+      .container {
+        margin: 3px;
+        padding: 8px;
+      }
+      
+      .main-content-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .left-panel {
+        order: 2;
+      }
+      
+      .right-panel {
+        order: 1;
+        min-height: 250px;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 8px;
+      }
+      
+      .equipments-title {
+        font-size: 1rem;
+      }
+      
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+      }
+      
+      .stat-card {
+        padding: 4px 2px;
+      }
+      
+      .stat-icon {
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+      }
+      
+      .stat-value {
+        font-size: 0.75rem;
+      }
+      
+      .stat-label {
+        font-size: 0.6rem;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .modal {
+        min-width: auto;
+        width: 95vw;
+      }
+      
+      table {
+        font-size: 0.65rem;
+      }
+      
+      th, td {
+        padding: 4px 2px;
+        font-size: 0.65rem;
+      }
+      
+      .cards-container {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        margin: 1px;
+        padding: 5px;
+      }
+      
+      .main-content-grid {
+        gap: 6px;
+      }
+      
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3px;
+      }
+      
+      .stat-card {
+        padding: 3px 1px;
+      }
+      
+      .stat-icon {
+        font-size: 0.7rem;
+        margin-bottom: 1px;
+      }
+      
+      .stat-value {
+        font-size: 0.7rem;
+      }
+      
+      .stat-label {
+        font-size: 0.55rem;
+      }
+      
+      th, td {
+        padding: 3px 1px;
+        font-size: 0.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="equipments-title">
+        <span>🏗️</span>
+        <span>إدارة المعدات</span>
+      </h1>
+    </div>
+    
+    <!-- Main Content Grid -->
+    <div class="main-content-grid">
+      <!-- Left Panel: Stats + View Toggle + Search -->
+      <div class="left-panel">
+        <!-- Statistics Cards -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-content">
+              <div class="stat-label">إجمالي المعدات</div>
+              <div class="stat-value" id="totalEquipments">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <div class="stat-label">إجمالي التكلفة</div>
+              <div class="stat-value" id="totalCost">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+              <div class="stat-label">إجمالي الأيام</div>
+              <div class="stat-value" id="totalDays">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <div class="stat-label">متوسط قيمة اليوم</div>
+              <div class="stat-value" id="avgDayValue">0</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- View Toggle -->
+        <div style="margin-bottom: 8px; display: flex; gap: 6px; flex-direction: column;">
+          <button class="btn btn-primary" id="viewAllBtn" style="width: 100%; justify-content: center;">
+            <span>📋</span>
+            <span>عرض الكل</span>
+          </button>
+          <button class="btn btn-icon" id="viewMonthsBtn" style="width: 100%; justify-content: center;">
+            <span>📅</span>
+            <span>عرض بالشهور</span>
+          </button>
+        </div>
+        
+        <!-- Toolbar (Search + Filters + Add Button) -->
+        <div class="toolbar" style="flex-direction: column; align-items: stretch;">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="equipmentSearch" placeholder="بحث عن معدة، محل، أو شخص...">
+          </div>
+          
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn btn-icon" id="filterBtn" title="فلترة بالتاريخ" style="flex: 1; justify-content: center;">
+              <span>🗓️</span>
+              <span>تصفية</span>
+            </button>
+            
+            <button class="btn btn-success" id="exportExcelBtn" style="flex: 1; justify-content: center;">
+              <span>📥</span>
+              <span>Excel</span>
+            </button>
+          </div>
+          
+          <button class="btn btn-primary" id="addEquipmentBtn" style="width: 100%; justify-content: center;">
+            <span>➕</span>
+            <span>إضافة معدات</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Right Panel: Table/Cards/Months View -->
+      <div class="right-panel">
+        <!-- Months View (Hidden by default) -->
+        <div id="monthsView" style="display: none;">
+          <div id="monthsContainer" class="cards-container" style="margin-bottom: 16px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+            <!-- Months will be loaded here -->
+          </div>
+        </div>
+        
+        <!-- Table View -->
+        <div class="table-container" id="mainTable">
+          <table id="equipmentsTable">
+            <thead>
+              <tr>
+                <th style="width: 50px;">م</th>
+                <th>اسم المعدة</th>
+                <th>المحل / الشخص</th>
+                <th>تاريخ التأجير</th>
+                <th>عدد الأيام</th>
+                <th>قيمة اليوم</th>
+                <th>الإجمالي</th>
+                <th>حالة الفاتورة</th>
+                <th>الفاتورة</th>
+                <th style="width: 120px;">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="equipmentsTbody">
+              <tr>
+                <td colspan="10" class="loading">
+                  <div class="spinner"></div>
+                  <div>جاري تحميل البيانات...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Month Details Modal -->
+  <div class="modal-overlay" id="monthDetailsModal">
+    <div class="modal" style="min-width: 800px; max-width: 95vw;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="monthDetailsTitle">معدات شهر</h2>
+        <button class="modal-close" id="closeMonthDetailsBtn">&times;</button>
+      </div>
+      
+      <div id="monthDetailsStats" class="stats-container" style="margin-bottom: 16px;">
+        <!-- Month stats will be loaded here -->
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">م</th>
+              <th>اسم المعدة</th>
+              <th>المحل / الشخص</th>
+              <th>تاريخ التأجير</th>
+              <th>عدد الأيام</th>
+              <th>قيمة اليوم</th>
+              <th>الإجمالي</th>
+              <th>حالة الفاتورة</th>
+              <th>الفاتورة</th>
+              <th style="width: 120px;">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="monthDetailsTbody">
+            <tr>
+              <td colspan="10" class="loading">
+                <div class="spinner"></div>
+                <div>جاري تحميل البيانات...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-success" onclick="exportMonthToExcel()">
+          <span>📥</span>
+          <span>تصدير Excel</span>
+        </button>
+        <button type="button" class="btn btn-icon" onclick="closeMonthDetails()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Filter Modal -->
+  <div class="modal-overlay" id="filterModal">
+    <div class="modal" style="min-width: 400px; max-width: 95vw;">
+      <div class="modal-header">
+        <h2 class="modal-title">🗓️ تصفية المعدات</h2>
+        <button class="modal-close" id="closeFilterModalBtn">&times;</button>
+      </div>
+      
+      <div style="padding: 10px 0;">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>من تاريخ:</label>
+          <input type="date" id="filterDateFrom" style="width: 100%; padding: 8px 10px; border: 2px solid #8c969a; border-radius: 6px; font-size: 0.85rem; font-family: 'Cairo', Arial, sans-serif;">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>إلى تاريخ:</label>
+          <input type="date" id="filterDateTo" style="width: 100%; padding: 8px 10px; border: 2px solid #8c969a; border-radius: 6px; font-size: 0.85rem; font-family: 'Cairo', Arial, sans-serif;">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>حالة الفاتورة:</label>
+          <select id="filterInvoiceStatus" style="width: 100%; padding: 8px 10px; border: 2px solid #8c969a; border-radius: 6px; font-size: 0.85rem; font-family: 'Cairo', Arial, sans-serif;">
+            <option value="">الكل</option>
+            <option value="with">مع فاتورة</option>
+            <option value="without">بدون فاتورة</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-icon" id="clearFilterModalBtn">
+          <span>✗</span>
+          <span>مسح</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="applyFilterModalBtn">
+          <span>✓</span>
+          <span>تطبيق</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="equipmentModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">إضافة معدات جديدة</h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      
+      <form id="equipmentForm" enctype="multipart/form-data">
+        <input type="hidden" id="equipmentId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>اسم المعدة *</label>
+            <input type="text" id="equipmentName" required placeholder="مثال: خلاطة خرسانة">
+          </div>
+          <div class="form-group">
+            <label>المحل / الشخص *</label>
+            <input type="text" id="equipmentOwner" required placeholder="مثال: محل المعدات">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>تاريخ تأجير المعدة *</label>
+            <input type="date" id="equipmentRentDate" required>
+          </div>
+          <div class="form-group">
+            <label>عدد الأيام *</label>
+            <input type="number" id="equipmentDays" min="1" required placeholder="0">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>قيمة اليوم (جنيه) *</label>
+            <input type="number" id="equipmentDayValue" min="0" step="0.01" required placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>الإجمالي (جنيه)</label>
+            <input type="text" id="equipmentTotal" readonly placeholder="0.00">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>الفاتورة (PDF)</label>
+            <input type="file" id="equipmentInvoice" accept="application/pdf">
+            <div id="currentInvoiceInfo" style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;"></div>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات</label>
+            <textarea id="equipmentNotes" rows="3" placeholder="ملاحظات إضافية..."></textarea>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-icon" id="cancelModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary">
+            <span id="submitBtnText">💾 حفظ</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <div class="footer">
+    جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
+  </div>
+  <script>
+    // Load navbar first, then initialize everything
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('📄 Page loaded, starting initialization...');
+      
+      // دالة مساعدة للانتظار حتى يتم تحميل sendNotification
+      window.waitForNotificationSystem = function() {
+        return new Promise((resolve) => {
+          if (window.sendNotification) {
+            resolve();
+          } else {
+            const checkInterval = setInterval(() => {
+              if (window.sendNotification) {
+                clearInterval(checkInterval);
+                resolve();
+              }
+            }, 100);
+          }
+        });
+      };
+      
+      // Load navbar
+      try {
+        const response = await fetch('components/main-navbar.html');
+        const html = await response.text();
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+        console.log('✅ Navbar loaded');
+      } catch (error) {
+        console.error('Error loading navbar:', error);
+      }
+
+      // Small delay to ensure navbar scripts are executed
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Initialize app after navbar is loaded
+      initializeApp();
+    });
+
+    function initializeApp() {
+      console.log('🚀 Initializing Equipment Management...');
+
+      // DOM Elements
+      const addBtn = document.getElementById('addEquipmentBtn');
+      const modal = document.getElementById('equipmentModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const cancelModalBtn = document.getElementById('cancelModalBtn');
+      const equipmentForm = document.getElementById('equipmentForm');
+      const equipmentsTbody = document.getElementById('equipmentsTbody');
+      const equipmentSearch = document.getElementById('equipmentSearch');
+      const filterBtn = document.getElementById('filterBtn');
+      const filterModal = document.getElementById('filterModal');
+      const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
+      const applyFilterModalBtn = document.getElementById('applyFilterModalBtn');
+      const clearFilterModalBtn = document.getElementById('clearFilterModalBtn');
+      const filterDateFrom = document.getElementById('filterDateFrom');
+      const filterDateTo = document.getElementById('filterDateTo');
+      const filterInvoiceStatus = document.getElementById('filterInvoiceStatus');
+      const exportExcelBtn = document.getElementById('exportExcelBtn');
+      const equipmentIdInput = document.getElementById('equipmentId');
+      const equipmentDays = document.getElementById('equipmentDays');
+      const equipmentDayValue = document.getElementById('equipmentDayValue');
+      const equipmentTotal = document.getElementById('equipmentTotal');
+      const equipmentInvoice = document.getElementById('equipmentInvoice');
+      const currentInvoiceInfo = document.getElementById('currentInvoiceInfo');
+      const submitBtnText = document.getElementById('submitBtnText');
+
+      // View toggle elements
+      const viewAllBtn = document.getElementById('viewAllBtn');
+      const viewMonthsBtn = document.getElementById('viewMonthsBtn');
+      const monthsView = document.getElementById('monthsView');
+      const monthsContainer = document.getElementById('monthsContainer');
+      const mainToolbar = document.getElementById('mainToolbar');
+      const mainTable = document.getElementById('mainTable');
+      const monthDetailsModal = document.getElementById('monthDetailsModal');
+      const closeMonthDetailsBtn = document.getElementById('closeMonthDetailsBtn');
+      const monthDetailsTitle = document.getElementById('monthDetailsTitle');
+      const monthDetailsTbody = document.getElementById('monthDetailsTbody');
+      const monthDetailsStats = document.getElementById('monthDetailsStats');
+
+      // Stats elements
+      const totalEquipmentsEl = document.getElementById('totalEquipments');
+      const totalCostEl = document.getElementById('totalCost');
+      const totalDaysEl = document.getElementById('totalDays');
+      const avgDayValueEl = document.getElementById('avgDayValue');
+
+      console.log('🔍 DOM Elements check:');
+      console.log('  addBtn:', addBtn ? '✅ Found' : '❌ Not found');
+      console.log('  modal:', modal ? '✅ Found' : '❌ Not found');
+      console.log('  filterBtn:', filterBtn ? '✅ Found' : '❌ Not found');
+      console.log('  filterModal:', filterModal ? '✅ Found' : '❌ Not found');
+      console.log('  equipmentForm:', equipmentForm ? '✅ Found' : '❌ Not found');
+
+      // Check if all elements are found
+      if (!addBtn || !modal || !equipmentForm) {
+        console.error('❌ Required elements not found!');
+        console.error('Missing elements:', {
+          addBtn: !addBtn,
+          modal: !modal,
+          equipmentForm: !equipmentForm
+        });
+        alert('خطأ في تحميل الصفحة! بعض العناصر غير موجودة.');
+        return;
+      }
+
+      console.log('✅ All DOM elements found');
+
+      // Data
+      let equipments = [];
+      let filteredEquipments = [];
+      let editingId = null;
+      let currentView = 'all'; // 'all' or 'months'
+      let currentMonthData = [];
+
+      // Functions
+      async function loadEquipments() {
+        try {
+          showLoading();
+          const response = await fetch('https://taskon-production.up.railway.app/equipments');
+          if (!response.ok) throw new Error('فشل تحميل المعدات');
+          equipments = await response.json();
+          filteredEquipments = [...equipments];
+          renderTable();
+          updateStats();
+        } catch (error) {
+          console.error('Error loading equipments:', error);
+          showError('فشل تحميل البيانات. تأكد من تشغيل السيرفر.');
+        }
+      }
+
+      function showLoading() {
+        equipmentsTbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="loading">
+              <div class="spinner"></div>
+              <div>جاري تحميل البيانات...</div>
+            </td>
+          </tr>
+        `;
+      }
+
+      function showError(message) {
+        equipmentsTbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="empty-state">
+              <div class="empty-icon">⚠️</div>
+              <div>${message}</div>
+            </td>
+          </tr>
+        `;
+      }
+
+      function renderTable() {
+        equipmentsTbody.innerHTML = '';
+        
+        if (filteredEquipments.length === 0) {
+          equipmentsTbody.innerHTML = `
+            <tr>
+              <td colspan="10" class="empty-state">
+                <div class="empty-icon">📦</div>
+                <div>لا توجد معدات</div>
+                <button class="btn btn-primary" onclick="openAddModal()" style="margin-top:12px;">
+                  ➕ إضافة أول معدة
+                </button>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        filteredEquipments.forEach((eq, idx) => {
+          const tr = document.createElement('tr');
+          const hasInvoice = eq.invoicePath && eq.invoicePath.trim() !== '';
+          const invoiceBadge = hasInvoice 
+            ? '<span class="badge badge-success">✓ مرفقة</span>' 
+            : '<span class="badge badge-warning">⚠ غير مرفقة</span>';
+          
+          const invoiceLink = hasInvoice 
+            ? `<a href="https://taskon-production.up.railway.app/uploads/${eq.invoicePath}" target="_blank" class="btn btn-icon btn-sm" title="عرض الفاتورة">📄</a>`
+            : '<span style="color:var(--text-secondary); font-size:0.85rem;">-</span>';
+
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${eq.name}</strong></td>
+            <td>${eq.owner}</td>
+            <td>${formatDate(eq.rentDate)}</td>
+            <td><span class="badge badge-info">${eq.days} يوم</span></td>
+            <td>${formatCurrency(eq.dayValue)}</td>
+            <td><strong>${formatCurrency(eq.total)}</strong></td>
+            <td>${invoiceBadge}</td>
+            <td>${invoiceLink}</td>
+            <td>
+              <button class="btn btn-icon btn-sm" onclick="editEquipment('${eq._id}')" title="تعديل">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteEquipment('${eq._id}')" title="حذف">🗑️</button>
+            </td>
+          `;
+          equipmentsTbody.appendChild(tr);
+        });
+      }
+
+      function updateStats() {
+        const total = equipments.length;
+        const totalCostValue = equipments.reduce((sum, eq) => sum + (eq.total || 0), 0);
+        const totalDaysValue = equipments.reduce((sum, eq) => sum + (eq.days || 0), 0);
+        const avgDayValueValue = total > 0 ? totalCostValue / totalDaysValue : 0;
+
+        totalEquipmentsEl.textContent = total;
+        totalCostEl.textContent = formatCurrency(totalCostValue);
+        totalDaysEl.textContent = totalDaysValue;
+        avgDayValueEl.textContent = formatCurrency(avgDayValueValue);
+      }
+
+      function openAddModal() {
+        console.log('🔵 Opening Add Modal...');
+        editingId = null;
+        modalTitle.textContent = 'إضافة معدات جديدة';
+        submitBtnText.textContent = '💾 حفظ';
+        equipmentForm.reset();
+        equipmentIdInput.value = '';
+        currentInvoiceInfo.textContent = '';
+        modal.classList.add('show');
+        console.log('✅ Modal opened');
+      }
+
+      window.editEquipment = async function(id) {
+        console.log('🔵 Editing equipment:', id);
+        editingId = id;
+        modalTitle.textContent = 'تعديل بيانات المعدة';
+        submitBtnText.textContent = '💾 حفظ التعديلات';
+        
+        const equipment = equipments.find(e => e._id === id);
+        if (!equipment) return;
+
+        equipmentIdInput.value = id;
+        document.getElementById('equipmentName').value = equipment.name;
+        document.getElementById('equipmentOwner').value = equipment.owner;
+        document.getElementById('equipmentRentDate').value = equipment.rentDate;
+        equipmentDays.value = equipment.days;
+        equipmentDayValue.value = equipment.dayValue;
+        updateTotal();
+        document.getElementById('equipmentNotes').value = equipment.notes || '';
+
+        if (equipment.invoicePath) {
+          currentInvoiceInfo.textContent = `✓ فاتورة مرفقة: ${equipment.invoicePath}`;
+          currentInvoiceInfo.style.color = 'var(--success-color)';
+        } else {
+          currentInvoiceInfo.textContent = '';
+        }
+
+        modal.classList.add('show');
+      };
+
+      function closeModal() {
+        console.log('🔵 Closing modal...');
+        modal.classList.remove('show');
+        equipmentForm.reset();
+        editingId = null;
+        currentInvoiceInfo.textContent = '';
+      }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        console.log('🔵 Submitting form...');
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('equipmentName').value.trim());
+        formData.append('owner', document.getElementById('equipmentOwner').value.trim());
+        formData.append('rentDate', document.getElementById('equipmentRentDate').value);
+        formData.append('days', equipmentDays.value);
+        formData.append('dayValue', equipmentDayValue.value);
+        formData.append('total', parseFloat(equipmentTotal.value));
+        formData.append('notes', document.getElementById('equipmentNotes').value.trim());
+
+        if (equipmentInvoice.files[0]) {
+          formData.append('invoice', equipmentInvoice.files[0]);
+        }
+
+        try {
+          submitBtnText.innerHTML = '<div class="spinner" style="width:16px; height:16px;"></div> جاري الحفظ...';
+          
+          let response;
+          if (editingId) {
+            response = await fetch(`https://taskon-production.up.railway.app/equipments/${editingId}`, {
+              method: 'PUT',
+              body: formData
+            });
+          } else {
+            response = await fetch('https://taskon-production.up.railway.app/equipments', {
+              method: 'POST',
+              body: formData
+            });
+          }
+
+          if (!response.ok) throw new Error('فشل حفظ المعدة');
+
+          const result = await response.json();
+          const isEdit = !!editingId;
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            const equipmentName = document.getElementById('equipmentName').value.trim();
+            const message = isEdit 
+              ? `تم تعديل المعدة: ${equipmentName}`
+              : `تم إضافة معدة جديدة: ${equipmentName}`;
+            
+            await window.sendNotification(
+              isEdit ? 'equipment-edit' : 'equipment-add',
+              message,
+              'equipments',
+              result.equipmentId || editingId || ''
+            );
+          }
+
+          await loadEquipments();
+          closeModal();
+          showSuccessMessage(editingId ? 'تم تحديث المعدة بنجاح' : 'تمت إضافة المعدة بنجاح');
+        } catch (error) {
+          console.error('Error saving equipment:', error);
+          alert('فشل حفظ المعدة. تأكد من الاتصال بالسيرفر.');
+        } finally {
+          submitBtnText.textContent = editingId ? '💾 حفظ التعديلات' : '💾 حفظ';
+        }
+      }
+
+      window.deleteEquipment = async function(id) {
+        const equipment = equipments.find(e => e._id === id);
+        if (!equipment) return;
+
+        if (!confirm(`هل أنت متأكد من حذف المعدة "${equipment.name}"؟`)) return;
+
+        try {
+          const response = await fetch(`https://taskon-production.up.railway.app/equipments/${id}`, {
+            method: 'DELETE'
+          });
+
+          if (!response.ok) throw new Error('فشل حذف المعدة');
+
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'equipment-delete',
+              `تم حذف المعدة: ${equipment.name}`,
+              'equipments',
+              id
+            );
+          }
+
+          await loadEquipments();
+          showSuccessMessage('تم حذف المعدة بنجاح');
+        } catch (error) {
+          console.error('Error deleting equipment:', error);
+          alert('فشل حذف المعدة. تأكد من الاتصال بالسيرفر.');
+        }
+      };
+
+      function updateTotal() {
+        const days = parseInt(equipmentDays.value) || 0;
+        const dayValue = parseFloat(equipmentDayValue.value) || 0;
+        equipmentTotal.value = (days * dayValue).toFixed(2);
+      }
+
+      function openFilterModal() {
+        console.log('🔵 Opening filter modal...');
+        filterModal.classList.add('show');
+      }
+
+      function closeFilterModal() {
+        console.log('🔵 Closing filter modal...');
+        filterModal.classList.remove('show');
+      }
+
+      function applyFilters() {
+        console.log('🔵 Applying filters...');
+        const searchValue = equipmentSearch.value.trim().toLowerCase();
+        const dateFrom = filterDateFrom.value ? new Date(filterDateFrom.value) : null;
+        const dateTo = filterDateTo.value ? new Date(filterDateTo.value) : null;
+        const invoiceStatus = filterInvoiceStatus.value;
+
+        filteredEquipments = equipments.filter(eq => {
+          // Search filter
+          const matchSearch = !searchValue || 
+            eq.name.toLowerCase().includes(searchValue) || 
+            eq.owner.toLowerCase().includes(searchValue);
+          if (!matchSearch) return false;
+
+          // Date filter
+          if (dateFrom || dateTo) {
+            const eqDate = new Date(eq.rentDate);
+            if (dateFrom && eqDate < dateFrom) return false;
+            if (dateTo && eqDate > dateTo) return false;
+          }
+
+          // Invoice status filter
+          if (invoiceStatus === 'with' && (!eq.invoicePath || eq.invoicePath.trim() === '')) return false;
+          if (invoiceStatus === 'without' && eq.invoicePath && eq.invoicePath.trim() !== '') return false;
+
+          return true;
+        });
+
+        renderTable();
+        closeFilterModal();
+      }
+
+      function clearFilters() {
+        equipmentSearch.value = '';
+        filterDateFrom.value = '';
+        filterDateTo.value = '';
+        filterInvoiceStatus.value = '';
+        filteredEquipments = [...equipments];
+        renderTable();
+      }
+
+      function exportToExcel() {
+        if (filteredEquipments.length === 0) {
+          alert('لا توجد بيانات للتصدير');
+          return;
+        }
+
+        const data = filteredEquipments.map((eq, idx) => ({
+          'م': idx + 1,
+          'اسم المعدة': eq.name,
+          'المحل / الشخص': eq.owner,
+          'تاريخ التأجير': eq.rentDate,
+          'عدد الأيام': eq.days,
+          'قيمة اليوم': eq.dayValue,
+          'الإجمالي': eq.total,
+          'حالة الفاتورة': eq.invoicePath ? 'مرفقة' : 'غير مرفقة',
+          'ملاحظات': eq.notes || ''
+        }));
+
+        // Create CSV
+        const headers = Object.keys(data[0]);
+        const csvContent = [
+          headers.join(','),
+          ...data.map(row => headers.map(h => `"${row[h]}"`).join(','))
+        ].join('\n');
+
+        // Download
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `equipments_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('ar-EG');
+      }
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'decimal',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(value) + ' ريال';
+      }
+
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      function showSuccessMessage(message) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: var(--success-color);
+          color: white;
+          padding: 12px 20px;
+          border-radius: 0;
+          box-shadow: var(--shadow-md);
+          z-index: 10000;
+          font-weight: 600;
+          animation: slideIn 0.3s ease;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      // Months View Functions
+      function groupEquipmentsByMonth() {
+        const monthsMap = {};
+        
+        equipments.forEach(eq => {
+          const date = new Date(eq.rentDate);
+          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          const monthName = date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long' });
+          
+          if (!monthsMap[monthKey]) {
+            monthsMap[monthKey] = {
+              key: monthKey,
+              name: monthName,
+              equipments: [],
+              totalCost: 0,
+              totalDays: 0,
+              count: 0
+            };
+          }
+          
+          monthsMap[monthKey].equipments.push(eq);
+          monthsMap[monthKey].totalCost += eq.total || 0;
+          monthsMap[monthKey].totalDays += eq.days || 0;
+          monthsMap[monthKey].count++;
+        });
+        
+        // Sort by month (newest first)
+        return Object.values(monthsMap).sort((a, b) => b.key.localeCompare(a.key));
+      }
+
+      function renderMonthsView() {
+        const months = groupEquipmentsByMonth();
+        monthsContainer.innerHTML = '';
+        
+        if (months.length === 0) {
+          monthsContainer.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-icon">📦</div>
+              <div>لا توجد معدات</div>
+            </div>
+          `;
+          return;
+        }
+        
+        months.forEach(month => {
+          const card = document.createElement('div');
+          card.className = 'month-card';
+          card.onclick = () => openMonthDetails(month);
+          
+          card.innerHTML = `
+            <div class="month-name">📅 ${month.name}</div>
+            <div class="month-count">عدد المعدات: ${month.count}</div>
+            <div class="month-count">إجمالي الأيام: ${month.totalDays}</div>
+            <div class="month-total">${formatCurrency(month.totalCost)}</div>
+          `;
+          
+          monthsContainer.appendChild(card);
+        });
+      }
+
+      function openMonthDetails(month) {
+        console.log('🔵 Opening month details:', month.name);
+        currentMonthData = month.equipments;
+        monthDetailsTitle.textContent = `معدات ${month.name}`;
+        
+        // Update month stats
+        const avgDayValue = month.totalDays > 0 ? month.totalCost / month.totalDays : 0;
+        monthDetailsStats.innerHTML = `
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-content">
+              <div class="stat-label">عدد المعدات</div>
+              <div class="stat-value">${month.count}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <div class="stat-label">إجمالي التكلفة</div>
+              <div class="stat-value">${formatCurrency(month.totalCost)}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+              <div class="stat-label">إجمالي الأيام</div>
+              <div class="stat-value">${month.totalDays}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <div class="stat-label">متوسط قيمة اليوم</div>
+              <div class="stat-value">${formatCurrency(avgDayValue)}</div>
+            </div>
+          </div>
+        `;
+        
+        // Render equipments table
+        monthDetailsTbody.innerHTML = '';
+        month.equipments.forEach((eq, idx) => {
+          const tr = document.createElement('tr');
+          const hasInvoice = eq.invoicePath && eq.invoicePath.trim() !== '';
+          const invoiceBadge = hasInvoice 
+            ? '<span class="badge badge-success">✓ مرفقة</span>' 
+            : '<span class="badge badge-warning">⚠ غير مرفقة</span>';
+          
+          const invoiceLink = hasInvoice 
+            ? `<a href="https://taskon-production.up.railway.app/uploads/${eq.invoicePath}" target="_blank" class="btn btn-icon btn-sm" title="عرض الفاتورة">📄</a>`
+            : '<span style="color:var(--text-secondary); font-size:0.85rem;">-</span>';
+
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${eq.name}</strong></td>
+            <td>${eq.owner}</td>
+            <td>${formatDate(eq.rentDate)}</td>
+            <td><span class="badge badge-info">${eq.days} يوم</span></td>
+            <td>${formatCurrency(eq.dayValue)}</td>
+            <td><strong>${formatCurrency(eq.total)}</strong></td>
+            <td>${invoiceBadge}</td>
+            <td>${invoiceLink}</td>
+            <td>
+              <button class="btn btn-icon btn-sm" onclick="editEquipment('${eq._id}')" title="تعديل">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteEquipment('${eq._id}')" title="حذف">🗑️</button>
+            </td>
+          `;
+          monthDetailsTbody.appendChild(tr);
+        });
+        
+        monthDetailsModal.classList.add('show');
+      }
+
+      function closeMonthDetails() {
+        monthDetailsModal.classList.remove('show');
+        currentMonthData = [];
+      }
+
+      function exportMonthToExcel() {
+        if (currentMonthData.length === 0) {
+          alert('لا توجد بيانات للتصدير');
+          return;
+        }
+
+        const data = currentMonthData.map((eq, idx) => ({
+          'م': idx + 1,
+          'اسم المعدة': eq.name,
+          'المحل / الشخص': eq.owner,
+          'تاريخ التأجير': eq.rentDate,
+          'عدد الأيام': eq.days,
+          'قيمة اليوم': eq.dayValue,
+          'الإجمالي': eq.total,
+          'حالة الفاتورة': eq.invoicePath ? 'مرفقة' : 'غير مرفقة',
+          'ملاحظات': eq.notes || ''
+        }));
+
+        const headers = Object.keys(data[0]);
+        const csvContent = [
+          headers.join(','),
+          ...data.map(row => headers.map(h => `"${row[h]}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `equipments_month_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      }
+
+      function switchToAllView() {
+        currentView = 'all';
+        monthsView.style.display = 'none';
+        mainTable.style.display = 'block';
+        viewAllBtn.className = 'btn btn-primary';
+        viewMonthsBtn.className = 'btn btn-icon';
+      }
+
+      function switchToMonthsView() {
+        currentView = 'months';
+        monthsView.style.display = 'block';
+        mainTable.style.display = 'none';
+        viewAllBtn.className = 'btn btn-icon';
+        viewMonthsBtn.className = 'btn btn-primary';
+        renderMonthsView();
+      }
+
+      // Make functions globally accessible
+      window.openAddModal = openAddModal;
+      window.closeModal = closeModal;
+      window.openFilterModal = openFilterModal;
+      window.closeFilterModal = closeFilterModal;
+      window.closeMonthDetails = closeMonthDetails;
+      window.exportMonthToExcel = exportMonthToExcel;
+
+      // Event Listeners
+      console.log('🔧 Attaching event listeners...');
+      
+      addBtn.addEventListener('click', function(e) {
+        console.log('🔵 Add button clicked!', e);
+        e.preventDefault();
+        e.stopPropagation();
+        openAddModal();
+      });
+      console.log('✅ Add button listener attached');
+      
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelModalBtn.addEventListener('click', closeModal);
+      equipmentForm.addEventListener('submit', handleSubmit);
+      equipmentSearch.addEventListener('input', debounce(applyFilters, 300));
+      
+      // Filter modal listeners
+      filterBtn.addEventListener('click', function(e) {
+        console.log('🔵 Filter button clicked!', e);
+        openFilterModal();
+      });
+      closeFilterModalBtn.addEventListener('click', closeFilterModal);
+      applyFilterModalBtn.addEventListener('click', applyFilters);
+      clearFilterModalBtn.addEventListener('click', clearFilters);
+      
+      equipmentDays.addEventListener('input', updateTotal);
+      equipmentDayValue.addEventListener('input', updateTotal);
+      exportExcelBtn.addEventListener('click', exportToExcel);
+
+      // View toggle listeners
+      viewAllBtn.addEventListener('click', switchToAllView);
+      viewMonthsBtn.addEventListener('click', switchToMonthsView);
+      closeMonthDetailsBtn.addEventListener('click', closeMonthDetails);
+
+      console.log('✅ All event listeners attached');
+
+      // Close modal on overlay click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // Close month details modal on overlay click
+      monthDetailsModal.addEventListener('click', (e) => {
+        if (e.target === monthDetailsModal) closeMonthDetails();
+      });
+
+      // Close filter modal on overlay click
+      filterModal.addEventListener('click', (e) => {
+        if (e.target === filterModal) closeFilterModal();
+      });
+
+      console.log('✅ Event listeners attached');
+
+      // Initialize - load equipments
+      loadEquipments();
+      console.log('✅ Loading equipments...');
+      
+      console.log('🎉 Initialization complete!');
+
+    // End of initializeApp function
+    } // closing initializeApp
+  </script>
+  <style>
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+  </style>
+</body>
+</html>
+  

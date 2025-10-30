@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>التعاملات الخارجية | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="permissions-check.js"></script>
+  <style>
+    :root {
+      direction: rtl;
+      font-family: 'Cairo', Arial, sans-serif;
+      --primary-color: #2e8ca3;
+      --primary-dark: #197c91;
+      --secondary-color: #8c969a;
+      --background: #c5d6db;
+      --card-bg: #ffffff;
+      --border-color: #d1dfe4;
+      --text-primary: #2c3e50;
+      --text-secondary: #546e7a;
+      --hover-bg: #e8f4f7;
+      --success: #4caf50;
+      --danger: #e53935;
+      --warning: #ff9800;
+      --shadow-sm: 0 2px 8px rgba(46, 140, 163, 0.08);
+      --shadow-md: 0 4px 16px rgba(46, 140, 163, 0.12);
+      --shadow-lg: 0 8px 32px rgba(46, 140, 163, 0.16);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--background);
+      color: var(--text-primary);
+      font-family: 'Cairo', Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Main Layout - Split Design */
+    .main-container {
+      max-width: 1400px;
+      margin: 2rem auto 2rem auto;
+      padding: 0 1.5rem 2rem 1.5rem;
+      display: grid;
+      grid-template-columns: 0.4fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* Left Panel - Details & Features (Smaller) */
+    .details-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    /* Right Panel - Table Section (Larger) */
+    .table-panel {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 700px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .panel-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.2rem;
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-color);
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 2px solid #f0f4f7;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .feature-title {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .feature-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+    }
+
+    .quick-action-btn {
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #e8f4f7 100%);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .quick-action-btn:hover {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .quick-action-icon {
+      font-size: 1.5rem;
+    }
+
+    /* Analytics Charts */
+    .chart-container {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chart-placeholder {
+      color: var(--text-secondary);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    /* Recent Activity */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 0.8rem;
+      padding: 0.8rem;
+      background: #f8fafc;
+      border-radius: 8px;
+      border-right: 3px solid var(--primary-color);
+      transition: all 0.2s ease;
+    }
+
+    .activity-item:hover {
+      background: var(--hover-bg);
+      transform: translateX(-3px);
+    }
+
+    .activity-icon-wrapper {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .activity-details {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .activity-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+    }
+
+    .summary-item {
+      background: #f8fafc;
+      padding: 0.9rem;
+      border-radius: 8px;
+      border-right: 3px solid var(--primary-color);
+      text-align: center;
+    }
+
+    .summary-value {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      margin-bottom: 0.2rem;
+    }
+
+    .summary-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .toolbar-left {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 250px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 0.9rem 0.6rem 2.2rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .search-box::before {
+      content: "🔍";
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 0.6rem 0.9rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--primary-dark);
+      border: 2px solid var(--primary-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--hover-bg);
+    }
+
+    /* Table */
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: linear-gradient(135deg, #e8f4f7 0%, #d4e9ef 100%);
+    }
+
+    th {
+      padding: 0.9rem 0.8rem;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--border-color);
+      letter-spacing: 0.3px;
+    }
+
+    td {
+      padding: 0.8rem;
+      text-align: center;
+      font-size: 0.75rem;
+      border-bottom: 1px solid #f0f4f7;
+      color: var(--text-primary);
+    }
+
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: var(--hover-bg);
+      transform: scale(1.01);
+    }
+
+    .service-badge {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .service-diesel { background: #fff3cd; color: #856404; }
+    .service-transport { background: #cfe2ff; color: #084298; }
+    .service-equipment { background: #f8d7da; color: #842029; }
+    .service-labor { background: #d1e7dd; color: #0f5132; }
+    .service-materials { background: #e2d9f3; color: #432874; }
+    .service-other { background: #e2e3e5; color: #41464b; }
+
+    .payment-badge {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .payment-cash { background: #d1e7dd; color: #0f5132; }
+    .payment-check { background: #cfe2ff; color: #084298; }
+    .payment-transfer { background: #e2d9f3; color: #432874; }
+
+    .action-btns {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-edit {
+      color: var(--primary-color);
+    }
+
+    .btn-edit:hover {
+      background: #e8f4f7;
+    }
+
+    .btn-delete {
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: #ffebee;
+    }
+
+    /* Modal - Simple Design */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      background: var(--primary-color);
+      color: #ffffff;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      font-size: 1.5rem;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    .form-input[type="file"] {
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+
+    /* Datalist Styling */
+    .form-input[list] {
+      position: relative;
+    }
+
+    .form-input[list]::-webkit-calendar-picker-indicator {
+      opacity: 0.6;
+      cursor: pointer;
+    }
+
+    .form-input[list]:focus::-webkit-calendar-picker-indicator {
+      opacity: 1;
+    }
+
+    datalist {
+      position: absolute;
+      background: white;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      box-shadow: var(--shadow-md);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    datalist option {
+      padding: 0.6rem 0.9rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    datalist option:hover {
+      background: var(--hover-bg);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 2px solid #f0f4f7;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 0.8rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-header-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-left,
+      .toolbar-right {
+        flex-direction: column;
+      }
+
+      .search-box {
+        min-width: 100%;
+      }
+
+      .filter-group {
+        flex-direction: column;
+      }
+
+      .filter-select {
+        width: 100%;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 800px;
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="main-navbar"></div>
+
+  <!-- Main Container - Split Layout -->
+  <div class="main-container">
+    <!-- Left Panel: Details & Features (Smaller) -->
+    <div class="details-panel">
+      <!-- Quick Actions Card -->
+      <div class="feature-card">
+        <div class="feature-header">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">إجراءات سريعة</div>
+        </div>
+        <div class="feature-content">
+          <div class="quick-actions">
+            <button class="quick-action-btn" id="addServiceBtn" data-permission="contractors-add">
+              <div class="quick-action-icon">➕</div>
+              <div>إضافة تعامل</div>
+            </button>
+            <button class="quick-action-btn" id="printReportBtn">
+              <div class="quick-action-icon">🖨️</div>
+              <div>طباعة تقرير</div>
+            </button>
+            <button class="quick-action-btn" id="viewStatsBtn">
+              <div class="quick-action-icon">📊</div>
+              <div>عرض إحصائيات</div>
+            </button>
+            <button class="quick-action-btn" id="filterByDateBtn">
+              <div class="quick-action-icon">📅</div>
+              <div>فلترة بالتاريخ</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="feature-card">
+        <div class="feature-header">
+          <div class="feature-icon">📈</div>
+          <div class="feature-title">ملخص الشهر الحالي</div>
+        </div>
+        <div class="feature-content">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-value" id="currentMonthCount">0</div>
+              <div class="summary-label">عدد التعاملات</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-value" id="currentMonthAmount">0</div>
+              <div class="summary-label">المبلغ (ريال)</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-value" id="avgTransactionValue">0</div>
+              <div class="summary-label">متوسط القيمة</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-value" id="topServiceType">-</div>
+              <div class="summary-label">الخدمة الأكثر</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity Card -->
+      <div class="feature-card">
+        <div class="feature-header">
+          <div class="feature-icon">🕐</div>
+          <div class="feature-title">آخر الأنشطة</div>
+        </div>
+        <div class="feature-content">
+          <div class="activity-list" id="recentActivityList">
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+              لا توجد أنشطة حديثة
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Services Card -->
+      <div class="feature-card">
+        <div class="feature-header">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-title">أكثر الخدمات طلباً</div>
+        </div>
+        <div class="feature-content">
+          <div class="chart-container">
+            <canvas id="servicesChart" width="300" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Table Section (Larger) -->
+    <div class="table-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>📋</span>
+          <span>جدول التعاملات الخارجية</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary" id="exportBtn" data-permission="contractors-export" style="font-size: 0.8rem; padding: 0.6rem 1rem;">
+            <span>📥</span>
+            تصدير Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="بحث بالاسم أو الوصف...">
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <div class="filter-group">
+            <select class="filter-select" id="serviceTypeFilter">
+              <option value="">كل الخدمات</option>
+            </select>
+            <select class="filter-select" id="paymentFilter">
+              <option value="">كل طرق الدفع</option>
+              <option value="نقدي">💵 نقدي</option>
+              <option value="شيك">📝 شيك</option>
+              <option value="تحويل">🏦 تحويل</option>
+            </select>
+            <input type="date" class="filter-select" id="startDateFilter" placeholder="من تاريخ" style="width: 140px;">
+            <input type="date" class="filter-select" id="endDateFilter" placeholder="إلى تاريخ" style="width: 140px;">
+            <button class="btn btn-secondary" id="clearDateFilter" style="padding: 0.6rem 0.8rem; font-size: 0.75rem;">
+              🔄 مسح
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container" style="flex: 1; overflow-y: auto; max-height: 600px;">
+        <table>
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>اسم الجهة</th>
+              <th>نوع الخدمة</th>
+              <th>القيمة</th>
+              <th>طريقة الدفع</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="servicesTableBody">
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <div class="empty-state-icon">🤝</div>
+                  <div class="empty-state-text">لا توجد تعاملات بعد</div>
+                  <p style="margin-top: 0.5rem; opacity: 0.7; font-size: 0.85rem;">ابدأ بإضافة تعامل جديد</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="serviceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>🤝</span>
+          <span id="modalTitle">إضافة تعامل جديد</span>
+        </h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="serviceForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">اسم الجهة / المورد *</label>
+              <input type="text" class="form-input" id="supplierName" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">نوع الخدمة *</label>
+              <input 
+                type="text" 
+                class="form-input" 
+                id="serviceType" 
+                list="serviceTypeList"
+                placeholder="اكتب نوع الخدمة..."
+                required
+                autocomplete="off"
+              >
+              <datalist id="serviceTypeList">
+                <!-- سيتم ملؤها ديناميكياً -->
+              </datalist>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">تاريخ التعامل *</label>
+              <input type="date" class="form-input" id="serviceDate" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">القيمة (ريال) *</label>
+              <input type="number" class="form-input" id="amount" step="0.01" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">طريقة الدفع *</label>
+              <select class="form-select" id="paymentMethod" required>
+                <option value="">-- اختر --</option>
+                <option value="نقدي">💵 نقدي</option>
+                <option value="شيك">📝 شيك</option>
+                <option value="تحويل">🏦 تحويل</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">اسم المستلم</label>
+              <input type="text" class="form-input" id="receiverName">
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">وصف العملية *</label>
+            <textarea class="form-textarea" id="description" required></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">ملاحظات إضافية</label>
+            <textarea class="form-textarea" id="notes" rows="2"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">مرفقات (فاتورة / إيصال)</label>
+            <input type="file" class="form-input" id="attachmentFile" accept=".pdf,.jpg,.jpeg,.png">
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">إلغاء</button>
+            <button type="submit" class="btn btn-primary">
+              <span>💾</span>
+              حفظ التعامل
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // إدراج الشريط العلوي
+    // دالة مساعدة للانتظار حتى يتم تحميل sendNotification
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    fetch('components/main-navbar.html')
+      .then(response => response.text())
+      .then(html => {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        temp.querySelectorAll('style').forEach(style => {
+          document.head.appendChild(style.cloneNode(true));
+        });
+        document.getElementById('main-navbar').innerHTML = '';
+        temp.childNodes.forEach(node => {
+          if (node.nodeName !== 'STYLE' && node.nodeName !== 'SCRIPT') {
+            document.getElementById('main-navbar').appendChild(node.cloneNode(true));
+          }
+        });
+        temp.querySelectorAll('script').forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+            newScript.onload = function() {
+              if (window.initMainNavbar) window.initMainNavbar();
+            };
+          } else {
+            newScript.textContent = script.textContent + "\nif(window.initMainNavbar) initMainNavbar();";
+          }
+          document.body.appendChild(newScript);
+        });
+        setTimeout(function() {
+          if (window.initMainNavbar) window.initMainNavbar();
+        }, 100);
+      });
+
+    // Data
+    let services = [];
+    let editingIndex = null;
+
+    // DOM Elements
+    const serviceModal = document.getElementById('serviceModal');
+    const serviceForm = document.getElementById('serviceForm');
+    const addServiceBtn = document.getElementById('addServiceBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const searchInput = document.getElementById('searchInput');
+    const serviceTypeFilter = document.getElementById('serviceTypeFilter');
+    const paymentFilter = document.getElementById('paymentFilter');
+    const startDateFilter = document.getElementById('startDateFilter');
+    const endDateFilter = document.getElementById('endDateFilter');
+    const clearDateFilterBtn = document.getElementById('clearDateFilter');
+    const exportBtn = document.getElementById('exportBtn');
+    const servicesTableBody = document.getElementById('servicesTableBody');
+    const modalTitle = document.getElementById('modalTitle');
+
+    // Service Type Icons & Classes
+    const serviceConfig = {
+      'ديزل': { icon: '⛽', class: 'service-diesel' },
+      'نقل': { icon: '🚚', class: 'service-transport' },
+      'معدات': { icon: '🚜', class: 'service-equipment' },
+      'عمالة': { icon: '👷', class: 'service-labor' },
+      'توريد مواد': { icon: '📦', class: 'service-materials' },
+      'أخرى': { icon: '🔧', class: 'service-other' }
+    };
+
+    const paymentConfig = {
+      'نقدي': { icon: '💵', class: 'payment-cash' },
+      'شيك': { icon: '📝', class: 'payment-check' },
+      'تحويل': { icon: '🏦', class: 'payment-transfer' }
+    };
+
+    // Set today's date as default
+    document.getElementById('serviceDate').valueAsDate = new Date();
+
+    // Modal Functions
+    function openModal(isEdit = false) {
+      modalTitle.textContent = isEdit ? 'تعديل التعامل' : 'إضافة تعامل جديد';
+      serviceModal.classList.add('show');
+    }
+
+    function closeModal() {
+      serviceModal.classList.remove('show');
+      serviceForm.reset();
+      editingIndex = null;
+      document.getElementById('serviceDate').valueAsDate = new Date();
+    }
+
+    // Event Listeners - Modal
+    addServiceBtn.addEventListener('click', () => openModal(false));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    
+    serviceModal.addEventListener('click', (e) => {
+      if (e.target === serviceModal) closeModal();
+    });
+
+    // Form Submit
+    serviceForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      formData.append('supplierName', document.getElementById('supplierName').value.trim());
+      formData.append('serviceType', document.getElementById('serviceType').value);
+      formData.append('serviceDate', document.getElementById('serviceDate').value);
+      formData.append('amount', document.getElementById('amount').value);
+      formData.append('paymentMethod', document.getElementById('paymentMethod').value);
+      formData.append('receiverName', document.getElementById('receiverName').value.trim());
+      formData.append('description', document.getElementById('description').value.trim());
+      formData.append('notes', document.getElementById('notes').value.trim());
+      
+      const attachmentFile = document.getElementById('attachmentFile');
+      if (attachmentFile.files.length > 0) {
+        formData.append('attachment', attachmentFile.files[0]);
+      }
+      
+      try {
+        let response;
+        if (editingIndex !== null) {
+          const serviceId = services[editingIndex]._id;
+          response = await fetch(`https://taskon-production.up.railway.app/external-services/${serviceId}`, {
+            method: 'PUT',
+            body: formData
+          });
+        } else {
+          response = await fetch('https://taskon-production.up.railway.app/external-services', {
+            method: 'POST',
+            body: formData
+          });
+        }
+        
+        if (response.ok) {
+          const result = await response.json();
+          const isEdit = editingIndex !== null;
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            const supplierName = document.getElementById('supplierName').value.trim();
+            const serviceType = document.getElementById('serviceType').value;
+            const message = isEdit 
+              ? `تم تعديل تعامل خارجي: ${supplierName} - ${serviceType}`
+              : `تم إضافة تعامل خارجي جديد: ${supplierName} - ${serviceType}`;
+            
+            await window.sendNotification(
+              isEdit ? 'contractor-edit' : 'contractor-add',
+              message,
+              'external-services',
+              result.insertedId || result._id || ''
+            );
+          }
+          
+          await loadServices();
+          closeModal();
+          alert(editingIndex !== null ? 'تم تحديث التعامل بنجاح!' : 'تم إضافة التعامل بنجاح!');
+        } else {
+          alert('حدث خطأ أثناء حفظ البيانات');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ في الاتصال بالسيرفر');
+      }
+    });
+
+    // Load Services
+    async function loadServices() {
+      try {
+        const response = await fetch('https://taskon-production.up.railway.app/external-services');
+        
+        if (!response.ok) {
+          console.error('Server returned:', response.status, response.statusText);
+          services = [];
+          renderTable();
+          updateServiceTypeList();
+          return;
+        }
+        
+        const data = await response.json();
+        services = Array.isArray(data) ? data : [];
+        renderTable();
+        updateServiceTypeList();
+      } catch (error) {
+        console.error('Error loading services:', error);
+        services = [];
+        renderTable();
+        updateServiceTypeList();
+      }
+    }
+
+    // Update Service Type List (للاقتراحات)
+    function updateServiceTypeList() {
+      const datalist = document.getElementById('serviceTypeList');
+      const filterSelect = document.getElementById('serviceTypeFilter');
+      
+      // استخراج جميع أنواع الخدمات الفريدة
+      const uniqueServiceTypes = [...new Set(services.map(s => s.serviceType))].filter(Boolean);
+      
+      // إضافة الخدمات الشائعة الافتراضية
+      const defaultServices = ['ديزل', 'نقل', 'معدات', 'عمالة', 'توريد مواد', 'صيانة', 'تأجير', 'استشارات'];
+      
+      // دمج القوائم وإزالة المكرر
+      const allServices = [...new Set([...defaultServices, ...uniqueServiceTypes])].sort();
+      
+      // ملء الـ datalist للإدخال
+      datalist.innerHTML = allServices.map(service => 
+        `<option value="${service}">${service}</option>`
+      ).join('');
+      
+      // ملء فلتر البحث
+      const currentFilter = filterSelect.value;
+      filterSelect.innerHTML = '<option value="">كل الخدمات</option>' + 
+        uniqueServiceTypes.sort().map(service => {
+          const icon = serviceConfig[service]?.icon || '📋';
+          return `<option value="${service}">${icon} ${service}</option>`;
+        }).join('');
+      filterSelect.value = currentFilter;
+    }
+
+    // Render Table
+    function renderTable() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const typeFilter = serviceTypeFilter.value;
+      const paymentFilterValue = paymentFilter.value;
+      const startDate = startDateFilter.value;
+      const endDate = endDateFilter.value;
+      
+      let filtered = services.filter(s => {
+        const matchSearch = !searchTerm || 
+          s.supplierName.toLowerCase().includes(searchTerm) ||
+          s.description.toLowerCase().includes(searchTerm);
+        const matchType = !typeFilter || s.serviceType === typeFilter;
+        const matchPayment = !paymentFilterValue || s.paymentMethod === paymentFilterValue;
+        
+        // Date filtering
+        let matchDate = true;
+        if (startDate || endDate) {
+          const serviceDate = s.serviceDate.split('T')[0];
+          if (startDate && endDate) {
+            matchDate = serviceDate >= startDate && serviceDate <= endDate;
+          } else if (startDate) {
+            matchDate = serviceDate >= startDate;
+          } else if (endDate) {
+            matchDate = serviceDate <= endDate;
+          }
+        }
+        
+        return matchSearch && matchType && matchPayment && matchDate;
+      });
+
+      if (filtered.length === 0) {
+        servicesTableBody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <div class="empty-state-text">لا توجد نتائج</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      servicesTableBody.innerHTML = filtered.map((service, idx) => {
+        const originalIndex = services.indexOf(service);
+        const serviceInfo = serviceConfig[service.serviceType] || { icon: '📋', class: 'service-other' };
+        const paymentInfo = paymentConfig[service.paymentMethod] || paymentConfig['نقدي'];
+        const date = new Date(service.serviceDate).toLocaleDateString('ar-EG');
+        
+        return `
+          <tr>
+            <td>${date}</td>
+            <td style="font-weight: 600;">${service.supplierName}</td>
+            <td>
+              <span class="service-badge ${serviceInfo.class}">
+                ${serviceInfo.icon} ${service.serviceType}
+              </span>
+            </td>
+            <td style="font-weight: 700; color: var(--primary-dark); direction: ltr; font-variant-numeric: lining-nums;">
+              ${parseFloat(service.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ريال
+            </td>
+            <td>
+              <span class="payment-badge ${paymentInfo.class}">
+                ${paymentInfo.icon} ${service.paymentMethod}
+              </span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn btn-edit" onclick="editService(${originalIndex})" title="تعديل" ${!hasPermission('contractors-edit') ? 'style="display:none;"' : ''}>
+                  ✏️
+                </button>
+                <button class="action-btn btn-delete" onclick="deleteService(${originalIndex})" title="حذف" ${!hasPermission('contractors-delete') ? 'style="display:none;"' : ''}>
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Update Stats (removed - stats cards deleted)
+
+    // Edit Service
+    window.editService = function(idx) {
+      editingIndex = idx;
+      const service = services[idx];
+      
+      document.getElementById('supplierName').value = service.supplierName;
+      document.getElementById('serviceType').value = service.serviceType;
+      document.getElementById('serviceDate').value = service.serviceDate.split('T')[0];
+      document.getElementById('amount').value = service.amount;
+      document.getElementById('paymentMethod').value = service.paymentMethod;
+      document.getElementById('receiverName').value = service.receiverName || '';
+      document.getElementById('description').value = service.description;
+      document.getElementById('notes').value = service.notes || '';
+      
+      openModal(true);
+    };
+
+    // Delete Service
+    window.deleteService = async function(idx) {
+      if (!confirm('هل أنت متأكد من حذف هذا التعامل؟\nلا يمكن التراجع عن هذا الإجراء.')) {
+        return;
+      }
+      
+      try {
+        const serviceId = services[idx]._id;
+        const serviceName = services[idx].supplierName;
+        const serviceType = services[idx].serviceType;
+        
+        const response = await fetch(`https://taskon-production.up.railway.app/external-services/${serviceId}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          // إرسال إشعار بالحذف
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'contractor-delete',
+              `تم حذف تعامل خارجي: ${serviceName} - ${serviceType}`,
+              'external-services',
+              serviceId
+            );
+          }
+          
+          await loadServices();
+          alert('تم حذف التعامل بنجاح!');
+        } else {
+          alert('حدث خطأ أثناء الحذف');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ في الاتصال بالسيرفر');
+      }
+    };
+
+    // Search and Filter
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(renderTable, 300);
+    });
+
+    serviceTypeFilter.addEventListener('change', renderTable);
+    paymentFilter.addEventListener('change', renderTable);
+    startDateFilter.addEventListener('change', renderTable);
+    endDateFilter.addEventListener('change', renderTable);
+    
+    // Clear date filter
+    clearDateFilterBtn.addEventListener('click', () => {
+      startDateFilter.value = '';
+      endDateFilter.value = '';
+      renderTable();
+    });
+
+    // Export to Excel
+    exportBtn.addEventListener('click', async () => {
+      try {
+        const response = await fetch('https://taskon-production.up.railway.app/external-services/export');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `external-services-${new Date().getTime()}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error('Export error:', error);
+        alert('حدث خطأ أثناء التصدير');
+      }
+    });
+
+    // ===== NEW FEATURES =====
+    
+    // Update Current Month Summary
+    function updateMonthSummary() {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      
+      const currentMonthServices = services.filter(s => {
+        const serviceDate = new Date(s.serviceDate);
+        return serviceDate.getMonth() === currentMonth && serviceDate.getFullYear() === currentYear;
+      });
+      
+      const count = currentMonthServices.length;
+      const total = currentMonthServices.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+      const avg = count > 0 ? total / count : 0;
+      
+      // حساب أكثر خدمة
+      const serviceCount = {};
+      currentMonthServices.forEach(s => {
+        serviceCount[s.serviceType] = (serviceCount[s.serviceType] || 0) + 1;
+      });
+      const topServiceType = Object.keys(serviceCount).length > 0 
+        ? Object.keys(serviceCount).reduce((a, b) => serviceCount[a] > serviceCount[b] ? a : b)
+        : '-';
+      
+      document.getElementById('currentMonthCount').textContent = count;
+      document.getElementById('currentMonthAmount').textContent = total.toLocaleString('ar-EG', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      document.getElementById('avgTransactionValue').textContent = avg.toLocaleString('ar-EG', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      document.getElementById('topServiceType').textContent = topServiceType !== '-' ? topServiceType : '-';
+    }
+
+    // Update Recent Activity
+    function updateRecentActivity() {
+      const recentServices = [...services]
+        .sort((a, b) => new Date(b.createdAt || b.serviceDate) - new Date(a.createdAt || a.serviceDate))
+        .slice(0, 5);
+      
+      const activityList = document.getElementById('recentActivityList');
+      
+      if (recentServices.length === 0) {
+        activityList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            لا توجد أنشطة حديثة
+          </div>
+        `;
+        return;
+      }
+      
+      activityList.innerHTML = recentServices.map(service => {
+        const config = serviceConfig[service.serviceType] || serviceConfig['أخرى'];
+        const date = new Date(service.serviceDate);
+        const timeAgo = getTimeAgo(date);
+        
+        return `
+          <div class="activity-item">
+            <div class="activity-icon-wrapper">
+              ${config.icon}
+            </div>
+            <div class="activity-details">
+              <div class="activity-title">${service.supplierName} - ${service.serviceType}</div>
+              <div class="activity-meta">
+                ${service.amount.toLocaleString('ar-EG')} ريال • ${timeAgo}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Get Time Ago
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diff = now - date;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor(diff / (1000 * 60));
+      
+      if (days > 0) return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+      if (hours > 0) return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+      if (minutes > 0) return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
+      return 'الآن';
+    }
+
+    // Create Services Chart
+    let servicesChart = null;
+    
+    function updateServicesChart() {
+      const serviceCount = {};
+      services.forEach(s => {
+        serviceCount[s.serviceType] = (serviceCount[s.serviceType] || 0) + 1;
+      });
+      
+      const sortedServices = Object.entries(serviceCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      const labels = sortedServices.map(([type]) => type);
+      const data = sortedServices.map(([, count]) => count);
+      const colors = labels.map(type => {
+        const config = serviceConfig[type] || serviceConfig['أخرى'];
+        return config.class === 'service-diesel' ? '#856404' :
+               config.class === 'service-transport' ? '#084298' :
+               config.class === 'service-equipment' ? '#842029' :
+               config.class === 'service-labor' ? '#0f5132' :
+               config.class === 'service-materials' ? '#432874' : '#41464b';
+      });
+      
+      const ctx = document.getElementById('servicesChart');
+      
+      if (servicesChart) {
+        servicesChart.destroy();
+      }
+      
+      if (sortedServices.length === 0) {
+        ctx.parentElement.innerHTML = `
+          <div class="chart-placeholder">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+            <div>لا توجد بيانات كافية</div>
+          </div>
+        `;
+        return;
+      }
+      
+      servicesChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              rtl: true,
+              labels: {
+                font: {
+                  family: 'Cairo',
+                  size: 11
+                },
+                padding: 10
+              }
+            },
+            tooltip: {
+              rtl: true,
+              callbacks: {
+                label: function(context) {
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = ((context.parsed / total) * 100).toFixed(1);
+                  return `${context.label}: ${context.parsed} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Quick Actions Event Listeners
+    document.getElementById('printReportBtn').addEventListener('click', () => {
+      window.print();
+    });
+
+    document.getElementById('viewStatsBtn').addEventListener('click', () => {
+      alert('سيتم فتح صفحة الإحصائيات المتقدمة قريباً');
+    });
+
+    document.getElementById('filterByDateBtn').addEventListener('click', () => {
+      // Auto-fill date filters with current month
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      
+      startDateFilter.value = firstDay.toISOString().split('T')[0];
+      endDateFilter.value = lastDay.toISOString().split('T')[0];
+      renderTable();
+      
+      // Scroll to filters
+      document.querySelector('.toolbar').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Update all new features when data changes
+    function updateAllFeatures() {
+      updateMonthSummary();
+      updateRecentActivity();
+      updateServicesChart();
+    }
+
+    // Override loadServices to update new features
+    const originalLoadServices = loadServices;
+    loadServices = async function() {
+      await originalLoadServices();
+      updateAllFeatures();
+    };
+
+    // Initial Load
+    loadServices();
+  </script>
+</body>
+</html>

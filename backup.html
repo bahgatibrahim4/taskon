@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>النسخ الاحتياطي - نظام إدارة المشاريع</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #667eea;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .header .icon {
+      font-size: 3rem;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    
+    .header p {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+    
+    /* Backup Cards Grid */
+    .backup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .backup-card {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 30px;
+      border-radius: 15px;
+      color: white;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      transition: transform 0.3s;
+    }
+    
+    .backup-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .backup-card .card-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+    
+    .backup-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+    
+    .backup-card p {
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Cairo', Arial, sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-white {
+      background: white;
+      color: #667eea;
+    }
+    
+    .btn-white:hover {
+      background: #f8f9fa;
+      transform: scale(1.02);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+    
+    /* Backup History */
+    .history-section {
+      margin-top: 40px;
+    }
+    
+    .history-section h2 {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .history-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    
+    .history-item:hover {
+      background: #e9ecef;
+    }
+    
+    .history-info {
+      flex: 1;
+    }
+    
+    .history-info .date {
+      font-weight: 700;
+      color: #2c3e50;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+    
+    .history-info .details {
+      color: #7f8c8d;
+      font-size: 0.95rem;
+    }
+    
+    .history-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-sm {
+      padding: 8px 15px;
+      font-size: 0.9rem;
+    }
+    
+    /* Settings Section */
+    .settings-section {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 40px;
+    }
+    
+    .settings-section h2 {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+    
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-info h4 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+      font-size: 1.1rem;
+    }
+    
+    .setting-info p {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 30px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #667eea;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+    
+    /* Alert Messages */
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .alert.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* File Upload Area */
+    .upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 20px;
+    }
+    
+    .upload-area:hover {
+      background: #f8f9fa;
+      border-color: #764ba2;
+    }
+    
+    .upload-area input[type="file"] {
+      display: none;
+    }
+    
+    .upload-area .icon {
+      font-size: 3rem;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    
+    .upload-area p {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="icon">
+        <i class="fas fa-database"></i>
+      </div>
+      <h1>النسخ الاحتياطي والاستعادة</h1>
+      <p>حماية بياناتك من خلال النسخ الاحتياطي التلقائي والاستعادة السريعة</p>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Backup Actions Grid -->
+    <div class="backup-grid">
+      <!-- Manual Backup -->
+      <div class="backup-card">
+        <div class="card-icon">
+          <i class="fas fa-download"></i>
+        </div>
+        <h3>نسخة احتياطية يدوية</h3>
+        <p>قم بإنشاء نسخة احتياطية فورية من جميع البيانات وتنزيلها على جهازك</p>
+        <button class="btn btn-white" onclick="createManualBackup()">
+          <i class="fas fa-download"></i> إنشاء نسخة الآن
+        </button>
+      </div>
+
+      <!-- Auto Backup -->
+      <div class="backup-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="card-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>نسخ احتياطي تلقائي</h3>
+        <p>جدولة نسخ احتياطية تلقائية يومية أو أسبوعية لحماية بياناتك</p>
+        <button class="btn btn-white" onclick="scheduleAutoBackup()">
+          <i class="fas fa-calendar"></i> جدولة النسخ
+        </button>
+      </div>
+
+      <!-- Restore -->
+      <div class="backup-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <div class="card-icon">
+          <i class="fas fa-upload"></i>
+        </div>
+        <h3>استعادة البيانات</h3>
+        <p>استعادة قاعدة البيانات من نسخة احتياطية سابقة</p>
+        <button class="btn btn-white" onclick="showRestoreDialog()">
+          <i class="fas fa-undo"></i> استعادة النسخة
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Area for Restore -->
+    <div class="upload-area" id="uploadArea" style="display: none;">
+      <input type="file" id="restoreFile" accept=".json" onchange="handleFileUpload(event)">
+      <div class="icon">
+        <i class="fas fa-cloud-upload-alt"></i>
+      </div>
+      <p>اسحب وأفلت ملف النسخة الاحتياطية هنا أو انقر للاختيار</p>
+      <p style="font-size: 0.9rem; margin-top: 10px;">الملفات المدعومة: .json</p>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="settings-section">
+      <h2><i class="fas fa-cog"></i> إعدادات النسخ الاحتياطي</h2>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <h4>النسخ الاحتياطي التلقائي</h4>
+          <p>تفعيل النسخ الاحتياطي التلقائي اليومي</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="autoBackupSwitch" onchange="toggleAutoBackup()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <h4>التخزين السحابي</h4>
+          <p>حفظ النسخ الاحتياطية على التخزين السحابي (قريباً)</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="cloudStorageSwitch" disabled>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <h4>الاحتفاظ بالنسخ القديمة</h4>
+          <p>عدد النسخ الاحتياطية التي يتم الاحتفاظ بها: <strong id="retentionDays">30 يوم</strong></p>
+        </div>
+        <select id="retentionSelect" onchange="updateRetention()" 
+                style="padding: 8px 15px; border-radius: 8px; border: 2px solid #e0e0e0; font-family: 'Cairo', Arial; font-size: 1rem;">
+          <option value="7">7 أيام</option>
+          <option value="14">14 يوم</option>
+          <option value="30" selected>30 يوم</option>
+          <option value="60">60 يوم</option>
+          <option value="90">90 يوم</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Backup History -->
+    <div class="history-section">
+      <h2><i class="fas fa-history"></i> سجل النسخ الاحتياطية</h2>
+      <div class="history-list" id="historyList">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>جاري تحميل السجل...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load Navbar
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+      });
+
+    // Check authentication
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.username) {
+      window.location.href = 'login.html';
+    }
+
+    // Show Alert
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type} show`;
+      alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'}"></i>
+        ${message}
+      `;
+      alertContainer.appendChild(alert);
+      
+      setTimeout(() => {
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+    }
+
+    // Create Manual Backup
+    async function createManualBackup() {
+      const btn = event.target.closest('button');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإنشاء...';
+      
+      try {
+        const response = await fetch('/backup/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: user.username,
+            type: 'manual'
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل إنشاء النسخة الاحتياطية');
+        }
+        
+        const data = await response.json();
+        
+        // Download backup file
+        const blob = new Blob([JSON.stringify(data.backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showAlert('✅ تم إنشاء النسخة الاحتياطية وتنزيلها بنجاح', 'success');
+        loadBackupHistory();
+        
+      } catch (error) {
+        console.error('خطأ في النسخ الاحتياطي:', error);
+        showAlert('❌ حدث خطأ في إنشاء النسخة الاحتياطية', 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-download"></i> إنشاء نسخة الآن';
+      }
+    }
+
+    // Schedule Auto Backup
+    function scheduleAutoBackup() {
+      const autoSwitch = document.getElementById('autoBackupSwitch');
+      autoSwitch.checked = true;
+      toggleAutoBackup();
+      showAlert('✅ تم جدولة النسخ الاحتياطي التلقائي اليومي', 'success');
+    }
+
+    // Toggle Auto Backup
+    function toggleAutoBackup() {
+      const isEnabled = document.getElementById('autoBackupSwitch').checked;
+      localStorage.setItem('autoBackupEnabled', isEnabled);
+      
+      if (isEnabled) {
+        showAlert('✅ تم تفعيل النسخ الاحتياطي التلقائي', 'success');
+        // In production, you would set up a cron job here
+      } else {
+        showAlert('⚠️ تم تعطيل النسخ الاحتياطي التلقائي', 'info');
+      }
+    }
+
+    // Show Restore Dialog
+    function showRestoreDialog() {
+      const uploadArea = document.getElementById('uploadArea');
+      uploadArea.style.display = uploadArea.style.display === 'none' ? 'block' : 'none';
+      
+      if (uploadArea.style.display === 'block') {
+        uploadArea.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Handle File Upload
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (!file.name.endsWith('.json')) {
+        showAlert('❌ يجب اختيار ملف JSON فقط', 'danger');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const backupData = JSON.parse(e.target.result);
+          
+          if (confirm('⚠️ تحذير: سيتم استبدال جميع البيانات الحالية. هل أنت متأكد؟')) {
+            await restoreBackup(backupData);
+          }
+        } catch (error) {
+          console.error('خطأ في قراءة الملف:', error);
+          showAlert('❌ ملف النسخة الاحتياطية غير صالح', 'danger');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Restore Backup
+    async function restoreBackup(backupData) {
+      try {
+        const response = await fetch('/backup/restore', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            backup: backupData,
+            userId: user.username
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل استعادة النسخة الاحتياطية');
+        }
+        
+        showAlert('✅ تم استعادة البيانات بنجاح! سيتم تحديث الصفحة...', 'success');
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        
+      } catch (error) {
+        console.error('خطأ في الاستعادة:', error);
+        showAlert('❌ حدث خطأ في استعادة النسخة الاحتياطية', 'danger');
+      }
+    }
+
+    // Update Retention
+    function updateRetention() {
+      const days = document.getElementById('retentionSelect').value;
+      document.getElementById('retentionDays').textContent = days + ' يوم';
+      localStorage.setItem('backupRetentionDays', days);
+      showAlert(`✅ تم تحديث مدة الاحتفاظ إلى ${days} يوم`, 'success');
+    }
+
+    // Load Backup History
+    async function loadBackupHistory() {
+      try {
+        const response = await fetch('/backup/history');
+        if (!response.ok) {
+          throw new Error('فشل تحميل السجل');
+        }
+        
+        const history = await response.json();
+        const historyList = document.getElementById('historyList');
+        
+        if (history.length === 0) {
+          historyList.innerHTML = '<p style="text-align: center; color: #95a5a6; padding: 30px;">لا توجد نسخ احتياطية سابقة</p>';
+          return;
+        }
+        
+        historyList.innerHTML = history.map(item => `
+          <div class="history-item">
+            <div class="history-info">
+              <div class="date">
+                <i class="fas fa-calendar"></i> ${new Date(item.date).toLocaleDateString('ar-EG', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+              <div class="details">
+                النوع: ${item.type === 'manual' ? 'يدوي' : 'تلقائي'} • 
+                الحجم: ${(item.size / 1024).toFixed(2)} KB •
+                بواسطة: ${item.user || 'النظام'}
+              </div>
+            </div>
+            <div class="history-actions">
+              <button class="btn btn-sm btn-primary" onclick="downloadBackup('${item.id}')">
+                <i class="fas fa-download"></i> تنزيل
+              </button>
+              <button class="btn btn-sm btn-success" onclick="restoreBackupById('${item.id}')">
+                <i class="fas fa-undo"></i> استعادة
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteBackup('${item.id}')">
+                <i class="fas fa-trash"></i> حذف
+              </button>
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('خطأ في تحميل السجل:', error);
+        document.getElementById('historyList').innerHTML = '<p style="text-align: center; color: #e74c3c;">حدث خطأ في تحميل السجل</p>';
+      }
+    }
+
+    // Download Backup by ID
+    async function downloadBackup(id) {
+      try {
+        const response = await fetch(`/backup/download/${id}`);
+        const data = await response.json();
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_${id}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showAlert('✅ تم تنزيل النسخة الاحتياطية', 'success');
+      } catch (error) {
+        console.error('خطأ في التنزيل:', error);
+        showAlert('❌ حدث خطأ في تنزيل النسخة', 'danger');
+      }
+    }
+
+    // Restore Backup by ID
+    async function restoreBackupById(id) {
+      if (!confirm('⚠️ تحذير: سيتم استبدال جميع البيانات الحالية. هل أنت متأكد؟')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/backup/restore/${id}`, {
+          method: 'POST'
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل الاستعادة');
+        }
+        
+        showAlert('✅ تم استعادة البيانات بنجاح! سيتم تحديث الصفحة...', 'success');
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        
+      } catch (error) {
+        console.error('خطأ في الاستعادة:', error);
+        showAlert('❌ حدث خطأ في استعادة النسخة', 'danger');
+      }
+    }
+
+    // Delete Backup
+    async function deleteBackup(id) {
+      if (!confirm('هل أنت متأكد من حذف هذه النسخة الاحتياطية؟')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/backup/delete/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          throw new Error('فشل الحذف');
+        }
+        
+        showAlert('✅ تم حذف النسخة الاحتياطية', 'success');
+        loadBackupHistory();
+        
+      } catch (error) {
+        console.error('خطأ في الحذف:', error);
+        showAlert('❌ حدث خطأ في حذف النسخة', 'danger');
+      }
+    }
+
+    // Drag and Drop for Upload Area
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('restoreFile');
+
+    uploadArea.addEventListener('click', () => {
+      if (uploadArea.style.display !== 'none') {
+        fileInput.click();
+      }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '#f8f9fa';
+      uploadArea.style.borderColor = '#764ba2';
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.background = '';
+      uploadArea.style.borderColor = '#667eea';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '';
+      uploadArea.style.borderColor = '#667eea';
+      
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileUpload({ target: { files: [file] } });
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved settings
+      const autoBackupEnabled = localStorage.getItem('autoBackupEnabled') === 'true';
+      document.getElementById('autoBackupSwitch').checked = autoBackupEnabled;
+      
+      const retentionDays = localStorage.getItem('backupRetentionDays') || '30';
+      document.getElementById('retentionSelect').value = retentionDays;
+      document.getElementById('retentionDays').textContent = retentionDays + ' يوم';
+      
+      // Load backup history
+      loadBackupHistory();
+    });
+  </script>
+</body>
+</html>

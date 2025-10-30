@@ -1,0 +1,834 @@
+/* 📐 تصميم نظام إدارة المخططات الهندسية */
+/* تم استخراج هذا التصميم من صفحة drawings.html */
+
+:root {
+    /* متغيرات الألوان الأساسية */
+    --primary-color: #2e8ca3;
+    --primary-dark: #197c91;
+    --secondary-color: #8c969a;
+    --background: #c5d6db;
+    --card-bg: #ffffff;
+    --border-color: #d1dfe4;
+    --text-primary: #2c3e50;
+    --text-secondary: #546e7a;
+    --hover-bg: #e8f4f7;
+    --success: #4caf50;
+    --danger: #e53935;
+    --warning: #ff9800;
+    
+    /* ظلال */
+    --shadow-sm: 0 2px 8px rgba(46, 140, 163, 0.08);
+    --shadow-md: 0 4px 16px rgba(46, 140, 163, 0.12);
+    --shadow-lg: 0 8px 32px rgba(46, 140, 163, 0.16);
+    
+    /* إعدادات الاتجاه */
+    direction: rtl;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+}
+
+/* ===============================
+   🔤 الخط والإعدادات الأساسية
+=============================== */
+.drawings-page * {
+    font-family: 'Cairo', Arial, sans-serif !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.drawings-page {
+    font-family: 'Cairo', Arial, sans-serif;
+    background: var(--background);
+    min-height: 100vh;
+    direction: rtl;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* ===============================
+   📦 الحاوي الرئيسي
+=============================== */
+.drawings-container {
+    max-width: 1600px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.drawings-main-content {
+    padding: 30px;
+}
+
+/* ===============================
+   🛠️ شريط الأدوات
+=============================== */
+.drawings-toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.drawings-toolbar-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.drawings-toolbar-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ===============================
+   🔍 مربع البحث
+=============================== */
+.drawings-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.drawings-search-input {
+    padding: 10px 16px 10px 40px;
+    border: 1px solid #d1d9e0;
+    font-size: 14px;
+    border-radius: 25px;
+    width: 300px;
+    transition: all 0.3s;
+    background: #fff;
+}
+
+.drawings-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+}
+
+.drawings-search-icon {
+    position: absolute;
+    left: 12px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* ===============================
+   🎛️ فلاتر التصفية
+=============================== */
+.drawings-filter-select {
+    padding: 10px 14px;
+    border: 1px solid #d1d9e0;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    min-width: 140px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.drawings-filter-select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(46, 140, 163, 0.1);
+}
+
+/* ===============================
+   👁️ تبديل العرض
+=============================== */
+.drawings-view-toggle {
+    display: flex;
+    background: #e9ecef;
+    border-radius: 6px;
+    padding: 3px;
+    border: 1px solid #d1d9e0;
+}
+
+.drawings-view-btn {
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.drawings-view-btn.active {
+    background: #3498db;
+    color: white;
+}
+
+/* ===============================
+   🔘 الأزرار
+=============================== */
+.drawings-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.drawings-btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.drawings-btn-success {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.drawings-btn-warning {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.drawings-btn-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.drawings-btn-secondary {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.drawings-btn-info {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+.drawings-btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.drawings-btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.drawings-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* ===============================
+   📊 تخطيط المحتوى
+=============================== */
+.drawings-content-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+}
+
+/* ===============================
+   📁 الشريط الجانبي
+=============================== */
+.drawings-sidebar {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.drawings-folder-item {
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.2s;
+    position: relative;
+    font-size: 13px;
+}
+
+.drawings-folder-item:hover {
+    background: #e9ecef;
+    border-color: #3498db;
+    transform: translateX(-5px);
+}
+
+.drawings-folder-item.active {
+    background: #e8f4f6;
+    border-color: var(--primary-color);
+    transform: translateX(-5px);
+}
+
+.drawings-folder-item.back-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.drawings-folder-item.back-button:hover {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+    transform: translateX(-2px);
+}
+
+.drawings-folder-stats {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 2px;
+    font-size: 10px;
+    color: #999;
+}
+
+.drawings-folder-progress {
+    width: 100%;
+    height: 4px;
+    background: #e1e8ed;
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.drawings-folder-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    transition: width 0.3s;
+}
+
+/* ===============================
+   🗂️ عرض الشبكة (Grid)
+=============================== */
+.drawings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.drawings-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.drawings-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+.drawings-card:hover {
+    transform: translateY(-5px);
+    border-color: #3498db;
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+}
+
+.drawings-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.drawings-card-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.drawings-card-number {
+    background: #3498db;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.drawings-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.drawings-meta-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.drawings-meta-model {
+    background: #e74c3c;
+    color: white;
+}
+
+.drawings-meta-folder {
+    background: #9b59b6;
+    color: white;
+}
+
+.drawings-meta-type {
+    background: #f39c12;
+    color: white;
+}
+
+.drawings-card-files {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.drawings-file-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.drawings-file-dwg {
+    background: #27ae60;
+    color: white;
+}
+
+.drawings-file-pdf {
+    background: #e74c3c;
+    color: white;
+}
+
+.drawings-file-badge:hover {
+    transform: scale(1.05);
+}
+
+.drawings-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* ===============================
+   ⚡ أزرار الإجراءات
+=============================== */
+.drawings-action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawings-action-edit {
+    background: #f39c12;
+    color: white;
+}
+
+.drawings-action-delete {
+    background: #e74c3c;
+    color: white;
+}
+
+.drawings-action-view {
+    background: #3498db;
+    color: white;
+}
+
+.drawings-action-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ===============================
+   📋 عرض الجدول
+=============================== */
+.drawings-table-container {
+    background: white;
+    border-radius: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.drawings-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+    font-size: 13px;
+}
+
+.drawings-table th {
+    background: #2c3e50;
+    color: white;
+    padding: 8px 12px;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 80px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.drawings-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e1e8ed;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+/* تخصيص عرض الأعمدة */
+.drawings-table th:nth-child(1), 
+.drawings-table td:nth-child(1) { 
+    width: 40px; 
+    text-align: center; 
+}
+
+.drawings-table th:nth-child(2), 
+.drawings-table td:nth-child(2) { 
+    width: 90px; 
+}
+
+.drawings-table th:nth-child(3), 
+.drawings-table td:nth-child(3) { 
+    width: 100px; 
+}
+
+.drawings-table th:nth-child(4), 
+.drawings-table td:nth-child(4) { 
+    width: 110px; 
+}
+
+.drawings-table th:nth-child(5), 
+.drawings-table td:nth-child(5) { 
+    width: 160px; 
+    white-space: normal; 
+}
+
+.drawings-table th:nth-child(6), 
+.drawings-table td:nth-child(6) { 
+    width: 90px; 
+}
+
+.drawings-table th:nth-child(7), 
+.drawings-table td:nth-child(7) { 
+    width: 110px; 
+}
+
+.drawings-table th:nth-child(8), 
+.drawings-table td:nth-child(8) { 
+    width: 80px; 
+    text-align: center; 
+}
+
+.drawings-table th:nth-child(9), 
+.drawings-table td:nth-child(9) { 
+    width: 80px; 
+    text-align: center; 
+}
+
+.drawings-table th:nth-child(10), 
+.drawings-table td:nth-child(10) { 
+    width: 120px; 
+    text-align: center; 
+}
+
+.drawings-table tr:hover {
+    background: #f8f9fa;
+}
+
+.drawings-number {
+    font-weight: 700;
+    color: #3498db;
+    font-size: 16px;
+}
+
+/* ===============================
+   🎭 النوافذ المنبثقة (Modals)
+=============================== */
+.drawings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.drawings-modal.show {
+    display: flex;
+}
+
+.drawings-modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* ===============================
+   📝 النماذج
+=============================== */
+.drawings-form-group {
+    margin-bottom: 20px;
+}
+
+.drawings-form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.drawings-form-input, 
+.drawings-form-select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    font-family: 'Cairo', Arial, sans-serif;
+    font-size: 14px;
+}
+
+.drawings-form-input:focus,
+.drawings-form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+}
+
+/* ===============================
+   📊 الحالة الفارغة
+=============================== */
+.drawings-empty-state {
+    text-align: center;
+    padding: 60px;
+    color: #666;
+}
+
+.drawings-empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.drawings-empty-state-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* ===============================
+   📋 عنوان القسم
+=============================== */
+.drawings-section-title-container {
+    margin-bottom: 8px;
+}
+
+.drawings-section-title-box {
+    display: inline-block;
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 4px 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.drawings-section-title-box h2 {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.drawings-section-title-box h2::before {
+    content: "📋";
+    font-size: 9px;
+}
+
+/* ===============================
+   📱 التصميم المتجاوب
+=============================== */
+@media (max-width: 1200px) {
+    .drawings-content-layout {
+        grid-template-columns: 250px 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .drawings-container {
+        margin: 10px;
+        border-radius: 10px;
+    }
+    
+    .drawings-main-content {
+        padding: 20px;
+    }
+    
+    .drawings-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .drawings-toolbar-right {
+        flex-direction: column;
+    }
+    
+    .drawings-search-input {
+        width: 100%;
+    }
+    
+    .drawings-content-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .drawings-grid {
+        grid-template-columns: 1fr;
+        padding: 15px 0;
+    }
+    
+    .drawings-modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .drawings-table-container {
+        font-size: 11px;
+    }
+    
+    .drawings-table th,
+    .drawings-table td {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .drawings-main-content {
+        padding: 15px;
+    }
+    
+    .drawings-toolbar {
+        padding: 10px;
+    }
+    
+    .drawings-card {
+        padding: 15px;
+    }
+    
+    .drawings-grid {
+        gap: 15px;
+    }
+    
+    .drawings-modal-content {
+        padding: 15px;
+    }
+}
+
+/* ===============================
+   🎨 تحسينات بصرية إضافية
+=============================== */
+
+/* تأثيرات الحركة */
+.drawings-card,
+.drawings-btn,
+.drawings-action-btn,
+.drawings-folder-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* تحسين الظلال */
+.drawings-card:hover {
+    box-shadow: 0 20px 40px rgba(52, 152, 219, 0.15);
+}
+
+/* تحسين الألوان عند التحويم */
+.drawings-btn:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* تحسين النصوص */
+.drawings-page {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* تحسين التركيز */
+.drawings-form-input:focus,
+.drawings-form-select:focus,
+.drawings-search-input:focus {
+    transform: translateY(-1px);
+}
+
+/* إخفاء عناصر التمرير المخصصة */
+.drawings-modal-content::-webkit-scrollbar,
+.drawings-table-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drawings-modal-content::-webkit-scrollbar-track,
+.drawings-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.drawings-modal-content::-webkit-scrollbar-thumb,
+.drawings-table-container::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.drawings-modal-content::-webkit-scrollbar-thumb:hover,
+.drawings-table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}

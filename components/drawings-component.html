@@ -1,0 +1,957 @@
+<!-- 📐 مكون نظام إدارة المخططات الهندسية -->
+<!-- يمكن دمج هذا المكون في أي صفحة مشروع -->
+
+<div class="drawings-page">
+    <div class="drawings-container">
+        <div class="drawings-main-content">
+            <!-- شريط الأدوات -->
+            <div class="drawings-toolbar">
+                <div class="drawings-toolbar-left">
+                    <!-- البحث -->
+                    <div class="drawings-search-container">
+                        <input type="text" class="drawings-search-input" id="drawingsSearchInput" placeholder="بحث في المخططات (رقم، اسم، نموذج...)">
+                        <span class="drawings-search-icon">🔍</span>
+                    </div>
+                    
+                    <!-- الفلاتر -->
+                    <select class="drawings-filter-select" id="drawingsTypeFilter">
+                        <option value="">جميع الأقسام</option>
+                        <option value="انشائي">🏗️ انشائي</option>
+                        <option value="معماري">🏛️ معماري</option>
+                        <option value="ميكانيكا">⚙️ ميكانيكا</option>
+                        <option value="كهرباء">⚡ كهرباء</option>
+                        <option value="مساحة">📐 مساحة</option>
+                        <option value="موقع عام">🗺️ موقع عام</option>
+                    </select>
+                    
+                    <select class="drawings-filter-select" id="drawingsModelFilter">
+                        <option value="">جميع النماذج</option>
+                    </select>
+                    
+                    <select class="drawings-filter-select" id="drawingsItemFilter">
+                        <option value="">جميع البنود</option>
+                    </select>
+                </div>
+                
+                <div class="drawings-toolbar-right">
+                    <!-- تبديل العرض -->
+                    <div class="drawings-view-toggle">
+                        <button class="drawings-view-btn active" id="drawingsTableViewBtn" title="عرض جدول">
+                            <span>📋</span>
+                            جدول
+                        </button>
+                        <button class="drawings-view-btn" id="drawingsGridViewBtn" title="عرض كاردات">
+                            <span>🔲</span>
+                            كاردات
+                        </button>
+                    </div>
+                    
+                    <!-- أزرار الإجراءات -->
+                    <button class="drawings-btn drawings-btn-primary" id="drawingsAddBtn">
+                        <span>➕</span>
+                        إضافة مخطط
+                    </button>
+                    
+                    <button class="drawings-btn drawings-btn-secondary" id="drawingsExportBtn">
+                        <span>📤</span>
+                        تصدير
+                    </button>
+                    
+                    <button class="drawings-btn drawings-btn-secondary" id="drawingsImportBtn">
+                        <span>📥</span>
+                        استيراد
+                    </button>
+                </div>
+            </div>
+
+            <!-- تخطيط المحتوى -->
+            <div class="drawings-content-layout">
+                <!-- الشريط الجانبي -->
+                <div class="drawings-sidebar">
+                    <div class="drawings-section-title-container">
+                        <div class="drawings-section-title-box">
+                            <h2>أقسام المخططات</h2>
+                        </div>
+                    </div>
+                    
+                    <div id="drawingsFoldersList">
+                        <!-- سيتم ملء القائمة ديناميكياً -->
+                    </div>
+                </div>
+
+                <!-- المنطقة الرئيسية -->
+                <div class="drawings-main-area">
+                    <!-- عنوان القسم -->
+                    <div class="drawings-section-title-container">
+                        <div class="drawings-section-title-box">
+                            <h2 id="drawingsSectionTitle">جميع المخططات</h2>
+                        </div>
+                    </div>
+                    
+                    <!-- عداد المخططات -->
+                    <div style="margin-bottom: 15px; font-size: 12px; color: #666;">
+                        <span id="drawingsTotalCount">المجموع: 0</span>
+                    </div>
+
+                    <!-- عرض الجدول -->
+                    <div class="drawings-table-container" id="drawingsTableView">
+                        <table class="drawings-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>رقم المخطط</th>
+                                    <th>نموذج المبنى</th>
+                                    <th>اسم المخطط</th>
+                                    <th>القسم</th>
+                                    <th>البند</th>
+                                    <th>التاريخ</th>
+                                    <th>الملفات</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drawingsTableBody">
+                                <!-- سيتم ملء البيانات ديناميكياً -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- عرض الشبكة -->
+                    <div class="drawings-grid" id="drawingsGridView" style="display: none;">
+                        <!-- سيتم ملء الكاردات ديناميكياً -->
+                    </div>
+
+                    <!-- الحالة الفارغة -->
+                    <div class="drawings-empty-state" id="drawingsEmptyState" style="display: none;">
+                        <div class="drawings-empty-state-icon">📐</div>
+                        <div class="drawings-empty-state-text">لا توجد مخططات هندسية</div>
+                        <p style="margin-top: 1rem; opacity: 0.7;">ابدأ بإضافة مخطط جديد من خلال الزر أعلاه</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- النافذة المنبثقة لإضافة/تعديل مخطط -->
+<div class="drawings-modal" id="drawingsModal">
+    <div class="drawings-modal-content">
+        <h3 id="drawingsModalTitle">📋 إضافة مخطط جديد</h3>
+        <form id="drawingsForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="drawings-form-group">
+                    <label class="drawings-form-label">رقم المخطط</label>
+                    <input type="text" class="drawings-form-input" id="drawingNumber" name="drawingNumber" required>
+                </div>
+                
+                <div class="drawings-form-group">
+                    <label class="drawings-form-label">نموذج المبنى</label>
+                    <input type="text" class="drawings-form-input" id="buildingModel" name="buildingModel" required>
+                </div>
+            </div>
+            
+            <div class="drawings-form-group">
+                <label class="drawings-form-label">اسم المخطط</label>
+                <input type="text" class="drawings-form-input" id="drawingName" name="drawingName" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="drawings-form-group">
+                    <label class="drawings-form-label">القسم</label>
+                    <select class="drawings-form-select" id="drawingType" name="drawingType" required>
+                        <option value="">-- اختر القسم --</option>
+                        <option value="انشائي">🏗️ انشائي</option>
+                        <option value="معماري">🏛️ معماري</option>
+                        <option value="ميكانيكا">⚙️ ميكانيكا</option>
+                        <option value="كهرباء">⚡ كهرباء</option>
+                        <option value="مساحة">📐 مساحة</option>
+                        <option value="موقع عام">🗺️ موقع عام</option>
+                    </select>
+                </div>
+                
+                <div class="drawings-form-group">
+                    <label class="drawings-form-label">البند</label>
+                    <input type="text" class="drawings-form-input" id="drawingFolder" name="drawingFolder" placeholder="اسم البند">
+                </div>
+            </div>
+            
+            <div class="drawings-form-group">
+                <label class="drawings-form-label">البيان</label>
+                <textarea class="drawings-form-input" id="drawingStatement" name="drawingStatement" rows="3" placeholder="بيان المخطط وتفاصيله"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="drawings-form-group">
+                    <label class="drawings-form-label">ملف DWG</label>
+                    <input type="file" class="drawings-form-input" id="dwgFile" name="dwgFile" accept=".dwg">
+                    <div id="dwgFileInfo" style="display: none; margin-top: 5px; font-size: 11px; color: #666;"></div>
+                </div>
+                
+                <div class="drawings-form-group">
+                    <label class="drawings-form-label">ملف PDF</label>
+                    <input type="file" class="drawings-form-input" id="pdfFile" name="pdfFile" accept=".pdf">
+                    <div id="pdfFileInfo" style="display: none; margin-top: 5px; font-size: 11px; color: #666;"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                <button type="button" class="drawings-btn drawings-btn-secondary" onclick="closeDrawingsModal()">إلغاء</button>
+                <button type="submit" class="drawings-btn drawings-btn-primary">
+                    <span>💾</span>
+                    حفظ المخطط
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- إدخال ملف CSV مخفي -->
+<input type="file" id="drawingsImportFile" accept=".csv" style="display: none;">
+
+<script>
+// 🚀 سكريبت نظام إدارة المخططات الهندسية
+(function() {
+    'use strict';
+    
+    // ===============================
+    // 🔧 الإعدادات والمتغيرات
+    // ===============================
+    
+    // ضبط API_URL حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'https://taskon-production.up.railway.app' 
+        : 'https://taskon-production.up.railway.app';
+    
+    // الحصول على معرفات المشروع والشركة
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('projectId') || localStorage.getItem('currentProjectId') || "68f89815d8013418f5ab28d9";
+    const companyId = urlParams.get('companyId') || localStorage.getItem('currentCompanyId') || "68f86f97a05ae9ba3e2f1dde";
+    
+    // متغيرات البيانات
+    let drawings = [];
+    let currentEditingId = null;
+    let currentView = "table"; // 'table' or 'grid'
+    let currentSearchTerm = "";
+    let currentTypeFilter = "";
+    let currentModelFilter = "";
+    let currentItemFilter = "";
+    let hierarchicalMode = false;
+    let currentDepartment = null;
+    let currentModel = null;
+    let currentItem = null;
+    
+    // قائمة الأقسام الثابتة
+    const departments = [
+        { id: "structural", name: "انشائي", icon: "🏗️" },
+        { id: "architectural", name: "معماري", icon: "🏛️" },
+        { id: "mechanical", name: "ميكانيكا", icon: "⚙️" },
+        { id: "electrical", name: "كهرباء", icon: "⚡" },
+        { id: "surveying", name: "مساحة", icon: "📐" },
+        { id: "general", name: "موقع عام", icon: "🗺️" }
+    ];
+    
+    // ===============================
+    // 🌐 دوال API
+    // ===============================
+    
+    async function apiCall(endpoint, method = "GET", data = null) {
+        const url = `${API_URL}${endpoint}?projectId=${projectId}&companyId=${companyId}`;
+        console.log("🌐 API Call:", method, url);
+        
+        const options = {
+            method,
+            headers: { "Content-Type": "application/json" }
+        };
+        if (data && method !== "GET") {
+            options.body = JSON.stringify(data);
+        }
+        
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error("❌ API Call Error:", error);
+            throw error;
+        }
+    }
+    
+    // ===============================
+    // 📊 تحميل البيانات
+    // ===============================
+    
+    async function loadDrawings() {
+        try {
+            console.log("🔄 Loading drawings from API...");
+            const response = await apiCall("/drawings");
+            drawings = Array.isArray(response) ? response : (response.data || []);
+            console.log("📋 Drawings loaded:", drawings.length);
+            
+            updateFilterOptions();
+            renderDrawings();
+        } catch (error) {
+            console.error("خطأ في تحميل المخططات:", error);
+            drawings = [];
+            renderDrawings();
+        }
+    }
+    
+    // ===============================
+    // 🎨 دوال العرض
+    // ===============================
+    
+    function renderFolders() {
+        const list = document.getElementById("drawingsFoldersList");
+        
+        if (!hierarchicalMode) {
+            // عرض الأقسام الرئيسية
+            list.innerHTML = `
+                <div class="drawings-folder-item" onclick="selectAllFolders()">
+                    <span>📋 جميع المخططات</span>
+                    <div class="drawings-folder-stats">${drawings.length}</div>
+                </div>
+            ` + departments.map(dept => {
+                const count = drawings.filter(d => d.type === dept.name).length;
+                return `
+                    <div class="drawings-folder-item" onclick="selectDepartment('${dept.name}')">
+                        <span>${dept.icon} ${dept.name}</span>
+                        <div class="drawings-folder-stats">${count}</div>
+                    </div>
+                `;
+            }).join("");
+        } else {
+            // عرض التنقل الهرمي
+            let backButton = `
+                <div class="drawings-folder-item back-button" onclick="goBackToDepartments()">
+                    <span>← العودة للأقسام</span>
+                </div>
+            `;
+            
+            if (currentDepartment && !currentModel) {
+                // عرض نماذج المباني
+                const deptDrawings = drawings.filter(d => d.type === currentDepartment);
+                const models = [...new Set(deptDrawings.map(d => d.buildingModel).filter(Boolean))];
+                
+                list.innerHTML = backButton + models.map(model => {
+                    const count = deptDrawings.filter(d => d.buildingModel === model).length;
+                    return `
+                        <div class="drawings-folder-item" onclick="selectModel('${model}')">
+                            <span>🏢 ${model}</span>
+                            <div class="drawings-folder-stats">${count}</div>
+                        </div>
+                    `;
+                }).join("");
+            } else if (currentDepartment && currentModel) {
+                // عرض البنود
+                const modelDrawings = drawings.filter(d => 
+                    d.type === currentDepartment && d.buildingModel === currentModel
+                );
+                const items = [...new Set(modelDrawings.map(d => d.itemName).filter(Boolean))];
+                
+                list.innerHTML = `
+                    <div class="drawings-folder-item back-button" onclick="goBackToModels()">
+                        <span>← العودة للنماذج</span>
+                    </div>
+                ` + items.map(item => {
+                    const count = modelDrawings.filter(d => d.itemName === item).length;
+                    return `
+                        <div class="drawings-folder-item" onclick="selectItem('${item}')">
+                            <span>📝 ${item}</span>
+                            <div class="drawings-folder-stats">${count}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+        }
+    }
+    
+    function renderDrawings() {
+        const tableBody = document.getElementById("drawingsTableBody");
+        const gridView = document.getElementById("drawingsGridView");
+        const emptyState = document.getElementById("drawingsEmptyState");
+        const totalCount = document.getElementById("drawingsTotalCount");
+        
+        // تطبيق الفلاتر
+        const filteredDrawings = getFilteredDrawings();
+        
+        totalCount.textContent = `المجموع: ${filteredDrawings.length}`;
+        
+        if (filteredDrawings.length === 0) {
+            if (currentView === 'table') {
+                tableBody.innerHTML = "";
+            } else {
+                gridView.innerHTML = "";
+            }
+            emptyState.style.display = "block";
+            return;
+        }
+        
+        emptyState.style.display = "none";
+        
+        if (currentView === 'table') {
+            renderTableView(filteredDrawings);
+        } else {
+            renderGridView(filteredDrawings);
+        }
+    }
+    
+    function renderTableView(drawingsToRender) {
+        const tableBody = document.getElementById("drawingsTableBody");
+        
+        tableBody.innerHTML = drawingsToRender.map((drawing, index) => {
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong class="drawings-number">${drawing.drawingNumber || '-'}</strong></td>
+                    <td>${drawing.buildingModel || '-'}</td>
+                    <td>${drawing.name || '-'}</td>
+                    <td>${drawing.type || '-'}</td>
+                    <td>${drawing.itemName || '-'}</td>
+                    <td>${drawing.lastModified ? new Date(drawing.lastModified).toLocaleDateString('ar-EG') : '-'}</td>
+                    <td>
+                        ${drawing.dwgFile ? 
+                            `<a href="${drawing.dwgFile}" target="_blank" style="color: var(--primary-color); margin-left: 5px;">DWG</a>` : 
+                            ''
+                        }
+                        ${drawing.pdfFile ? 
+                            `<a href="${drawing.pdfFile}" target="_blank" style="color: var(--danger);">PDF</a>` : 
+                            ''
+                        }
+                        ${!drawing.dwgFile && !drawing.pdfFile ? '-' : ''}
+                    </td>
+                    <td>
+                        <button class="drawings-action-btn drawings-action-edit" onclick="editDrawing('${drawing._id}')" title="تعديل">
+                            ✏️
+                        </button>
+                        <button class="drawings-action-btn drawings-action-delete" onclick="deleteDrawing('${drawing._id}')" title="حذف">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+    
+    function renderGridView(drawingsToRender) {
+        const gridView = document.getElementById("drawingsGridView");
+        
+        gridView.innerHTML = drawingsToRender.map((drawing) => {
+            return `
+                <div class="drawings-card">
+                    <div class="drawings-card-header">
+                        <div class="drawings-card-title">${drawing.name || 'بدون اسم'}</div>
+                        <div class="drawings-card-number">${drawing.drawingNumber || '-'}</div>
+                    </div>
+                    
+                    <div class="drawings-card-meta">
+                        ${drawing.type ? `<span class="drawings-meta-badge drawings-meta-type">${drawing.type}</span>` : ''}
+                        ${drawing.buildingModel ? `<span class="drawings-meta-badge drawings-meta-model">${drawing.buildingModel}</span>` : ''}
+                        ${drawing.itemName ? `<span class="drawings-meta-badge drawings-meta-folder">${drawing.itemName}</span>` : ''}
+                    </div>
+                    
+                    ${drawing.statement ? `<p style="font-size: 12px; color: #666; margin-bottom: 15px;">${drawing.statement}</p>` : ''}
+                    
+                    <div class="drawings-card-files">
+                        ${drawing.dwgFile ? 
+                            `<a href="${drawing.dwgFile}" target="_blank" class="drawings-file-badge drawings-file-dwg">📄 DWG</a>` : 
+                            `<div class="drawings-file-badge drawings-file-dwg" style="opacity: 0.3;">📄 DWG</div>`
+                        }
+                        ${drawing.pdfFile ? 
+                            `<a href="${drawing.pdfFile}" target="_blank" class="drawings-file-badge drawings-file-pdf">📄 PDF</a>` : 
+                            `<div class="drawings-file-badge drawings-file-pdf" style="opacity: 0.3;">📄 PDF</div>`
+                        }
+                    </div>
+                    
+                    <div class="drawings-card-actions">
+                        <button class="drawings-action-btn drawings-action-edit" onclick="editDrawing('${drawing._id}')" title="تعديل">
+                            ✏️
+                        </button>
+                        <button class="drawings-action-btn drawings-action-delete" onclick="deleteDrawing('${drawing._id}')" title="حذف">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+    
+    // ===============================
+    // 🔍 دوال الفلترة والبحث
+    // ===============================
+    
+    function getFilteredDrawings() {
+        return drawings.filter(drawing => {
+            // التصفية الهرمية
+            if (hierarchicalMode) {
+                if (currentDepartment && drawing.type !== currentDepartment) return false;
+                if (currentModel && drawing.buildingModel !== currentModel) return false;
+                if (currentItem && drawing.itemName !== currentItem) return false;
+            }
+            
+            // البحث النصي
+            if (currentSearchTerm) {
+                const searchTerm = currentSearchTerm.toLowerCase();
+                const matchesSearch = 
+                    (drawing.name && drawing.name.toLowerCase().includes(searchTerm)) ||
+                    (drawing.drawingNumber && drawing.drawingNumber.toLowerCase().includes(searchTerm)) ||
+                    (drawing.buildingModel && drawing.buildingModel.toLowerCase().includes(searchTerm)) ||
+                    (drawing.type && drawing.type.toLowerCase().includes(searchTerm)) ||
+                    (drawing.itemName && drawing.itemName.toLowerCase().includes(searchTerm));
+                if (!matchesSearch) return false;
+            }
+            
+            // الفلاتر العادية
+            if (!hierarchicalMode && currentTypeFilter && drawing.type !== currentTypeFilter) return false;
+            if (!hierarchicalMode && currentModelFilter && drawing.buildingModel !== currentModelFilter) return false;
+            if (!hierarchicalMode && currentItemFilter && drawing.itemName !== currentItemFilter) return false;
+            
+            return true;
+        });
+    }
+    
+    function updateFilterOptions() {
+        // تحديث فلتر النماذج
+        const modelFilter = document.getElementById("drawingsModelFilter");
+        const uniqueModels = [...new Set(drawings.map(d => d.buildingModel).filter(Boolean))];
+        modelFilter.innerHTML = '<option value="">جميع النماذج</option>' +
+            uniqueModels.map(model => `<option value="${model}">${model}</option>`).join('');
+        
+        // تحديث فلتر البنود
+        const itemFilter = document.getElementById("drawingsItemFilter");
+        const uniqueItems = [...new Set(drawings.map(d => d.itemName).filter(Boolean))];
+        itemFilter.innerHTML = '<option value="">جميع البنود</option>' +
+            uniqueItems.map(item => `<option value="${item}">${item}</option>`).join('');
+    }
+    
+    // ===============================
+    // 🎯 دوال التنقل
+    // ===============================
+    
+    window.selectAllFolders = function() {
+        hierarchicalMode = false;
+        currentDepartment = null;
+        currentModel = null;
+        currentItem = null;
+        currentTypeFilter = "";
+        currentModelFilter = "";
+        currentItemFilter = "";
+        
+        // إعادة تعيين الفلاتر في الواجهة
+        document.getElementById("drawingsTypeFilter").value = "";
+        document.getElementById("drawingsModelFilter").value = "";
+        document.getElementById("drawingsItemFilter").value = "";
+        
+        updateSectionTitle();
+        renderFolders();
+        renderDrawings();
+    };
+    
+    window.selectDepartment = function(departmentName) {
+        hierarchicalMode = true;
+        currentDepartment = departmentName;
+        currentModel = null;
+        currentItem = null;
+        currentTypeFilter = departmentName;
+        
+        document.getElementById("drawingsTypeFilter").value = departmentName;
+        
+        updateSectionTitle();
+        renderFolders();
+        renderDrawings();
+    };
+    
+    window.selectModel = function(modelName) {
+        currentModel = modelName;
+        currentItem = null;
+        currentModelFilter = modelName;
+        
+        updateSectionTitle();
+        renderFolders();
+        renderDrawings();
+    };
+    
+    window.selectItem = function(itemName) {
+        currentItem = itemName;
+        currentItemFilter = itemName;
+        
+        updateSectionTitle();
+        renderFolders();
+        renderDrawings();
+    };
+    
+    window.goBackToDepartments = function() {
+        hierarchicalMode = false;
+        currentDepartment = null;
+        currentModel = null;
+        currentItem = null;
+        currentTypeFilter = "";
+        currentModelFilter = "";
+        currentItemFilter = "";
+        
+        // إعادة تعيين الفلاتر
+        document.getElementById("drawingsTypeFilter").value = "";
+        document.getElementById("drawingsModelFilter").value = "";
+        document.getElementById("drawingsItemFilter").value = "";
+        
+        updateSectionTitle();
+        renderFolders();
+        renderDrawings();
+    };
+    
+    window.goBackToModels = function() {
+        currentModel = null;
+        currentItem = null;
+        currentModelFilter = "";
+        currentItemFilter = "";
+        
+        updateSectionTitle();
+        renderFolders();
+        renderDrawings();
+    };
+    
+    function updateSectionTitle() {
+        const sectionTitle = document.getElementById("drawingsSectionTitle");
+        if (hierarchicalMode) {
+            let title = "";
+            if (currentDepartment && currentModel && currentItem) {
+                title = `${currentDepartment} > ${currentModel} > ${currentItem}`;
+            } else if (currentDepartment && currentModel) {
+                title = `${currentDepartment} > ${currentModel}`;
+            } else if (currentDepartment) {
+                title = currentDepartment;
+            } else {
+                title = "جميع المخططات";
+            }
+            sectionTitle.textContent = title;
+        } else {
+            sectionTitle.textContent = "جميع المخططات";
+        }
+    }
+    
+    // ===============================
+    // ✏️ دوال التعديل والحذف
+    // ===============================
+    
+    window.editDrawing = function(drawingId) {
+        const drawing = drawings.find(d => d._id === drawingId);
+        if (!drawing) {
+            alert('المخطط غير موجود!');
+            return;
+        }
+        
+        // ملء النموذج بالبيانات الحالية
+        document.getElementById('drawingNumber').value = drawing.drawingNumber || '';
+        document.getElementById('buildingModel').value = drawing.buildingModel || '';
+        document.getElementById('drawingName').value = drawing.name || '';
+        document.getElementById('drawingType').value = drawing.type || '';
+        document.getElementById('drawingFolder').value = drawing.itemName || '';
+        document.getElementById('drawingStatement').value = drawing.statement || '';
+        
+        // تعيين المعرف للتعديل
+        currentEditingId = drawingId;
+        
+        // إظهار النموذج
+        document.getElementById('drawingsModalTitle').textContent = '✏️ تعديل المخطط';
+        document.getElementById('drawingsModal').classList.add('show');
+        
+        // التركيز على حقل الاسم
+        document.getElementById('drawingName').focus();
+    };
+    
+    window.deleteDrawing = async function(drawingId) {
+        if (!confirm("هل تريد حذف هذا المخطط؟\nلا يمكن التراجع عن هذا الإجراء.")) return;
+        
+        try {
+            console.log(`🗑️ محاولة حذف المخطط: ${drawingId}`);
+            const response = await apiCall(`/drawings/${drawingId}`, "DELETE");
+            
+            if (response.error) {
+                throw new Error(response.error);
+            }
+            
+            await loadDrawings();
+            renderFolders();
+            alert("✅ تم حذف المخطط!");
+        } catch (error) {
+            console.error("Error deleting drawing:", error);
+            alert("❌ خطأ في حذف المخطط: " + (error.message || "خطأ غير معروف"));
+        }
+    };
+    
+    // ===============================
+    // 💾 دوال الحفظ والتصدير
+    // ===============================
+    
+    function generateDrawingNumber(type) {
+        if (!drawings.length) return `${getDepartmentPrefix(type)}-001`;
+        
+        const departmentDrawings = drawings.filter(d => d.type === type);
+        const existingNumbers = departmentDrawings
+            .map(d => d.drawingNumber)
+            .filter(num => num && num.startsWith(getDepartmentPrefix(type)))
+            .map(num => {
+                const match = num.match(/(\d+)$/);
+                return match ? parseInt(match[0]) : 0;
+            })
+            .sort((a, b) => b - a);
+        
+        const nextNumber = existingNumbers.length > 0 ? existingNumbers[0] + 1 : 1;
+        return `${getDepartmentPrefix(type)}-${nextNumber.toString().padStart(3, '0')}`;
+    }
+    
+    function getDepartmentPrefix(type) {
+        const prefixes = {
+            'انشائي': 'STR',
+            'معماري': 'ARC', 
+            'ميكانيكا': 'MEC',
+            'كهرباء': 'ELE',
+            'مساحة': 'SUR',
+            'موقع عام': 'GEN'
+        };
+        return prefixes[type] || 'DRW';
+    }
+    
+    // ===============================
+    // 🎭 دوال النوافذ المنبثقة
+    // ===============================
+    
+    function openDrawingsModal() {
+        currentEditingId = null;
+        document.getElementById('drawingsModalTitle').textContent = '📋 إضافة مخطط جديد';
+        document.getElementById("drawingsForm").reset();
+        document.getElementById('drawingsModal').classList.add('show');
+    }
+    
+    window.closeDrawingsModal = function() {
+        document.getElementById('drawingsModal').classList.remove('show');
+        currentEditingId = null;
+        
+        // تنظيف حقول الملفات
+        const dwgFileInfo = document.getElementById('dwgFileInfo');
+        const pdfFileInfo = document.getElementById('pdfFileInfo');
+        if (dwgFileInfo) dwgFileInfo.style.display = 'none';
+        if (pdfFileInfo) pdfFileInfo.style.display = 'none';
+    };
+    
+    // ===============================
+    // 📤 دوال التصدير والاستيراد
+    // ===============================
+    
+    function exportDrawingsToCSV() {
+        const filteredDrawings = getFilteredDrawings();
+        
+        if (filteredDrawings.length === 0) {
+            alert("⚠️ لا توجد مخططات للتصدير");
+            return;
+        }
+
+        const csvHeaders = ['رقم المخطط', 'اسم المخطط', 'القسم', 'نموذج المبنى', 'البند', 'البيان', 'تاريخ الإنشاء'];
+        const csvRows = filteredDrawings.map(drawing => [
+            drawing.drawingNumber || '',
+            drawing.name || '',
+            drawing.type || '',
+            drawing.buildingModel || '',
+            drawing.itemName || '',
+            drawing.statement || '',
+            drawing.lastModified ? new Date(drawing.lastModified).toLocaleDateString('ar-EG') : ''
+        ]);
+
+        const csvContent = [csvHeaders, ...csvRows]
+            .map(row => row.map(field => `"${field}"`).join(','))
+            .join('\n');
+
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `مخططات_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        
+        alert(`✅ تم تصدير ${filteredDrawings.length} مخطط بنجاح`);
+    }
+    
+    // ===============================
+    // 🎮 مُستمعات الأحداث
+    // ===============================
+    
+    function setupEventListeners() {
+        // البحث
+        document.getElementById("drawingsSearchInput").addEventListener("input", (e) => {
+            currentSearchTerm = e.target.value.toLowerCase();
+            renderDrawings();
+        });
+        
+        // الفلاتر
+        document.getElementById("drawingsTypeFilter").addEventListener("change", (e) => {
+            currentTypeFilter = e.target.value;
+            hierarchicalMode = false; // إيقاف الوضع الهرمي عند استخدام الفلاتر
+            renderFolders();
+            renderDrawings();
+        });
+        
+        document.getElementById("drawingsModelFilter").addEventListener("change", (e) => {
+            currentModelFilter = e.target.value;
+            renderDrawings();
+        });
+        
+        document.getElementById("drawingsItemFilter").addEventListener("change", (e) => {
+            currentItemFilter = e.target.value;
+            renderDrawings();
+        });
+        
+        // تبديل العرض
+        document.getElementById("drawingsTableViewBtn").addEventListener("click", () => {
+            currentView = 'table';
+            document.getElementById("drawingsTableViewBtn").classList.add("active");
+            document.getElementById("drawingsGridViewBtn").classList.remove("active");
+            document.getElementById("drawingsTableView").style.display = 'block';
+            document.getElementById("drawingsGridView").style.display = 'none';
+            renderDrawings();
+        });
+        
+        document.getElementById("drawingsGridViewBtn").addEventListener("click", () => {
+            currentView = 'grid';
+            document.getElementById("drawingsGridViewBtn").classList.add("active");
+            document.getElementById("drawingsTableViewBtn").classList.remove("active");
+            document.getElementById("drawingsTableView").style.display = 'none';
+            document.getElementById("drawingsGridView").style.display = 'grid';
+            renderDrawings();
+        });
+        
+        // أزرار الإجراءات
+        document.getElementById("drawingsAddBtn").addEventListener("click", openDrawingsModal);
+        document.getElementById("drawingsExportBtn").addEventListener("click", exportDrawingsToCSV);
+        document.getElementById("drawingsImportBtn").addEventListener("click", () => {
+            document.getElementById("drawingsImportFile").click();
+        });
+        
+        // إغلاق النافذة المنبثقة عند الضغط خارجها
+        document.getElementById('drawingsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('drawingsModal')) {
+                closeDrawingsModal();
+            }
+        });
+        
+        // توليد رقم تلقائي عند تغيير القسم
+        document.getElementById("drawingType").addEventListener("change", (e) => {
+            const selectedType = e.target.value;
+            if (selectedType && !currentEditingId) {
+                const generatedNumber = generateDrawingNumber(selectedType);
+                document.getElementById("drawingNumber").value = generatedNumber;
+            }
+        });
+        
+        // معالجة تحديد الملفات
+        document.getElementById('dwgFile').addEventListener('change', function() {
+            handleFileSelect(this, 'dwgFileInfo', 'ملف DWG');
+        });
+        
+        document.getElementById('pdfFile').addEventListener('change', function() {
+            handleFileSelect(this, 'pdfFileInfo', 'ملف PDF');
+        });
+        
+        // إرسال النموذج
+        document.getElementById("drawingsForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await saveDrawing();
+        });
+    }
+    
+    // ===============================
+    // 📁 معالجة الملفات
+    // ===============================
+    
+    function handleFileSelect(fileInput, infoElementId, fileType) {
+        const file = fileInput.files[0];
+        const infoElement = document.getElementById(infoElementId);
+        
+        if (file) {
+            infoElement.innerHTML = `
+                📄 ${file.name}<br>
+                📊 ${(file.size / 1024 / 1024).toFixed(2)} MB
+            `;
+            infoElement.style.display = 'block';
+        } else {
+            infoElement.style.display = 'none';
+        }
+    }
+    
+    // ===============================
+    // 💾 حفظ المخطط
+    // ===============================
+    
+    async function saveDrawing() {
+        // إظهار مؤشر التحميل
+        const submitButton = document.querySelector('#drawingsForm button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '⏳ جاري الحفظ...';
+        submitButton.disabled = true;
+        
+        try {
+            const data = {
+                drawingNumber: document.getElementById("drawingNumber").value,
+                buildingModel: document.getElementById("buildingModel").value,
+                name: document.getElementById("drawingName").value,
+                type: document.getElementById("drawingType").value,
+                itemName: document.getElementById("drawingFolder").value,
+                statement: document.getElementById("drawingStatement").value,
+                lastModified: new Date().toISOString(),
+                projectId: projectId,
+                companyId: companyId
+            };
+            
+            let message, endpoint, method;
+            
+            if (currentEditingId) {
+                endpoint = `/drawings/${currentEditingId}`;
+                method = "PUT";
+                message = "✅ تم تعديل المخطط بنجاح!";
+            } else {
+                endpoint = "/drawings";
+                method = "POST";
+                message = "✅ تم إضافة المخطط بنجاح!";
+            }
+            
+            // حفظ بيانات المخطط
+            const response = await apiCall(endpoint, method, data);
+            
+            // إعادة تحميل البيانات وإغلاق النافذة
+            await loadDrawings();
+            renderFolders();
+            closeDrawingsModal();
+            alert(message);
+            
+        } catch (error) {
+            console.error("Error saving drawing:", error);
+            alert(currentEditingId ? "❌ خطأ في تعديل المخطط" : "❌ خطأ في إضافة المخطط");
+        } finally {
+            // إعادة تعيين الزر
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+    
+    // ===============================
+    // 🚀 التهيئة
+    // ===============================
+    
+    function initDrawingsSystem() {
+        console.log("🎯 تهيئة نظام إدارة المخططات...");
+        
+        setupEventListeners();
+        renderFolders();
+        loadDrawings();
+        
+        console.log("✅ تم تهيئة نظام إدارة المخططات بنجاح");
+    }
+    
+    // تشغيل النظام عند تحميل الصفحة
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDrawingsSystem);
+    } else {
+        initDrawingsSystem();
+    }
+    
+})();
+</script>

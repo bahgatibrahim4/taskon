@@ -1,0 +1,1721 @@
+<!-- شريط علوي ثابت قابل للإدراج في كل الصفحات -->
+<div class="navbar">
+  <span class="navbar-taskon">
+    TASKON
+    <span id="navbarMenuIcon" style="cursor:pointer; margin-right:8px; font-size:1.18em; vertical-align:middle;" title="القائمة">
+      &#9776;
+    </span>
+    <div id="navbarMenuDropdown" style="display:none; position:absolute; right:10px; top:38px; background:#fff; color:#1a3b50; border:1.5px solid #2e8ca3; border-radius:10px; box-shadow:0 2px 12px #0002; min-width:170px; z-index:10000; font-size:1.01em; text-align:right;">
+      <!-- سيتم تعبئة القائمة ديناميكياً -->
+    </div>
+  </span>
+  سعيد أحمد بالبيد
+  <span class="user-info" id="userInfo">
+    <!-- أيقونة الإشعارات -->
+    <span id="notificationIcon" title="الإشعارات" style="cursor:pointer; font-size:1.15em; color:#2e8ca3; margin-right:10px; position:relative; transition:all 0.2s; display:inline-flex; align-items:center; gap:4px;" onmouseover="this.style.color='#197c91';this.style.transform='scale(1.08)'" onmouseout="this.style.color='#2e8ca3';this.style.transform='scale(1)'">
+      <span id="notificationBadge" style="display:none;min-width:16px;height:16px;background:linear-gradient(135deg,#e53935,#c62828);color:#fff;border-radius:8px;font-size:0.5em;line-height:16px;text-align:center;font-weight:700;box-shadow:0 2px 4px rgba(229,57,53,0.4);padding:0 4px;border:1.5px solid #fff;">0</span>
+      🔔
+    </span>
+    
+    <!-- أيقونة الدردشة -->
+    <span id="chatIcon" title="الدردشة" style="cursor:pointer; font-size:1.15em; color:#2e8ca3; margin-right:6px; position:relative; transition:all 0.2s;" onmouseover="this.style.color='#197c91';this.style.transform='scale(1.08)'" onmouseout="this.style.color='#2e8ca3';this.style.transform='scale(1)'">
+      &#128172;
+      <span id="chatNotifBadge" style="display:none;position:absolute;top:0px;right:-6px;width:12px;height:12px;background:linear-gradient(135deg,#e53935,#c62828);color:#fff;border-radius:2px;font-size:0.6em;line-height:12px;text-align:center;font-weight:800;box-shadow:0 2px 4px rgba(229,57,53,0.5);z-index:2;border:1.5px solid #fff;">!</span>
+      <!-- السهم تحت أيقونة الدردشة مباشرة -->
+      <span id="chatArrow" style="display:none;position:absolute;top:32px;right:3px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid #fff;z-index:10002;"></span>
+    </span>
+    <img src="https://www.gravatar.com/avatar/?d=mp&s=60" alt="user" class="user-avatar" id="userAvatar">
+    <span class="user-name" id="userName"></span>
+    <button id="logoutBtn">تسجيل الخروج</button>
+  </span>
+</div>
+<div id="chatModal" style="display:none; position:absolute; background:#fff; border-radius:4px; box-shadow:0 3px 16px rgba(0,0,0,0.2); z-index:10001; min-width:280px; max-width:95vw; width:320px; height:550px; padding:0; border:2px solid #e4e6eb; overflow:hidden;">
+  <h3 style="margin:0; font-size:0.95rem; color:#fff; background:linear-gradient(to bottom, #0084ff 0%, #0073e6 100%); border-bottom:none; padding:10px 12px; text-align:right; font-weight:700; letter-spacing:0.2px; box-shadow:none;">الدردشة</h3>
+  <div id="chatUsersList" style="margin:0; max-height:485px; overflow-y:auto; background:#fff; padding:0;"></div>
+  <div id="chatWindow" style="border-top:1px solid #eee; padding:8px 10px; max-height:100px; overflow-y:auto; background:#f8fafd; border-radius:0; margin-bottom:0; font-size:0.85em; display:none;"></div>
+  <!-- مربع إرسال الرسالة محذوف -->
+  <!-- <div style="display:flex;gap:4px;margin-top:6px;">
+    <input id="chatInput" type="text" placeholder="اكتب رسالة..." style="flex:1; padding:5px; border-radius:5px; border:1px solid #2e8ca3; font-size:0.92em;">
+    <button id="sendChatBtn" style="background:#2e8ca3;color:#fff;border:none;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:0.92em;">إرسال</button>
+  </div> -->
+</div>
+
+<!-- قائمة الإشعارات المنسدلة -->
+<div id="notificationsDropdown" style="display:none; position:fixed; background:#fff; border-radius:0 0 4px 4px; box-shadow:0 3px 18px rgba(46, 140, 163, 0.28); z-index:10001; width:340px; padding:0; border:2px solid #d1dfe4; border-top:none; overflow:hidden; top:42px; left:20px; bottom:0;">
+  <div style="display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg, #2e8ca3 0%, #197c91 100%); border-bottom:none; padding:10px 12px; color:#fff;">
+    <h3 style="margin:0; font-size:0.92rem; font-weight:700; letter-spacing:0.2px;">🔔 الإشعارات</h3>
+    <div style="display:flex; gap:5px;">
+      <button id="markAllReadBtn" style="background:rgba(255,255,255,0.25); color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:0.7rem; cursor:pointer; font-weight:600; transition:all 0.2s; font-family:'Cairo',Arial,sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">تعليم الكل</button>
+      <button id="clearReadBtn" style="background:rgba(255,255,255,0.25); color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:0.7rem; cursor:pointer; font-weight:600; transition:all 0.2s; font-family:'Cairo',Arial,sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">مسح المقروء</button>
+    </div>
+  </div>
+  <div id="notificationsList" style="height:calc(100% - 44px); overflow-y:auto; background:#f8fafc; padding:0;"></div>
+</div>
+
+<!-- نافذة شات أسفل الصفحة -->
+<div id="bottomChatBox" style="display:none; position:fixed; bottom:0; right:0; left:auto; margin:0; width:300px; max-width:96vw; background:#fff; border-radius:4px 4px 0 0; box-shadow:0 -2px 10px rgba(0,0,0,0.18); z-index:10002; border:2px solid #e4e6eb; border-bottom:none; padding:0; height:420px;">
+  <!-- صف اسم المستخدم وعلامة الإغلاق بتصميم فيس بوك -->
+  <div style="display:flex;align-items:center;justify-content:space-between; background:linear-gradient(to bottom, #0084ff 0%, #0073e6 100%); border-radius:4px 4px 0 0; padding:8px 10px; box-shadow:none;">
+    <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0;">
+      <div style="width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg, #fff 0%, #e3f2fd 100%); display:flex; align-items:center; justify-content:center; color:#0084ff; font-weight:700; font-size:0.8em; flex-shrink:0; border:1.5px solid rgba(255,255,255,0.3);">
+        <i class="fas fa-user" style="font-size:0.85em;"></i>
+      </div>
+      <span id="bottomChatSelectedUser"
+        style="background:transparent; color:#fff; font-weight:600; font-size:0.88em; padding:0; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0;"
+      ></span>
+    </div>
+    <button id="closeBottomChatBtn"
+      style="background:rgba(255,255,255,0.2); border:none; color:#fff; font-size:1em; cursor:pointer; padding:0; border-radius:3px; transition:background 0.2s; height:24px; width:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"
+      title="إغلاق"
+    >&#10005;</button>
+  </div>
+  <div id="bottomChatWindow" style="flex:1; padding:10px; overflow-y:auto; background:#fff; height:calc(100% - 98px); font-size:0.85em; scroll-behavior:smooth;"></div>
+  <!-- مربع الإرسال بتصميم فيس بوك -->
+  <div style="position:absolute; bottom:0; left:0; right:0; display:flex; gap:6px; align-items:center; padding:8px 10px; background:#f0f2f5; border-top:1px solid #e4e6eb;">
+    <input id="bottomChatInput" type="text" placeholder="اكتب رسالة..." style="flex:1; padding:7px 10px; border-radius:18px; border:none; font-size:0.88em; font-family:'Cairo','Tajawal',Arial,sans-serif; background:#fff; color:#050505; outline:none; transition:box-shadow 0.2s; min-width:0;" onfocus="this.style.boxShadow='0 0 0 2px rgba(0,132,255,0.2)'" onblur="this.style.boxShadow='none'">
+    <span id="bottomSendChatBtn" style="display:inline-flex; align-items:center; justify-content:center; background:#0084ff; color:#fff; border-radius:50%; width:28px; height:28px; cursor:pointer; transition:all 0.2s; flex-shrink:0;" onmouseover="this.style.background='#0073e6'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='#0084ff'; this.style.transform='scale(1)'">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M2 21l21-9-21-9v7l15 2-15 2z"/>
+      </svg>
+    </span>
+  </div>
+</div>
+<!-- زر صغير مكان الشات (سيتم إنشاء أكثر من زر ديناميكياً) -->
+<div id="miniChatBtnsContainer" style="position:fixed;bottom:0;right:22px;z-index:10003;display:flex;flex-direction:row-reverse;align-items:flex-end;gap:10px;transition:right 0.2s;"></div>
+<style>
+  :root {
+    --navbar-primary: #2563eb;
+    --navbar-primary-dark: #1d4ed8;
+    --navbar-primary-light: #3b82f6;
+    --navbar-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --navbar-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --navbar-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navbar {
+    background: #1a3b50;
+    color: #fff;
+    padding: 2px 0 1px 0;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    box-shadow: 0 2px 18px rgba(26, 59, 80, 0.13);
+    border-radius: 0;
+    border-bottom: 3px solid #2e8ca3;
+    margin-bottom: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+
+  .navbar::before {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #2e8ca3;
+    opacity: 1;
+  }
+
+  /* Brand/Title Styling */
+  .navbar > span:not(.navbar-taskon):not(.user-info) {
+    color: #fff;
+    font-weight: 900;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .navbar .user-info {
+    position: absolute;
+    left: 16px;
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    height: auto;
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--navbar-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    object-fit: cover;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+    color: white;
+    font-size: 0.75rem;
+  }
+
+  .user-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 2px #2e8ca3, 0 4px 12px rgba(46, 140, 163, 0.4);
+  }
+
+  .user-name {
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: #fff;
+    margin-right: 6px;
+    vertical-align: middle;
+    display: inline-block !important;
+    letter-spacing: 0.3px;
+    font-family: 'Cairo', Arial, sans-serif !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.13);
+    transition: var(--transition);
+  }
+
+  .user-avatar:hover + .user-name {
+    color: #2e8ca3;
+    text-shadow: 0 0 8px rgba(46, 140, 163, 0.5);
+  }
+
+  #logoutBtn {
+    display: none;
+    color: #ef4444;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 8px 16px;
+    position: absolute;
+    left: 0;
+    transform: translateX(0);
+    top: calc(100% + 8px);
+    white-space: nowrap;
+    z-index: 1001;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    font-family: 'Cairo', Arial, sans-serif !important;
+    letter-spacing: 0;
+    text-shadow: none;
+    transition: var(--transition);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+  }
+
+  #logoutBtn:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+  }
+
+  .show-logout #logoutBtn {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideDown {
+    from { 
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px);}
+    to { opacity: 1; transform: translateX(-50%) translateY(0);}
+  }
+
+  .navbar-taskon {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Cairo', Arial, sans-serif !important;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 2px;
+    background: transparent;
+    padding: 2px 14px 2px 10px;
+    border-radius: 10px;
+    box-shadow: none;
+    border: none;
+    z-index: 10;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .navbar-taskon:hover {
+    background: rgba(46, 140, 163, 0.2);
+  }
+
+  #navbarMenuIcon {
+    color: #fff;
+    font-size: 1.18em !important;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+
+  #navbarMenuIcon:hover {
+    color: #2e8ca3;
+    transform: scale(1.1);
+  }
+
+  /* Chat Icon Modern Style */
+  #chatIcon {
+    font-size: 1.25em !important;
+    color: #2e8ca3 !important;
+    transition: var(--transition) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    border-radius: 50%;
+    position: relative;
+    margin-right: 4px;
+  }
+
+  #chatIcon:hover {
+    color: #fff !important;
+    transform: scale(1.1);
+  }
+
+  #chatNotifBadge {
+    position: absolute !important;
+    top: 6px !important;
+    right: 6px !important;
+    width: 18px !important;
+    height: 18px !important;
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    font-size: 0.65em !important;
+    line-height: 18px !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4) !important;
+    border: 2px solid white !important;
+    z-index: 2 !important;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    }
+    50% {
+      transform: scale(1.1);
+      box-shadow: 0 2px 12px rgba(239, 68, 68, 0.6);
+    }
+  }
+  #navbarMenuDropdown {
+    background: white;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    max-width: 200px;
+    padding: 2px 0;
+    z-index: 10000;
+    font-size: 0.58em;
+    text-align: right;
+    font-family: 'Cairo', 'Tajawal', Arial, sans-serif !important;
+    margin-top: 4px;
+    animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1.1;
+  }
+
+  #navbarMenuDropdown a {
+    display: flex;
+    align-items: center;
+    padding: 3px 10px 2px 10px;
+    color: #374151;
+    text-decoration: none;
+    border-bottom: 1px solid #e5e7eb;
+    transition: var(--transition);
+    font-family: 'Cairo', 'Tajawal', Arial, sans-serif !important;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 0;
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: 0;
+    position: relative;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  #navbarMenuDropdown a:last-child {
+    border-bottom: none;
+  }
+
+  #navbarMenuDropdown a::before {
+    content: '•';
+    margin-left: 5px;
+    color: var(--navbar-primary);
+    font-size: 0.9em;
+    transition: var(--transition);
+  }
+
+  #navbarMenuDropdown a:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    color: var(--navbar-primary);
+    transform: translateX(-2px);
+    font-weight: 600;
+  }
+
+  #navbarMenuDropdown a:hover::before {
+    transform: scale(1.2);
+  }
+
+  #chatModal {
+    position: absolute !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 0;
+    background: white;
+    min-width: 380px;
+    max-width: 95vw;
+    width: 440px;
+    height: 720px;
+    z-index: 10001;
+    font-family: 'Cairo', 'Tajawal', Arial, sans-serif !important;
+    font-size: 0.95em;
+    overflow: hidden;
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #chatModal h3 {
+    font-size: 1.25rem;
+    color: white;
+    background: var(--navbar-gradient);
+    border-bottom: none;
+    padding: 18px 24px;
+    margin: 0;
+    text-align: right;
+    font-weight: 800;
+    letter-spacing: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  #chatModal h3::before {
+    content: '💬';
+    margin-left: 8px;
+    font-size: 1.1em;
+  }
+
+  #chatUsersList {
+    margin: 0;
+    background: white;
+    border-radius: 0;
+    padding: 0;
+    border: none;
+    max-height: 640px;
+    overflow-y: auto;
+    font-size: 1em;
+  }
+
+  .chat-user {
+    padding: 14px 20px !important;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    color: #1f2937;
+    font-weight: 500;
+    font-size: 1em;
+    border-radius: 0;
+    transition: var(--transition);
+    margin: 0;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    min-height: 56px;
+  }
+
+  .chat-user:last-child {
+    border-bottom: none;
+  }
+
+  .chat-user:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    transform: translateX(-2px);
+  }
+
+  .chat-user > div:first-child {
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+    background: var(--navbar-gradient) !important;
+  }
+
+  #chatWindow {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 12px;
+    max-height: 140px;
+    overflow-y: auto;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+  }
+
+  .chat-unread-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-radius: 50%;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+  }
+
+  .chat-user.has-unread {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08)) !important;
+    font-weight: 600;
+    border-right: 3px solid var(--navbar-primary);
+  }
+
+  .chat-user.has-unread:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)) !important;
+    transform: translateX(-2px);
+  }
+
+  /* Animation للرسائل */
+  @keyframes fadeInMessage {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Scrollbar تصميم أنيق */
+  #bottomChatWindow::-webkit-scrollbar,
+  #chatUsersList::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #bottomChatWindow::-webkit-scrollbar-track,
+  #chatUsersList::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+  }
+
+  #bottomChatWindow::-webkit-scrollbar-thumb,
+  #chatUsersList::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--navbar-primary), var(--navbar-primary-light));
+    border-radius: 10px;
+  }
+
+  #bottomChatWindow::-webkit-scrollbar-thumb:hover,
+  #chatUsersList::-webkit-scrollbar-thumb:hover {
+    background: var(--navbar-primary-dark);
+  }
+
+  /* Bottom Chat Box Modern Style */
+  #bottomChatBox,
+  .bottomChatBox {
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15), 0 0 2px rgba(0, 0, 0, 0.1);
+    border-radius: 12px 12px 0 0 !important;
+    border: 1px solid #e5e7eb;
+    border-bottom: none;
+  }
+
+  .bottomChatBox > div:first-child {
+    background: var(--navbar-gradient) !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .bottomChatInput {
+    font-family: 'Cairo', 'Tajawal', Arial, sans-serif !important;
+  }
+
+  .bottomSendChatBtn {
+    background: var(--navbar-gradient) !important;
+  }
+
+  .bottomSendChatBtn:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+  }
+
+  /* Mini Chat Buttons */
+  .miniChatBtn {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .miniChatBtn:hover {
+    background: #f9fafb !important;
+    transform: translateY(-2px) !important;
+  }
+
+  .miniChatBtn > div:first-child {
+    background: var(--navbar-gradient) !important;
+  }
+  
+  /* Responsive chat modal */
+  @media (max-width: 600px) {
+    #chatModal { 
+      min-width: 90vw; 
+      width: 98vw; 
+      right: 1vw !important; 
+      left: 1vw !important;
+      border-radius: 12px;
+    }
+  }
+
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .navbar { 
+      font-size: 1rem; 
+      padding: 3px 0 2px 0;
+    }
+    
+    .navbar .user-info { 
+      left: 12px;
+      gap: 8px;
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      font-size: 0.7rem;
+    }
+
+    .user-name {
+      font-size: 0.9rem;
+    }
+
+    .navbar-taskon {
+      right: 14px;
+      font-size: 1rem;
+    }
+
+    #navbarMenuIcon {
+      font-size: 1.15em !important;
+    }
+
+    #chatIcon {
+      font-size: 1.2em !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .navbar {
+      font-size: 0.95rem;
+      padding: 3px 0 2px 0;
+      min-height: 22px;
+    }
+
+    .navbar .user-info {
+      left: 8px;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 0.65rem;
+    }
+
+    .user-name {
+      font-size: 0.88rem;
+    }
+
+    .navbar-taskon {
+      right: 10px;
+      font-size: 0.95rem;
+      padding: 2px 10px 2px 8px;
+    }
+
+    #navbarMenuDropdown {
+      min-width: 160px;
+      max-width: 180px;
+      font-size: 0.55em;
+      padding: 1px 0;
+    }
+
+    #navbarMenuDropdown a {
+      padding: 2px 8px 2px 8px;
+      font-size: 1em;
+      margin: 0;
+      line-height: 1.1;
+      font-weight: 500;
+    }
+
+    #chatModal {
+      width: 96vw !important;
+      height: 80vh;
+    }
+  }
+
+  #miniChatBtnsContainer {
+    position: fixed;
+    bottom: 10px;
+    right: 22px;
+    z-index: 10003;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    gap: 12px;
+    transition: right 0.2s;
+  }
+</style>
+<script>
+  // حماية الصفحة
+  if (!localStorage.getItem('user')) {
+    window.location.href = 'login.html';
+  }
+
+  // دالة لتحديث اسم المستخدم في الشريط العلوي
+  function updateNavbarUserName() {
+    // تأكد من وجود العنصر
+    var userNameSpan = document.getElementById('userName');
+    if (!userNameSpan) return;
+    // جلب بيانات المستخدم من localStorage
+    var userStr = localStorage.getItem('user');
+    var username = '';
+    if (userStr) {
+      try {
+        var userObj = JSON.parse(userStr);
+        username = userObj.username || '';
+      } catch (e) {
+        username = '';
+      }
+    }
+    // تحديث النص
+    userNameSpan.textContent = username;
+    // إذا لم يوجد اسم، أخفِ العنصر
+    userNameSpan.style.display = username ? 'inline-block' : 'none';
+  }
+
+  // دالة تفعيل زر تسجيل الخروج وإظهار القائمة
+  function setupNavbarLogout() {
+    const userAvatar = document.getElementById('userAvatar');
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (userAvatar && userInfo && logoutBtn) {
+      userAvatar.onclick = function(e) {
+        e.stopPropagation();
+        userInfo.classList.toggle('show-logout');
+      };
+      document.addEventListener('click', function(e) {
+        if (!userInfo.contains(e.target)) {
+          userInfo.classList.remove('show-logout');
+        }
+      });
+      logoutBtn.onclick = function() {
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+      };
+    }
+  }
+
+  // قائمة جميع الصفحات الموجودة في المشروع
+  const NAVBAR_PAGES = [
+    { name: "الرئيسية", href: "index.html" },
+    { name: "لوحة التحكم", href: "dashboard.html" },
+    { name: "التقارير", href: "reports.html" },
+    { name: "النسخ الاحتياطي", href: "backup.html" },
+    { name: "المستخلصات", href: "extract.html" },
+    { name: "إضافة مستخلص", href: "add-extract.html" },
+    { name: "قائمة المستخلصات", href: "list-extracts.html" },
+    { name: "المقاولون", href: "list-contractors.html" },
+    { name: "إضافة مقاول", href: "add-contractor.html" },
+    { name: "المقاول", href: "contractor.html" },
+    { name: "الموردين", href: "suppliers.html" },
+    { name: "تفاصيل المورد", href: "supplier-details.html" },
+    { name: "التوريدات", href: "supplies.html" },
+    { name: "السندات", href: "receipts.html" },
+    { name: "المخزن", href: "store.html" },
+    { name: "تقرير المخزن", href: "store-report.html" },
+    { name: "العمال", href: "workers.html" },
+    { name: "المعدات", href: "equipments.html" },
+    { name: "المشتريات", href: "purchases.html" },
+    { name: "المشروع", href: "project.html" },
+    { name: "المخططات", href: "drawings.html" },
+    { name: "القبض الشهري", href: "monthly-pay.html" },
+    { name: "تفاصيل الشهر", href: "month-details.html" },
+    { name: "المستخدمون", href: "users.html" },
+    { name: "مركز الإشعارات", href: "notifications-center.html" }
+  ];
+
+  // منطق القائمة المنسدلة
+  function setupNavbarMenuDropdown() {
+    const icon = document.getElementById('navbarMenuIcon');
+    const dropdown = document.getElementById('navbarMenuDropdown');
+    if (!icon || !dropdown) return;
+
+    // تعبئة القائمة بخط صغير وأنيق
+    dropdown.innerHTML = NAVBAR_PAGES.map(page =>
+      `<a href="${page.href}">${page.name}</a>`
+    ).join('');
+
+    icon.onclick = function(e) {
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    };
+
+    // إغلاق عند الضغط خارج القائمة
+    document.addEventListener('click', function(e) {
+      if (dropdown.style.display === 'block' && !dropdown.contains(e.target) && e.target !== icon) {
+        dropdown.style.display = 'none';
+      }
+    });
+  }
+
+  // دالة لجلب عدد إشعارات الرسائل غير المقروءة للمستخدم الحالي
+  async function checkUnreadChats() {
+    const badge = document.getElementById('chatNotifBadge');
+    if (!badge) return;
+    let userObj;
+    try {
+      userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (e) {
+      userObj = {};
+    }
+    const username = userObj.username;
+    if (!username) {
+      badge.style.display = 'none';
+      return;
+    }
+    try {
+      // جلب الإشعارات من السيرفر
+      const res = await fetch(`/notifications/${encodeURIComponent(username)}?t=${Date.now()}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      }).catch(err => {
+        // إذا فشل الاتصال، لا تظهر خطأ
+        return null;
+      });
+      
+      if (!res || !res.ok) {
+        badge.style.display = 'none';
+        return;
+      }
+      
+      const notifications = await res.json();
+      // عدّ فقط إشعارات الرسائل غير المقروءة
+      const unreadCount = Array.isArray(notifications)
+        ? notifications.filter(n => n.type === 'chat' && !n.read).length
+        : 0;
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {
+      badge.style.display = 'none';
+    }
+  }
+
+  // عند فتح نافذة الدردشة، اعتبر إشعارات الرسائل كمقروءة وأزل الإشعار
+  document.getElementById('chatIcon').onclick = async function(e) {
+    e.stopPropagation();
+    const chatModal = document.getElementById('chatModal');
+    const chatIcon = document.getElementById('chatIcon');
+    const chatArrow = document.getElementById('chatArrow');
+    // إذا كانت النافذة مفتوحة، أغلقها وأخفي السهم
+    if (chatModal.style.display === 'block') {
+      chatModal.style.display = 'none';
+      chatArrow.style.display = 'none';
+      return;
+    }
+    // اجعل القائمة تظهر للداخل أكثر (يمين وأسفل الايقونة)
+    chatModal.style.display = 'block';
+    chatModal.style.opacity = '1';
+    chatModal.style.top = (window.scrollY + chatIcon.getBoundingClientRect().bottom + 6) + 'px';
+    chatModal.style.right = (window.innerWidth - chatIcon.getBoundingClientRect().right - 4) + 'px';
+    chatModal.style.left = 'auto';
+
+    // أظهر السهم تحت أيقونة الدردشة
+    chatArrow.style.display = 'block';
+    chatArrow.style.top = (chatIcon.offsetHeight + 4) + 'px';
+
+    // تعديل: اجعل النافذة دائماً داخل الشاشة
+    setTimeout(() => {
+      const modalRect = chatModal.getBoundingClientRect();
+      // إذا خرجت من أسفل الشاشة
+      if (modalRect.bottom > window.innerHeight) {
+        chatModal.style.top = Math.max(window.innerHeight - modalRect.height - 12, 8) + 'px';
+      }
+      // إذا خرجت من اليمين
+      if (modalRect.right > window.innerWidth) {
+        chatModal.style.right = '8px';
+      }
+      // إذا خرجت من اليسار
+      if (modalRect.left < 0) {
+        chatModal.style.left = '8px';
+        chatModal.style.right = 'auto';
+      }
+    }, 0);
+
+    // جلب المستخدمين من السيرفر
+    let users = [];
+    try {
+      const res = await fetch('/users');
+      users = await res.json();
+    } catch (err) {
+      users = [];
+    }
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}').username;
+
+    // جلب الإشعارات غير المقروءة للمستخدم الحالي
+    let notifications = [];
+    try {
+      const notifRes = await fetch(`/notifications/${encodeURIComponent(currentUser)}`);
+      notifications = await notifRes.json();
+    } catch (e) {
+      notifications = [];
+    }
+
+    // جلب آخر رسالة لكل مستخدم
+    const usersListContainer = document.getElementById('chatUsersList');
+    usersListContainer.innerHTML = `
+      <div style="color:#65676b; padding:30px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:40px; height:40px; border:3px solid #f0f2f5; border-top-color:#0084ff; border-radius:50%; animation:spin 1s linear infinite;"></div>
+        <span style="font-size:0.9em;">جاري التحميل...</span>
+      </div>
+    `;
+    const otherUsers = users.filter(u => u.username !== currentUser);
+
+    const userItems = await Promise.all(otherUsers.map(async u => {
+      let lastMsg = null;
+      try {
+        const res = await fetch(`/chats/last/${currentUser}/${u.username}`);
+        lastMsg = await res.json();
+      } catch {}
+      let msgText = lastMsg && lastMsg.text ? lastMsg.text : 'لا توجد رسائل بعد';
+      let msgTime = '';
+      if (lastMsg && lastMsg.date) {
+        const d = new Date(lastMsg.date);
+        const now = new Date();
+        const diffMs = now - d;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) {
+          msgTime = `<span style="color:#65676b;font-size:0.78em;">الآن</span>`;
+        } else if (diffMins < 60) {
+          msgTime = `<span style="color:#65676b;font-size:0.78em;">${diffMins} د</span>`;
+        } else if (diffHours < 24) {
+          msgTime = `<span style="color:#65676b;font-size:0.78em;">${diffHours} س</span>`;
+        } else if (diffDays < 7) {
+          msgTime = `<span style="color:#65676b;font-size:0.78em;">${diffDays} يوم</span>`;
+        } else {
+          msgTime = `<span style="color:#65676b;font-size:0.78em;">${d.toLocaleDateString('ar-EG', {day: 'numeric', month: 'short'})}</span>`;
+        }
+      }
+      // تحقق إذا كان هناك إشعار غير مقروء من هذا المستخدم
+      const hasUnread = Array.isArray(notifications) && notifications.some(n =>
+        n.type === 'chat' && !n.read && n.from === u.username
+      );
+      
+      // اختصار النص إذا كان طويلاً
+      if (msgText.length > 35) {
+        msgText = msgText.substring(0, 35) + '...';
+      }
+      
+      // الحرف الأول من اسم المستخدم
+      const firstLetter = u.username.substring(0, 1).toUpperCase();
+      
+      return `
+        <div class="chat-user${hasUnread ? ' has-unread' : ''}" data-username="${u.username}">
+          ${hasUnread ? '<span class="chat-unread-dot"></span>' : ''}
+          <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #0084ff 0%, #0073e6 100%); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.95em; flex-shrink:0; box-shadow:0 2px 6px rgba(0,132,255,0.25); border:2px solid #fff;">
+            ${firstLetter}
+          </div>
+          <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:${hasUnread ? '700' : '600'}; font-size:0.95em; color:#050505;">
+                ${u.username}
+              </span>
+              ${msgTime}
+            </div>
+            <div style="color:${hasUnread ? '#0084ff' : '#65676b'}; font-size:0.83em; font-weight:${hasUnread ? '600' : '400'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${msgText}
+            </div>
+          </div>
+        </div>
+      `;
+    }));
+    usersListContainer.innerHTML = userItems.length ? userItems.join('') : `
+      <div style="color:#65676b; padding:40px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:60px; height:60px; border-radius:50%; background:#f0f2f5; display:flex; align-items:center; justify-content:center; font-size:1.8em;">
+          💬
+        </div>
+        <span style="font-size:0.9em; font-weight:500;">لا يوجد مستخدمين آخرين</span>
+      </div>
+    `;
+    document.getElementById('chatWindow').innerHTML = '';
+
+    // بعد فتح النافذة، عيّن كل إشعار غير مقروء من نوع chat كمقروء
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const username = userObj.username;
+    if (username) {
+      try {
+        const res = await fetch(`/notifications/${encodeURIComponent(username)}`);
+        const notifications = await res.json();
+        for (const notif of notifications) {
+          if (notif.type === 'chat' && !notif.read && notif._id) {
+            await fetch(`/notifications/${notif._id}/read`, { method: 'PUT' });
+          }
+        }
+      } catch (e) {}
+    }
+    document.getElementById('chatNotifBadge').style.display = 'none';
+  };
+
+  // إغلاق نافذة الدردشة عند الضغط خارجها + إخفاء السهم
+  document.addEventListener('click', function(e) {
+    const chatModal = document.getElementById('chatModal');
+    const chatArrow = document.getElementById('chatArrow');
+    if (chatModal.style.display === 'block' && !chatModal.contains(e.target) && e.target.id !== 'chatIcon') {
+      chatModal.style.display = 'none';
+      if (chatArrow) chatArrow.style.display = 'none';
+    }
+  });
+
+  // إعادة ضبط موقع نافذة الدردشة عند تغيير حجم الشاشة + إعادة ضبط السهم
+  window.addEventListener('resize', function() {
+    const chatModal = document.getElementById('chatModal');
+    const chatIcon = document.getElementById('chatIcon');
+    const chatArrow = document.getElementById('chatArrow');
+    if (chatModal.style.display === 'block') {
+      chatModal.style.top = (window.scrollY + chatIcon.getBoundingClientRect().bottom + 6) + 'px';
+      chatModal.style.right = (window.innerWidth - chatIcon.getBoundingClientRect().right - 4) + 'px';
+      chatModal.style.left = 'auto';
+      if (chatArrow) {
+        chatArrow.style.top = (chatIcon.offsetHeight + 4) + 'px';
+      }
+    }
+  });
+
+  // فتح نافذة شات جديدة أو إظهار نافذة موجودة عند اختيار مستخدم
+  document.getElementById('chatUsersList').onclick = function(e) {
+    const userDiv = e.target.closest('.chat-user');
+    if (userDiv) {
+      const selectedUser = userDiv.dataset.username;
+      openChatWindow(selectedUser);
+      document.getElementById('chatModal').style.display = 'none';
+    }
+  };
+
+  // دالة لإنشاء نافذة شات جديدة أو إظهار نافذة موجودة
+  async function openChatWindow(username) {
+    // تحقق إذا كانت النافذة موجودة بالفعل
+    let chatBox = document.querySelector(`.bottomChatBox[data-username="${username}"]`);
+    if (!chatBox) {
+      // أنشئ نافذة جديدة بتصميم فيس بوك
+      chatBox = document.createElement('div');
+      chatBox.className = 'bottomChatBox';
+      chatBox.setAttribute('data-username', username);
+      chatBox.style.cssText = "display:block; position:fixed; bottom:0; right:0; left:auto; margin:0; width:328px; max-width:96vw; background:#fff; border-radius:8px 8px 0 0; box-shadow:0 -2px 12px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1); z-index:10002; border:none; padding:0; height:455px;";
+      chatBox.innerHTML = `
+        <div style="display:flex;flex-direction:column;height:100%;">
+          <div style="display:flex;align-items:center;justify-content:space-between; background:linear-gradient(to bottom, #0084ff 0%, #0073e6 100%); border-radius:8px 8px 0 0; padding:10px 12px; box-shadow:0 1px 2px rgba(0,0,0,0.1);">
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+              <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #fff 0%, #e3f2fd 100%); display:flex; align-items:center; justify-content:center; color:#0084ff; font-weight:700; font-size:0.85em; flex-shrink:0; border:2px solid rgba(255,255,255,0.3);">
+                ${username.substring(0,1).toUpperCase()}
+              </div>
+              <span class="bottomChatSelectedUser"
+                style="background:transparent; color:#fff; font-weight:600; font-size:0.95em; padding:0; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0;"
+              >${username}</span>
+            </div>
+            <button class="closeBottomChatBtn"
+              style="background:rgba(255,255,255,0.2); border:none; color:#fff; font-size:1.1em; cursor:pointer; padding:0; border-radius:50%; transition:background 0.2s; height:28px; width:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"
+              title="إغلاق"
+            >&#10005;</button>
+          </div>
+          <div class="bottomChatWindow" style="flex:1; padding:12px; overflow-y:auto; background:#fff; min-height:0; font-size:0.9em;"></div>
+          <div style="display:flex; gap:8px; align-items:center; padding:10px 12px; background:#f0f2f5; border-top:1px solid #e4e6eb;">
+            <input class="bottomChatInput" type="text" placeholder="اكتب رسالة..." style="flex:1; padding:8px 12px; border-radius:20px; border:none; font-size:0.93em; font-family:'Cairo','Tajawal',Arial,sans-serif; background:#fff; color:#050505; outline:none; transition:box-shadow 0.2s; min-width:0;">
+            <span class="bottomSendChatBtn" style="display:inline-flex; align-items:center; justify-content:center; background:#0084ff; color:#fff; border-radius:50%; width:32px; height:32px; cursor:pointer; transition:background 0.2s; flex-shrink:0;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M2 21l21-9-21-9v7l15 2-15 2z"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(chatBox);
+
+      // زر الإغلاق للنافذة
+      chatBox.querySelector('.closeBottomChatBtn').onclick = function() {
+        chatBox.style.display = 'none';
+        showMiniChatBtn(username);
+      };
+
+      // إرسال الرسالة عند الضغط على الأيقونة أو زر Enter
+      const sendBtn = chatBox.querySelector('.bottomSendChatBtn');
+      const input = chatBox.querySelector('.bottomChatInput');
+      const chatWindow = chatBox.querySelector('.bottomChatWindow');
+      sendBtn.onclick = function() {
+        sendChatMsg(username, input, chatWindow);
+      };
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          sendChatMsg(username, input, chatWindow);
+          e.preventDefault();
+        }
+      });
+    } else {
+      chatBox.style.display = 'block';
+      chatBox.style.zIndex = 10002;
+      hideMiniChatBtn(username);
+    }
+
+    // جلب الرسائل المحفوظة من السيرفر وعرضها دائماً عند فتح الشات
+    const chatWindow = chatBox.querySelector('.bottomChatWindow');
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const fromUserId = userObj.username;
+    if (fromUserId && username && chatWindow) {
+      try {
+        const res = await fetch(`/chats/${fromUserId}/${username}`);
+        const messages = await res.json();
+        chatWindow.innerHTML = '';
+        
+        messages.forEach((msg, idx) => {
+          const isMe = msg.from === fromUserId;
+          const msgDate = new Date(msg.date);
+          const time = msgDate.toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'});
+          
+          // إضافة فاصل تاريخي بين الأيام المختلفة
+          const showDateSeparator = idx === 0 || 
+            new Date(messages[idx - 1].date).toLocaleDateString() !== msgDate.toLocaleDateString();
+          
+          if (showDateSeparator) {
+            const dateSeparator = document.createElement('div');
+            dateSeparator.style.cssText = "text-align:center; margin:16px 0 12px 0; position:relative;";
+            dateSeparator.innerHTML = `
+              <span style="background:#f0f2f5; color:#65676b; padding:4px 12px; border-radius:12px; font-size:0.8em; font-weight:500; display:inline-block; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                ${msgDate.toLocaleDateString('ar-EG', {day: 'numeric', month: 'long'})}
+              </span>
+            `;
+            chatWindow.appendChild(dateSeparator);
+          }
+          
+          const msgDiv = document.createElement('div');
+          msgDiv.style.cssText = `
+            display:flex;
+            flex-direction:column;
+            align-items:${isMe ? 'flex-end' : 'flex-start'};
+            margin:3px 0;
+            padding:0 4px;
+            animation:fadeInMessage 0.3s ease-out;
+          `;
+          
+          const bubbleColor = isMe ? '#0084ff' : '#e4e6eb';
+          const textColor = isMe ? '#fff' : '#050505';
+          
+          msgDiv.innerHTML = `
+            <div style="
+              background:${bubbleColor};
+              color:${textColor};
+              padding:9px 14px;
+              border-radius:18px;
+              max-width:70%;
+              word-wrap:break-word;
+              box-shadow:0 1px 2px rgba(0,0,0,0.08);
+              font-size:0.95em;
+              line-height:1.4;
+              position:relative;
+            ">
+              ${msg.text}
+            </div>
+            <div style="
+              color:#65676b;
+              font-size:0.72em;
+              margin-top:3px;
+              padding:0 6px;
+              font-weight:400;
+              letter-spacing:0.2px;
+            ">
+              ${time}
+            </div>
+          `;
+          chatWindow.appendChild(msgDiv);
+        });
+        
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      } catch (err) {
+        chatWindow.innerHTML = '<div style="color:#65676b;text-align:center;padding:20px;font-size:0.9em;">تعذر تحميل الرسائل</div>';
+      }
+    }
+
+    // ترتيب مربعات الدردشة جنب بعض
+    arrangeChatBoxes();
+    shiftMiniChatBtns();
+  }
+
+  // دالة لترتيب مربعات الدردشة جنب بعض (تفتح جنب بعض وليس فوق بعض)
+  function arrangeChatBoxes() {
+    const chatBoxes = Array.from(document.querySelectorAll('.bottomChatBox'))
+      .filter(box => box.style.display === 'block');
+    chatBoxes.forEach((box, idx) => {
+      box.style.right = (idx * 348) + 'px'; // 328px عرض + 20px فراغ
+      box.style.bottom = '0';
+      box.style.left = 'auto';
+      box.style.position = 'fixed';
+    });
+  }
+
+  function shiftMiniChatBtns() {
+  const chatBoxes = Array.from(document.querySelectorAll('.bottomChatBox'))
+    .filter(box => box.style.display === 'block');
+  const miniBtns = Array.from(document.querySelectorAll('.miniChatBtn'))
+    .filter(btn => btn.style.display === 'block');
+
+  miniBtns.forEach((btn, idx) => {
+    btn.style.position = 'fixed';
+    btn.style.bottom = '0'; // ملاصق للأسفل
+    btn.style.right = ((chatBoxes.length + idx) * 348) + 22 + 'px';
+    btn.style.zIndex = 10003;
+    btn.style.margin = '0';
+  });
+}
+
+  // عند إغلاق نافذة الشات أعد ترتيب مربعات الدردشة
+  function showMiniChatBtn(username) {
+    let miniBtn = document.querySelector(`.miniChatBtn[data-username="${username}"]`);
+    if (!miniBtn) {
+      miniBtn = document.createElement('button');
+      miniBtn.className = 'miniChatBtn';
+      miniBtn.setAttribute('data-username', username);
+      miniBtn.style.cssText = `
+        min-width:328px;
+        width:328px;
+        max-width:96vw;
+        background:#fff;
+        color:#050505;
+        border-radius:8px 8px 0 0;
+        box-shadow:0 2px 8px rgba(0,0,0,0.15);
+        border:1px solid #e4e6eb;
+        border-bottom:none;
+        padding:10px 16px;
+        font-weight:600;
+        font-size:0.95em;
+        cursor:pointer;
+        text-align:right;
+        font-family:'Tajawal','Cairo',Arial,sans-serif;
+        transition:background 0.2s;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        line-height:1.2;
+        margin-bottom:0;
+        display:flex;
+        align-items:center;
+        gap:8px;
+        position:fixed;
+        bottom:0;
+        z-index:10003;
+      `;
+      // أيقونة المستخدم + اسم المستخدم + زر الإغلاق
+      miniBtn.innerHTML = `
+        <div style="width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg, #0084ff 0%, #0073e6 100%); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.8em; flex-shrink:0;">
+          ${username.substring(0,1).toUpperCase()}
+        </div>
+        <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;">${username}</span>
+        <span class="miniChatCloseBtn" style="color:#65676b; font-size:1.1em; cursor:pointer; padding:0 4px; flex-shrink:0;">&#10005;</span>
+      `;
+      miniBtn.onclick = function(e) {
+        if (e.target.classList.contains('miniChatCloseBtn')) {
+          miniBtn.style.display = 'none';
+          return;
+        }
+        openChatWindow(username);
+        miniBtn.style.display = 'none';
+      };
+      // hover effect
+      miniBtn.onmouseenter = function() {
+        miniBtn.style.background = '#f0f2f5';
+      };
+      miniBtn.onmouseleave = function() {
+        miniBtn.style.background = '#fff';
+      };
+      document.getElementById('miniChatBtnsContainer').appendChild(miniBtn);
+    }
+    miniBtn.style.display = 'flex';
+    shiftMiniChatBtns();
+    arrangeChatBoxes();
+  }
+
+  function hideMiniChatBtn(username) {
+    const miniBtn = document.querySelector(`.miniChatBtn[data-username="${username}"]`);
+    if (miniBtn) miniBtn.style.display = 'none';
+    shiftMiniChatBtns();
+    arrangeChatBoxes();
+  }
+
+  // نفذ عند التحميل (سواء تم إدراج الشريط مباشرة أو ديناميكياً)
+  function initMainNavbar() {
+    updateNavbarUserName();
+    setupNavbarLogout();
+    setupNavbarMenuDropdown();
+    // تأكد من تنفيذ الدالة بعد تحميل كل العناصر
+    // لا تظهر أخطاء الاتصال بالسيرفر
+    setTimeout(() => {
+      checkUnreadChats().catch(() => {});
+    }, 1000);
+    setInterval(() => {
+      checkUnreadChats().catch(() => {});
+    }, 15000);
+    
+    // فحص الإشعارات غير المقروءة
+    setTimeout(() => {
+      checkUnreadNotifications().catch(() => {});
+    }, 1000);
+    setInterval(() => {
+      checkUnreadNotifications().catch(() => {});
+    }, 30000); // كل 30 ثانية
+  }
+
+  // نفذ مباشرة إذا تم تحميل الشريط كصفحة مستقلة
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMainNavbar);
+  } else {
+    initMainNavbar();
+  }
+
+  // إذا تم إدراج الشريط ديناميكياً من صفحة أخرى، يمكن استدعاء window.initMainNavbar()
+  window.initMainNavbar = initMainNavbar;
+
+  if (document.getElementById('miniChatBtn')) {
+    document.getElementById('miniChatBtn').onclick = function() {
+      document.getElementById('bottomChatBox').style.display = 'block';
+      this.style.display = 'none';
+    };
+  }
+  if (document.getElementById('bottomChatSelectedUser')) {
+    document.getElementById('bottomChatSelectedUser').onclick = function() {
+      document.getElementById('bottomChatBox').style.display = 'none';
+      const miniBtn = document.getElementById('miniChatBtn');
+      if (miniBtn) {
+        document.getElementById('miniChatBtnUser').textContent = window._selectedChatUser || '';
+        miniBtn.style.display = 'block';
+      }
+    };
+  }
+  // دالة لإرسال الرسالة فعلياً للسيرفر
+  async function sendChatMsg(username, input, chatWindow) {
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    // جلب بيانات المستخدم الحالي
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const fromUserId = userObj.username;
+    const toUserId = username;
+    if (!fromUserId || !toUserId) return;
+
+    // إرسال الرسالة للسيرفر
+    try {
+      await fetch('/chats/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fromUserId,
+          toUserId,
+          message: msg
+        })
+      });
+      
+      // بعد الإرسال، أضف الرسالة بتصميم فيس بوك محسّن
+      const now = new Date();
+      const time = now.toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'});
+      
+      const msgDiv = document.createElement('div');
+      msgDiv.style.cssText = `
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        margin:3px 0;
+        padding:0 4px;
+        animation:fadeInMessage 0.3s ease-out;
+      `;
+      
+      msgDiv.innerHTML = `
+        <div style="
+          background:#0084ff;
+          color:#fff;
+          padding:9px 14px;
+          border-radius:18px;
+          max-width:70%;
+          word-wrap:break-word;
+          box-shadow:0 1px 2px rgba(0,0,0,0.08);
+          font-size:0.95em;
+          line-height:1.4;
+          position:relative;
+        ">
+          ${msg}
+        </div>
+        <div style="
+          color:#65676b;
+          font-size:0.72em;
+          margin-top:3px;
+          padding:0 6px;
+          font-weight:400;
+          letter-spacing:0.2px;
+        ">
+          ${time}
+        </div>
+      `;
+      
+      chatWindow.appendChild(msgDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    } catch (err) {
+      // يمكنك عرض رسالة خطأ هنا إذا أردت
+    }
+  }
+
+  // ==================== Notifications System ====================
+  
+  // جلب عدد الإشعارات غير المقروءة
+  async function checkUnreadNotifications() {
+    const badge = document.getElementById('notificationBadge');
+    if (!badge) return;
+    
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const username = userObj.username;
+    if (!username) {
+      badge.style.display = 'none';
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/notifications/${encodeURIComponent(username)}/unread-count`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      }).catch(err => {
+        // إذا فشل الاتصال، لا تظهر خطأ في الكونسول
+        return null;
+      });
+      
+      if (!res || !res.ok) {
+        badge.style.display = 'none';
+        return;
+      }
+      
+      const data = await res.json();
+      const count = data.count || 0;
+      
+      if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {
+      // خطأ بسيط، لا حاجة لطباعته
+      badge.style.display = 'none';
+    }
+  }
+  
+  // فتح قائمة الإشعارات
+  document.getElementById('notificationIcon')?.addEventListener('click', async function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('notificationsDropdown');
+    
+    if (dropdown.style.display === 'block') {
+      dropdown.style.display = 'none';
+      return;
+    }
+    
+    dropdown.style.display = 'block';
+    
+    // تحميل الإشعارات
+    await loadNotifications();
+  });
+  
+  // تحميل الإشعارات
+  async function loadNotifications() {
+    const list = document.getElementById('notificationsList');
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const username = userObj.username;
+    
+    if (!username) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:#666;">يرجى تسجيل الدخول</div>';
+      return;
+    }
+    
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:#666;">جاري التحميل...</div>';
+    
+    try {
+      const res = await fetch(`/notifications/${encodeURIComponent(username)}?limit=20`);
+      const notifications = await res.json();
+      
+      if (!notifications || notifications.length === 0) {
+        list.innerHTML = `
+          <div style="padding:24px 14px;text-align:center;color:#8c969a;background:#fff;">
+            <div style="font-size:2em;margin-bottom:8px;opacity:0.5;">🔔</div>
+            <div style="font-size:0.8rem;font-weight:600;color:#546e7a;">لا توجد إشعارات</div>
+            <div style="font-size:0.7rem;margin-top:3px;color:#8c969a;">ستظهر هنا جميع التحديثات</div>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = notifications.map(n => {
+        const date = new Date(n.createdAt);
+        const timeAgo = getTimeAgo(date);
+        const isUnread = !n.isRead;
+        
+        return `
+          <div class="notification-item" data-id="${n._id}" style="
+            padding:8px 10px;
+            border-bottom:1px solid #e8f4f7;
+            cursor:pointer;
+            transition:all 0.2s ease;
+            background:${isUnread ? '#e8f4f7' : '#ffffff'};
+            border-right:${isUnread ? '2.5px solid #2e8ca3' : '2.5px solid transparent'};
+          " onmouseover="this.style.background='#f0f8fa'" onmouseout="this.style.background='${isUnread ? '#e8f4f7' : '#ffffff'}'">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:6px;">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:${isUnread ? '700' : '500'};font-size:0.76rem;color:#2c3e50;margin-bottom:2px;line-height:1.3;font-family:'Cairo',Arial,sans-serif;">
+                  ${getNotificationIcon(n.type)} ${n.message}
+                </div>
+                <div style="font-size:0.65rem;color:#8c969a;font-weight:500;">
+                  ⏰ ${timeAgo} • 👤 ${n.performedBy}
+                </div>
+              </div>
+              <button onclick="deleteNotification('${n._id}', event)" style="
+                background:rgba(229, 57, 53, 0.1);
+                border:none;
+                color:#e53935;
+                cursor:pointer;
+                padding:3px 5px;
+                font-size:0.88em;
+                border-radius:3px;
+                transition:all 0.2s;
+                flex-shrink:0;
+              " onmouseover="this.style.background='#e53935';this.style.color='#fff'" onmouseout="this.style.background='rgba(229, 57, 53, 0.1)';this.style.color='#e53935'" title="حذف">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      }).reverse().join('');
+      
+      // تعليم الإشعار كمقروء عند النقر
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          if (id) {
+            try {
+              await fetch(`/notifications/${id}/read`, { method: 'PUT' });
+              this.style.background = '#ffffff';
+              this.style.borderRight = '4px solid transparent';
+              this.style.fontWeight = '500';
+              await checkUnreadNotifications();
+            } catch (e) {
+              console.error('خطأ في تعليم الإشعار كمقروء:', e);
+            }
+          }
+        });
+      });
+      
+    } catch (e) {
+      console.error('خطأ في تحميل الإشعارات:', e);
+      list.innerHTML = '<div style="padding:30px;text-align:center;color:#e53935;font-size:1rem;font-weight:600;">خطأ في تحميل الإشعارات</div>';
+    }
+  }
+  
+  // حذف إشعار
+  async function deleteNotification(id, event) {
+    event.stopPropagation();
+    try {
+      await fetch(`/notifications/${id}`, { method: 'DELETE' });
+      await loadNotifications();
+      await checkUnreadNotifications();
+    } catch (e) {
+      console.error('خطأ في حذف الإشعار:', e);
+    }
+  }
+  
+  // تعليم الكل كمقروء
+  document.getElementById('markAllReadBtn')?.addEventListener('click', async function() {
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const username = userObj.username;
+    if (!username) return;
+    
+    try {
+      await fetch(`/notifications/${encodeURIComponent(username)}/read-all`, { method: 'PUT' });
+      await loadNotifications();
+      await checkUnreadNotifications();
+    } catch (e) {
+      console.error('خطأ في تعليم الكل كمقروء:', e);
+    }
+  });
+  
+  // مسح المقروء
+  document.getElementById('clearReadBtn')?.addEventListener('click', async function() {
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const username = userObj.username;
+    if (!username) return;
+    
+    try {
+      await fetch(`/notifications/${encodeURIComponent(username)}/clear-read`, { method: 'DELETE' });
+      await loadNotifications();
+      await checkUnreadNotifications();
+    } catch (e) {
+      console.error('خطأ في مسح الإشعارات المقروءة:', e);
+    }
+  });
+  
+  // إغلاق القائمة عند النقر خارجها
+  document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('notificationsDropdown');
+    const icon = document.getElementById('notificationIcon');
+    if (dropdown && dropdown.style.display === 'block' && 
+        !dropdown.contains(e.target) && e.target !== icon && !icon?.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+  
+  // دالة لحساب الوقت منذ الإشعار
+  function getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'الآن';
+    if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+    if (diffDays < 7) return `منذ ${diffDays} يوم`;
+    return date.toLocaleDateString('ar-EG');
+  }
+  
+  // أيقونات الإشعارات حسب النوع
+  function getNotificationIcon(type) {
+    const icons = {
+      'extract-add': '➕',
+      'extract-edit': '✏️',
+      'extract-delete': '🗑️',
+      'contractor-add': '➕',
+      'contractor-edit': '✏️',
+      'contractor-delete': '🗑️',
+      'pay-add': '➕',
+      'pay-save': '💾',
+      'pay-delete': '🗑️',
+      'worker-add': '➕',
+      'worker-edit': '✏️',
+      'worker-delete': '🗑️',
+      'purchase-add': '➕',
+      'supplier-add': '➕'
+    };
+    return icons[type] || '📢';
+  }
+  
+  // دالة مساعدة لإرسال إشعار (يمكن استخدامها من أي صفحة)
+  window.sendNotification = async function(type, message, sourcePage = '', sourceId = '') {
+    try {
+      // جلب الإعدادات من السيرفر
+      const settingsRes = await fetch('/notification-settings');
+      const settingsData = await settingsRes.json();
+      const userSettings = settingsData.settings || {};
+      
+      const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+      const performedBy = userObj.username || 'مستخدم';
+      
+      // جلب جميع المستخدمين
+      const usersRes = await fetch('/users');
+      const allUsers = await usersRes.json();
+      
+      // تحديد المستخدمين الذين سيستقبلون هذا الإشعار
+      const targetUsers = allUsers.filter(user => {
+        const prefs = userSettings[user.username] || {};
+        // افتراضياً مفعّل إذا لم يتم تحديد
+        return prefs[type] !== false;
+      }).map(u => u.username);
+      
+      if (targetUsers.length === 0) {
+        console.log(`لا يوجد مستخدمين مفعّلين للإشعار ${type}`);
+        return;
+      }
+      
+      // إرسال إشعار لكل مستخدم محدد
+      for (const username of targetUsers) {
+        await fetch('/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type,
+            userId: username,
+            message,
+            sourcePage,
+            sourceId,
+            performedBy
+          })
+        });
+      }
+      
+      console.log(`✅ تم إرسال الإشعار ${type} إلى ${targetUsers.length} مستخدم`);
+    } catch (e) {
+      console.error('❌ خطأ في إرسال الإشعار:', e);
+    }
+  };
+  
+  // ==================== End Notifications System ====================
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>
+</script>

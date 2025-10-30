@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المخططات الهندسية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="permissions-check.js"></script>
+    <style>
+        :root {
+            direction: rtl;
+            writing-mode: horizontal-tb;
+            text-orientation: mixed;
+        }
+        
+        /* تطبيق خط Cairo على جميع العناصر */
+        * {
+            font-family: 'Cairo', Arial, sans-serif !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Page Fade In Animation */
+        @keyframes pageLoadFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        body > * {
+            animation: pageLoadFadeIn 0.6s ease-out;
+        }
+        
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #c5d6db 0%, #a8bdc7 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: transparent;
+            overflow: visible;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Main Container */
+        .main-container {
+            margin: 20px;
+            padding-top: 0;
+        }
+        
+        /* Search Box */
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+            background: white;
+        }
+        
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .page-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-title-icon {
+            font-size: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+        }
+        
+        .page-title p {
+            font-size: 15px;
+            color: #7f8c8d;
+            margin: 0;
+        }
+        
+        /* Stats Section */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            border-right: 4px solid transparent;
+        }
+        
+        .stat-card:nth-child(1) {
+            border-right-color: #3498db;
+        }
+        
+        .stat-card:nth-child(2) {
+            border-right-color: #e74c3c;
+        }
+        
+        .stat-card:nth-child(3) {
+            border-right-color: #9b59b6;
+        }
+        
+        .stat-card:nth-child(4) {
+            border-right-color: #f39c12;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .stat-icon {
+            font-size: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        /* Filter Info */
+        .filter-info {
+            flex: 1;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .filter-info .arrow {
+            margin: 0 8px;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Filter Breadcrumb - keeping for backwards compatibility but hidden */
+        .filter-breadcrumb {
+            display: none !important;
+        }
+        
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 12px 16px 12px 45px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            width: 320px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+            background: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        
+        .meta-model {
+            background: #9b59b6 !important;
+            color: white !important;
+        }
+
+        .meta-item {
+            background: #16a085 !important;
+            color: white !important;
+        }
+
+        .meta-folder {
+            background: #2980b9 !important;
+            color: white !important;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            background: #f8f9fa;
+            cursor: pointer;
+            min-width: 160px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .filter-select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+            background: white;
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 5px;
+            gap: 5px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .view-btn {
+            padding: 10px 18px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+        
+        .view-btn.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #229954, #1e8449);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #7f8c8d, #707b7c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+        }
+        
+        .content-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 20px;
+            margin: 20px;
+            max-width: 1500px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 30px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .main-area {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        
+        .folder-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 13px;
+            font-weight: 500;
+            color: #2c3e50;
+            background: #f8f9fa;
+        }
+        
+        .folder-item:hover {
+            background: #e8f4f8;
+            border-color: #3498db;
+            transform: translateX(-8px);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+        }
+        
+        .folder-item.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-color: transparent;
+            transform: translateX(-8px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .folder-item.back-button {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .folder-item.back-button:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+        
+        .folder-stats {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #95a5a6;
+            font-weight: 500;
+        }
+        
+        .folder-progress {
+            width: 100%;
+            height: 5px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .folder-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        /* Section Items in Sidebar */
+        .section-item {
+            margin-bottom: 10px;
+        }
+        
+        .section-item-header {
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #ecf0f1, #d5dbdb);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+        
+        .section-item-header:hover {
+            background: linear-gradient(135deg, #d5dbdb, #bdc3c7);
+            transform: translateX(-5px);
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s;
+            font-size: 12px;
+        }
+        
+        .models-list {
+            padding: 8px 0;
+        }
+        
+        .model-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            color: #2c3e50;
+            border-right: 3px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .model-item:hover {
+            background: #e8f4f8;
+            border-right-color: #3498db;
+            transform: translateX(-8px);
+        }
+        
+        .model-item.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: 600;
+            border-right-color: transparent;
+            transform: translateX(-8px);
+        }
+        
+        .model-folder {
+            margin-bottom: 8px;
+        }
+        
+        .items-list {
+            margin-top: 5px;
+            padding-right: 15px;
+        }
+        
+        .item-entry {
+            padding: 7px 10px;
+            margin: 3px 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .item-entry:hover {
+            background: #e8f8f5;
+            border-color: #16a085;
+            transform: translateX(-3px);
+        }
+        
+        .item-entry.active {
+            background: linear-gradient(135deg, #16a085, #138d75);
+            color: white;
+            border-color: #16a085;
+            box-shadow: 0 2px 8px rgba(22, 160, 133, 0.3);
+        }
+        
+        /* Item Section in Table */
+        .item-section {
+            margin-bottom: 30px;
+        }
+        
+        .item-title {
+            padding: 18px 25px;
+            background: linear-gradient(135deg, #ecf0f1, #d5dbdb);
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0;
+            font-size: 18px;
+            color: #2c3e50;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .item-count {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        /* Table column widths */
+        .drawings-table th:nth-child(1),
+        .drawings-table td:nth-child(1) {
+            width: 60px;
+            text-align: center;
+        }
+        
+        .drawings-table th:nth-child(2),
+        .drawings-table td:nth-child(2) {
+            width: 140px;
+        }
+        
+        .drawings-table th:nth-child(3),
+        .drawings-table td:nth-child(3) {
+            width: 130px;
+        }
+        
+        .drawings-table th:nth-child(4),
+        .drawings-table td:nth-child(4) {
+            width: 130px;
+        }
+        
+        .drawings-table th:nth-child(5),
+        .drawings-table td:nth-child(5) {
+            min-width: 300px;
+        }
+        
+        .drawings-table th:nth-child(6),
+        .drawings-table td:nth-child(6) {
+            width: 120px;
+            text-align: center;
+        }
+        
+        .drawings-table th:nth-child(7),
+        .drawings-table td:nth-child(7) {
+            width: 120px;
+            text-align: center;
+        }
+        
+        .drawings-table th:nth-child(8),
+        .drawings-table td:nth-child(8) {
+            width: 140px;
+            text-align: center;
+        }
+        
+        .drawings-table th:nth-child(9),
+        .drawings-table td:nth-child(9) {
+            max-width: 200px;
+            min-width: 150px;
+        }
+        
+        .drawings-table th:nth-child(10),
+        .drawings-table td:nth-child(10) {
+            width: 140px;
+            text-align: center;
+        }
+        
+        .drawings-table {
+            background: white;
+            border-radius: 15px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            width: 100%;
+        }
+        
+        .drawings-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1300px;
+        }
+        
+        .drawings-table thead {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .drawings-table th {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        .drawings-table tbody tr {
+            border-bottom: 1px solid #ecf0f1;
+            transition: all 0.3s;
+        }
+        
+        .drawings-table tbody tr:hover {
+            background: linear-gradient(to right, rgba(52, 152, 219, 0.05), transparent);
+            transform: scale(1.01);
+        }
+        
+        .drawings-table tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        .drawings-table td {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #2c3e50;
+            border: none;
+            vertical-align: middle;
+        }
+        
+        .drawings-table .table-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .drawings-table .btn-edit,
+        .drawings-table .btn-delete {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .drawings-table .btn-edit {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .drawings-table .btn-delete {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .drawings-table .btn-edit:hover,
+        .drawings-table .btn-delete:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .drawings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 0;
+        }
+
+        
+        .drawing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drawing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
+        }
+        
+        .drawing-card:hover {
+            transform: translateY(-8px);
+            border-color: #3498db;
+            box-shadow: 0 12px 30px rgba(52, 152, 219, 0.25);
+        }
+        
+        .drawing-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+        
+        .drawing-card-title {
+            font-weight: 700;
+            font-size: 17px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .drawing-card-number {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .drawing-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        
+        .meta-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        .meta-model {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .meta-folder {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+        
+        .meta-type {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .drawing-card-files {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        
+        .file-badge {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .file-dwg {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+        
+        .file-pdf {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .file-badge:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .drawing-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .action-edit {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .action-delete {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .action-view {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(44, 62, 80, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 550px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      margin-top: 2vh;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100px) scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      padding: 25px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e1e8ed;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: all 0.3s;
+      background: #f8f9fa;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: #3498db;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .form-input[type="file"] {
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      margin-top: 30px;
+      padding-top: 25px;
+      border-top: 2px solid #ecf0f1;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 30px;
+      color: #95a5a6;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.6;
+      filter: grayscale(50%);
+    }
+
+    .empty-state-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #7f8c8d;
+    }
+    
+    /* Section Groups */
+    .section-group {
+      margin-bottom: 25px;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .section-header {
+      background: linear-gradient(135deg, #ecf0f1, #d5dbdb);
+      padding: 20px 25px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .section-header:hover {
+      background: linear-gradient(135deg, #d5dbdb, #bdc3c7);
+      border-bottom-color: #3498db;
+    }
+    
+    .section-header.collapsed {
+      border-bottom-color: transparent;
+    }
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .section-icon {
+      font-size: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    
+    .section-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    
+    .section-count {
+      font-size: 13px;
+      color: #7f8c8d;
+      font-weight: 600;
+    }
+    
+    .section-toggle {
+      font-size: 20px;
+      color: #7f8c8d;
+      transition: transform 0.3s;
+    }
+    
+    .section-header:not(.collapsed) .section-toggle {
+      transform: rotate(180deg);
+    }
+    
+    .section-group .drawings-grid {
+      padding: 25px;
+      background: #f8f9fa;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-container {
+        padding-top: 50px;
+      }
+      
+      .page-header {
+        margin: 15px;
+        padding: 20px;
+      }
+      
+      .page-header-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .page-title h1 {
+        font-size: 24px;
+      }
+      
+      .page-title-icon {
+        font-size: 36px;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+        margin: 15px;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        margin: 15px;
+      }
+
+      .toolbar-right {
+        flex-direction: column;
+      }
+
+      .search-input {
+        width: 100%;
+      }
+      
+      .filter-select {
+        width: 100%;
+      }
+
+      .drawings-grid {
+        grid-template-columns: 1fr;
+        padding: 0;
+        gap: 20px;
+      }
+      
+      .content-layout {
+        grid-template-columns: 1fr;
+        margin: 15px;
+      }
+      
+      .sidebar {
+        order: 2;
+      }
+
+      .modal {
+        width: 98%;
+        border-radius: 15px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      /* Table responsive */
+      .drawings-table {
+        font-size: 12px;
+        overflow-x: auto;
+      }
+      
+      .drawings-table table {
+        min-width: 800px;
+      }
+
+      .drawings-table th,
+      .drawings-table td {
+        padding: 10px 8px;
+      }
+
+      .view-toggle {
+        width: 100%;
+      }
+
+      .view-btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="main-navbar"></div>
+  
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Content Layout with Sidebar -->
+    <div class="content-layout">
+      <!-- Sidebar for Sections -->
+      <div class="sidebar">
+        <h3 style="margin-bottom: 20px; color: #2c3e50; font-size: 18px;">الأقسام</h3>
+        <div id="sectionsList"></div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="main-area">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <button class="btn btn-primary" id="addDrawingBtn" data-permission="drawings-add">
+            <span>➕</span>
+            إضافة مخطط جديد
+          </button>
+          <div class="filter-info" id="filterInfo">
+            <span style="color: #7f8c8d; font-size: 14px;">غير محدد</span>
+          </div>
+          <button class="btn btn-success" id="showAllBtn" style="display: none;">
+            <span>�</span>
+            عرض جميع المخططات
+          </button>
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="بحث في المخططات...">
+          </div>
+        </div>
+
+        <!-- Drawings Table -->
+        <div id="drawingsContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="drawingModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>📐</span>
+          <span id="modalTitle">إضافة مخطط هندسي</span>
+        </h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="drawingForm">
+          <div class="form-group">
+            <label class="form-label">رقم المخطط (يتولد تلقائياً)</label>
+            <input type="text" class="form-input" id="drawingNumber" name="drawingNumber" readonly style="background: #f0f0f0; cursor: not-allowed;">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">القسم</label>
+            <select class="form-select" id="drawingSection" name="drawingSection" required>
+              <option value="">-- اختر القسم --</option>
+              <option value="معماري">🏛️ معماري</option>
+              <option value="إنشائي">🏗️ إنشائي</option>
+              <option value="كهرباء">⚡ كهرباء</option>
+              <option value="ميكانيكا">⚙️ ميكانيكا</option>
+              <option value="صحي">🚰 صحي</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">البند</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              id="drawingItem" 
+              name="drawingItem" 
+              required 
+              list="itemsList"
+              placeholder="اكتب اسم البند أو اختر من القائمة">
+            <datalist id="itemsList">
+            </datalist>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">نموذج المبنى</label>
+            <input type="text" class="form-input" id="buildingModel" name="buildingModel" required placeholder="مثال: A1, B2, C3...">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">اسم المخطط</label>
+            <input type="text" class="form-input" id="drawingName" name="drawingName" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">ملاحظة</label>
+            <textarea class="form-input" id="drawingNote" name="drawingNote" rows="3" placeholder="أضف ملاحظات إضافية (اختياري)"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">ملف DWG</label>
+            <input type="file" class="form-input" id="drawingFileDWG" name="drawingFileDWG" accept=".dwg">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">ملف PDF</label>
+            <input type="file" class="form-input" id="drawingFilePDF" name="drawingFilePDF" accept=".pdf">
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">إلغاء</button>
+            <button type="submit" class="btn btn-primary">
+              <span>💾</span>
+              حفظ المخطط
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    // إدراج الشريط العلوي
+    // دالة مساعدة للانتظار حتى يتم تحميل sendNotification
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    fetch('components/main-navbar.html')
+      .then(response => response.text())
+      .then(html => {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        temp.querySelectorAll('style').forEach(style => {
+          document.head.appendChild(style.cloneNode(true));
+        });
+        document.getElementById('main-navbar').innerHTML = '';
+        temp.childNodes.forEach(node => {
+          if (node.nodeName !== 'STYLE' && node.nodeName !== 'SCRIPT') {
+            document.getElementById('main-navbar').appendChild(node.cloneNode(true));
+          }
+        });
+        temp.querySelectorAll('script').forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+            newScript.onload = function() {
+              if (window.initMainNavbar) window.initMainNavbar();
+            };
+          } else {
+            newScript.textContent = script.textContent + "\nif(window.initMainNavbar) initMainNavbar();";
+          }
+          document.body.appendChild(newScript);
+        });
+        setTimeout(function() {
+          if (window.initMainNavbar) window.initMainNavbar();
+        }, 100);
+      });
+
+    // API Base URL - يتغير تلقائياً حسب البيئة
+    const API_URL = window.location.hostname === 'localhost' 
+      ? 'https://taskon-production.up.railway.app' 
+      : 'https://taskon-production.up.railway.app';
+    
+    console.log('🌐 API URL:', API_URL);
+    
+    // Data
+    let drawings = [];
+    let editingId = null;
+    let currentSection = null;
+    let currentModel = null;
+    let currentItem = null;
+    let drawingCounter = 1;
+
+    // DOM Elements
+    const drawingModal = document.getElementById('drawingModal');
+    const drawingForm = document.getElementById('drawingForm');
+    const addDrawingBtn = document.getElementById('addDrawingBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const searchInput = document.getElementById('searchInput');
+    const drawingsContent = document.getElementById('drawingsContent');
+    const sectionsList = document.getElementById('sectionsList');
+    const modalTitle = document.getElementById('modalTitle');
+    const drawingSectionSelect = document.getElementById('drawingSection');
+    const drawingItemSelect = document.getElementById('drawingItem');
+
+    // البنود لكل قسم
+    const sectionCodes = {
+      'معماري': 'ARC',
+      'إنشائي': 'STR',
+      'كهرباء': 'ELE',
+      'ميكانيكا': 'MEC',
+      'صحي': 'PLU'
+    };
+
+    // تحديث البنود عند تغيير القسم
+    drawingSectionSelect.addEventListener('change', function() {
+      const section = this.value;
+      
+      // تحديث رقم المخطط بناءً على القسم
+      if (!editingId && section) {
+        const sectionCode = sectionCodes[section] || 'DWG';
+        const sectionDrawings = drawings.filter(d => d.drawingType === section);
+        const nextNumber = (sectionDrawings.length + 1).toString().padStart(4, '0');
+        document.getElementById('drawingNumber').value = `${sectionCode}-${nextNumber}`;
+      }
+      
+      // تحديث قائمة البنود المتاحة
+      updateItemsList();
+    });
+
+    // تحديث قائمة البنود بناءً على البنود المستخدمة سابقاً
+    function updateItemsList() {
+      const itemsSet = new Set();
+      drawings.forEach(d => {
+        if (d.drawingItem) {
+          itemsSet.add(d.drawingItem);
+        }
+      });
+      
+      const itemsList = document.getElementById('itemsList');
+      itemsList.innerHTML = '';
+      
+      Array.from(itemsSet).sort().forEach(item => {
+        const option = document.createElement('option');
+        option.value = item;
+        itemsList.appendChild(option);
+      });
+    }
+
+    // Modal Functions
+    function openModal(isEdit = false) {
+      if (!isEdit) {
+        // توليد رقم المخطط تلقائياً عند اختيار القسم
+        document.getElementById('drawingNumber').value = 'DWG-0001';
+      }
+      modalTitle.textContent = isEdit ? 'تعديل مخطط هندسي' : 'إضافة مخطط هندسي';
+      updateItemsList(); // تحديث قائمة البنود
+      drawingModal.classList.add('show');
+    }
+
+    function closeModal() {
+      drawingModal.classList.remove('show');
+      drawingForm.reset();
+      editingId = null;
+    }
+
+    // Load drawings from API
+    async function loadDrawings() {
+      try {
+        const response = await fetch(`${API_URL}/drawings`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        
+        drawings = await response.json();
+        renderSections();
+        renderDrawings();
+      } catch (err) {
+        console.error('Error loading drawings:', err);
+        drawings = [];
+        renderSections();
+        renderDrawings();
+        
+        if (err.message.includes('Failed to fetch')) {
+          alert('⚠️ لا يمكن الاتصال بالسيرفر!\n\nتأكد من:\n1. تشغيل السيرفر: npm start\n2. السيرفر يعمل على المنفذ 4000');
+        }
+      }
+    }
+
+    // عرض الأقسام في الشريط الجانبي
+    function renderSections() {
+      console.log('📊 All drawings:', drawings);
+      const hierarchy = {}; // {section: {model: [items]}}
+      
+      drawings.forEach(d => {
+        console.log('Drawing data:', {
+          drawingType: d.drawingType,
+          contractorName: d.contractorName,
+          drawingItem: d.drawingItem
+        });
+        const section = d.drawingType || 'غير محدد';
+        const model = d.contractorName || 'غير محدد';
+        const item = d.drawingItem || 'غير محدد';
+        
+        if (!hierarchy[section]) {
+          hierarchy[section] = {};
+        }
+        if (!hierarchy[section][model]) {
+          hierarchy[section][model] = [];
+        }
+        if (!hierarchy[section][model].includes(item)) {
+          hierarchy[section][model].push(item);
+        }
+      });
+
+      let html = '';
+      Object.keys(hierarchy).sort().forEach(section => {
+        const icon = getSectionIcon(section);
+        html += `
+          <div class="section-item">
+            <div class="section-item-header" onclick="toggleSectionModels('${section}')">
+              <span>${icon} ${section}</span>
+              <span class="toggle-icon" id="toggle-${section}">◀</span>
+            </div>
+            <div class="models-list" id="models-${section}" style="display: none;">
+              ${Object.keys(hierarchy[section]).map(model => `
+                <div class="model-folder">
+                  <div class="model-item" onclick="toggleModelItems('${section}', '${model}')">
+                    <span>📋 ${model}</span>
+                    <span class="toggle-icon" id="toggle-${section}-${model}">◀</span>
+                  </div>
+                  <div class="items-list" id="items-${section}-${model}" style="display: none; padding-right: 20px;">
+                    ${hierarchy[section][model].map(item => `
+                      <div class="item-entry" onclick="selectItem('${section}', '${model}', '${item}')">
+                        📌 ${item}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      sectionsList.innerHTML = html || '<p style="color: #999; font-size: 14px;">لا توجد أقسام</p>';
+      
+      // تحديث قائمة البنود
+      updateItemsList();
+    }
+
+    // الحصول على أيقونة القسم
+    function getSectionIcon(section) {
+      const icons = {
+        'معماري': '🏛️',
+        'إنشائي': '🏗️',
+        'كهرباء': '⚡',
+        'ميكانيكا': '⚙️',
+        'صحي': '🚰'
+      };
+      return icons[section] || '📐';
+    }
+
+    // تبديل عرض النماذج
+    function toggleSectionModels(section) {
+      const modelsList = document.getElementById(`models-${section}`);
+      const toggleIcon = document.getElementById(`toggle-${section}`);
+      const allModels = document.querySelectorAll('.models-list');
+      const allToggles = document.querySelectorAll('.section-item-header .toggle-icon');
+      
+      allModels.forEach(m => {
+        if (m !== modelsList) m.style.display = 'none';
+      });
+      
+      allToggles.forEach(t => {
+        if (t !== toggleIcon) t.textContent = '◀';
+      });
+      
+      if (modelsList.style.display === 'none') {
+        modelsList.style.display = 'block';
+        toggleIcon.textContent = '▼';
+      } else {
+        modelsList.style.display = 'none';
+        toggleIcon.textContent = '◀';
+      }
+    }
+
+    // تبديل عرض البنود
+    function toggleModelItems(section, model) {
+      const itemsList = document.getElementById(`items-${section}-${model}`);
+      const toggleIcon = document.getElementById(`toggle-${section}-${model}`);
+      const allItems = document.querySelectorAll('.items-list');
+      const allToggles = document.querySelectorAll('.model-item .toggle-icon');
+      
+      allItems.forEach(i => {
+        if (i !== itemsList) i.style.display = 'none';
+      });
+      
+      allToggles.forEach(t => {
+        if (t !== toggleIcon) t.textContent = '◀';
+      });
+      
+      if (itemsList.style.display === 'none') {
+        itemsList.style.display = 'block';
+        toggleIcon.textContent = '▼';
+      } else {
+        itemsList.style.display = 'none';
+        toggleIcon.textContent = '◀';
+      }
+    }
+
+    // اختيار بند معين
+    function selectItem(section, model, item) {
+      console.log('selectItem called:', { section, model, item });
+      currentSection = section;
+      currentModel = model;
+      currentItem = item;
+      
+      // تحديد العنصر النشط
+      document.querySelectorAll('.item-entry').forEach(entry => {
+        entry.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // تحديث شريط الفلتر
+      updateBreadcrumb();
+      
+      renderDrawings();
+    }
+
+    // اختيار نموذج معين (للتوافق القديم)
+    function selectModel(section, model) {
+      console.log('selectModel called:', { section, model });
+      currentSection = section;
+      currentModel = model;
+      currentItem = null;
+      
+      // تحديد العنصر النشط
+      document.querySelectorAll('.model-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+      
+      // تحديث شريط الفلتر
+      updateBreadcrumb();
+      
+      renderDrawings();
+    }
+    
+    // تحديث شريط الفلتر
+    function updateBreadcrumb() {
+      const filterInfo = document.getElementById('filterInfo');
+      const showAllBtn = document.getElementById('showAllBtn');
+      
+      if (currentSection || currentModel || currentItem) {
+        let parts = [];
+        
+        if (currentSection) {
+          parts.push(currentSection);
+        }
+        if (currentModel) {
+          parts.push(currentModel);
+        }
+        if (currentItem) {
+          parts.push(currentItem);
+        }
+        
+        const filterText = parts.join(' <span class="arrow">←</span> ');
+        filterInfo.innerHTML = filterText;
+        showAllBtn.style.display = 'inline-flex';
+      } else {
+        filterInfo.innerHTML = '<span style="color: #7f8c8d;">غير محدد</span>';
+        showAllBtn.style.display = 'none';
+      }
+    }
+    
+    // إلغاء الفلتر
+    function clearFilter() {
+      currentSection = null;
+      currentModel = null;
+      currentItem = null;
+      
+      document.querySelectorAll('.model-item, .item-entry').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      updateBreadcrumb();
+      renderDrawings();
+    }
+
+    // Event Listeners - Modal
+    addDrawingBtn.addEventListener('click', () => openModal(false));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Event Listener - Show All Button
+    document.getElementById('showAllBtn').addEventListener('click', clearFilter);
+    
+    drawingModal.addEventListener('click', (e) => {
+      if (e.target === drawingModal) closeModal();
+    });
+
+    // Form Submit
+    drawingForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const number = document.getElementById('drawingNumber').value.trim();
+      const buildingModel = document.getElementById('buildingModel').value.trim();
+      const name = document.getElementById('drawingName').value.trim();
+      const section = document.getElementById('drawingSection').value;
+      const item = document.getElementById('drawingItem').value.trim();
+      const note = document.getElementById('drawingNote').value.trim();
+      
+      // التحقق من البيانات المطلوبة قبل الإرسال
+      if (!number || !name || !buildingModel || !section) {
+        alert('⚠️ برجاء ملء جميع الحقول المطلوبة:\n- رقم المخطط\n- اسم المخطط\n- نموذج المبنى\n- القسم');
+        return;
+      }
+      
+      // جلب عناصر رفع الملفات أولاً
+      const fileDWGInput = document.getElementById('drawingFileDWG');
+      const filePDFInput = document.getElementById('drawingFilePDF');
+      
+      console.log('📤 Sending data:', {
+        drawingNumber: number,
+        drawingName: name,
+        contractorName: buildingModel,
+        drawingType: section,
+        drawingItem: item,
+        notes: note,
+        hasFiles: {
+          dwg: fileDWGInput.files.length > 0,
+          pdf: filePDFInput.files.length > 0
+        }
+      });
+      
+      // إنشاء FormData لإرسال الملفات
+      const formData = new FormData();
+      formData.append('drawingNumber', number);
+      formData.append('drawingName', name);
+      formData.append('drawingDate', new Date().toISOString());
+      formData.append('contractorName', buildingModel);
+      formData.append('drawingType', section);
+      formData.append('drawingItem', item);
+      formData.append('notes', note);
+      
+      // التحقق من حجم الملفات
+      if (fileDWGInput.files.length) {
+        const file = fileDWGInput.files[0];
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+          alert('⚠️ حجم ملف DWG كبير جداً (أكثر من 10 ميجابايت). برجاء اختيار ملف أصغر.');
+          return;
+        }
+        formData.append('attachment', file);
+        console.log('📎 DWG file added:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+      }
+      
+      if (filePDFInput.files.length) {
+        const file = filePDFInput.files[0];
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+          alert('⚠️ حجم ملف PDF كبير جداً (أكثر من 10 ميجابايت). برجاء اختيار ملف أصغر.');
+          return;
+        }
+        formData.append('pdfAttachment', file);
+        console.log('📎 PDF file added:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+      }
+      
+      // إظهار مؤشر التحميل
+      const submitBtn = document.querySelector('#drawingForm button[type="submit"]');
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> جاري الحفظ...';
+      
+      try {
+        console.log('🚀 Sending request to:', `${API_URL}/drawings`);
+        
+        let response;
+        if (editingId !== null) {
+          // Update
+          console.log('🔄 Updating drawing:', editingId);
+          response = await fetch(`${API_URL}/drawings/${editingId}`, {
+            method: 'PUT',
+            body: formData
+          });
+        } else {
+          // Create
+          console.log('➕ Creating new drawing');
+          response = await fetch(`${API_URL}/drawings`, {
+            method: 'POST',
+            body: formData
+          });
+        }
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        // التحقق من حالة الاستجابة
+        if (!response.ok) {
+          console.error(`HTTP Error: ${response.status} ${response.statusText}`);
+          
+          // محاولة قراءة الرد
+          let errorMessage = 'خطأ في الخادم';
+          try {
+            const responseText = await response.text();
+            console.error('Error response text:', responseText);
+            
+            // محاولة تحليل النص كـ JSON
+            try {
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.error || errorData.message || `خطأ HTTP ${response.status}`;
+              if (errorData.details) {
+                errorMessage += `\n\nتفاصيل: ${errorData.details}`;
+              }
+            } catch (jsonError) {
+              // إذا لم يكن JSON، استخدم النص كما هو
+              if (responseText.includes('<!DOCTYPE html>')) {
+                errorMessage = `خطأ في الخادم (${response.status}): خطأ داخلي في الخادم`;
+              } else {
+                errorMessage = `خطأ في الخادم (${response.status}): ${responseText.substring(0, 200)}...`;
+              }
+            }
+          } catch (textError) {
+            console.error('Failed to read error response:', textError);
+            errorMessage = `خطأ في الخادم (${response.status}): ${response.statusText}`;
+          }
+          
+          alert(`فشل في ${editingId ? 'تحديث' : 'إضافة'} المخطط!\n\n${errorMessage}`);
+          return;
+        }
+        
+        // قراءة الاستجابة الناجحة
+        let result;
+        try {
+          const responseText = await response.text();
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('Failed to parse response:', parseError);
+          alert('خطأ في تحليل استجابة الخادم. تأكد من أن الخادم يعمل بشكل صحيح.');
+          return;
+        } finally {
+          // استعادة زر الإرسال في حالة الخطأ
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+          }
+        }
+        
+        if (result.success) {
+          const isEdit = editingId !== null;
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            const drawingName = name || `مخطط رقم ${number}`;
+            const message = isEdit 
+              ? `تم تعديل المخطط: ${drawingName}`
+              : `تم إضافة مخطط جديد: ${drawingName}`;
+            
+            await window.sendNotification(
+              isEdit ? 'drawing-edit' : 'drawing-add',
+              message,
+              'drawings',
+              result.id || editingId || ''
+            );
+          }
+          
+          alert(editingId ? 'تم تحديث المخطط بنجاح! ✅' : 'تم إضافة المخطط بنجاح! ✅');
+          await loadDrawings();
+          closeModal();
+        } else {
+          const errorMsg = result.error || 'خطأ غير معروف';
+          const details = result.details ? `\n\nتفاصيل: ${result.details}` : '';
+          alert('حدث خطأ: ' + errorMsg + details);
+        }
+      } catch (err) {
+        console.error('Error saving drawing:', err);
+        alert('فشل حفظ المخطط! تأكد من تشغيل السيرفر.\n\nالخطأ: ' + err.message);
+      }
+    });
+
+    // Search
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        renderDrawings(this.value.trim());
+      }, 300);
+    });
+
+    // عرض المخططات في الجدول
+    function renderDrawings(searchTerm = '') {
+      console.log('🔍 renderDrawings called:', { currentSection, currentModel, currentItem, searchTerm });
+      let filteredDrawings = drawings;
+
+      // تصفية حسب القسم والنموذج المختار
+      if (currentSection && currentModel && currentItem) {
+        console.log('Filtering by section, model, and item');
+        filteredDrawings = drawings.filter(d => {
+          const itemMatch = currentItem === 'غير محدد' 
+            ? (!d.drawingItem || d.drawingItem === 'غير محدد')
+            : d.drawingItem === currentItem;
+          const match = d.drawingType === currentSection && 
+                       d.contractorName === currentModel &&
+                       itemMatch;
+          if (!match) {
+            console.log('Not matching (S+M+I):', {
+              drawing: d.drawingNumber,
+              type: d.drawingType, expected: currentSection,
+              contractor: d.contractorName, expectedModel: currentModel,
+              item: d.drawingItem, expectedItem: currentItem
+            });
+          }
+          return match;
+        });
+      } else if (currentSection && currentModel) {
+        console.log('Filtering by section and model');
+        filteredDrawings = drawings.filter(d => {
+          const match = d.drawingType === currentSection && d.contractorName === currentModel;
+          if (!match) {
+            console.log('Not matching (S+M):', {
+              drawing: d.drawingNumber,
+              type: d.drawingType, expected: currentSection,
+              contractor: d.contractorName, expectedModel: currentModel
+            });
+          }
+          return match;
+        });
+      } else if (currentSection) {
+        console.log('Filtering by section only');
+        filteredDrawings = drawings.filter(d => {
+          const match = d.drawingType === currentSection;
+          if (!match) {
+            console.log('Not matching (S):', {
+              drawing: d.drawingNumber,
+              type: d.drawingType, expected: currentSection
+            });
+          }
+          return match;
+        });
+      }
+      
+      console.log('Filtered drawings:', filteredDrawings.length);
+
+      // تصفية حسب البحث
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filteredDrawings = filteredDrawings.filter(d => 
+          (d.drawingNumber && d.drawingNumber.toLowerCase().includes(term)) ||
+          (d.contractorName && d.contractorName.toLowerCase().includes(term)) ||
+          (d.drawingName && d.drawingName.toLowerCase().includes(term)) ||
+          (d.drawingType && d.drawingType.toLowerCase().includes(term)) ||
+          (d.drawingItem && d.drawingItem.toLowerCase().includes(term))
+        );
+      }
+
+      if (filteredDrawings.length === 0) {
+        drawingsContent.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">�</div>
+            <div class="empty-state-text">
+              ${currentSection && currentModel ? 
+                `لا توجد مخططات في ${currentSection} - ${currentModel}` : 
+                'لا توجد مخططات هندسية'}
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // عرض جدول واحد بدون تجميع
+      let html = `
+        <div class="drawings-table">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>رقم المخطط</th>
+                <th>البند</th>
+                <th>نموذج المبنى</th>
+                <th>اسم المخطط</th>
+                <th>القسم</th>
+                <th>الملفات</th>
+                <th>آخر تحديث</th>
+                <th>ملاحظات</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredDrawings.map((d, idx) => {
+                const lastUpdate = d.lastUpdated ? new Date(d.lastUpdated) : (d.createdAt ? new Date(d.createdAt) : new Date());
+                const formattedDate = lastUpdate.toLocaleDateString('ar-EG', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                });
+                const formattedTime = lastUpdate.toLocaleTimeString('ar-EG', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                });
+                
+                return `
+                <tr>
+                  <td style="text-align: center;">${idx + 1}</td>
+                  <td><strong style="color: #3498db;">${d.drawingNumber || '-'}</strong></td>
+                  <td><span style="background: #e8f8f5; padding: 4px 10px; border-radius: 8px; font-weight: 600; color: #16a085;">${d.drawingItem || 'غير محدد'}</span></td>
+                  <td><span style="background: #e8f4f8; padding: 4px 10px; border-radius: 8px; font-weight: 600;">${d.contractorName || '-'}</span></td>
+                  <td>${d.drawingName || '-'}</td>
+                  <td>
+                    <span style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                      ${getSectionIcon(d.drawingType)} ${d.drawingType || '-'}
+                    </span>
+                  </td>
+                  <td style="text-align: center;">
+                    ${d.attachment ? 
+                      `<a href="${API_URL}/${d.attachment}" target="_blank" style="color: #27ae60; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+                        📄 تحميل
+                      </a>` :
+                      `<span style="color: #95a5a6;">-</span>`
+                    }
+                  </td>
+                  <td style="text-align: center;">
+                    <div style="font-size: 12px;">
+                      <div style="color: #2c3e50; font-weight: 600;">${formattedDate}</div>
+                      <div style="color: #7f8c8d; font-size: 11px;">${formattedTime}</div>
+                    </div>
+                  </td>
+                  <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${d.notes || ''}">
+                    <span style="color: #7f8c8d; font-size: 11px;">${d.notes || '-'}</span>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 8px; justify-content: center;">
+                      <button class="action-btn action-edit" onclick="editDrawing('${d._id}')" title="تعديل" data-permission="drawings-edit" ${!hasPermission('drawings-edit') ? 'style="display:none"' : ''}>
+                        ✏️
+                      </button>
+                      <button class="action-btn action-delete" onclick="deleteDrawing('${d._id}')" title="حذف" data-permission="drawings-delete" ${!hasPermission('drawings-delete') ? 'style="display:none"' : ''}>
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      drawingsContent.innerHTML = html;
+    }
+
+    // Event Listeners - Modal
+    addDrawingBtn.addEventListener('click', () => openModal(false));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Event Listener - Show All Button
+    document.getElementById('showAllBtn').addEventListener('click', clearFilter);
+    
+    drawingModal.addEventListener('click', (e) => {
+      if (e.target === drawingModal) closeModal();
+    });
+
+    // Edit Drawing
+    async function editDrawing(id) {
+      const drawing = drawings.find(d => d._id === id);
+      if (!drawing) return;
+      
+      editingId = id;
+      document.getElementById('drawingNumber').value = drawing.drawingNumber || '';
+      document.getElementById('drawingSection').value = drawing.drawingType || '';
+      document.getElementById('drawingItem').value = drawing.drawingItem || '';
+      document.getElementById('buildingModel').value = drawing.contractorName || '';
+      document.getElementById('drawingName').value = drawing.drawingName || '';
+      document.getElementById('drawingNote').value = drawing.notes || '';
+      
+      updateItemsList();
+      openModal(true);
+    }
+
+    // Delete Drawing
+    async function deleteDrawing(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا المخطط؟')) return;
+      
+      // الحصول على معلومات المخطط قبل الحذف
+      const drawing = drawings.find(d => d._id === id);
+      const drawingName = drawing ? (drawing.drawingName || `مخطط رقم ${drawing.drawingNumber}`) : 'مخطط';
+      
+      try {
+        const response = await fetch(`${API_URL}/drawings/${id}`, {
+          method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'drawing-delete',
+              `تم حذف المخطط: ${drawingName}`,
+              'drawings',
+              id
+            );
+          }
+          
+          alert('تم حذف المخطط بنجاح! ✅');
+          await loadDrawings();
+        } else {
+          alert('حدث خطأ أثناء الحذف: ' + (result.error || 'خطأ غير معروف'));
+        }
+      } catch (err) {
+        console.error('Error deleting drawing:', err);
+        alert('فشل حذف المخطط! ' + err.message);
+      }
+    }
+
+    // Initialize
+    loadDrawings();
+  </script>
+</body>
+</html>
+      

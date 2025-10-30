@@ -1,0 +1,2381 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>«·”‰œ«  | ”⁄Ìœ √Õ„œ »«·»Ìœ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="permissions-check.js"></script>
+  <!-- „ﬂ »… html2pdf ·Õ›Ÿ PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      direction: rtl;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      min-height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      width: 95vw;
+      max-width: 1400px;
+      margin: 0 auto;
+      background: #f7fafd;
+      border-radius: 18px;
+      padding: 28px 2vw 18px 2vw;
+      border: 2.5px solid #8c969a;
+      margin-top: 32px;
+      box-shadow: 0 2px 16px #0001;
+    }
+    
+    h2 {
+      color: #2e8ca3;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-align: right;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary {
+      background: #2e8ca3;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1a3b50;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 16px;
+      gap: 8px;
+      border: 1px solid #8c969a;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #1a3b50;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.95rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    .search-box input::placeholder {
+      color: #8c969a;
+    }
+
+    .search-box .icon {
+      font-size: 1.2rem;
+      color: #2e8ca3;
+    }
+
+    .filter-select {
+      background: white;
+      border: 1px solid #8c969a;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #1a3b50;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .filter-select option {
+      background: white;
+      color: #1a3b50;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(26, 59, 80, 0.08);
+      overflow: hidden;
+      border: 1px solid #8c969a;
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 20px 24px;
+      border-bottom: 2px solid #2e8ca3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-header h2 {
+      font-size: 1.5rem;
+      color: #1a3b50;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .receipt-count {
+      background: #2e8ca3;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    /* ========== TWO COLUMN LAYOUT ========== */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .left-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px #2e8ca322;
+      border: 1px solid #8c969a;
+    }
+
+    .right-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px #2e8ca322;
+      border: 1px solid #8c969a;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #2e8ca3;
+    }
+
+    .panel-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1a3b50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ========== FILTERS SECTION ========== */
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1a3b50;
+    }
+
+    .filter-input {
+      padding: 8px 12px;
+      border: 1px solid #8c969a;
+      border-radius: 8px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .filter-input:focus {
+      border-color: #2e8ca3;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    /* ========== STATISTICS CARDS ========== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid #8c969a;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2e8ca3;
+    }
+
+    /* ========== TABLE STYLES ========== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    thead {
+      background: linear-gradient(135deg, #2e8ca3 0%, #1a3b50 100%);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    thead th {
+      padding: 10px 8px;
+      text-align: right;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-bottom: 2px solid #1a3b50;
+    }
+
+    tbody td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1a3b50;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .table-container-panel {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin: 0 3px;
+    }
+
+    .btn-edit {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .btn-edit:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-delete:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-view {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
+
+    .btn-view:hover {
+      background: #a855f7;
+      color: white;
+    }
+
+    .btn-print {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .btn-print:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-pdf {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-pdf:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* ========== DRAWER PANEL - COMPACT & MODERN ========== */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      display: none;
+      animation: fadeIn 0.3s;
+      backdrop-filter: blur(2px);
+    }
+
+    .drawer-overlay.active {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      right: -420px;
+      top: 0;
+      bottom: 0;
+      width: 400px;
+      max-width: 95%;
+      background: white;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.3);
+      z-index: 201;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.active {
+      right: 0;
+    }
+
+    .drawer-header {
+      background: linear-gradient(135deg, #1a3b50 0%, #2e8ca3 100%);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .drawer-header h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-drawer {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .close-drawer:hover {
+      background: rgba(255,255,255,0.25);
+      transform: rotate(90deg);
+    }
+
+    .drawer-body {
+      padding: 18px 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ========== FORM CARDS - COMPACT ========== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .form-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      transition: all 0.2s;
+    }
+
+    .form-card:hover {
+      border-color: #2e8ca3;
+      box-shadow: 0 2px 8px rgba(46, 140, 163, 0.15);
+    }
+
+    .form-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: #1a3b50;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+
+    .form-label .icon {
+      font-size: 1.1rem;
+      color: #2e8ca3;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: #2e8ca3;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    /* ========== PDF UPLOAD SECTION ========== */
+    .pdf-upload-card {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px dashed #f59e0b;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pdf-upload-card:hover {
+      background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+      border-color: #d97706;
+    }
+
+    .pdf-upload-card .icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .pdf-upload-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    .pdf-file-name {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #059669;
+      font-weight: 600;
+    }
+
+    #pdfFileInput {
+      display: none;
+    }
+
+    /* ========== FORM ACTIONS - COMPACT ========== */
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1.5px solid #e2e8f0;
+      margin-top: 16px;
+    }
+
+    .btn-submit {
+      flex: 1;
+      background: linear-gradient(135deg, #1a3b50 0%, #2e8ca3 100%);
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(46, 140, 163, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(46, 140, 163, 0.4);
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: #f1f5f9;
+      color: var(--text-dark);
+      padding: 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+      background: #e2e8f0;
+      border-color: var(--border-color);
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s;
+    }
+
+    .slide-up {
+      animation: slideUp 0.3s;
+    }
+
+    /* ========== EMPTY STATE ========== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: var(--text-dark);
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+
+    /* ========== PRINT TEMPLATE ========== */
+    .print-template {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 9999;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .print-template.active {
+      display: block;
+    }
+
+    #printContent {
+      max-width: 210mm;
+      margin: 0 auto;
+      background: white;
+    }
+
+    /* ”‰œ «·ﬁ»÷ -  ’„Ì„ «Õ —«›Ì */
+    .voucher-container {
+      max-width: 210mm;
+      width: 100%;
+      margin: 0 auto;
+      border: 3px solid #1e3a5f;
+      background: white;
+      font-family: 'Cairo', Arial, sans-serif;
+      box-sizing: border-box;
+    }
+
+    .voucher-header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2e5a8f 100%);
+      padding: 20px 30px;
+      text-align: center;
+      color: white;
+      border-bottom: 4px solid #d4a056;
+    }
+
+    .voucher-title-ar {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .voucher-number-section {
+      background: #f8f9fa;
+      padding: 20px 30px;
+      border-bottom: 2px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .voucher-number-label {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .voucher-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #1e3a5f;
+      font-family: Arial, sans-serif;
+    }
+
+    .voucher-logo-section {
+      text-align: center;
+    }
+
+    .voucher-logo {
+      max-width: 140px;
+      max-height: 90px;
+      object-fit: contain;
+      margin-bottom: 5px;
+    }
+
+    .voucher-currency {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .voucher-logo-space {
+      width: 120px;
+      height: 80px;
+      border: 2px dashed #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+    }
+
+    .voucher-logo-space img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .voucher-body {
+      padding: 25px 30px;
+    }
+
+    .voucher-row {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: baseline;
+      font-size: 1.1rem;
+      border-bottom: 2px dotted #dee2e6;
+      padding-bottom: 12px;
+      gap: 15px;
+    }
+
+    .voucher-label {
+      font-weight: 700;
+      color: #1e3a5f;
+      min-width: 180px;
+      margin-left: 15px;
+    }
+
+    .voucher-label-ar {
+      font-weight: 700;
+      color: #1e3a5f;
+      font-size: 1.2rem;
+      min-width: 150px;
+      white-space: nowrap;
+    }
+
+    .voucher-amount-row .voucher-label-ar {
+      font-size: 1.4rem;
+    }
+
+    .voucher-value {
+      flex: 1;
+      font-weight: 600;
+      color: #333;
+      padding: 5px 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .voucher-amount-row {
+      border: 3px solid #d4a056;
+      background: #fff9e6;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .voucher-amount-row .voucher-value {
+      font-size: 1.8rem;
+      color: #22c55e;
+      font-weight: 900;
+      background: white;
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .voucher-currency-inline {
+      font-size: 1.1rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .voucher-amount-words {
+      border: 2px dashed #2e5a8f;
+      background: #e8f4f8;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+
+    .voucher-amount-words .voucher-value {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1e3a5f;
+      background: white;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .voucher-description {
+      min-height: 80px;
+      border: 2px solid #dee2e6;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      line-height: 1.8;
+    }
+
+    .voucher-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-top: 30px;
+      padding: 25px 30px 25px;
+      border-top: 2px solid #1e3a5f;
+    }
+
+    .voucher-signature-box {
+      text-align: center;
+    }
+
+    .voucher-signature-line {
+      border-top: 2px solid #1e3a5f;
+      width: 180px;
+      margin: 30px auto 12px;
+    }
+
+    .voucher-signature-label {
+      font-weight: 700;
+      color: #1e3a5f;
+      font-size: 1.1rem;
+    }
+
+    .print-actions {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 10000;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+
+      .print-actions {
+        display: none !important;
+      }
+      
+      .print-template {
+        padding: 0;
+        margin: 0;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+      
+      .print-template, .print-template * {
+        visibility: visible;
+      }
+      
+      .print-template {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+
+      #printContent {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .voucher-container {
+        border: 3px solid #000;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        page-break-inside: avoid;
+      }
+
+      .voucher-logo {
+        max-width: 120px;
+        max-height: 80px;
+      }
+
+      /* ≈“«·… ﬂ· «·Œ·›Ì«  «·„·Ê‰… ›Ì «·ÿ»«⁄… */
+      .voucher-number-section {
+        background: white !important;
+      }
+
+      .voucher-value {
+        background: white !important;
+      }
+
+      .voucher-amount-row {
+        background: white !important;
+        border: 2px solid #000 !important;
+      }
+
+      .voucher-amount-row .voucher-value {
+        background: white !important;
+      }
+
+      .voucher-amount-words {
+        background: white !important;
+        border: 2px solid #000 !important;
+      }
+
+      .voucher-amount-words .voucher-value {
+        background: white !important;
+      }
+
+      .voucher-description {
+        background: white !important;
+      }
+
+      /* ÷»ÿ «·√·Ê«‰ ··ÿ»«⁄… - ›ﬁÿ ··⁄‰«’— «·„Â„… */
+      .voucher-header {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+        background: linear-gradient(135deg, #1e3a5f 0%, #2e5a8f 100%) !important;
+      }
+
+      /*  Õ”Ì‰ ÕÃ„ «·ŒÿÊÿ ›Ì «·ÿ»«⁄… */
+      .voucher-title-ar {
+        font-size: 2.2rem !important;
+      }
+
+      .voucher-number {
+        font-size: 2rem !important;
+      }
+
+      .voucher-row {
+        font-size: 1rem !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+      }
+
+      .voucher-label-ar {
+        font-size: 1.1rem !important;
+      }
+
+      .voucher-amount-row {
+        padding: 15px !important;
+        margin: 20px 0 !important;
+      }
+
+      .voucher-amount-row .voucher-value {
+        font-size: 1.5rem !important;
+      }
+
+      .voucher-amount-words {
+        padding: 15px !important;
+        margin: 15px 0 !important;
+      }
+
+      .voucher-body {
+        padding: 20px 25px !important;
+      }
+
+      /* «· ÊﬁÌ⁄«  ›Ì «·ÿ»«⁄… */
+      .voucher-signatures {
+        margin-top: 25px !important;
+        padding: 20px 25px 20px !important;
+        page-break-inside: avoid !important;
+      }
+
+      .voucher-signature-line {
+        width: 150px !important;
+        margin: 25px auto 10px !important;
+        border-top: 2px solid #000 !important;
+      }
+
+      .voucher-signature-label {
+        font-size: 1rem !important;
+      }
+    }
+
+    /* ========== LOGO UPLOAD SECTION ========== */
+    .logo-upload-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px #2e8ca322;
+      border: 1px solid #8c969a;
+    }
+
+    .logo-upload-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+
+    .logo-upload-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1a3b50;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-preview {
+      max-width: 150px;
+      max-height: 80px;
+      object-fit: contain;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      background: white;
+    }
+
+    .logo-upload-input {
+      display: none;
+    }
+
+    .logo-upload-btn {
+      background: #2e8ca3;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+
+    .logo-upload-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1200px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 18px 1vw;
+      }
+
+      .drawer {
+        width: 100%;
+        right: -100%;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!--  ÷„Ì‰ «·‘—Ìÿ «·⁄·ÊÌ -->
+  <div id="navbar-container"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h2>?? ≈œ«—… «·”‰œ« </h2>
+
+    <!-- Two Column Layout -->
+    <div class="main-layout">
+      <!-- Right Panel: Filters & Actions -->
+      <div class="right-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>???</span>
+            <span>⁄Ê«„· «· ’›Ì… Ê«·≈Õ’«∆Ì« </span>
+          </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">≈Ã„«·Ì «·”‰œ« </div>
+            <div class="stat-value" id="totalReceipts">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">«·„»·€ «·≈Ã„«·Ì</div>
+            <div class="stat-value" id="totalAmount">0 —.”</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">”‰œ«  «·ÌÊ„</div>
+            <div class="stat-value" id="todayReceipts">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">”‰œ«  «·‘Â—</div>
+            <div class="stat-value" id="monthReceipts">0</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-grid">
+          <div class="filter-item">
+            <label class="filter-label">?? »ÕÀ ‰’Ì</label>
+            <input type="text" id="searchInput" class="filter-input" placeholder="—ﬁ„ «·”‰œ° «·„” ·„...">
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label">?? „‰  «—ÌŒ</label>
+            <input type="date" id="dateFrom" class="filter-input">
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label">?? ≈·Ï  «—ÌŒ</label>
+            <input type="date" id="dateTo" class="filter-input">
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label">?? «·„ﬁ«Ê·</label>
+            <select id="filterContractor" class="filter-input">
+              <option value="">«·ﬂ·</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label">??  — Ì» Õ”»</label>
+            <select id="sortBy" class="filter-input">
+              <option value="date-desc">«·√ÕœÀ √Ê·«</option>
+              <option value="date-asc">«·√ﬁœ„ √Ê·«</option>
+              <option value="amount-desc">«·„»·€ („‰ «·√ﬂ»—)</option>
+              <option value="amount-asc">«·„»·€ („‰ «·√’€—)</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label">??? ›· — ”—Ì⁄</label>
+            <select id="quickFilter" class="filter-input">
+              <option value="">«·ﬂ·</option>
+              <option value="today">«·ÌÊ„</option>
+              <option value="week">Â–« «·√”»Ê⁄</option>
+              <option value="month">Â–« «·‘Â—</option>
+              <option value="quarter">Â–« «·—»⁄</option>
+              <option value="year">Â–Â «·”‰…</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+          <button class="btn btn-primary" id="btnNewReceipt" data-permission="vouchers-add" style="width: 100%;">
+            ? ”‰œ ÃœÌœ
+          </button>
+          <button class="btn" style="background: #10b981; color: white; width: 100%;" onclick="exportToExcel()">
+            ?  ’œÌ— Excel
+          </button>
+          <button class="btn" style="background: #ef4444; color: white; width: 100%;" onclick="exportToPDF()">
+            ??  ’œÌ— PDF
+          </button>
+          <button class="btn" style="background: #8b5cf6; color: white; width: 100%;" onclick="printAllReceipts()">
+            ??? ÿ»«⁄… «·ﬂ·
+          </button>
+          <button class="btn" style="background: #f59e0b; color: white; width: 100%;" onclick="printBlankReceipt()">
+            ?? ÿ»«⁄… ”‰œ ›«÷Ì
+          </button>
+        </div>
+      </div>
+
+      <!-- Left Panel: Table -->
+      <div class="left-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>??</span>
+            <span>ﬁ«∆„… «·”‰œ« </span>
+            <span class="receipt-count" id="receiptCount">0</span>
+          </div>
+        </div>
+
+        <div class="table-container-panel">
+          <table>
+            <thead>
+              <tr>
+                <th>„</th>
+                <th>—ﬁ„ «·”‰œ</th>
+                <th>«· «—ÌŒ</th>
+                <th>«·„” ·„ / «·„ﬁ«Ê·</th>
+                <th>«·„»·€</th>
+                <th>«·≈Ã—«¡« </th>
+              </tr>
+            </thead>
+            <tbody id="receiptsTableBody">
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+  <!-- Drawer Panel - Compact -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h3>
+        <span>??</span>
+        <span id="drawerTitle">≈‰‘«¡ ”‰œ ÃœÌœ</span>
+      </h3>
+      <button class="close-drawer" onclick="closeDrawer()">?</button>
+    </div>
+    <div class="drawer-body">
+      <form id="receiptForm">
+        <div class="form-grid" style="grid-template-columns: 1fr;">
+          <!-- —ﬁ„ «·”‰œ Ê«· «—ÌŒ -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-card" style="margin: 0;">
+              <label class="form-label">
+                <span class="icon">???</span>
+                <span>—ﬁ„ «·”‰œ</span>
+              </label>
+              <input type="text" class="form-input" id="receiptNumber" placeholder="„À«·: R-001" required>
+            </div>
+
+            <div class="form-card" style="margin: 0;">
+              <label class="form-label">
+                <span class="icon">??</span>
+                <span>«· «—ÌŒ</span>
+              </label>
+              <input type="date" class="form-input" id="receiptDate" required>
+            </div>
+          </div>
+
+          <!-- «·„” ·„ Ê«·„ﬁ«Ê· -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-card" style="margin: 0;">
+              <label class="form-label">
+                <span class="icon">??û??</span>
+                <span>«·„” ·„</span>
+              </label>
+              <input type="text" class="form-input" id="receiverName" placeholder="«”„ «·„” ·„ («Œ Ì«—Ì)">
+            </div>
+
+            <div class="form-card" style="margin: 0;">
+              <label class="form-label">
+                <span class="icon">??</span>
+                <span>«·„ﬁ«Ê·</span>
+              </label>
+              <select class="form-input" id="contractorId">
+                <option value="">-- »œÊ‰ „ﬁ«Ê· --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- «·„»·€ Ê«·„»·€ »«·Õ—Ê› -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-card" style="margin: 0;">
+              <label class="form-label">
+                <span class="icon">??</span>
+                <span>«·„»·€ (—Ì«·)</span>
+              </label>
+              <input type="number" class="form-input" id="amount" placeholder="5000" step="0.01" required>
+            </div>
+
+            <div class="form-card" style="margin: 0;">
+              <label class="form-label">
+                <span class="icon">??</span>
+                <span>«·„»·€ »«·Õ—Ê›</span>
+              </label>
+              <input type="text" class="form-input" id="amountInWords" placeholder=" ·ﬁ«∆Ì" readonly style="background: #f0f9ff;">
+            </div>
+          </div>
+
+          <!-- «·»Ì«‰ -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">??</span>
+              <span>«·»Ì«‰ (Ê’› «·Œœ„…)</span>
+            </label>
+            <textarea class="form-input" id="serviceDescription" placeholder="„À«·: œ›⁄… „” Œ·’ —ﬁ„ 1..." rows="2" required></textarea>
+          </div>
+
+          <!-- „·«ÕŸ«  -->
+          <div class="form-card">
+            <label class="form-label">
+              <span class="icon">??</span>
+              <span>„·«ÕŸ« </span>
+            </label>
+            <textarea class="form-input" id="notes" placeholder="„·«ÕŸ«  ≈÷«›Ì…..." rows="2"></textarea>
+          </div>
+
+          <!-- —›⁄ „·› PDF -->
+          <div class="form-card">
+            <label for="pdfFileInput" class="pdf-upload-card">
+              <div class="icon">??</div>
+              <div class="pdf-upload-text">«÷€ÿ ·—›⁄ „·› PDF „—›ﬁ</div>
+              <div class="pdf-file-name" id="pdfFileName"></div>
+            </label>
+            <input type="file" id="pdfFileInput" accept="application/pdf">
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            ?? Õ›Ÿ «·”‰œ
+          </button>
+          <button type="button" class="btn-cancel" onclick="closeDrawer()" style="flex: 1; background: #6b7280; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600;">
+            ? ≈·€«¡
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Print Template -->
+  <div class="print-template" id="printTemplate">
+    <div class="print-actions">
+      <button class="btn btn-primary" onclick="printReceipt()">
+        ??? ÿ»«⁄…
+      </button>
+      <button class="btn btn-primary" onclick="downloadPDF()">
+        ?? Õ›Ÿ PDF
+      </button>
+      <button class="btn btn-primary" onclick="closePrintPreview()">
+        ? ≈€·«ﬁ
+      </button>
+    </div>
+
+    <div id="printContent">
+      <!-- Official Receipt Voucher Design - Arabic Only -->
+      <div class="voucher-container">
+        
+        <!-- Header -->
+        <div class="voucher-header">
+          <div class="voucher-title-ar">”‰œ ﬁ»÷</div>
+        </div>
+
+        <!-- Number Section -->
+        <div class="voucher-number-section">
+          <div>
+            <div class="voucher-number-label">—ﬁ„</div>
+            <div class="voucher-number" id="printReceiptNumber">0001</div>
+          </div>
+          <div class="voucher-logo-section">
+            <img id="printVoucherLogo" class="voucher-logo" style="display: none;" alt="Logo">
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="voucher-body">
+
+          <!-- Date Row -->
+          <div class="voucher-row">
+            <div class="voucher-label-ar">«· «—ÌŒ:</div>
+            <div class="voucher-value" id="printVoucherDate">
+              <span class="date-part">/</span>
+              <span class="date-part">/</span>
+              <span class="date-part"></span>
+            </div>
+          </div>
+
+          <!-- Received From Row -->
+          <div class="voucher-row">
+            <div class="voucher-label-ar">«” ·„ «·”Ìœ:</div>
+            <div class="voucher-value" id="printReceivedFrom">_________________</div>
+          </div>
+
+          <!-- Amount Row -->
+          <div class="voucher-amount-row">
+            <div class="voucher-label-ar">„»·€ Êﬁœ—Â:</div>
+            <div class="voucher-value voucher-amount-value">
+              <span id="printAmountValue">_________________</span>
+              <span class="voucher-currency-inline">—Ì«· ”⁄ÊœÌ</span>
+            </div>
+          </div>
+
+          <!-- Bank/Cheque Row -->
+          <div class="voucher-row">
+            <div class="voucher-label-ar">«·»‰ﬂ:</div>
+            <div class="voucher-value">_________________</div>
+            <div class="voucher-label-ar" style="margin: 0 20px;">—ﬁ„ «·‘Ìﬂ / ‰ﬁœÌ:</div>
+            <div class="voucher-value">_________________</div>
+          </div>
+
+          <!-- Amount in Words -->
+          <div class="voucher-amount-words">
+            <div class="voucher-label-ar" style="margin-bottom: 10px;">«·„»·€ »«·Õ—Ê›:</div>
+            <div class="voucher-value" id="printAmountWords" style="font-size: 1.1rem; font-weight: 700; text-align: center;">
+              _________________________________
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="voucher-row" style="min-height: 80px; align-items: flex-start;">
+            <div class="voucher-label-ar">Ê–·ﬂ „ﬁ«»·:</div>
+            <div class="voucher-value" id="printBieng" style="flex: 1; min-height: 60px; text-align: right; padding: 10px;">
+              _________________
+            </div>
+          </div>
+
+        </div>
+
+
+      <!-- Signatures -->
+      <div class="voucher-signatures">
+        <div class="voucher-signature-box">
+          <div class="voucher-signature-line"></div>
+          <div class="voucher-signature-label">
+            <span class="voucher-label-ar">«·„” ·„</span>
+          </div>
+        </div>
+        <div class="voucher-signature-box">
+          <div class="voucher-signature-line"></div>
+          <div class="voucher-signature-label">
+            <span class="voucher-label-ar">«·„Õ«”»</span>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+  <script>
+    // ========== CHECK USER LOGIN ==========
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.username) {
+      alert('?? ÌÃ»  ”ÃÌ· «·œŒÊ· √Ê·«');
+      window.location.href = 'login.html';
+    }
+
+    // ========== STATE ========== 
+    let receipts = [];
+    let contractors = [];
+    let editingIndex = null;
+    let currentPrintReceipt = null;
+
+    // ========== NUMBER TO ARABIC WORDS ==========
+    function numberToArabicWords(num) {
+      if (num === 0) return '’›—';
+      
+      const ones = ['', 'Ê«Õœ', '«À‰«‰', 'À·«À…', '√—»⁄…', 'Œ„”…', '” …', '”»⁄…', 'À„«‰Ì…', ' ”⁄…'];
+      const tens = ['', '', '⁄‘—Ê‰', 'À·«ÀÊ‰', '√—»⁄Ê‰', 'Œ„”Ê‰', '” Ê‰', '”»⁄Ê‰', 'À„«‰Ê‰', ' ”⁄Ê‰'];
+      const teens = ['⁄‘—…', '√Õœ ⁄‘—', '«À‰« ⁄‘—', 'À·«À… ⁄‘—', '√—»⁄… ⁄‘—', 'Œ„”… ⁄‘—', '” … ⁄‘—', '”»⁄… ⁄‘—', 'À„«‰Ì… ⁄‘—', ' ”⁄… ⁄‘—'];
+      const hundreds = ['', '„«∆…', '„∆ «‰', 'À·«À„«∆…', '√—»⁄„«∆…', 'Œ„”„«∆…', '” „«∆…', '”»⁄„«∆…', 'À„«‰„«∆…', ' ”⁄„«∆…'];
+      
+      function convertLessThanThousand(n) {
+        if (n === 0) return '';
+        
+        let result = '';
+        
+        // «·„∆« 
+        const h = Math.floor(n / 100);
+        if (h > 0) {
+          result += hundreds[h];
+        }
+        
+        n = n % 100;
+        
+        // «·⁄‘—«  Ê«·¬Õ«œ
+        if (n >= 10 && n < 20) {
+          if (result) result += ' Ê';
+          result += teens[n - 10];
+        } else {
+          const t = Math.floor(n / 10);
+          const o = n % 10;
+          
+          if (t > 0) {
+            if (result) result += ' Ê';
+            result += tens[t];
+          }
+          
+          if (o > 0) {
+            if (result) result += ' Ê';
+            result += ones[o];
+          }
+        }
+        
+        return result;
+      }
+      
+      // ›’· «·Ã“¡ «·’ÕÌÕ Ê«·ﬂ”—Ì
+      const integerPart = Math.floor(num);
+      const decimalPart = Math.round((num - integerPart) * 100);
+      
+      let result = '';
+      
+      // «·„·«ÌÌ‰
+      const millions = Math.floor(integerPart / 1000000);
+      if (millions > 0) {
+        if (millions === 1) {
+          result += '„·ÌÊ‰';
+        } else if (millions === 2) {
+          result += '„·ÌÊ‰«‰';
+        } else {
+          result += convertLessThanThousand(millions) + ' „·ÌÊ‰';
+        }
+      }
+      
+      // «·¬·«›
+      const thousands = Math.floor((integerPart % 1000000) / 1000);
+      if (thousands > 0) {
+        if (result) result += ' Ê';
+        if (thousands === 1) {
+          result += '√·›';
+        } else if (thousands === 2) {
+          result += '√·›«‰';
+        } else if (thousands >= 3 && thousands <= 10) {
+          result += convertLessThanThousand(thousands) + ' ¬·«›';
+        } else {
+          result += convertLessThanThousand(thousands) + ' √·›';
+        }
+      }
+      
+      // «·„∆«  Ê«·⁄‘—«  Ê«·¬Õ«œ
+      const remainder = integerPart % 1000;
+      if (remainder > 0) {
+        if (result) result += ' Ê';
+        result += convertLessThanThousand(remainder);
+      }
+      
+      result += ' —Ì«·';
+      
+      // «·Ã“¡ «·ﬂ”—Ì («·Â··« )
+      if (decimalPart > 0) {
+        result += ' Ê' + convertLessThanThousand(decimalPart) + ' Â··…';
+      }
+      
+      return result + ' ›ﬁÿ ·« €Ì—';
+    }
+
+    // ========== DOM ELEMENTS ==========
+    const drawer = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const drawerTitle = document.getElementById('drawerTitle');
+    const receiptForm = document.getElementById('receiptForm');
+    const receiptsTableBody = document.getElementById('receiptsTableBody');
+    const receiptCount = document.getElementById('receiptCount');
+    const searchInput = document.getElementById('searchInput');
+    const btnNewReceipt = document.getElementById('btnNewReceipt');
+    const amountInput = document.getElementById('amount');
+    const amountInWordsInput = document.getElementById('amountInWords');
+    const contractorSelect = document.getElementById('contractorId');
+
+    // ========== LOAD CONTRACTORS ==========
+    async function loadContractors() {
+      try {
+        const response = await fetch('https://taskon-production.up.railway.app/contractors');
+        contractors = await response.json();
+        
+        // Update form dropdown
+        contractorSelect.innerHTML = '<option value="">-- »œÊ‰ „ﬁ«Ê· --</option>';
+        
+        // Update filter dropdown
+        const filterContractor = document.getElementById('filterContractor');
+        filterContractor.innerHTML = '<option value="">«·ﬂ·</option>';
+        
+        contractors.forEach(contractor => {
+          const option1 = document.createElement('option');
+          option1.value = contractor._id;
+          option1.textContent = contractor.name;
+          contractorSelect.appendChild(option1);
+
+          const option2 = document.createElement('option');
+          option2.value = contractor._id;
+          option2.textContent = contractor.name;
+          filterContractor.appendChild(option2);
+        });
+      } catch (error) {
+        console.error('Error loading contractors:', error);
+      }
+    }
+
+    // ========== GET CONTRACTOR NAME ==========
+    function getContractorName(contractorId) {
+      if (!contractorId) return '';
+      const contractor = contractors.find(c => c._id === contractorId);
+      return contractor ? contractor.name : '';
+    }
+
+    // ========== AMOUNT CONVERTER ==========
+    amountInput.addEventListener('input', function() {
+      const amount = parseFloat(this.value);
+      if (!isNaN(amount) && amount > 0) {
+        amountInWordsInput.value = numberToArabicWords(amount);
+      } else {
+        amountInWordsInput.value = '';
+      }
+    });
+
+    // ========== FILTER EVENTS ==========
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+    document.getElementById('dateFrom').addEventListener('change', renderTable);
+    document.getElementById('dateTo').addEventListener('change', renderTable);
+    document.getElementById('filterContractor').addEventListener('change', renderTable);
+    document.getElementById('sortBy').addEventListener('change', renderTable);
+    document.getElementById('quickFilter').addEventListener('change', renderTable);
+
+    // ========== PDF UPLOAD ==========
+    document.getElementById('pdfFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const fileNameDiv = document.getElementById('pdfFileName');
+      if (file) {
+        fileNameDiv.textContent = '? ' + file.name;
+      } else {
+        fileNameDiv.textContent = '';
+      }
+    });
+    // ========== LOAD RECEIPTS FROM API ==========
+    async function loadReceipts() {
+      try {
+        const response = await fetch('https://taskon-production.up.railway.app/receipts');
+        if (!response.ok) {
+          console.error('Server returned:', response.status, response.statusText);
+          receipts = [];
+          renderTable();
+          return;
+        }
+        const data = await response.json();
+        receipts = Array.isArray(data) ? data : [];
+        renderTable();
+      } catch (error) {
+        console.error('Error loading receipts:', error);
+        receipts = [];
+        renderTable();
+      }
+    }
+
+    // ========== RENDER TABLE ==========
+    function renderTable() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const dateFrom = document.getElementById('dateFrom').value;
+      const dateTo = document.getElementById('dateTo').value;
+      const filterContractor = document.getElementById('filterContractor').value;
+      const sortBy = document.getElementById('sortBy').value;
+      const quickFilter = document.getElementById('quickFilter').value;
+
+      let filtered = receipts.filter(receipt => {
+        const matchSearch = !searchTerm || 
+          receipt.receiptNumber.toLowerCase().includes(searchTerm) ||
+          receipt.receiverName.toLowerCase().includes(searchTerm) ||
+          (receipt.serviceDescription && receipt.serviceDescription.toLowerCase().includes(searchTerm));
+
+        const receiptDate = new Date(receipt.receiptDate);
+        const matchDateFrom = !dateFrom || receiptDate >= new Date(dateFrom);
+        const matchDateTo = !dateTo || receiptDate <= new Date(dateTo);
+        const matchContractor = !filterContractor || receipt.contractorId === filterContractor;
+
+        // Quick filter
+        let matchQuick = true;
+        if (quickFilter) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const receiptDay = new Date(receiptDate);
+          receiptDay.setHours(0, 0, 0, 0);
+
+          if (quickFilter === 'today') {
+            matchQuick = receiptDay.getTime() === today.getTime();
+          } else if (quickFilter === 'week') {
+            const weekAgo = new Date(today);
+            weekAgo.setDate(today.getDate() - 7);
+            matchQuick = receiptDate >= weekAgo;
+          } else if (quickFilter === 'month') {
+            matchQuick = receiptDate.getMonth() === today.getMonth() && receiptDate.getFullYear() === today.getFullYear();
+          } else if (quickFilter === 'quarter') {
+            const quarter = Math.floor(today.getMonth() / 3);
+            const receiptQuarter = Math.floor(receiptDate.getMonth() / 3);
+            matchQuick = quarter === receiptQuarter && receiptDate.getFullYear() === today.getFullYear();
+          } else if (quickFilter === 'year') {
+            matchQuick = receiptDate.getFullYear() === today.getFullYear();
+          }
+        }
+
+        return matchSearch && matchDateFrom && matchDateTo && matchContractor && matchQuick;
+      });
+
+      // Sorting
+      filtered.sort((a, b) => {
+        if (sortBy === 'date-desc') return new Date(b.receiptDate) - new Date(a.receiptDate);
+        if (sortBy === 'date-asc') return new Date(a.receiptDate) - new Date(b.receiptDate);
+        if (sortBy === 'amount-desc') return (b.amount || 0) - (a.amount || 0);
+        if (sortBy === 'amount-asc') return (a.amount || 0) - (b.amount || 0);
+        return 0;
+      });
+
+      // Update stats
+      updateStatistics(filtered);
+
+      receiptCount.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        receiptsTableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+              <div style="font-size: 3rem;">??</div>
+              <div style="font-size: 1.1rem; font-weight: 600; margin-top: 10px;">·«  ÊÃœ ‰ «∆Ã</div>
+              <div style="font-size: 0.9rem; color: #999; margin-top: 5px;">Ã—»  €ÌÌ— „⁄«ÌÌ— «·»ÕÀ</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      receiptsTableBody.innerHTML = filtered.map((receipt, idx) => {
+        const contractorName = getContractorName(receipt.contractorId);
+        const displayName = contractorName || receipt.receiverName || '-';
+        const nameLabel = contractorName ? '?? ' : '??û?? ';
+        
+        return `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${receipt.receiptNumber}</strong></td>
+          <td>${new Date(receipt.receiptDate).toLocaleDateString('ar-EG')}</td>
+          <td>${nameLabel}${displayName}</td>
+          <td><strong style="color: #22c55e;">${parseFloat(receipt.amount || 0).toFixed(2)} —.”</strong></td>
+          <td style="white-space: nowrap;">
+            <button class="action-btn btn-print" onclick="openPrintPreview(${receipts.indexOf(receipt)})" title="ÿ»«⁄…">???</button>
+            <button class="action-btn btn-edit" onclick="editReceipt(${receipts.indexOf(receipt)})" title=" ⁄œÌ·">??</button>
+            <button class="action-btn btn-delete" onclick="deleteReceipt(${receipts.indexOf(receipt)})" title="Õ–›">???</button>
+          </td>
+        </tr>
+        `;
+      }).join('');
+    }
+
+    // ========== UPDATE STATISTICS ==========
+    function updateStatistics(filtered = receipts) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const todayReceipts = filtered.filter(r => {
+        const d = new Date(r.receiptDate);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime() === today.getTime();
+      });
+
+      const monthReceipts = filtered.filter(r => {
+        const d = new Date(r.receiptDate);
+        return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+      });
+
+      const totalAmount = filtered.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+
+      document.getElementById('totalReceipts').textContent = filtered.length;
+      document.getElementById('totalAmount').textContent = totalAmount.toFixed(2) + ' —.”';
+      document.getElementById('todayReceipts').textContent = todayReceipts.length;
+      document.getElementById('monthReceipts').textContent = monthReceipts.length;
+    }
+
+    // ========== OPEN DRAWER ==========
+    function openDrawer(isEdit = false) {
+      drawer.classList.add('active');
+      drawerOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      if (!isEdit) {
+        drawerTitle.textContent = '≈‰‘«¡ ”‰œ ÃœÌœ';
+        receiptForm.reset();
+        document.getElementById('receiptDate').valueAsDate = new Date();
+        editingIndex = null;
+      } else {
+        drawerTitle.textContent = ' ⁄œÌ· «·”‰œ';
+      }
+    }
+
+    // ========== CLOSE DRAWER ==========
+    function closeDrawer() {
+      drawer.classList.remove('active');
+      drawerOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      receiptForm.reset();
+      editingIndex = null;
+    }
+
+    // ========== VIEW RECEIPT ==========
+    function viewReceipt(index) {
+      const receipt = receipts[index];
+      alert(`
+??  ›«’Ì· «·”‰œ
+???????????????????
+??? —ﬁ„ «·”‰œ: ${receipt.receiptNumber}
+?? «· «—ÌŒ: ${new Date(receipt.receiptDate).toLocaleDateString('ar-EG')}
+??û?? «·„” ·„: ${receipt.receiverName}
+?? «·»Ì«‰: ${receipt.serviceDescription || '·« ÌÊÃœ'}
+?? «·„»·€: ${parseFloat(receipt.amount || 0).toFixed(2)} —.”
+?? «·„»·€ »«·Õ—Ê›: ${receipt.amountInWords || ''}
+?? „·«ÕŸ« : ${receipt.notes || '·«  ÊÃœ'}
+      `);
+    }
+
+    // ========== EDIT RECEIPT ==========
+    function editReceipt(index) {
+      const receipt = receipts[index];
+      editingIndex = index;
+      
+      document.getElementById('receiptNumber').value = receipt.receiptNumber;
+      document.getElementById('receiptDate').value = receipt.receiptDate;
+      document.getElementById('receiverName').value = receipt.receiverName;
+      document.getElementById('contractorId').value = receipt.contractorId || '';
+      document.getElementById('serviceDescription').value = receipt.serviceDescription || '';
+      document.getElementById('amount').value = receipt.amount || 0;
+      document.getElementById('amountInWords').value = receipt.amountInWords || '';
+      document.getElementById('notes').value = receipt.notes || '';
+      
+      openDrawer(true);
+    }
+
+    // ========== DELETE RECEIPT ==========
+    async function deleteReceipt(index) {
+      if (!confirm('Â· √‰  „ √ﬂœ „‰ Õ–› Â–« «·”‰œø')) return;
+
+      const receipt = receipts[index];
+      const receiptNumber = receipt.receiptNumber || '”‰œ';
+      
+      try {
+        const response = await fetch(`https://taskon-production.up.railway.app/receipts/${receipt._id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Failed to delete');
+
+        receipts.splice(index, 1);
+        renderTable();
+        
+        // ≈—”«· ≈‘⁄«—
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          await window.sendNotification('receipt-delete', ` „ Õ–› ”‰œ ﬁ»÷ —ﬁ„: ${receiptNumber}`, 'receipts', receipt._id);
+        }
+        
+        alert('?  „ Õ–› «·”‰œ »‰Ã«Õ');
+      } catch (error) {
+        console.error('Error deleting receipt:', error);
+        alert('? ÕœÀ Œÿ√ √À‰«¡ «·Õ–›');
+      }
+    }
+
+    // ========== FORM SUBMIT ==========
+    receiptForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const contractorId = document.getElementById('contractorId').value;
+      const receiptData = {
+        receiptNumber: document.getElementById('receiptNumber').value,
+        receiptDate: document.getElementById('receiptDate').value,
+        receiverName: document.getElementById('receiverName').value,
+        contractorId: contractorId || null,
+        serviceDescription: document.getElementById('serviceDescription').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        amountInWords: document.getElementById('amountInWords').value,
+        notes: document.getElementById('notes').value
+      };
+
+      try {
+        let response;
+        if (editingIndex !== null) {
+          // Update existing receipt
+          const receiptId = receipts[editingIndex]._id;
+          response = await fetch(`https://taskon-production.up.railway.app/receipts/${receiptId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(receiptData)
+          });
+        } else {
+          // Create new receipt
+          response = await fetch('https://taskon-production.up.railway.app/receipts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(receiptData)
+          });
+        }
+
+        if (!response.ok) throw new Error('Failed to save receipt');
+
+        const isEdit = editingIndex !== null;
+        await loadReceipts();
+        
+        // ≈—”«· ≈‘⁄«—
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          const notifType = isEdit ? 'receipt-edit' : 'receipt-add';
+          const notifMsg = isEdit 
+            ? ` „  ⁄œÌ· ”‰œ ﬁ»÷ —ﬁ„: ${receiptData.receiptNumber}` 
+            : ` „ ≈÷«›… ”‰œ ﬁ»÷ ÃœÌœ —ﬁ„: ${receiptData.receiptNumber}`;
+          await window.sendNotification(notifType, notifMsg, 'receipts', '');
+        }
+        
+        closeDrawer();
+        receiptForm.reset();
+        editingIndex = null;
+        alert(isEdit ? '?  „  ÕœÌÀ «·”‰œ »‰Ã«Õ' : '?  „ ≈÷«›… «·”‰œ »‰Ã«Õ');
+      } catch (error) {
+        console.error('Error saving receipt:', error);
+        alert('? ÕœÀ Œÿ√ √À‰«¡ «·Õ›Ÿ');
+      }
+    });
+
+    // ========== EVENT LISTENERS ==========
+    btnNewReceipt.addEventListener('click', () => openDrawer(false));
+
+    // Set default date to today
+    document.getElementById('receiptDate').valueAsDate = new Date();
+
+    // ========== LOGO UPLOAD (OPTIONAL) ==========
+    const logoInput = document.getElementById('logoInput');
+    const logoPreview = document.getElementById('logoPreview');
+    const printVoucherLogo = document.getElementById('printVoucherLogo');
+
+    // Load saved logo from localStorage
+    const savedLogo = localStorage.getItem('companyLogo');
+    if (savedLogo && logoPreview) {
+      logoPreview.src = savedLogo;
+      logoPreview.style.display = 'block';
+    }
+    if (savedLogo && printVoucherLogo) {
+      printVoucherLogo.src = savedLogo;
+      printVoucherLogo.style.display = 'block';
+    }
+
+    // Only add event listener if element exists
+    if (logoInput) {
+      logoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const logoData = event.target.result;
+            // Save to localStorage
+            localStorage.setItem('companyLogo', logoData);
+            // Update preview
+            if (logoPreview) {
+              logoPreview.src = logoData;
+              logoPreview.style.display = 'block';
+            }
+            if (printVoucherLogo) {
+              printVoucherLogo.src = logoData;
+              printVoucherLogo.style.display = 'block';
+            }
+            alert('?  „ Õ›Ÿ «··ÊÃÊ »‰Ã«Õ');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // ========== PRINT FUNCTIONS ==========
+    function openPrintPreview(index) {
+      currentPrintReceipt = receipts[index];
+      const receipt = currentPrintReceipt;
+
+      // Fill voucher template with data
+      document.getElementById('printReceiptNumber').textContent = receipt.receiptNumber;
+      
+      // Format date as day/month/year
+      const date = new Date(receipt.receiptDate);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const dateParts = document.getElementById('printVoucherDate').querySelectorAll('.date-part');
+      dateParts[0].textContent = day;
+      dateParts[1].textContent = month;
+      dateParts[2].textContent = year;
+      
+      // Show contractor name if exists, otherwise receiver name
+      const contractorName = getContractorName(receipt.contractorId);
+      const displayName = contractorName || receipt.receiverName || '_________________';
+      document.getElementById('printReceivedFrom').textContent = displayName;
+      
+      document.getElementById('printAmountValue').textContent = parseFloat(receipt.amount || 0).toFixed(2);
+      document.getElementById('printAmountWords').textContent = receipt.amountInWords || numberToArabicWords(receipt.amount || 0);
+      document.getElementById('printBieng').textContent = receipt.serviceDescription || '_________________';
+      
+      // Load company logo if exists
+      const logo = localStorage.getItem('companyLogo');
+      const logoElement = document.getElementById('printVoucherLogo');
+      if (logoElement) {
+        if (logo) {
+          logoElement.src = logo;
+          logoElement.style.display = 'block';
+        } else {
+          logoElement.style.display = 'none';
+        }
+      }
+
+      // Show print template
+      document.getElementById('printTemplate').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePrintPreview() {
+      document.getElementById('printTemplate').classList.remove('active');
+      document.body.style.overflow = '';
+      currentPrintReceipt = null;
+    }
+
+    function printReceipt() {
+      window.print();
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('printContent');
+      const receiptNumber = currentPrintReceipt.receiptNumber.replace(/[/\\?%*:|"<>]/g, '-');
+      
+      const opt = {
+        margin: 10,
+        filename: `”‰œ_«” ·«„_${receiptNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        alert('?  „ Õ›Ÿ „·› PDF »‰Ã«Õ');
+      });
+    }
+
+    // Close print preview with ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('printTemplate').classList.contains('active')) {
+        closePrintPreview();
+      }
+    });
+
+    // ========== EXPORT TO EXCEL ==========
+    function exportToExcel() {
+      if (receipts.length === 0) {
+        alert('?? ·«  ÊÃœ ”‰œ«  ·· ’œÌ—');
+        return;
+      }
+
+      const data = receipts.map((r, idx) => ({
+        '„': idx + 1,
+        '—ﬁ„ «·”‰œ': r.receiptNumber,
+        '«· «—ÌŒ': new Date(r.receiptDate).toLocaleDateString('ar-EG'),
+        '«·„” ·„': r.receiverName,
+        '«·»Ì«‰': r.serviceDescription || '',
+        '«·„»·€': parseFloat(r.amount || 0).toFixed(2),
+        '«·„»·€ »«·Õ—Ê›': r.amountInWords || '',
+        '„·«ÕŸ« ': r.notes || ''
+      }));
+
+      const worksheet = data.map(row => Object.values(row));
+      const headers = Object.keys(data[0]);
+      worksheet.unshift(headers);
+
+      let csv = worksheet.map(row => row.join('\t')).join('\n');
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `”‰œ« _«·«” ·«„_${new Date().toLocaleDateString('ar-EG')}.csv`;
+      link.click();
+      alert('?  „  ’œÌ— «·»Ì«‰«  »‰Ã«Õ');
+    }
+
+    // ========== EXPORT TO PDF ==========
+    function exportToPDF() {
+      if (receipts.length === 0) {
+        alert('?? ·«  ÊÃœ ”‰œ«  ·· ’œÌ—');
+        return;
+      }
+
+      const content = `
+        <div style="font-family: 'Cairo', Arial, sans-serif; direction: rtl; padding: 20px;">
+          <h1 style="text-align: center; color: #2e8ca3;"> ﬁ—Ì— ”‰œ«  «·«” ·«„</h1>
+          <p style="text-align: center; color: #666;">«· «—ÌŒ: ${new Date().toLocaleDateString('ar-EG')}</p>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+              <tr style="background: #2e8ca3; color: white;">
+                <th style="border: 1px solid #ddd; padding: 8px;">„</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">—ﬁ„ «·”‰œ</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">«· «—ÌŒ</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">«·„” ·„</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">«·„»·€</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${receipts.map((r, idx) => `
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${idx + 1}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${r.receiptNumber}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${new Date(r.receiptDate).toLocaleDateString('ar-EG')}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${r.receiverName}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${parseFloat(r.amount || 0).toFixed(2)} —.”</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top: 20px; text-align: right; font-weight: bold;">
+            «·≈Ã„«·Ì: ${receipts.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0).toFixed(2)} —.”
+          </p>
+        </div>
+      `;
+
+      const element = document.createElement('div');
+      element.innerHTML = content;
+
+      const opt = {
+        margin: 10,
+        filename: ` ﬁ—Ì—_«·”‰œ« _${new Date().toLocaleDateString('ar-EG')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        alert('?  „  ’œÌ— «· ﬁ—Ì— »‰Ã«Õ');
+      });
+    }
+
+    // ========== PRINT ALL RECEIPTS ==========
+    function printAllReceipts() {
+      if (receipts.length === 0) {
+        alert('?? ·«  ÊÃœ ”‰œ«  ··ÿ»«⁄…');
+        return;
+      }
+      alert('??? Ã«—Ì  ÃÂÌ“ «·ÿ»«⁄…...');
+      window.print();
+    }
+
+    // ========== PRINT BLANK RECEIPT ==========
+    function printBlankReceipt() {
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write('<!DOCTYPE html>');
+      printWindow.document.write('<html dir="rtl" lang="ar">');
+      printWindow.document.write('<head>');
+      printWindow.document.write('<meta charset="UTF-8">');
+      printWindow.document.write('<title>”‰œ ﬁ»÷ ›«÷Ì</title>');
+      printWindow.document.write('<style>');
+      printWindow.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
+      printWindow.document.write('body { font-family: "Arial", "Segoe UI", sans-serif; direction: rtl; padding: 20mm; background: white; }');
+      printWindow.document.write('.voucher-container { max-width: 180mm; margin: 0 auto; padding: 15mm; border: 2px solid #000; background: #fff; }');
+      printWindow.document.write('.voucher-header { text-align: center; margin-bottom: 15mm; padding-bottom: 8mm; border-bottom: 3px double #000; }');
+      printWindow.document.write('.voucher-title-ar { font-size: 32px; font-weight: 900; letter-spacing: 3px; }');
+      printWindow.document.write('.voucher-number-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10mm; padding-bottom: 8mm; border-bottom: 1px solid #333; }');
+      printWindow.document.write('.voucher-number-label { font-size: 14px; font-weight: 600; margin-bottom: 3px; }');
+      printWindow.document.write('.voucher-number { font-size: 24px; font-weight: 700; padding: 5px 15px; border: 2px solid #000; border-radius: 4px; min-width: 100px; text-align: center; }');
+      printWindow.document.write('.voucher-body { margin-bottom: 10mm; }');
+      printWindow.document.write('.voucher-row { display: flex; align-items: center; margin-bottom: 8mm; min-height: 35px; }');
+      printWindow.document.write('.voucher-label-ar { font-weight: 700; font-size: 16px; min-width: 110px; margin-left: 15px; }');
+      printWindow.document.write('.voucher-value { flex: 1; border-bottom: 2px solid #000; padding: 5px 10px; min-height: 30px; font-size: 15px; }');
+      printWindow.document.write('.voucher-amount-row { display: flex; align-items: center; margin-bottom: 8mm; }');
+      printWindow.document.write('.voucher-amount-value { display: flex; align-items: center; gap: 10px; }');
+      printWindow.document.write('.voucher-currency-inline { font-weight: 600; white-space: nowrap; }');
+      printWindow.document.write('.voucher-amount-words { margin: 10mm 0; padding: 8mm; border: 2px solid #000; border-radius: 4px; background: #f9f9f9; }');
+      printWindow.document.write('.voucher-signatures { display: flex; justify-content: space-around; margin-top: 15mm; padding-top: 10mm; border-top: 2px solid #000; }');
+      printWindow.document.write('.voucher-signature-box { text-align: center; min-width: 150px; }');
+      printWindow.document.write('.voucher-signature-line { border-top: 2px solid #000; margin-bottom: 8px; width: 150px; margin: 0 auto 8px; }');
+      printWindow.document.write('.voucher-signature-label { font-weight: 700; font-size: 14px; }');
+      printWindow.document.write('.date-part { margin: 0 5px; }');
+      printWindow.document.write('@media print { body { padding: 0; } @page { margin: 15mm; } }');
+      printWindow.document.write('</style>');
+      printWindow.document.write('</head>');
+      printWindow.document.write('<body>');
+      printWindow.document.write('<div class="voucher-container">');
+      
+      // Header
+      printWindow.document.write('<div class="voucher-header">');
+      printWindow.document.write('<div class="voucher-title-ar">”‰œ ﬁ»÷</div>');
+      printWindow.document.write('</div>');
+      
+      // Number Section
+      printWindow.document.write('<div class="voucher-number-section">');
+      printWindow.document.write('<div>');
+      printWindow.document.write('<div class="voucher-number-label">—ﬁ„</div>');
+      printWindow.document.write('<div class="voucher-number">_______</div>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('<div class="voucher-logo-section"></div>');
+      printWindow.document.write('</div>');
+      
+      // Body
+      printWindow.document.write('<div class="voucher-body">');
+      
+      // Date Row
+      printWindow.document.write('<div class="voucher-row">');
+      printWindow.document.write('<div class="voucher-label-ar">«· «—ÌŒ:</div>');
+      printWindow.document.write('<div class="voucher-value">');
+      printWindow.document.write('<span class="date-part">____</span> / ');
+      printWindow.document.write('<span class="date-part">____</span> / ');
+      printWindow.document.write('<span class="date-part">____</span>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      
+      // Received From Row
+      printWindow.document.write('<div class="voucher-row">');
+      printWindow.document.write('<div class="voucher-label-ar">«” ·„ «·”Ìœ:</div>');
+      printWindow.document.write('<div class="voucher-value">_________________</div>');
+      printWindow.document.write('</div>');
+      
+      // Amount Row
+      printWindow.document.write('<div class="voucher-amount-row">');
+      printWindow.document.write('<div class="voucher-label-ar">„»·€ Êﬁœ—Â:</div>');
+      printWindow.document.write('<div class="voucher-value voucher-amount-value">');
+      printWindow.document.write('<span>_________________</span>');
+      printWindow.document.write('<span class="voucher-currency-inline">—Ì«· ”⁄ÊœÌ</span>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      
+      // Bank/Cheque Row
+      printWindow.document.write('<div class="voucher-row">');
+      printWindow.document.write('<div class="voucher-label-ar">«·»‰ﬂ:</div>');
+      printWindow.document.write('<div class="voucher-value">_________________</div>');
+      printWindow.document.write('<div class="voucher-label-ar" style="margin: 0 20px;">—ﬁ„ «·‘Ìﬂ / ‰ﬁœÌ:</div>');
+      printWindow.document.write('<div class="voucher-value">_________________</div>');
+      printWindow.document.write('</div>');
+      
+      // Amount in Words
+      printWindow.document.write('<div class="voucher-amount-words">');
+      printWindow.document.write('<div class="voucher-label-ar" style="margin-bottom: 10px;">«·„»·€ »«·Õ—Ê›:</div>');
+      printWindow.document.write('<div class="voucher-value" style="font-size: 1.1rem; font-weight: 700; text-align: center; border: none;">');
+      printWindow.document.write('_________________________________');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      
+      // Description
+      printWindow.document.write('<div class="voucher-row" style="min-height: 80px; align-items: flex-start;">');
+      printWindow.document.write('<div class="voucher-label-ar">Ê–·ﬂ „ﬁ«»·:</div>');
+      printWindow.document.write('<div class="voucher-value" style="flex: 1; min-height: 60px; text-align: right; padding: 10px;">');
+      printWindow.document.write('_________________');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      
+      printWindow.document.write('</div>');
+      
+      // Signatures
+      printWindow.document.write('<div class="voucher-signatures">');
+      printWindow.document.write('<div class="voucher-signature-box">');
+      printWindow.document.write('<div class="voucher-signature-line"></div>');
+      printWindow.document.write('<div class="voucher-signature-label">');
+      printWindow.document.write('<span class="voucher-label-ar">«·„” ·„</span>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('<div class="voucher-signature-box">');
+      printWindow.document.write('<div class="voucher-signature-line"></div>');
+      printWindow.document.write('<div class="voucher-signature-label">');
+      printWindow.document.write('<span class="voucher-label-ar">«·„Õ«”»</span>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div>');
+      
+      printWindow.document.write('</div>');
+      printWindow.document.write('</body>');
+      printWindow.document.write('</html>');
+      printWindow.document.close();
+      
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+
+    // ========== INIT ==========
+    loadReceipts();
+    loadContractors();
+    
+    // œ«·… „”«⁄œ… ··«‰ Ÿ«— Õ Ï Ì „  Õ„Ì· ‰Ÿ«„ «·≈‘⁄«—« 
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+    
+    //  Õ„Ì· «·‘—Ìÿ «·⁄·ÊÌ (‰›” ÿ—Ìﬁ… suppliers.html)
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      })
+      .catch(err => console.error('Œÿ√ ›Ì  Õ„Ì· «·‘—Ìÿ «·⁄·ÊÌ:', err));
+  </script>
+</body>
+</html>
+
+
+

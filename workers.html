@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>كشف العمال | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { direction: rtl; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      min-height: 100vh;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
+    }
+    .navbar {
+      background: #1a3b50;
+      color: #fff;
+      padding: 14px 0 10px 0;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 18px #1a3b5022;
+      border-radius: 0 0 24px 24px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 2;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 3px solid #2e8ca3;
+    }
+    .navbar .user-info {
+      position: absolute;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      /* background: #2e8ca3; */ /* تم إزالة الخلفية */
+      padding: 6px 18px;
+      border-radius: 18px;
+      box-shadow: 0 1px 6px #2e8ca322;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .container {
+      max-width: 1200px; /* تم التوسيع */
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #1a3b5011, 0 1.5px 8px #c5d6dbcc;
+      padding: 24px 18px 18px 18px;
+      margin-top: 4px; /* رفع المحتوى لأعلى */
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .add-btn, .monthly-btn {
+      border: 2px solid #2e8ca3;
+      background: #fff;
+      color: #1a3b50;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.85rem; /* تصغير الخط */
+      padding: 3px 10px;  /* تصغير الحشو */
+      border-radius: 0;
+      cursor: pointer;
+      margin-bottom: 0;
+      transition: background 0.15s, color 0.15s, border 0.15s;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #2e8ca311;
+      outline: none;
+      display: inline-block;
+    }
+    .export-btn {
+      border: 2px solid #27ae60;
+      background: #27ae60;
+      color: #fff;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 0;
+      cursor: pointer;
+      margin-bottom: 0;
+      margin-right: 6px;
+      transition: background 0.15s, color 0.15s, border 0.15s;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #27ae6011;
+      outline: none;
+      display: inline-block;
+    }
+    .add-btn:hover, .add-btn:focus,
+    .monthly-btn:hover, .monthly-btn:focus {
+      background: #2e8ca3;
+      color: #fff;
+      border-color: #1a3b50;
+    }
+    .export-btn:hover, .export-btn:focus {
+      background: #219150;
+      color: #fff;
+      border-color: #219150;
+    }
+    h1 {
+      color: #1a3b50;
+      text-align: center;
+      margin-bottom: 12px; /* تقليل المسافة السفلية */
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      background: #f8fafb;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 4px 8px; /* تقليل الارتفاع */
+      text-align: center;
+      border-bottom: 1px solid #c5d6db;
+      font-size: 0.95rem; /* تصغير الخط */
+    }
+    th {
+      background: #2e8ca3;
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.95rem;
+      padding: 4px 8px; /* تقليل الارتفاع */
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .footer {
+      text-align: center;
+      color: #2e8ca3;
+      font-size: 1.1rem;
+      margin-top: 60px;
+      padding-bottom: 18px;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      font-weight: 500;
+      text-shadow: 0 1px 8px #2e8ca311;
+    }
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0006;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px #1a3b5044;
+      padding: 28px 18px 18px 18px;
+      min-width: 420px; /* تم التوسيع */
+      max-width: 99vw;
+      width: 520px;     /* تم التوسيع */
+      position: relative;
+      font-family: 'Cairo', Arial, sans-serif;
+      direction: rtl;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-fields-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .modal-fields-row > div {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal label {
+      font-weight: 700;
+      color: #1a3b50;
+      margin-bottom: 4px;
+      font-size: 1rem;
+      display: block;
+    }
+    .modal input, .modal select {
+      width: 100%;
+      padding: 4px 8px; /* تقليل الارتفاع */
+      border: 1.5px solid #c5d6db;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+      margin-bottom: 8px;
+      outline: none;
+      transition: border 0.15s;
+      height: 32px; /* تقليل الارتفاع */
+      box-sizing: border-box;
+    }
+    .modal input:focus, .modal select:focus {
+      border-color: #2e8ca3;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .modal-btn {
+      border: none;
+      background: #2e8ca3;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 7px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .modal-btn.cancel {
+      background: #c5d6db;
+      color: #1a3b50;
+    }
+    .modal-btn:hover, .modal-btn:focus {
+      background: #1a3b50;
+      color: #fff;
+    }
+    .modal-btn.cancel:hover, .modal-btn.cancel:focus {
+      background: #8c969a;
+      color: #fff;
+    }
+    @media (max-width: 900px) {
+      .container { max-width: 99vw; }
+      .header-row h1 { font-size: 1.2rem; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px 2px; }
+      .header-row { flex-direction: column-reverse; align-items: stretch; gap: 6px; }
+      .header-row h1 { font-size: 1.1rem; }
+      th, td { font-size: 0.95rem; padding: 7px 2px; }
+      .modal-fields-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container" style="margin-top:4px;">
+    <div class="header-actions" style="margin-bottom:18px; justify-content:space-between; display:flex; gap:10px; align-items:center;">
+      <!-- زر إضافة وزر تصدير Excel بجانب بعض -->
+      <div style="display:flex; gap:6px;">
+        <button class="add-btn" id="addWorkerBtn" style="font-size:0.85rem; padding:3px 10px;">إضافة</button>
+        <button class="export-btn" id="exportExcelBtn" style="font-size:0.85rem; padding:3px 10px;">تصدير Excel</button>
+      </div>
+      <!-- مربع البحث في المنتصف -->
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="بحث بالاسم أو مكان العمل أو المراقب"
+        style="flex:1 1 320px; max-width:340px; min-width:180px; margin:0 18px; padding:6px 12px; border:1.5px solid #c5d6db; border-radius:8px; font-size:1rem; font-family:'Cairo',Arial,sans-serif;"
+      >
+      <button class="monthly-btn" id="monthlyPayBtn" style="font-size:0.85rem; padding:3px 10px;">القبض الشهري</button>
+    </div>
+    <!-- حذف العنوان h1 بالكامل -->
+    <table id="workersTable">
+      <thead>
+        <tr>
+          <th>الرقم</th>
+          <th>اسم العامل</th>
+          <th>تاريخ بدء العمل</th>
+          <th>رقم الهوية</th>
+          <th>مكان العمل</th>
+          <th>المراقب / المهندس</th>
+          <th>حالة العمل</th>
+          <th>إجراءات</th>
+        </tr>
+      </thead>
+      <tbody id="workersTbody">
+        <!-- سيتم تعبئة العمال من قاعدة البيانات -->
+      </tbody>
+    </table>
+  </div>
+  <!-- مربع إضافة عامل -->
+  <div class="modal-overlay" id="modalOverlay">
+    <form class="modal" id="workerForm" autocomplete="off">
+      <div class="modal-fields-row">
+        <div>
+          <label for="workerName">اسم العامل</label>
+          <input type="text" id="workerName" required>
+        </div>
+        <div>
+          <label for="startDate">تاريخ بدء العمل</label>
+          <input type="date" id="startDate" required>
+        </div>
+      </div>
+      <div class="modal-fields-row">
+        <div>
+          <label for="idNumber">رقم الهوية</label>
+          <input type="text" id="idNumber" required pattern="\d+">
+        </div>
+        <div>
+          <label for="workPlace">مكان العمل</label>
+          <input type="text" id="workPlace" required>
+        </div>
+      </div>
+      <div class="modal-fields-row">
+        <div>
+          <label for="supervisor">المراقب / المهندس</label>
+          <input type="text" id="supervisor" required>
+        </div>
+        <div>
+          <label for="workStatus">حالة العمل</label>
+          <select id="workStatus" required>
+            <option value="يعمل">يعمل</option>
+            <option value="إجازة">إجازة</option>
+            <option value="موقوف">موقوف</option>
+            <option value="منتهي">منتهي</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" id="cancelModalBtn">إلغاء</button>
+        <button type="submit" class="modal-btn">حفظ</button>
+      </div>
+    </form>
+  </div>
+  <div class="footer">
+    جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
+  </div>
+  <!-- أضف مكتبة SheetJS قبل السكريبتات -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script>
+    // حماية الصفحة
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+
+    // استخدم متغير باسم مختلف لتفادي التعارض مع الشريط العلوي
+    const pageUser = localStorage.getItem('user');
+    if (pageUser) {
+      try {
+        const username = JSON.parse(pageUser).username || '';
+        // إذا كان عنصر userInfo موجود في الصفحة (قد لا يكون موجودًا بعد إزالة الشريط العلوي المحلي)
+        const userInfoEl = document.getElementById('userInfo');
+        if (userInfoEl && userInfoEl.childNodes[0]) {
+          userInfoEl.childNodes[0].textContent = '👤 ' + username + ' ';
+        }
+      } catch {}
+    }
+
+    // تأكد من وجود العناصر قبل ربط الأحداث
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.onclick = function() {
+          localStorage.removeItem('user');
+          window.location.href = 'login.html';
+        };
+      }
+      const addWorkerBtn = document.getElementById('addWorkerBtn');
+      if (addWorkerBtn) {
+        addWorkerBtn.onclick = function() {
+          document.getElementById('modalOverlay').style.display = 'flex';
+          document.getElementById('workerForm').reset();
+          setTimeout(() => document.getElementById('workerName').focus(), 100);
+        };
+      }
+      const monthlyPayBtn = document.getElementById('monthlyPayBtn');
+      if (monthlyPayBtn) {
+        monthlyPayBtn.onclick = function() {
+          window.location.href = 'monthly-pay.html';
+        };
+      }
+      const cancelModalBtn = document.getElementById('cancelModalBtn');
+      if (cancelModalBtn) {
+        cancelModalBtn.onclick = function() {
+          document.getElementById('modalOverlay').style.display = 'none';
+        };
+      }
+      const modalOverlay = document.getElementById('modalOverlay');
+      if (modalOverlay) {
+        modalOverlay.onclick = function(e) {
+          if (e.target === this) this.style.display = 'none';
+        };
+      }
+      // البحث
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', renderWorkersTable);
+      }
+    });
+
+    // جلب العمال من السيرفر وعرضهم (مع معالجة الأخطاء)
+    let allWorkers = [];
+    async function fetchWorkers() {
+      try {
+        const res = await fetch('/workers');
+        if (!res.ok) {
+          allWorkers = [];
+          alert('تعذر جلب بيانات العمال من السيرفر');
+          renderWorkersTable();
+          return;
+        }
+        // تحقق أن الاستجابة JSON فعلاً
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          allWorkers = [];
+          alert('الاستجابة من السيرفر ليست بيانات JSON');
+          renderWorkersTable();
+          return;
+        }
+        allWorkers = await res.json();
+        renderWorkersTable();
+      } catch (err) {
+        allWorkers = [];
+        alert('حدث خطأ أثناء جلب العمال: ' + err.message);
+        renderWorkersTable();
+      }
+    }
+
+    // عرض العمال في الجدول (مع دعم البحث)
+    function renderWorkersTable() {
+      const tbody = document.getElementById('workersTbody');
+      const q = document.getElementById('searchInput').value.trim();
+      tbody.innerHTML = '';
+      let filtered = allWorkers;
+      if (q) {
+        filtered = allWorkers.filter(w =>
+          (w.name || '').includes(q) ||
+          (w.place || '').includes(q) ||
+          (w.supervisor || '').includes(q)
+        );
+      }
+      filtered.forEach((w, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${w.name || ''}</td>
+          <td>${w.date || ''}</td>
+          <td>${w.idNum || ''}</td>
+          <td>${w.place || ''}</td>
+          <td>${w.supervisor || ''}</td>
+          <td>${w.status || ''}</td>
+          <td style="display:flex; justify-content:center; align-items:center; gap:2px;">
+            <button class="edit-btn" data-id="${w._id}" style="background:none; border:none; padding:1px; cursor:pointer;" title="تعديل">
+              <svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle; fill:#2e8ca3;">
+                <path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm14.71-10.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+              </svg>
+            </button>
+            <button class="delete-btn" data-id="${w._id}" style="background:none; border:none; padding:1px; cursor:pointer;" title="حذف">
+              <svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle; fill:#a0522d;">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+      attachDeleteEvents();
+      attachEditEvents();
+    }
+
+    // إضافة عامل جديد
+    document.getElementById('workerForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('workerName').value.trim();
+      const date = document.getElementById('startDate').value;
+      const idNum = document.getElementById('idNumber').value.trim();
+      const place = document.getElementById('workPlace').value.trim();
+      const supervisor = document.getElementById('supervisor').value.trim();
+      const status = document.getElementById('workStatus').value;
+      const editId = document.getElementById('workerForm').getAttribute('data-edit-id');
+      if (editId) {
+        // تعديل عامل
+        const res = await fetch('/workers/' + editId, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, date, idNum, place, supervisor, status })
+        });
+        if (res.ok) {
+          const result = await res.json();
+          
+          // إرسال إشعار بتعديل العامل
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'worker-edit',
+              `تم تعديل بيانات العامل: ${name} - ${place}`,
+              'workers',
+              editId
+            );
+          }
+          
+          document.getElementById('workerForm').removeAttribute('data-edit-id');
+          document.getElementById('modalOverlay').style.display = 'none';
+          await fetchWorkers();
+        } else {
+          alert('تعذر تعديل بيانات العامل!');
+        }
+      } else {
+        // إضافة عامل جديد
+        const res = await fetch('/workers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, date, idNum, place, supervisor, status })
+        });
+        if (res.ok) {
+          const result = await res.json();
+          
+          // إرسال إشعار بإضافة عامل جديد
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification(
+              'worker-add',
+              `تم إضافة عامل جديد: ${name} - ${place}`,
+              'workers',
+              result.insertedId || ''
+            );
+          }
+          
+          document.getElementById('modalOverlay').style.display = 'none';
+          await fetchWorkers();
+        } else {
+          alert('تعذر إضافة العامل!');
+        }
+      }
+    };
+
+    // حذف عامل عند الضغط على زر الحذف
+    function attachDeleteEvents() {
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = async function() {
+          if (confirm('هل أنت متأكد من حذف هذا العامل؟')) {
+            const id = btn.getAttribute('data-id');
+            const worker = allWorkers.find(w => w._id === id);
+            const workerName = worker ? worker.name : 'غير محدد';
+            
+            const res = await fetch('/workers/' + id, { method: 'DELETE' });
+            
+            if (res.ok) {
+              // إرسال إشعار بحذف العامل
+              await window.waitForNotificationSystem();
+              if (window.sendNotification) {
+                await window.sendNotification(
+                  'worker-delete',
+                  `تم حذف العامل: ${workerName}`,
+                  'workers',
+                  id
+                );
+              }
+            }
+            
+            await fetchWorkers();
+          }
+        };
+      });
+    }
+
+    // تعديل عامل عند الضغط على زر التعديل (جديد)
+    function attachEditEvents() {
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.onclick = function() {
+          const id = btn.getAttribute('data-id');
+          const worker = allWorkers.find(w => w._id === id);
+          if (!worker) return;
+          document.getElementById('workerName').value = worker.name || '';
+          document.getElementById('startDate').value = worker.date || '';
+          document.getElementById('idNumber').value = worker.idNum || '';
+          document.getElementById('workPlace').value = worker.place || '';
+          document.getElementById('supervisor').value = worker.supervisor || '';
+          document.getElementById('workStatus').value = worker.status || '';
+          document.getElementById('modalOverlay').style.display = 'flex';
+          document.getElementById('workerForm').setAttribute('data-edit-id', id);
+          setTimeout(() => document.getElementById('workerName').focus(), 100);
+        };
+      });
+    }
+
+    // زر تصدير العمال إلى Excel
+    document.getElementById('exportExcelBtn').onclick = function() {
+      const data = [
+        ["الرقم", "اسم العامل", "تاريخ بدء العمل", "رقم الهوية", "مكان العمل", "المراقب / المهندس", "حالة العمل"]
+      ];
+      let filtered = allWorkers;
+      const q = document.getElementById('searchInput').value.trim();
+      if (q) {
+        filtered = allWorkers.filter(w =>
+          (w.name || '').includes(q) ||
+          (w.place || '').includes(q) ||
+          (w.supervisor || '').includes(q)
+        );
+      }
+      filtered.forEach((w, idx) => {
+        data.push([
+          idx + 1,
+          w.name || '',
+          w.date || '',
+          w.idNum || '',
+          w.place || '',
+          w.supervisor || '',
+          w.status || ''
+        ]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "العمال");
+      XLSX.writeFile(wb, "workers.xlsx");
+    };
+
+    // عند تحميل الصفحة
+    fetchWorkers();
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    // دالة مساعدة للانتظار حتى يتم تحميل sendNotification
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>

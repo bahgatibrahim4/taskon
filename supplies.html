@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>التوريدات | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { direction: rtl; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      direction: rtl;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1500px; /* تم التوسيع من 1300px */
+      margin: 24px auto;
+      background: #f7fafd;
+      border-radius: 18px;
+      box-shadow: 0 0 24px #0002;
+      padding: 28px 24px 18px 24px;
+      border: 2px solid #8c969a;
+    }
+    h2 {
+      color: #2e8ca3;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-align: right;
+    }
+    .supplies-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-bottom: 24px;
+      align-items: center;
+      background: none; /* إزالة الخلفية الخضراء الفاتحة */
+      border-radius: 10px;
+      padding: 12px 10px;
+      border: 1.5px solid #1b5e20;
+      justify-content: flex-start;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;
+      flex: 1 1 180px;
+      margin-bottom: 0;
+    }
+    .form-group label {
+      color: #2e8ca3;
+      font-weight: 600;
+      margin-bottom: 3px;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+    .form-group input, .form-group select {
+      padding: 6px 8px;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      border: 1.2px solid #c5d6db;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: #2e8ca3;
+      background: #c5d6db;
+    }
+    .add-btn {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 8px 24px;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: background 0.2s;
+      box-shadow: 0 2px 10px #0001;
+    }
+    .add-btn:hover {
+      background: #1a3b50;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #f7fafd;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px #8c969a;
+    }
+    th, td {
+      padding: 8px 4px;
+      border-bottom: 1px solid #c5d6db;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.95rem;
+      background: transparent;
+      white-space: nowrap;
+      word-break: break-word;
+    }
+    th.item-col, td.item-col {
+      min-width: 180px;
+      width: 220px;
+    }
+    th {
+      background: #2e8ca3 !important;
+      color: #fff !important;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: #c5d6db;
+      transition: background 0.18s;
+    }
+    .delete-btn {
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .delete-btn:hover {
+      background: #b71c1c;
+    }
+    
+    /* زر الإضافة العائم الجديد */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2e8ca3, #1a3b50);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      z-index: 900;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    .fab:hover {
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* تحسينات على النافذة المنبثقة */
+    #addSupplyModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    #addSupplyModal.show {
+      opacity: 1;
+      display: flex;
+    }
+    
+    #addSupplyModal > div {
+      transform: translateY(30px);
+      transition: transform 0.3s ease;
+    }
+    
+    #addSupplyModal.show > div {
+      transform: translateY(0);
+    }
+    
+    /* تحسينات للشكل العام للنافذة */
+    #addSupplyModal > div {
+      background: #fff;
+      /* border-radius: 22px; */ /* احذف التدوير */
+      border-radius: 0;
+      box-shadow: 0 8px 32px #1976d233, 0 1.5px 0 #2e8ca3;
+      padding: 22px 18px 18px 18px;
+      min-width: 340px;
+      max-width: 480px;
+      width: 98vw;
+      margin: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2.5px solid #2e8ca3;
+      transition: box-shadow 0.2s;
+    }
+    #closeAddSupplyModalBtn {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      background: linear-gradient(135deg,#e53935 60%,#ffb4a2 100%);
+      border: none;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      box-shadow: 0 2px 8px #e5393533;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s;
+    }
+    #closeAddSupplyModalBtn:hover {
+      background: #b71c1c;
+    }
+    #addSupplyModal > div h3 {
+      color: #1976d2;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-family: 'Tajawal','Cairo',Arial,sans-serif;
+      font-size: 1.13rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 0 #fff, 0 2px 8px #1976d222;
+    }
+    #addSupplyModal > div form.supplies-form {
+      background: none; /* إزالة الخلفية الزرقاء الفاتحة */
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      gap: 10px;
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #addSupplyModal > div .form-group label {
+      color: #2e8ca3;
+      font-weight: 600;
+      margin-bottom: 3px;
+      font-size: 0.97rem;
+      letter-spacing: 0.5px;
+    }
+    #addSupplyModal > div .form-group input,
+    #addSupplyModal > div .form-group select {
+      padding: 6px 8px;
+      font-size: 0.97rem;
+      border-radius: 6px;
+      border: 1.2px solid #c5d6db;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    #addSupplyModal > div .form-group input:focus,
+    #addSupplyModal > div .form-group select:focus {
+      border-color: #2e8ca3;
+      background: #c5d6db;
+    }
+    #addSupplyModal > div .add-btn {
+      background: #2e8ca3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 8px 24px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+      box-shadow: 0 2px 10px #0001;
+      width: 100%;
+    }
+    #addSupplyModal > div .add-btn:hover {
+      background: #1a3b50;
+    }
+
+    /* نافذة أمر الإرجاع */
+    #returnOrderModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: flex-start;
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 20px 0;
+    }
+    
+    #returnOrderModal.show {
+      display: flex;
+    }
+    
+    #returnOrderModal > div {
+      background: #f7fafd;
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      padding: 30px;
+      width: 90%;
+      max-width: 800px;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      border: 2px solid #d32f2f;
+    }
+    
+    #returnOrderModal.show > div {
+      transform: scale(1);
+    }
+    
+    #closeReturnOrderModalBtn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: #d32f2f;
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      transition: all 0.2s;
+    }
+    
+    #closeReturnOrderModalBtn:hover {
+      background: #b71c1c;
+      transform: scale(1.1);
+    }
+    
+    #returnOrderModal > div h3 {
+      color: #d32f2f;
+      margin-top: 0;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-bottom: 2px solid #d32f2f;
+      padding-bottom: 10px;
+    }
+    
+    #returnOrderModal textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    #returnOrderModal textarea:focus {
+      border-color: #d32f2f;
+      outline: none;
+    }
+    
+    #returnPreview {
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* تحسينات على الجوال */
+    @media (max-width: 900px) {
+      .container { padding: 8px; }
+      .supplies-form { flex-direction: column; gap: 10px; padding: 10px 4px; }
+      table { font-size: .92rem; }
+      th, td { padding: 4px; }
+      .add-btn { padding: 8px 12px; font-size: 0.92rem; }
+      
+      .fab {
+        bottom: 16px;
+        left: 16px;
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+      }
+      
+      #returnOrderModal > div {
+        width: 95%;
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      #returnOrderModal > div h3 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container" style="margin-top:8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button id="openAddSupplyModalBtn" style="background:#2e8ca3;color:#fff;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+          + إضافة
+        </button>
+        <button onclick="location.href='suppliers.html'" style="background:#8d5524;color:#fff;border:2px solid #8d5524;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+          الموردين
+        </button>
+        <!-- زر أمر الإرجاع -->
+        <button id="openReturnOrderModalBtn" style="background:#d32f2f;color:#fff;border:2px solid #d32f2f;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+          ↩ أمر إرجاع
+        </button>
+        <!-- زر تصدير إلى Excel -->
+        <button id="exportExcelBtn" style="background:#fff;color:#2e8ca3;border:2px solid #2e8ca3;border-radius:0;padding:3px 10px;font-size:0.98rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;box-shadow:none;transition:background 0.2s, color 0.2s, border-color 0.2s;min-width:0;">
+          تصدير Excel
+        </button>
+      </div>
+      <!-- العنوان في منتصف السطر مع الأزرار -->
+      <div style="flex:1;display:flex;justify-content:center;align-items:center;">
+        <h2 style="margin:0; text-align:center; font-size:1.18rem;">سجل التوريدات</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;position:relative;">
+        <input id="supplySearchBox" type="text" placeholder="ابحث بالاسم أو الصنف..."
+          style="width:200px;max-width:30vw;padding:3px 8px;font-size:1.02rem;font-family:'Cairo',Arial,sans-serif;font-weight:600;border-radius:0;border:2px solid #2e8ca3;outline:none;box-shadow:none;text-align:center;letter-spacing:0.5px;transition:border-color 0.18s;color:#1a3b50;background:#fafdff;height:24px;">
+        <!-- زر الفلتر بعد مربع البحث -->
+        <button id="filterToggleBtn" title="فلترة بالتاريخ" style="background:#fff;border:2px solid #2e8ca3;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;margin-right:4px;">
+          <!-- أيقونة فلتر SVG بخط أنعم وأشيك -->
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M7 10h6M9 15h2" stroke="#1976d2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <!-- نافذة الفلترة تظهر تحت مربع البحث والزر -->
+        <div id="filterBox"
+          style="display:none;position:absolute;top:calc(100% + 8px);right:0;left:auto;background:#fff;border:1.5px solid #2e8ca3;border-radius:10px;box-shadow:0 2px 12px #0002;padding:14px 18px 12px 18px;z-index:1000;min-width:260px;max-width:340px;">
+          <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <label for="filterFrom" style="font-size:0.97rem;color:#2e8ca3;font-weight:600;">من</label>
+              <input type="date" id="filterFrom"
+                style="flex:1;padding:4px 8px;font-size:0.97rem;border:1px solid #8c969a;border-radius:6px;background:#f7fafd;">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <label for="filterTo" style="font-size:0.97rem;color:#2e8ca3;font-weight:600;">إلى</label>
+              <input type="date" id="filterTo"
+                style="flex:1;padding:4px 8px;font-size:0.97rem;border:1px solid #8c969a;border-radius:6px;background:#f7fafd;">
+            </div>
+            <button id="filterApplyBtn"
+              style="margin-top:6px;background:#2e8ca3;color:#fff;border:none;border-radius:6px;padding:6px 0;font-size:1rem;font-family:'Cairo',Arial,sans-serif;font-weight:700;cursor:pointer;width:100%;letter-spacing:1px;transition:background 0.18s;">
+              تطبيق
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- نافذة إضافة توريد -->
+    <div id="addSupplyModal">
+      <div>
+        <button id="closeAddSupplyModalBtn">&times;</button>
+        <h3>إضافة توريد جديد</h3>
+        <form id="supplyForm" class="supplies-form">
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>تاريخ التوريد</label>
+              <input type="date" name="date" required>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>اسم المورد</label>
+              <select name="supplier" id="supplierSelect" required>
+                <option value="">اختر المورد</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>الصنف</label>
+              <input type="text" name="item" required placeholder="اسم الصنف">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>الكمية</label>
+              <input type="number" name="quantity" min="1" step="any" required placeholder="الكمية">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>الوحدة</label>
+              <input type="text" name="unit" required placeholder="الوحدة">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>السعر للوحدة</label>
+              <input type="number" name="unitPrice" min="0" step="any" required placeholder="السعر للوحدة">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>الإجمالي</label>
+              <input type="number" name="total" readonly placeholder="الإجمالي">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>رابط الفاتورة</label>
+              <input type="text" name="invoice" placeholder="رابط الفاتورة (اختياري)">
+            </div>
+          </div>
+          <!-- إضافة حقل رقم الفاتورة -->
+          <div style="display:flex;gap:10px;width:100%;">
+            <div class="form-group" style="flex:1;">
+              <label>رقم الفاتورة</label>
+              <input type="text" name="invoiceNo" placeholder="رقم الفاتورة (اختياري)">
+            </div>
+            <div style="flex:1;"></div>
+          </div>
+          <button type="submit" class="add-btn">إضافة التوريد</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- نافذة أمر الإرجاع -->
+    <div id="returnOrderModal">
+      <div>
+        <button id="closeReturnOrderModalBtn">&times;</button>
+        <h3>🔄 أمر إرجاع توريد</h3>
+        <form id="returnOrderForm" class="supplies-form">
+          <div style="display:flex;flex-wrap:wrap;gap:18px;width:100%;">
+            <div class="form-group">
+              <label>اختر التوريد المراد إرجاعه:</label>
+              <select name="originalSupplyId" required style="width:100%;">
+                <option value="">-- اختر التوريد --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الكمية المرجعة:</label>
+              <input type="number" name="returnedQuantity" step="0.01" min="0.01" required>
+              <small style="color:#666;font-size:0.85rem;">الحد الأقصى: <span id="maxReturnQty">0</span></small>
+            </div>
+            <div class="form-group">
+              <label>سبب الإرجاع:</label>
+              <select name="returnReason" required>
+                <option value="">-- اختر السبب --</option>
+                <option value="عيب في المادة">عيب في المادة</option>
+                <option value="مطابقة غير صحيحة">مطابقة غير صحيحة</option>
+                <option value="كمية زائدة">كمية زائدة</option>
+                <option value="انتهاء صلاحية">انتهاء صلاحية</option>
+                <option value="طلب العميل">طلب العميل</option>
+                <option value="خطأ في التوريد">خطأ في التوريد</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>تفاصيل إضافية:</label>
+              <textarea name="returnNotes" rows="2" placeholder="اكتب أي ملاحظات إضافية..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>تاريخ الإرجاع:</label>
+              <input type="date" name="returnDate" required>
+            </div>
+            <div class="form-group">
+              <label>المبلغ المسترد:</label>
+              <input type="number" name="refundAmount" step="0.01" min="0" readonly>
+              <small style="color:#666;font-size:0.85rem;">يحسب تلقائياً</small>
+            </div>
+          </div>
+          
+          <!-- معاينة تفاصيل الإرجاع -->
+          <div id="returnPreview" style="display:none;background:#fff3cd;border:1px solid #ffeaa7;padding:15px;border-radius:8px;margin-top:15px;">
+            <h4 style="margin-top:0;color:#856404;">📋 تفاصيل أمر الإرجاع:</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.9rem;">
+              <div><strong>التوريد الأصلي:</strong> <span id="previewOriginal"></span></div>
+              <div><strong>الكمية المرجعة:</strong> <span id="previewQuantity"></span></div>
+              <div><strong>المبلغ المسترد:</strong> <span id="previewAmount"></span></div>
+              <div><strong>سبب الإرجاع:</strong> <span id="previewReason"></span></div>
+            </div>
+          </div>
+          
+          <button type="submit" class="add-btn" style="background:#d32f2f;border-color:#d32f2f;">تنفيذ أمر الإرجاع</button>
+        </form>
+      </div>
+    </div>
+    <!-- احذف العنوان المنفصل القديم -->
+    <!-- إضافة مسافة بسيطة بين الأزرار والجدول -->
+    <div style="height:18px;"></div>
+    <table id="suppliesTable">
+      <thead>
+        <tr>
+          <th>م</th>
+          <th>تاريخ التوريد</th>
+          <th>النوع</th>
+          <th>اسم المورد</th>
+          <th class="item-col">الصنف</th>
+          <th>الكمية</th>
+          <th>الوحدة</th>
+          <th>السعر للوحدة</th>
+          <th>الإجمالي</th>
+          <th>رقم الفاتورة</th>
+          <th>الفاتورة</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- الصفوف تضاف ديناميكياً -->
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // إظهار/إخفاء نافذة إضافة توريد
+    const openAddSupplyModalBtn = document.getElementById('openAddSupplyModalBtn');
+    // const floatingAddBtn = document.getElementById('floatingAddBtn'); // لم يعد مستخدماً
+    const addSupplyModal = document.getElementById('addSupplyModal');
+    const closeAddSupplyModalBtn = document.getElementById('closeAddSupplyModalBtn');
+    const supplyForm = document.getElementById('supplyForm');
+    
+    function openModal() {
+      addSupplyModal.classList.add('show');
+      setTimeout(() => {
+        supplyForm.date.focus();
+      }, 100);
+    }
+    
+    function closeModal() {
+      addSupplyModal.classList.remove('show');
+    }
+    
+    openAddSupplyModalBtn.onclick = openModal;
+    // floatingAddBtn.onclick = openModal; // لم يعد مستخدماً
+
+    // أصلح هنا: استخدم addEventListener بدلاً من = للزر X
+    closeAddSupplyModalBtn.addEventListener('click', closeModal);
+
+    addSupplyModal.onclick = function(e) {
+      if (e.target === addSupplyModal) closeModal();
+    };
+    
+    document.addEventListener('keydown', function(e) {
+      if (addSupplyModal.classList.contains('show') && e.key === 'Escape') closeModal();
+    });
+
+    // نافذة أمر الإرجاع
+    const openReturnOrderModalBtn = document.getElementById('openReturnOrderModalBtn');
+    const returnOrderModal = document.getElementById('returnOrderModal');
+    const closeReturnOrderModalBtn = document.getElementById('closeReturnOrderModalBtn');
+    const returnOrderForm = document.getElementById('returnOrderForm');
+
+    function openReturnModal() {
+      // تحديث قائمة التوريدات المتاحة للإرجاع
+      populateSuppliesForReturn();
+      returnOrderModal.classList.add('show');
+      // تعيين التاريخ الافتراضي لتاريخ الإرجاع
+      const today = new Date().toISOString().split('T')[0];
+      returnOrderForm.returnDate.value = today;
+    }
+
+    function closeReturnModal() {
+      returnOrderModal.classList.remove('show');
+      returnOrderForm.reset();
+      document.getElementById('returnPreview').style.display = 'none';
+    }
+
+    // ملء قائمة التوريدات المتاحة للإرجاع
+    async function populateSuppliesForReturn() {
+      try {
+        const response = await fetch('/supplies');
+        allSupplies = await response.json();
+        
+        const suppliesSelect = returnOrderForm.originalSupplyId;
+        suppliesSelect.innerHTML = '<option value="">-- اختر التوريد --</option>';
+        
+        // فلترة التوريدات التي لم يتم إرجاعها بالكامل
+        const availableSupplies = allSupplies.filter(supply => {
+          const issuedQty = supply.issued || 0;
+          const availableForReturn = supply.quantity - issuedQty;
+          return availableForReturn > 0;
+        });
+        
+        availableSupplies.forEach(supply => {
+          const option = document.createElement('option');
+          option.value = supply._id;
+          option.textContent = `${supply.item} - ${supply.supplier} - كمية: ${supply.quantity} ${supply.unit} - ${supply.date}`;
+          option.dataset.quantity = supply.quantity;
+          option.dataset.issued = supply.issued || 0;
+          option.dataset.unitPrice = supply.unitPrice;
+          option.dataset.supplier = supply.supplier;
+          option.dataset.item = supply.item;
+          option.dataset.unit = supply.unit;
+          suppliesSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('خطأ في جلب التوريدات:', error);
+        alert('حدث خطأ في جلب التوريدات');
+      }
+    }
+
+    // تحديث الحد الأقصى للكمية المرجعة عند اختيار التوريد
+    returnOrderForm.originalSupplyId.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      if (selectedOption.value) {
+        const quantity = parseFloat(selectedOption.dataset.quantity);
+        const issued = parseFloat(selectedOption.dataset.issued || 0);
+        const maxReturn = quantity - issued;
+        
+        document.getElementById('maxReturnQty').textContent = `${maxReturn} ${selectedOption.dataset.unit}`;
+        returnOrderForm.returnedQuantity.max = maxReturn;
+        returnOrderForm.returnedQuantity.placeholder = `الحد الأقصى: ${maxReturn}`;
+        
+        // حساب المبلغ المسترد عند تغيير الكمية
+        updateRefundAmount();
+      } else {
+        document.getElementById('maxReturnQty').textContent = '0';
+        returnOrderForm.returnedQuantity.max = '';
+        returnOrderForm.returnedQuantity.placeholder = '';
+        returnOrderForm.refundAmount.value = '';
+      }
+    });
+
+    // حساب المبلغ المسترد تلقائياً
+    function updateRefundAmount() {
+      const selectedOption = returnOrderForm.originalSupplyId.options[returnOrderForm.originalSupplyId.selectedIndex];
+      if (selectedOption.value && returnOrderForm.returnedQuantity.value) {
+        const unitPrice = parseFloat(selectedOption.dataset.unitPrice);
+        const returnedQty = parseFloat(returnOrderForm.returnedQuantity.value);
+        const refundAmount = unitPrice * returnedQty;
+        returnOrderForm.refundAmount.value = refundAmount.toFixed(2);
+        
+        // إظهار معاينة تفاصيل الإرجاع
+        showReturnPreview(selectedOption, returnedQty, refundAmount);
+      }
+    }
+
+    returnOrderForm.returnedQuantity.addEventListener('input', updateRefundAmount);
+
+    // إظهار معاينة تفاصيل الإرجاع
+    function showReturnPreview(selectedOption, returnedQty, refundAmount) {
+      const preview = document.getElementById('returnPreview');
+      document.getElementById('previewOriginal').textContent = `${selectedOption.dataset.item} من ${selectedOption.dataset.supplier}`;
+      document.getElementById('previewQuantity').textContent = `${returnedQty} ${selectedOption.dataset.unit}`;
+      document.getElementById('previewAmount').textContent = `${refundAmount.toFixed(2)} جنيه`;
+      document.getElementById('previewReason').textContent = returnOrderForm.returnReason.value || 'لم يحدد بعد';
+      preview.style.display = 'block';
+    }
+
+    returnOrderForm.returnReason.addEventListener('change', function() {
+      if (returnOrderForm.returnedQuantity.value) {
+        updateRefundAmount(); // لتحديث معاينة السبب
+      }
+    });
+
+    openReturnOrderModalBtn.onclick = openReturnModal;
+    closeReturnOrderModalBtn.addEventListener('click', closeReturnModal);
+
+    returnOrderModal.onclick = function(e) {
+      if (e.target === returnOrderModal) closeReturnModal();
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if (returnOrderModal.classList.contains('show') && e.key === 'Escape') closeReturnModal();
+    });
+
+    // معالج إرسال نموذج أمر الإرجاع
+    returnOrderForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(returnOrderForm);
+      const returnData = {
+        originalSupplyId: formData.get('originalSupplyId'),
+        returnedQuantity: parseFloat(formData.get('returnedQuantity')),
+        returnReason: formData.get('returnReason'),
+        returnNotes: formData.get('returnNotes'),
+        returnDate: formData.get('returnDate'),
+        refundAmount: parseFloat(formData.get('refundAmount'))
+      };
+
+      // التحقق من صحة البيانات
+      const selectedOption = returnOrderForm.originalSupplyId.options[returnOrderForm.originalSupplyId.selectedIndex];
+      const maxReturn = parseFloat(selectedOption.dataset.quantity) - parseFloat(selectedOption.dataset.issued || 0);
+      
+      if (returnData.returnedQuantity > maxReturn) {
+        alert(`الكمية المرجعة لا يمكن أن تتجاوز ${maxReturn} ${selectedOption.dataset.unit}`);
+        return;
+      }
+
+      try {
+        console.log('إرسال بيانات الإرجاع:', returnData);
+        
+        const response = await fetch('/supplies/return', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(returnData)
+        });
+
+        console.log('حالة الاستجابة:', response.status);
+        console.log('نوع المحتوى:', response.headers.get('content-type'));
+
+        // قراءة النص الخام أولاً
+        const responseText = await response.text();
+        console.log('النص الخام للاستجابة:', responseText);
+
+        if (response.ok) {
+          let result;
+          try {
+            result = JSON.parse(responseText);
+          } catch (parseError) {
+            console.error('خطأ في تحليل JSON:', parseError);
+            alert('خطأ: استجابة غير صحيحة من الخادم');
+            return;
+          }
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            const supplyItem = selectedOption.dataset.item || 'مادة';
+            await window.sendNotification(
+              'supply-return', 
+              `تم إرجاع توريد: ${supplyItem} - ${returnData.returnedQuantity} ${selectedOption.dataset.unit}`, 
+              'supplies', 
+              returnData.originalSupplyId
+            );
+          }
+          
+          alert('تم تنفيذ أمر الإرجاع بنجاح');
+          closeReturnModal();
+          location.reload(); // إعادة تحميل الصفحة لإظهار التحديثات
+        } else {
+          let error;
+          try {
+            error = JSON.parse(responseText);
+          } catch (parseError) {
+            console.error('خطأ في تحليل رسالة الخطأ:', parseError);
+            alert('خطأ: ' + responseText);
+            return;
+          }
+          alert('خطأ: ' + (error.error || error.message || 'حدث خطأ أثناء تنفيذ أمر الإرجاع'));
+        }
+      } catch (error) {
+        console.error('خطأ في تنفيذ أمر الإرجاع:', error);
+        alert('حدث خطأ في الاتصال بالخادم: ' + error.message);
+      }
+    });
+
+    // حساب الإجمالي تلقائياً
+    supplyForm.quantity.oninput = supplyForm.unitPrice.oninput = function() {
+      const qty = parseFloat(supplyForm.quantity.value) || 0;
+      const price = parseFloat(supplyForm.unitPrice.value) || 0;
+      supplyForm.total.value = (qty * price).toFixed(2);
+    };
+
+    const tableBody = document.querySelector('#suppliesTable tbody');
+    let allSupplies = []; // تخزين كل التوريدات هنا
+
+    // جلب التوريدات من قاعدة البيانات
+    async function fetchSupplies() {
+      const res = await fetch('/supplies');
+      return await res.json();
+    }
+
+    // فلتر التاريخ
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filterBox = document.getElementById('filterBox');
+    const filterFrom = document.getElementById('filterFrom');
+    const filterTo = document.getElementById('filterTo');
+    const filterApplyBtn = document.getElementById('filterApplyBtn');
+    let dateFilter = { from: '', to: '' };
+
+    filterToggleBtn.onclick = function(e) {
+      // إذا كانت القايمة ظاهرة، إخفِها وامسح الفلتر
+      if (filterBox.style.display === 'block') {
+        filterBox.style.display = 'none';
+        // امسح الفلتر الزمني وأعد عرض الجدول
+        dateFilter.from = '';
+        dateFilter.to = '';
+        filterFrom.value = '';
+        filterTo.value = '';
+        renderTable(searchBox.value);
+      } else {
+        filterBox.style.display = 'block';
+      }
+      e.stopPropagation();
+    };
+    document.body.onclick = function(e) {
+      if (filterBox.style.display === 'block' && !filterBox.contains(e.target) && e.target !== filterToggleBtn) {
+        filterBox.style.display = 'none';
+      }
+    };
+
+    filterApplyBtn.onclick = function() {
+      dateFilter.from = filterFrom.value;
+      dateFilter.to = filterTo.value;
+      renderTable(searchBox.value);
+      filterBox.style.display = 'none';
+    };
+
+    // عرض التوريدات في الجدول مع دعم البحث والفلترة بالتاريخ
+    async function renderTable(filter = '') {
+      if (!allSupplies.length) {
+        allSupplies = await fetchSupplies();
+      }
+      let supplies = allSupplies;
+      // فلترة بالبحث
+      if (filter) {
+        const f = filter.trim().toLowerCase();
+        supplies = supplies.filter(s =>
+          (s.supplier && s.supplier.toLowerCase().includes(f)) ||
+          (s.item && s.item.toLowerCase().includes(f))
+        );
+      }
+      // فلترة بالتاريخ
+      if (dateFilter.from) {
+        supplies = supplies.filter(s => s.date && s.date >= dateFilter.from);
+      }
+      if (dateFilter.to) {
+        supplies = supplies.filter(s => s.date && s.date <= dateFilter.to);
+      }
+      tableBody.innerHTML = '';
+      supplies.forEach((s, idx) => {
+        const invoiceCell = s.invoice ? `<a href="${s.invoice}" target="_blank">عرض</a>` : '';
+        
+        // تحديد نوع العملية
+        let typeCell = '';
+        let typeClass = '';
+        if (s.type === 'return') {
+          typeCell = '↩ إرجاع';
+          typeClass = 'style="color:#d32f2f;font-weight:bold;"';
+        } else {
+          typeCell = '📦 توريد';
+          typeClass = 'style="color:#2e8ca3;font-weight:bold;"';
+        }
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${s.date || ''}</td>
+          <td ${typeClass}>${typeCell}</td>
+          <td>${s.supplier || ''}</td>
+          <td class="item-col">${s.item || ''}</td>
+          <td>${s.quantity || ''}</td>
+          <td>${s.unit || ''}</td>
+          <td>${s.unitPrice || ''}</td>
+          <td>${s.total || ''}</td>
+          <td>${s.invoiceNo || ''}</td>
+          <td>${invoiceCell}</td>
+          <td></td>
+        `;
+        // زر الحذف في عمود الحذف فقط (آخر عمود) - لا يمكن حذف الإرجاعات
+        if (s.type !== 'return') {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-btn';
+          deleteBtn.textContent = 'حذف';
+          deleteBtn.dataset.id = s._id;
+          tr.children[11].appendChild(deleteBtn);
+        } else {
+          tr.children[11].innerHTML = '<span style="color:#999;font-size:0.8rem;">محمي</span>';
+        }
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // تعبئة قائمة الموردين في القائمة المنسدلة
+    async function fillSuppliersSelect() {
+      const res = await fetch('/suppliers');
+      const suppliers = await res.json();
+      const select = document.getElementById('supplierSelect');
+      select.innerHTML = '<option value="">اختر المورد</option>';
+      suppliers.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.name;
+        opt.textContent = s.name;
+        select.appendChild(opt);
+      });
+    }
+
+    // مربع البحث
+    const searchBox = document.getElementById('supplySearchBox');
+    searchBox.oninput = function() {
+      renderTable(this.value);
+    };
+
+    // إضافة توريد جديد للقاعدة
+    supplyForm.onsubmit = async function(e) {
+      e.preventDefault();
+      const data = {
+        date: supplyForm.date.value,
+        supplier: supplyForm.supplier.value,
+        item: supplyForm.item.value,
+        quantity: supplyForm.quantity.value,
+        unit: supplyForm.unit.value,
+        unitPrice: supplyForm.unitPrice.value,
+        total: supplyForm.total.value,
+        invoice: supplyForm.invoice.value, // إضافة رابط الفاتورة
+        invoiceNo: supplyForm.invoiceNo.value // إضافة رقم الفاتورة
+      };
+      await fetch('/supplies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      // إضافة: إرسال التوريد أيضاً إلى حساب توريدات المورد إذا وجد اسم المورد
+      if (data.supplier) {
+        // جلب بيانات المورد للحصول على الـ id
+        try {
+          const res = await fetch(`/suppliers?name=${encodeURIComponent(data.supplier)}`);
+          const suppliers = await res.json();
+          if (Array.isArray(suppliers) && suppliers.length > 0 && suppliers[0]._id) {
+            const supplierId = suppliers[0]._id;
+            // أضف التوريد لهذا المورد
+            const supplyResponse = await fetch(`/suppliers/${supplierId}/supplies`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                date: data.date,
+                desc: data.item,
+                qty: data.quantity,
+                unit: data.unit,
+                category: '', // يمكن تعديلها لاحقاً إذا لزم
+                total: data.total,
+                invoiceNo: data.invoiceNo, // تمرير رقم الفاتورة
+                invoice: data.invoice
+              })
+            });
+            
+            // إرسال إشعار توريد للمورد
+            if (supplyResponse.ok) {
+              await window.waitForNotificationSystem();
+              if (window.sendNotification) {
+                await window.sendNotification(
+                  'supplier-supply-add', 
+                  `تم إضافة توريد للمورد: ${data.supplier} - ${data.item}`, 
+                  'supplier-details', 
+                  supplierId
+                );
+              }
+            }
+          }
+        } catch (err) {
+          // تجاهل الخطأ، فقط لا ترسل للمورد إذا لم يوجد
+        }
+      }
+      allSupplies = await fetchSupplies();
+      renderTable(searchBox.value);
+      
+      // إرسال إشعار
+      await window.waitForNotificationSystem();
+      if (window.sendNotification) {
+        await window.sendNotification('supply-add', `تم إضافة توريد جديد: ${data.item} - ${data.quantity} ${data.unit}`, 'supplies', '');
+      }
+      
+      supplyForm.reset();
+      supplyForm.total.value = '';
+      closeModal();
+    };
+
+    // حذف توريد من القاعدة
+    tableBody.onclick = async function(e) {
+      if (e.target.classList.contains('delete-btn')) {
+        const id = e.target.dataset.id;
+        
+        // الحصول على معلومات التوريد قبل الحذف
+        const supply = allSupplies.find(s => s._id === id);
+        const itemName = supply ? supply.item : 'توريد';
+        
+        if (confirm('هل أنت متأكد من حذف التوريد؟')) {
+          const response = await fetch(`/supplies/${id}`, { method: 'DELETE' });
+          
+          if (response.ok) {
+            // إرسال إشعار
+            await window.waitForNotificationSystem();
+            if (window.sendNotification) {
+              await window.sendNotification('supply-delete', `تم حذف توريد: ${itemName}`, 'supplies', id);
+            }
+          }
+          
+          allSupplies = await fetchSupplies();
+          renderTable(searchBox.value);
+        }
+      }
+    };
+
+    // عند تحميل الصفحة
+    window.onload = async function() {
+      await fillSuppliersSelect();
+      allSupplies = await fetchSupplies();
+      renderTable();
+    };
+  </script>
+  <!-- أضف مكتبة SheetJS قبل السكريبتات -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script>
+    // زر تصدير التوريدات إلى Excel
+    document.getElementById('exportExcelBtn').onclick = function() {
+      let supplies = allSupplies;
+      // فلترة بالبحث
+      const filter = searchBox.value.trim().toLowerCase();
+      if (filter) {
+        supplies = supplies.filter(s =>
+          (s.supplier && s.supplier.toLowerCase().includes(filter)) ||
+          (s.item && s.item.toLowerCase().includes(filter))
+        );
+      }
+      // فلترة بالتاريخ
+      if (dateFilter.from) {
+        supplies = supplies.filter(s => s.date && s.date >= dateFilter.from);
+      }
+      if (dateFilter.to) {
+        supplies = supplies.filter(s => s.date && s.date <= dateFilter.to);
+      }
+      const data = [
+        ["م", "تاريخ التوريد", "اسم المورد", "الصنف", "الكمية", "الوحدة", "السعر للوحدة", "الإجمالي", "رقم الفاتورة", "رابط الفاتورة"]
+      ];
+      supplies.forEach((s, idx) => {
+        data.push([
+          idx + 1,
+          s.date || '',
+          s.supplier || '',
+          s.item || '',
+          s.quantity || '',
+          s.unit || '',
+          s.unitPrice || '',
+          s.total || '',
+          s.invoiceNo || '',
+          s.invoice || ''
+        ]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "التوريدات");
+      XLSX.writeFile(wb, "supplies.xlsx");
+    };
+
+    // دالة مساعدة للانتظار حتى يتم تحميل نظام الإشعارات
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>

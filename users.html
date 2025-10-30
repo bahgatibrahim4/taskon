@@ -1,0 +1,2955 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>إدارة المستخدمين</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2e8ca3;
+      --secondary-color: #1a3b50;
+      --accent-color: #1976d2;
+      --danger-color: #e53935;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --bg-light: #f8f9fa;
+      --bg-gradient: linear-gradient(135deg, #2e8ca3 0%, #1976d2 100%);
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(135deg, #c5d6db 0%, #e8f4f8 100%);
+      direction: rtl;
+      min-height: 100vh;
+    }
+    
+    .navbar {
+      background: linear-gradient(135deg, #1a3b50 0%, #2e8ca3 100%);
+      color: #fff;
+      padding: 7px 0 7px 0;
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border-bottom: 3px solid #2e8ca3;
+      position: relative;
+      min-height: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 10px auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      padding: 15px;
+      border: none;
+      position: relative;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Header Section */
+    .page-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 12px rgba(46, 140, 163, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      border: none;
+      padding: 0;
+      letter-spacing: 1px;
+    }
+    
+    .page-header .header-icon {
+      font-size: 1.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 8px;
+      border-radius: 50%;
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--bg-gradient);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-color: var(--primary-color);
+    }
+    
+    .stat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+      color: var(--primary-color);
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--secondary-color);
+      margin-bottom: 3px;
+    }
+    
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+    
+    h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-top: 12px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 6px;
+      position: relative;
+    }
+    
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: 50%;
+      transform: translateX(50%);
+      width: 60px;
+      height: 2px;
+      background: var(--accent-color);
+    }
+    
+    /* Form Styling */
+    .form-container {
+      background: var(--bg-light);
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+    
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+    
+    form > div {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    label {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    label i {
+      color: var(--accent-color);
+      font-size: 0.9rem;
+    }
+    
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"], 
+    select[name="jobTitle"], 
+    #editJobTitle {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      border: 2px solid #e9ecef;
+      background: #fff;
+      transition: all 0.3s ease;
+      font-family: 'Cairo', Arial, sans-serif;
+    }
+    
+    input[type="text"]:focus, 
+    input[type="email"]:focus, 
+    input[type="password"]:focus,
+    select[name="jobTitle"]:focus, 
+    #editJobTitle:focus {
+      border-color: var(--primary-color);
+      background: #f0f8ff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+    }
+    /* Button Styling */
+    button, .permissions-btn {
+      background: var(--bg-gradient);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 8px 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(46, 140, 163, 0.25);
+    }
+    
+    button:hover, .permissions-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 140, 163, 0.35);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .delete-btn {
+      background: linear-gradient(135deg, #e53935 0%, #c62828 100%) !important;
+      color: #fff !important;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-weight: bold;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.25);
+    }
+    
+    .delete-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.35);
+    }
+    
+    /* Search and Filter Section */
+    .search-filter-section {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .search-box {
+      flex: 0 0 auto;
+      min-width: 180px;
+      max-width: 250px;
+      position: relative;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 6px 30px 6px 10px;
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+    
+    .search-box input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(46, 140, 163, 0.1);
+      outline: none;
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+      font-size: 0.85rem;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-right: 30px;
+    }
+    
+    .filter-btn {
+      padding: 7px 12px;
+      border: 2px solid var(--primary-color);
+      background: white;
+      color: var(--primary-color);
+      border-radius: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+    }
+    
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    /* Table Styling */
+    .table-container {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      border: 2px solid #e9ecef;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: transparent;
+      margin: 0;
+      border-radius: 0;
+      overflow: visible;
+      box-shadow: none;
+      font-size: 0.85rem;
+    }
+    
+    th, td {
+      padding: 10px 6px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #e9ecef;
+      text-align: center;
+      word-break: break-word;
+      background: transparent;
+    }
+    
+    th {
+      background: var(--bg-gradient) !important;
+      color: #fff !important;
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    th i {
+      font-size: 0.85rem;
+      margin-left: 3px;
+    }
+    
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+    
+    tr:last-child td { 
+      border-bottom: none; 
+    }
+    
+    tbody tr:hover {
+      background: #f8f9fa !important;
+      transform: scale(1.005);
+      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    }
+    
+    tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+    /* نافذة الصلاحيات */
+    #permissionsModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    #permissionsModal > div {
+      background: #fff;
+      border-radius: 15px;
+      padding: 0;
+      min-width: 900px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow: hidden;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+      position: relative;
+      border: none;
+      animation: slideIn 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    @keyframes slideIn {
+      from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    
+    #permissionsModal h3 {
+      margin: 0;
+      padding: 20px 25px;
+      color: white;
+      font-size: 1.3rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--bg-gradient);
+      border-bottom: none;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    #permissionsModal h3 i {
+      font-size: 1.4rem;
+      color: white;
+    }
+    
+    .permissions-content {
+      padding: 20px 25px;
+      overflow-y: auto;
+      max-height: calc(90vh - 180px);
+    }
+    
+    .permissions-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 10px;
+    }
+    
+    .permission-tab {
+      padding: 10px 18px;
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #6c757d;
+    }
+    
+    .permission-tab:hover {
+      background: #e9ecef;
+      color: var(--primary-color);
+    }
+    
+    .permission-tab.active {
+      background: var(--bg-gradient);
+      color: white;
+      border-color: var(--primary-color);
+      transform: translateY(2px);
+    }
+    
+    .permission-tab i {
+      font-size: 1rem;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .permission-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .permission-card:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 5px 15px rgba(46, 140, 163, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .permission-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .permission-card-title {
+      font-weight: bold;
+      color: var(--primary-color);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .permission-card-title i {
+      font-size: 1.1rem;
+      color: var(--accent-color);
+    }
+    
+    .select-all-btn {
+      padding: 5px 12px;
+      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .select-all-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+    }
+    
+    .permissions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 10px;
+    }
+    
+    .permission-item {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 10px 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .permission-item:hover {
+      background: #f0f8ff;
+      border-color: var(--primary-color);
+    }
+    
+    .permission-item.checked {
+      background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+      border-color: #4caf50;
+    }
+    
+    .permission-item label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      margin: 0;
+      color: var(--secondary-color);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+    
+    .permission-item label:hover {
+      background: transparent;
+    }
+    
+    .permission-item input[type="checkbox"] {
+      accent-color: #4caf50;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .permission-item i {
+      font-size: 0.9rem;
+      color: var(--accent-color);
+      min-width: 20px;
+    }
+    
+    .permissions-footer {
+      padding: 15px 25px;
+      background: #f8f9fa;
+      border-top: 2px solid #e9ecef;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      position: sticky;
+      bottom: 0;
+    }
+    
+    .permissions-footer button {
+      padding: 10px 25px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      min-width: 120px;
+    }
+    
+    #permissionsForm label {
+      color: var(--secondary-color);
+      font-weight: 500;
+      font-size: 0.85rem;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      border-radius: 0;
+      transition: none;
+    }
+    
+    #permissionsForm label:hover {
+      background: transparent;
+    }
+    
+    #permissionsForm input[type="checkbox"] {
+      accent-color: #4caf50;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .permission-description {
+      font-size: 0.75rem;
+      color: #6c757d;
+      margin-top: 5px;
+      padding-right: 28px;
+    }
+    
+    #permissionsForm table {
+      margin-bottom: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    #permissionsForm table td {
+      padding: 10px;
+      border: 1px solid #e9ecef;
+    }
+    
+    #permissionsForm table td:first-child {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    #permissionsForm button {
+      padding: 8px 15px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+    
+    #permissionsForm button[type="button"] {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      margin-right: 8px;
+    }
+    
+    #permissionsForm button[type="button"]:hover {
+      background: linear-gradient(135deg, #5a6268 0%, #343a40 100%);
+    }
+    
+    .permission-section {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .permission-section-title {
+      font-weight: bold;
+      color: var(--primary-color);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    /* نافذة تعديل المستخدم */
+    #editUserModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1001;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    #editUserModal > div {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 350px;
+      max-width: 95vw;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: slideIn 0.3s ease;
+    }
+    
+    #editUserModal h3 {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-color);
+      width: 100%;
+    }
+    
+    #editUserForm {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 350px;
+    }
+    
+    #editUserForm label {
+      color: var(--primary-color);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    
+    #editUserForm input[type="text"],
+    #editUserForm input[type="email"],
+    #editUserForm input[type="password"],
+    #editUserForm select {
+      margin-top: 3px;
+      width: 100%;
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 2px solid #e9ecef;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    
+    #editUserForm button {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+      justify-content: center;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+    }
+    
+    #editUserForm button[type="submit"] {
+      background: var(--bg-gradient);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    
+    #editUserForm button[type="button"] {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    
+    #editUserForm button[type="button"]:hover {
+      background: linear-gradient(135deg, #5a6268 0%, #343a40 100%);
+    }
+    
+    #editUserForm small {
+      font-size: 0.75rem;
+    }
+    .actions-cell {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .icon-btn {
+      background: none;
+      border: none;
+      padding: 6px 10px;
+      margin: 0;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      border-radius: 6px;
+    }
+    
+    .icon-btn.delete { 
+      color: #e53935;
+      background: rgba(229, 57, 53, 0.1);
+    }
+    
+    .icon-btn.delete:hover { 
+      color: #fff;
+      background: #e53935;
+      transform: scale(1.08);
+    }
+    
+    .icon-btn.permissions { 
+      color: #ff9800;
+      background: rgba(255, 152, 0, 0.1);
+    }
+    
+    .icon-btn.permissions:hover { 
+      color: #fff;
+      background: #ff9800;
+      transform: scale(1.08);
+    }
+    
+    .icon-btn.edit { 
+      color: var(--primary-color);
+      background: rgba(46, 140, 163, 0.1);
+    }
+    
+    .icon-btn.edit:hover { 
+      color: #fff;
+      background: var(--primary-color);
+      transform: scale(1.08);
+    }
+    
+    /* Badge Styling */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .badge-primary {
+      background: linear-gradient(135deg, #2e8ca3 0%, #1976d2 100%);
+      color: white;
+    }
+    
+    .badge-success {
+      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+      color: white;
+    }
+    
+    .badge-warning {
+      background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+      color: white;
+    }
+    
+    /* Tooltip */
+    [title] {
+      position: relative;
+    }
+    
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(46, 140, 163, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 900px) {
+      .container { 
+        padding: 12px;
+        margin: 8px;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+      }
+      
+      .page-header h2 {
+        font-size: 1.1rem;
+      }
+      
+      .stats-container {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+      }
+      
+      .stat-card {
+        padding: 10px;
+      }
+      
+      .stat-icon {
+        font-size: 1.5rem;
+      }
+      
+      .stat-value {
+        font-size: 1.2rem;
+      }
+      
+      form {
+        grid-template-columns: 1fr;
+      }
+      
+      th, td { 
+        padding: 8px 4px;
+        font-size: 0.75rem;
+      }
+      
+      #permissionsModal > div,
+      #editUserModal > div {
+        min-width: 90vw;
+        padding: 15px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .container { 
+        padding: 10px;
+        margin: 5px;
+        border-radius: 10px;
+      }
+      
+      .page-header h2 {
+        font-size: 1rem;
+      }
+      
+      .page-header .header-icon {
+        font-size: 1.2rem;
+        padding: 6px;
+      }
+      
+      .stat-card {
+        padding: 8px;
+      }
+      
+      .stat-icon {
+        font-size: 1.3rem;
+      }
+      
+      .stat-value {
+        font-size: 1rem;
+      }
+      
+      .stat-label {
+        font-size: 0.7rem;
+      }
+      
+      th, td { 
+        padding: 6px 2px;
+        font-size: 0.7rem;
+      }
+      
+      .icon-btn {
+        padding: 5px 8px;
+        font-size: 0.9rem;
+      }
+      
+      .search-box {
+        min-width: 100%;
+      }
+      
+      .badge {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+      }
+      
+      button, .permissions-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container">
+    <!-- Page Header with Icon -->
+    <div class="page-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="header-icon">
+          <i class="fa fa-users"></i>
+        </div>
+        <h2>إدارة المستخدمين</h2>
+      </div>
+      <div id="currentUserInfo" style="font-size: 0.85rem; opacity: 0.9;">
+        <i class="fa fa-user-circle"></i> <span id="currentUserName"></span>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-users"></i></div>
+        <div class="stat-value" id="totalUsers">0</div>
+        <div class="stat-label">إجمالي المستخدمين</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-user-check"></i></div>
+        <div class="stat-value" id="activeUsers">0</div>
+        <div class="stat-label">المستخدمين النشطين</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-shield-alt"></i></div>
+        <div class="stat-value" id="adminUsers">0</div>
+        <div class="stat-label">المديرين</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-user-plus"></i></div>
+        <div class="stat-value" id="recentUsers">0</div>
+        <div class="stat-label">إضافات اليوم</div>
+      </div>
+    </div>
+
+    <!-- Add New User Form -->
+    <div class="form-container">
+      <h2><i class="fa fa-user-plus"></i> إضافة مستخدم جديد</h2>
+      <form id="userForm">
+        <div>
+          <label><i class="fa fa-briefcase"></i> الوظيفة <span style="color: red;">*</span></label>
+          <input type="text" name="jobTitle" list="jobTitles" required placeholder="اختر أو اكتب الوظيفة">
+          <datalist id="jobTitles">
+            <option value="مدير المشروع">
+            <option value="مهندس مكتب فنى">
+            <option value="مهندس انشائي">
+            <option value="مهندس معمارى">
+            <option value="مهندس كهرباء">
+            <option value="مهندس ميكانيكا">
+            <option value="مراقب">
+            <option value="محاسب">
+            <option value="مدير مشتريات">
+            <option value="امين مستودع">
+          </datalist>
+        </div>
+        <div>
+          <label><i class="fa fa-user"></i> اسم المستخدم <span style="color: red;">*</span></label>
+          <input type="text" name="username" required placeholder="أدخل اسم المستخدم">
+        </div>
+        <div>
+          <label><i class="fa fa-envelope"></i> الإيميل <span style="color: red;">*</span></label>
+          <input type="email" name="email" required placeholder="example@email.com">
+        </div>
+        <div>
+          <label><i class="fa fa-lock"></i> كلمة المرور <span style="color: red;">*</span></label>
+          <input type="password" name="password" required placeholder="أدخل كلمة المرور">
+        </div>
+        <button type="submit" style="grid-column: 1 / -1;">
+          <i class="fa fa-plus-circle"></i> إضافة المستخدم
+        </button>
+      </form>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-section">
+      <div class="search-box">
+        <input type="text" id="searchUsers" placeholder="ابحث عن مستخدم بالاسم، الإيميل أو الوظيفة...">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">
+          <i class="fa fa-users"></i> الكل
+        </button>
+        <button class="filter-btn" data-filter="مدير المشروع">
+          <i class="fa fa-user-tie"></i> المديرين
+        </button>
+        <button class="filter-btn" data-filter="مهندس">
+          <i class="fa fa-hard-hat"></i> المهندسين
+        </button>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <h2><i class="fa fa-list"></i> قائمة المستخدمين</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th><i class="fa fa-hashtag"></i> #</th>
+            <th><i class="fa fa-briefcase"></i> الوظيفة</th>
+            <th><i class="fa fa-user"></i> اسم المستخدم</th>
+            <th><i class="fa fa-envelope"></i> الإيميل</th>
+            <th><i class="fa fa-lock"></i> كلمة المرور</th>
+            <th><i class="fa fa-cog"></i> إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- نافذة الصلاحيات -->
+  <div id="permissionsModal">
+    <div>
+      <h3><i class="fa fa-shield-alt"></i> إدارة صلاحيات المستخدم</h3>
+      
+      <!-- Tabs Navigation -->
+      <div class="permissions-content">
+        <div class="permissions-tabs">
+          <div class="permission-tab active" data-tab="extracts">
+            <i class="fa fa-file-invoice"></i> المستخلصات
+          </div>
+          <div class="permission-tab" data-tab="contractors">
+            <i class="fa fa-user-tie"></i> المقاولين
+          </div>
+          <div class="permission-tab" data-tab="drawings">
+            <i class="fa fa-drafting-compass"></i> المخططات
+          </div>
+          <div class="permission-tab" data-tab="suppliers">
+            <i class="fa fa-truck"></i> الموردين
+          </div>
+          <div class="permission-tab" data-tab="workers">
+            <i class="fa fa-users-cog"></i> العمالة
+          </div>
+          <div class="permission-tab" data-tab="store">
+            <i class="fa fa-warehouse"></i> المخزن
+          </div>
+          <div class="permission-tab" data-tab="purchases">
+            <i class="fa fa-shopping-cart"></i> المشتريات
+          </div>
+          <div class="permission-tab" data-tab="receipts">
+            <i class="fa fa-receipt"></i> الإيصالات
+          </div>
+          <div class="permission-tab" data-tab="vouchers">
+            <i class="fa fa-file-invoice-dollar"></i> السندات
+          </div>
+          <div class="permission-tab" data-tab="users">
+            <i class="fa fa-users"></i> المستخدمين
+          </div>
+          <div class="permission-tab" data-tab="dashboard">
+            <i class="fa fa-th-large"></i> كاردات الرئيسية
+          </div>
+        </div>
+
+        <form id="permissionsForm">
+          <!-- Tab 1: المستخلصات -->
+          <div class="tab-content active" data-tab="extracts">
+            <!-- إضافة مستخلص -->
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-plus-circle"></i> إضافة مستخلص
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">القدرة على الدخول لصفحة إضافة مستخلص</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-create">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-file-plus"></i> إنشاء مستخلص جديد</div>
+                      <div class="permission-description">القدرة على إنشاء مستخلص جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل المستخلص</div>
+                      <div class="permission-description">تعديل بيانات المستخلص الحالي</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-add-workitem">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-tasks"></i> إضافة بنود أعمال</div>
+                      <div class="permission-description">إضافة بنود عمل للمستخلص</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-edit-workitem">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-pen"></i> تعديل بنود الأعمال</div>
+                      <div class="permission-description">تعديل الكميات والأسعار</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-delete-workitem">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف بنود الأعمال</div>
+                      <div class="permission-description">حذف بنود من المستخلص</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-add-lump">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-hand-holding-usd"></i> إضافة مقطوعيات</div>
+                      <div class="permission-description">إضافة بنود مقطوعية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-add-daily">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-calendar-day"></i> إضافة يوميات</div>
+                      <div class="permission-description">إضافة بنود يومية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="add-extract-print">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-print"></i> طباعة المستخلص</div>
+                      <div class="permission-description">طباعة وحفظ PDF</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- قائمة المستخلصات -->
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-list-alt"></i> قائمة المستخلصات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="list-extracts-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">عرض قائمة المستخلصات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="list-extracts-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض التفاصيل</div>
+                      <div class="permission-description">عرض تفاصيل المستخلصات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="list-extracts-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل المستخلصات</div>
+                      <div class="permission-description">تعديل بيانات المستخلصات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="list-extracts-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash-alt"></i> حذف المستخلصات</div>
+                      <div class="permission-description">حذف المستخلصات من القائمة</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="list-extracts-print">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-print"></i> طباعة المستخلصات</div>
+                      <div class="permission-description">طباعة المستخلصات</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: المقاولين -->
+          <div class="tab-content" data-tab="contractors">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-user-tie"></i> إدارة المقاولين
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="contractors-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة المقاولين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="contractors-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض المقاولين</div>
+                      <div class="permission-description">عرض قائمة المقاولين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="contractors-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إضافة مقاول</div>
+                      <div class="permission-description">إضافة مقاول جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="contractors-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل بيانات المقاول</div>
+                      <div class="permission-description">تعديل معلومات المقاولين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="contractors-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف مقاول</div>
+                      <div class="permission-description">حذف مقاول من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="contractors-view-details">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-info-circle"></i> عرض التفاصيل</div>
+                      <div class="permission-description">عرض تفاصيل المقاول الكاملة</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: المخططات -->
+          <div class="tab-content" data-tab="drawings">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-drafting-compass"></i> إدارة المخططات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="drawings-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة المخططات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="drawings-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض المخططات</div>
+                      <div class="permission-description">عرض قائمة المخططات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="drawings-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إضافة مخطط</div>
+                      <div class="permission-description">رفع مخططات جديدة</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="drawings-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل المخطط</div>
+                      <div class="permission-description">تعديل بيانات المخططات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="drawings-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف مخطط</div>
+                      <div class="permission-description">حذف المخططات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="drawings-download">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-download"></i> تحميل المخططات</div>
+                      <div class="permission-description">تحميل ملفات المخططات</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: الموردين -->
+          <div class="tab-content" data-tab="suppliers">
+            <!-- إدارة الموردين -->
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-truck"></i> إدارة الموردين
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة الموردين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض الموردين</div>
+                      <div class="permission-description">عرض قائمة الموردين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إضافة مورد</div>
+                      <div class="permission-description">إضافة مورد جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل بيانات المورد</div>
+                      <div class="permission-description">تعديل معلومات الموردين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف مورد</div>
+                      <div class="permission-description">حذف مورد من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-view-details">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-info-circle"></i> عرض التفاصيل</div>
+                      <div class="permission-description">الدخول لصفحة تفاصيل المورد</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- التوريدات -->
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-box"></i> التوريدات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-add-supply">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus"></i> إضافة توريد</div>
+                      <div class="permission-description">إضافة توريد جديد للمورد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-view-supplies">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-list"></i> عرض التوريدات</div>
+                      <div class="permission-description">عرض قائمة توريدات المورد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-edit-supply">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل توريد</div>
+                      <div class="permission-description">تعديل بيانات التوريد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-delete-supply">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف توريد</div>
+                      <div class="permission-description">حذف توريد من النظام</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- المدفوعات -->
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-money-bill-wave"></i> المدفوعات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-add-payment">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus"></i> إضافة دفعة</div>
+                      <div class="permission-description">إضافة دفعة للمورد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-view-payments">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-list"></i> عرض المدفوعات</div>
+                      <div class="permission-description">عرض سجل المدفوعات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-delete-payment">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف دفعة</div>
+                      <div class="permission-description">حذف دفعة من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-view-account">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-book"></i> عرض الحساب</div>
+                      <div class="permission-description">عرض الحساب المحاسبي للمورد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="suppliers-view-balance">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-balance-scale"></i> عرض الرصيد</div>
+                      <div class="permission-description">عرض رصيد المورد الحالي</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 5: العمالة -->
+          <div class="tab-content" data-tab="workers">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-users-cog"></i> إدارة العمالة
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة العمالة</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض العمالة</div>
+                      <div class="permission-description">عرض قائمة العمال</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-user-plus"></i> إضافة عامل</div>
+                      <div class="permission-description">إضافة عامل جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل بيانات العامل</div>
+                      <div class="permission-description">تعديل معلومات العمال</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف عامل</div>
+                      <div class="permission-description">حذف عامل من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-monthly-pay">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-money-bill-wave"></i> رواتب شهرية</div>
+                      <div class="permission-description">إدارة الرواتب الشهرية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="workers-monthly-pay-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل القبض الشهرى</div>
+                      <div class="permission-description">تعديل بيانات القبض المحفوظة</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 6: المخزن -->
+          <div class="tab-content" data-tab="store">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-warehouse"></i> إدارة المخزن
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة المخزن</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض المخزون</div>
+                      <div class="permission-description">عرض قائمة المواد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-add-item">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إضافة صنف</div>
+                      <div class="permission-description">إضافة صنف جديد للمخزن</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-edit-item">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل الصنف</div>
+                      <div class="permission-description">تعديل بيانات الأصناف</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-delete-item">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف صنف</div>
+                      <div class="permission-description">حذف صنف من المخزن</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-add-quantity">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-arrow-up"></i> إضافة كمية</div>
+                      <div class="permission-description">زيادة كمية صنف</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-withdraw">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-arrow-down"></i> صرف من المخزن</div>
+                      <div class="permission-description">صرف كميات من المخزن</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="store-reports">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-chart-bar"></i> تقارير المخزن</div>
+                      <div class="permission-description">عرض وطباعة التقارير</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 7: المشتريات -->
+          <div class="tab-content" data-tab="purchases">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-shopping-cart"></i> إدارة المشتريات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="purchases-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة المشتريات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="purchases-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض المشتريات</div>
+                      <div class="permission-description">عرض قائمة المشتريات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="purchases-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إضافة مشترى</div>
+                      <div class="permission-description">تسجيل مشترى جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="purchases-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل المشترى</div>
+                      <div class="permission-description">تعديل بيانات المشتريات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="purchases-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف مشترى</div>
+                      <div class="permission-description">حذف سجل مشترى</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 8: الإيصالات -->
+          <div class="tab-content" data-tab="receipts">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-receipt"></i> إدارة الإيصالات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="receipts-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة الإيصالات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="receipts-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض الإيصالات</div>
+                      <div class="permission-description">عرض قائمة الإيصالات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="receipts-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إنشاء إيصال</div>
+                      <div class="permission-description">إنشاء إيصال جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="receipts-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل الإيصال</div>
+                      <div class="permission-description">تعديل بيانات الإيصالات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="receipts-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف إيصال</div>
+                      <div class="permission-description">حذف إيصال من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="receipts-print">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-print"></i> طباعة الإيصالات</div>
+                      <div class="permission-description">طباعة الإيصالات</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 9: السندات -->
+          <div class="tab-content" data-tab="vouchers">
+            <!-- إدارة السندات -->
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-file-invoice-dollar"></i> إدارة السندات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة السندات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض السندات</div>
+                      <div class="permission-description">عرض قائمة السندات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-plus-circle"></i> إضافة سند</div>
+                      <div class="permission-description">إنشاء سند جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل سند</div>
+                      <div class="permission-description">تعديل بيانات السند</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف سند</div>
+                      <div class="permission-description">حذف سند من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-print">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-print"></i> طباعة السند</div>
+                      <div class="permission-description">طباعة السندات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-assign-contractor">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-user-tie"></i> ربط بمقاول</div>
+                      <div class="permission-description">ربط السند بمقاول معين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="vouchers-view-contractor">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-search"></i> عرض سندات المقاول</div>
+                      <div class="permission-description">عرض السندات المرتبطة بمقاول</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 10: المستخدمين -->
+          <div class="tab-content" data-tab="users">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-users"></i> إدارة المستخدمين
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="users-access">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-door-open"></i> الوصول للصفحة</div>
+                      <div class="permission-description">الدخول لصفحة المستخدمين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="users-view">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-eye"></i> عرض المستخدمين</div>
+                      <div class="permission-description">عرض قائمة المستخدمين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="users-add">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-user-plus"></i> إضافة مستخدم</div>
+                      <div class="permission-description">إضافة مستخدم جديد</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="users-edit">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-edit"></i> تعديل المستخدم</div>
+                      <div class="permission-description">تعديل بيانات المستخدمين</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="users-delete">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-trash"></i> حذف مستخدم</div>
+                      <div class="permission-description">حذف مستخدم من النظام</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="users-manage-permissions">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-shield-alt"></i> إدارة الصلاحيات</div>
+                      <div class="permission-description">تعديل صلاحيات المستخدمين</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 10: كاردات الصفحة الرئيسية -->
+          <div class="tab-content" data-tab="dashboard">
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-th-large"></i> كاردات الصفحة الرئيسية
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-extracts">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-file-invoice"></i> كارد المستخلصات</div>
+                      <div class="permission-description">عرض كارد المستخلصات في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-contractors">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-user-tie"></i> كارد المقاولين</div>
+                      <div class="permission-description">عرض كارد المقاولين في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-drawings">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-drafting-compass"></i> كارد المخططات</div>
+                      <div class="permission-description">عرض كارد المخططات في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-suppliers">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-truck"></i> كارد الموردين</div>
+                      <div class="permission-description">عرض كارد الموردين في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-workers">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-users-cog"></i> كارد العمالة</div>
+                      <div class="permission-description">عرض كارد العمالة في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-store">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-warehouse"></i> كارد المخزن</div>
+                      <div class="permission-description">عرض كارد المخزن في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-purchases">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-shopping-cart"></i> كارد المشتريات</div>
+                      <div class="permission-description">عرض كارد المشتريات في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-receipts">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-receipt"></i> كارد الإيصالات</div>
+                      <div class="permission-description">عرض كارد الإيصالات في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-vouchers">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-file-invoice-dollar"></i> كارد السندات</div>
+                      <div class="permission-description">عرض كارد السندات في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-equipments">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-tools"></i> كارد المعدات</div>
+                      <div class="permission-description">عرض كارد المعدات في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-users">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-users"></i> كارد المستخدمين</div>
+                      <div class="permission-description">عرض كارد المستخدمين في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-project-info">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-info-circle"></i> كارد معلومات المشروع</div>
+                      <div class="permission-description">عرض كارد معلومات المشروع في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-card-monthly-pay">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-money-bill-wave"></i> كارد الرواتب الشهرية</div>
+                      <div class="permission-description">عرض كارد الرواتب الشهرية في الرئيسية</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="permission-card">
+              <div class="permission-card-header">
+                <div class="permission-card-title">
+                  <i class="fa fa-chart-line"></i> كاردات الإحصائيات
+                </div>
+                <button type="button" class="select-all-btn" onclick="selectAllInCard(this)">
+                  تحديد الكل
+                </button>
+              </div>
+              <div class="permissions-grid">
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-stats-total-budget">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-dollar-sign"></i> الميزانية الإجمالية</div>
+                      <div class="permission-description">عرض إحصائية الميزانية الكلية</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-stats-spent">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-coins"></i> المصروفات</div>
+                      <div class="permission-description">عرض إحصائية المصروفات</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-stats-remaining">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-piggy-bank"></i> الرصيد المتبقي</div>
+                      <div class="permission-description">عرض إحصائية الرصيد المتبقي</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="permission-item">
+                  <label>
+                    <input type="checkbox" name="permissions" value="dashboard-stats-progress">
+                    <div class="permission-label-content">
+                      <div class="permission-name"><i class="fa fa-tasks"></i> نسبة الإنجاز</div>
+                      <div class="permission-description">عرض نسبة إنجاز المشروع</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="permissions-footer">
+        <button type="submit" form="permissionsForm">
+          <i class="fa fa-save"></i> حفظ الصلاحيات
+        </button>
+        <button type="button" onclick="closePermissionsModal()" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">
+          <i class="fa fa-times"></i> إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تعديل المستخدم -->
+  <div id="editUserModal">
+    <div>
+      <h3>
+        <i class="fa fa-user-edit"></i> تعديل بيانات المستخدم
+      </h3>
+      <form id="editUserForm">
+        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:3px; width:100%;">
+          <label for="editJobTitle">
+            <i class="fa fa-briefcase"></i> الوظيفة <span style="color: red;">*</span>
+          </label>
+          <input type="text" name="jobTitle" id="editJobTitle" list="editJobTitles" required placeholder="اختر أو اكتب الوظيفة">
+          <datalist id="editJobTitles">
+            <option value="مدير المشروع">
+            <option value="مهندس مكتب فنى">
+            <option value="مهندس انشائي">
+            <option value="مهندس معمارى">
+            <option value="مهندس كهرباء">
+            <option value="مهندس ميكانيكا">
+            <option value="مراقب">
+            <option value="محاسب">
+            <option value="مدير مشتريات">
+            <option value="امين مستودع">
+          </datalist>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:3px; width:100%;">
+          <label for="editUsername">
+            <i class="fa fa-user"></i> اسم المستخدم <span style="color: red;">*</span>
+          </label>
+          <input type="text" name="username" id="editUsername" required placeholder="اسم المستخدم">
+        </div>
+        
+        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:3px; width:100%;">
+          <label for="editEmail">
+            <i class="fa fa-envelope"></i> الإيميل <span style="color: red;">*</span>
+          </label>
+          <input type="email" name="email" id="editEmail" required placeholder="example@email.com">
+        </div>
+        
+        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:3px; width:100%;">
+          <label for="editPassword">
+            <i class="fa fa-lock"></i> كلمة المرور الجديدة
+          </label>
+          <input type="password" name="password" id="editPassword" placeholder="اتركها فارغة للإبقاء على القديمة">
+          <small style="color: #6c757d; margin-top: 2px;">
+            <i class="fa fa-info-circle"></i> اترك الحقل فارغاً إذا لم ترغب في تغيير كلمة المرور
+          </small>
+        </div>
+        
+        <div style="display:flex; gap:8px; margin-top:10px; justify-content:center; width:100%;">
+          <button type="submit">
+            <i class="fa fa-save"></i> حفظ التعديلات
+          </button>
+          <button type="button" onclick="closeEditUserModal()">
+            <i class="fa fa-times"></i> إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // عرض اسم المستخدم الحالي
+    document.getElementById('currentUserName').textContent = user.username || user.name || '';
+
+    let currentPermissionsUserId = null;
+    let currentPermissions = [];
+    let currentEditUserId = null;
+    let allUsers = []; // لحفظ كل المستخدمين
+
+    async function fetchUsers() {
+      const res = await fetch('/users');
+      const users = await res.json();
+      allUsers = users; // حفظ في المتغير العام
+      updateStatistics(users); // تحديث الإحصائيات
+      return users;
+    }
+
+    // تحديث الإحصائيات
+    function updateStatistics(users) {
+      const totalUsers = users.length;
+      const activeUsers = users.length; // يمكن تعديله حسب الحاجة
+      const adminUsers = users.filter(u => u.jobTitle === 'مدير المشروع').length;
+      const today = new Date().toISOString().split('T')[0];
+      const recentUsers = users.filter(u => {
+        // يمكن إضافة تاريخ الإنشاء في المستقبل
+        return false; // مؤقتاً
+      }).length;
+
+      document.getElementById('totalUsers').textContent = totalUsers;
+      document.getElementById('activeUsers').textContent = activeUsers;
+      document.getElementById('adminUsers').textContent = adminUsers;
+      document.getElementById('recentUsers').textContent = recentUsers;
+    }
+
+    async function renderUsers(usersToRender = null) {
+      const users = usersToRender || await fetchUsers();
+      const tbody = document.getElementById('usersTable');
+      tbody.innerHTML = '';
+      
+      if (users.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="padding: 40px; text-align: center; color: #6c757d;">
+              <i class="fa fa-users" style="font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+              <div style="font-size: 1.2rem; font-weight: bold;">لا توجد مستخدمين</div>
+              <div style="font-size: 0.9rem; margin-top: 8px;">قم بإضافة مستخدم جديد للبدء</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      users.forEach((u, index) => {
+        const tr = document.createElement('tr');
+        
+        // تحديد نوع الشارة حسب الوظيفة
+        let badgeClass = 'badge-primary';
+        if (u.jobTitle === 'مدير المشروع') badgeClass = 'badge-success';
+        else if (u.jobTitle && u.jobTitle.includes('مهندس')) badgeClass = 'badge-warning';
+        
+        tr.innerHTML = `
+          <td style="font-weight: bold; color: var(--primary-color);">${index + 1}</td>
+          <td><span class="badge ${badgeClass}">${u.jobTitle || ''}</span></td>
+          <td style="font-weight: 600;">${u.username}</td>
+          <td style="direction: ltr; text-align: center;">${u.email || ''}</td>
+          <td style="font-family: monospace; color: #6c757d;">••••••••</td>
+          <td class="actions-cell">
+            <button class="icon-btn edit"
+              title="تعديل المستخدم"
+              data-userid="${u._id}"
+              data-username="${u.username || ''}"
+              data-email="${u.email || ''}"
+              data-jobtitle="${u.jobTitle || ''}">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="icon-btn permissions"
+              title="إدارة الصلاحيات"
+              data-userid="${u._id}"
+              data-permissions='${JSON.stringify(u.permissions || [])}'>
+              <i class="fa fa-key"></i>
+            </button>
+            <button class="icon-btn delete" 
+              title="حذف المستخدم" 
+              onclick="deleteUser('${u._id}')">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // ربط الأحداث بعد بناء الجدول
+      document.querySelectorAll('.icon-btn.permissions').forEach(btn => {
+        btn.onclick = function() {
+          const userId = this.getAttribute('data-userid');
+          let permissions = [];
+          try { permissions = JSON.parse(this.getAttribute('data-permissions') || '[]'); } catch {}
+          openPermissionsModal(userId, permissions);
+        };
+      });
+
+      document.querySelectorAll('.icon-btn.edit').forEach(btn => {
+        btn.onclick = function() {
+          const userId = this.getAttribute('data-userid');
+          const username = this.getAttribute('data-username');
+          const email = this.getAttribute('data-email');
+          const jobTitle = this.getAttribute('data-jobtitle');
+          openEditUserModal(userId, username, email, jobTitle);
+        };
+      });
+    }
+
+    // البحث والفلترة
+    let currentFilter = 'all';
+    
+    document.getElementById('searchUsers').addEventListener('input', function() {
+      filterAndSearchUsers();
+    });
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.getAttribute('data-filter');
+        filterAndSearchUsers();
+      });
+    });
+    
+    function filterAndSearchUsers() {
+      const searchTerm = document.getElementById('searchUsers').value.toLowerCase().trim();
+      
+      let filtered = allUsers;
+      
+      // تطبيق الفلتر
+      if (currentFilter !== 'all') {
+        if (currentFilter === 'مهندس') {
+          filtered = filtered.filter(u => u.jobTitle && u.jobTitle.includes('مهندس'));
+        } else {
+          filtered = filtered.filter(u => u.jobTitle === currentFilter);
+        }
+      }
+      
+      // تطبيق البحث
+      if (searchTerm) {
+        filtered = filtered.filter(u => 
+          (u.username && u.username.toLowerCase().includes(searchTerm)) ||
+          (u.email && u.email.toLowerCase().includes(searchTerm)) ||
+          (u.jobTitle && u.jobTitle.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      renderUsers(filtered);
+    }
+
+    // ربط صلاحية "تعديل كامل" بتفعيل كل الصلاحيات تحتها
+    function handleEditAllPermission() {
+      const editAll = document.getElementById('perm-edit-all');
+      const underAll = document.querySelectorAll('.perm-under-edit-all');
+      if (!editAll) return;
+
+      function updateRelatedPermissions() {
+        if (editAll.checked) {
+          underAll.forEach(cb => {
+            cb.checked = true;
+            cb.disabled = true;
+          });
+        } else {
+          underAll.forEach(cb => {
+            cb.disabled = false;
+          });
+        }
+      }
+      editAll.removeEventListener('change', updateRelatedPermissions); // لمنع التكرار
+      editAll.addEventListener('change', updateRelatedPermissions);
+      updateRelatedPermissions();
+    }
+
+    // تبديل التبويبات في نافذة الصلاحيات
+    function initPermissionsTabs() {
+      const tabs = document.querySelectorAll('.permission-tab');
+      const contents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const targetTab = this.getAttribute('data-tab');
+          
+          // إزالة active من جميع التبويبات والمحتويات
+          tabs.forEach(t => t.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+          
+          // إضافة active للتبويب والمحتوى المختار
+          this.classList.add('active');
+          document.querySelector(`.tab-content[data-tab="${targetTab}"]`).classList.add('active');
+        });
+      });
+    }
+
+    // تحديد جميع العناصر في بطاقة صلاحيات
+    function selectAllInCard(button) {
+      const card = button.closest('.permission-card');
+      const checkboxes = card.querySelectorAll('input[type="checkbox"]');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      
+      checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+        // تحديث الكلاس للعنصر
+        const item = cb.closest('.permission-item');
+        if (item) {
+          if (cb.checked) {
+            item.classList.add('checked');
+          } else {
+            item.classList.remove('checked');
+          }
+        }
+      });
+      
+      // تحديث نص الزر
+      button.textContent = allChecked ? 'تحديد الكل' : 'إلغاء الكل';
+    }
+
+    // إضافة event listeners لتحديث مظهر العناصر عند التحديد
+    function initCheckboxListeners() {
+      document.querySelectorAll('.permission-item input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const item = this.closest('.permission-item');
+          if (this.checked) {
+            item.classList.add('checked');
+          } else {
+            item.classList.remove('checked');
+          }
+        });
+      });
+    }
+
+    function openPermissionsModal(userId, permissions) {
+      currentPermissionsUserId = userId;
+      currentPermissions = permissions || [];
+      document.getElementById('permissionsModal').style.display = 'flex';
+      
+      // تهيئة التبويبات
+      initPermissionsTabs();
+      
+      // ضبط القيم
+      document.querySelectorAll('#permissionsForm input[type="checkbox"]').forEach(cb => {
+        cb.checked = currentPermissions.includes(cb.value);
+        // تحديث مظهر العنصر
+        const item = cb.closest('.permission-item');
+        if (item) {
+          if (cb.checked) {
+            item.classList.add('checked');
+          } else {
+            item.classList.remove('checked');
+          }
+        }
+      });
+      
+      // تهيئة checkbox listeners
+      initCheckboxListeners();
+    }
+
+    function closePermissionsModal() {
+      document.getElementById('permissionsModal').style.display = 'none';
+      currentPermissionsUserId = null;
+    }
+
+    document.getElementById('permissionsForm').onsubmit = async function(e) {
+      e.preventDefault();
+      
+      // البحث عن زر الإرسال في permissions-footer
+      const submitBtn = document.querySelector('.permissions-footer button[type="submit"]');
+      if (!submitBtn) {
+        console.error('Submit button not found');
+        return;
+      }
+      
+      const originalContent = submitBtn.innerHTML;
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading"></span> جاري الحفظ...';
+      
+      // اجمع كل الصلاحيات المختارة
+      let checked = Array.from(this.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+      try {
+        await fetch('/users/' + currentPermissionsUserId + '/permissions', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ permissions: checked })
+        });
+        
+        // تحديث بيانات المستخدم الحالي في localStorage إذا كان هو نفسه
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (currentUser && currentUser._id === currentPermissionsUserId) {
+          currentUser.permissions = checked;
+          localStorage.setItem('user', JSON.stringify(currentUser));
+        }
+        
+        closePermissionsModal();
+        renderUsers();
+        
+        // إرسال إشعار
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          const user = allUsers.find(u => u._id === currentPermissionsUserId);
+          const username = user ? user.username : 'مستخدم';
+          await window.sendNotification('user-permissions', `تم تحديث صلاحيات: ${username}`, 'users', currentPermissionsUserId);
+        }
+        
+        showNotification('تم تحديث الصلاحيات بنجاح ✓', 'success');
+      } catch (error) {
+        showNotification('حدث خطأ أثناء تحديث الصلاحيات', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      }
+    };
+
+    document.getElementById('userForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalContent = submitBtn.innerHTML;
+      
+      // تعطيل الزر وإظهار تحميل
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
+      
+      const jobTitle = this.jobTitle.value.trim();
+      const username = this.username.value.trim();
+      const email = this.email.value.trim();
+      const password = this.password.value;
+      
+      if (!jobTitle || !username || !email || !password) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+        return;
+      }
+      
+      try {
+        const response = await fetch('/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobTitle, username, email, password })
+        });
+        
+        if (response.ok) {
+          await renderUsers();
+          this.reset();
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification('user-add', `تم إضافة مستخدم جديد: ${username}`, 'users', '');
+          }
+          
+          // إظهار رسالة نجاح عصرية
+          showNotification('تمت إضافة المستخدم بنجاح', 'success');
+        } else {
+          showNotification('حدث خطأ أثناء إضافة المستخدم', 'error');
+        }
+      } catch (error) {
+        showNotification('خطأ في الاتصال بالخادم', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      }
+    };
+
+    async function deleteUser(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا المستخدم؟\nهذا الإجراء لا يمكن التراجع عنه.')) return;
+      
+      // الحصول على اسم المستخدم قبل الحذف
+      const user = allUsers.find(u => u._id === id);
+      const username = user ? user.username : 'مستخدم';
+      
+      try {
+        const response = await fetch('/users/' + id, { method: 'DELETE' });
+        if (response.ok) {
+          await renderUsers();
+          
+          // إرسال إشعار
+          await window.waitForNotificationSystem();
+          if (window.sendNotification) {
+            await window.sendNotification('user-delete', `تم حذف المستخدم: ${username}`, 'users', id);
+          }
+          
+          showNotification('تم حذف المستخدم بنجاح', 'success');
+        } else {
+          showNotification('حدث خطأ أثناء حذف المستخدم', 'error');
+        }
+      } catch (error) {
+        showNotification('خطأ في الاتصال بالخادم', 'error');
+      }
+    }
+
+    // دالة لإظهار الإشعارات
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 0.85rem;
+        z-index: 10000;
+        animation: slideDown 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      `;
+      
+      if (type === 'success') {
+        notification.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
+        notification.style.color = 'white';
+        notification.innerHTML = '<i class="fa fa-check-circle"></i> ' + message;
+      } else if (type === 'error') {
+        notification.style.background = 'linear-gradient(135deg, #e53935 0%, #c62828 100%)';
+        notification.style.color = 'white';
+        notification.innerHTML = '<i class="fa fa-exclamation-circle"></i> ' + message;
+      } else {
+        notification.style.background = 'linear-gradient(135deg, #2e8ca3 0%, #1976d2 100%)';
+        notification.style.color = 'white';
+        notification.innerHTML = '<i class="fa fa-info-circle"></i> ' + message;
+      }
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // إضافة الأنيميشن للإشعارات
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideDown {
+        from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(0); opacity: 1; }
+        to { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // عرض اسم المستخدم
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        document.getElementById('username').textContent = user.username || '';
+      } catch {}
+    }
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+
+    renderUsers();
+
+    // نافذة التعديل
+    function openEditUserModal(userId, username, email, jobTitle) {
+      currentEditUserId = userId;
+      // set jobTitle select value
+      const jobSelect = document.getElementById('editJobTitle');
+      if (jobSelect) {
+        jobSelect.value = jobTitle || '';
+      }
+      document.getElementById('editUsername').value = username || '';
+      document.getElementById('editEmail').value = email || '';
+      document.getElementById('editPassword').value = '';
+      document.getElementById('editUserModal').style.display = 'flex';
+      window._editingUserRow = document.querySelector(
+        `.edit-user-btn[data-userid="${userId}"]`
+      )?.closest('tr');
+    }
+    function closeEditUserModal() {
+      document.getElementById('editUserModal').style.display = 'none';
+      currentEditUserId = null;
+      window._editingUserRow = null;
+    }
+
+    document.getElementById('editUserForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalContent = submitBtn.innerHTML;
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading"></span> جاري الحفظ...';
+      
+      const jobTitle = document.getElementById('editJobTitle').value.trim();
+      const username = document.getElementById('editUsername').value.trim();
+      const email = document.getElementById('editEmail').value.trim();
+      const password = document.getElementById('editPassword').value;
+      
+      if (!jobTitle || !username || !email) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+        return;
+      }
+      
+      const body = { jobTitle, username, email };
+      if (password) body.password = password;
+      
+      try {
+        await fetch('/users/' + currentEditUserId, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        
+        closeEditUserModal();
+        await renderUsers();
+        
+        // إرسال إشعار
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          await window.sendNotification('user-edit', `تم تعديل بيانات المستخدم: ${username}`, 'users', currentEditUserId);
+        }
+        
+        showNotification('تم تحديث بيانات المستخدم بنجاح', 'success');
+      } catch (error) {
+        showNotification('حدث خطأ أثناء التحديث', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+      }
+    };
+
+    // دالة مساعدة للانتظار حتى يتم تحميل نظام الإشعارات
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>

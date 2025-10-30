@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>سعيد أحمد بالبيد | الرئيسية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="permissions-check.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db; /* اللون الفاتح */
+      min-height: 100vh;
+      direction: rtl;
+    }
+    .navbar {
+      background: #1a3b50;
+      color: #fff;
+      padding: 2px 0 1px 0;
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 18px #1a3b5022;
+      border-radius: 0;
+      border-bottom: 3px solid #2e8ca3;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 2;
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .navbar .user-info {
+      position: absolute;
+      left: 16px;
+      right: auto;
+      top: 50%;
+      transform: translateY(-50%);
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 0;
+      height: auto;
+    }
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #bbb;
+      display: inline-block;
+      vertical-align: middle;
+      object-fit: cover;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .user-avatar:hover {
+      box-shadow: 0 0 0 2px #2e8ca3;
+    }
+    .user-name {
+      font-size: 0.93rem;
+      font-weight: 500;
+      color: #fff;
+      margin-right: 6px;
+      vertical-align: middle;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      font-family: 'Cairo', Arial, sans-serif;
+      text-shadow: 0 1px 6px #0002;
+      transition: color 0.2s;
+    }
+    .user-avatar:hover + .user-name {
+      color: #2e8ca3;
+    }
+    #logoutBtn {
+      display: none;
+      color: #2e8ca3;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 2px;
+      cursor: pointer;
+      /* text-decoration: underline; */ /* تم إلغاء الخط */
+      background: #fff;
+      border: none;
+      padding: 3px 10px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 110%;
+      white-space: nowrap;
+      z-index: 10;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px #2e8ca322;
+      border: 1.2px solid #2e8ca3;
+      transition: background 0.2s, color 0.2s;
+      font-family: 'Cairo', Arial, sans-serif;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 8px #2e8ca322, 0 1px 6px #0001;
+    }
+    #logoutBtn:hover {
+      background: #2e8ca3;
+      color: #fff;
+    }
+    .show-logout #logoutBtn {
+      display: block;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px);}
+      to { opacity: 1; transform: translateX(-50%) translateY(0);}
+    }
+    .dashboard {
+      max-width: 1400px; /* تم التوسيع */
+      margin: 0 auto;
+      padding: 32px 0 0 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* زيادة عدد الأعمدة */
+      gap: 24px;
+      justify-content: stretch;
+      align-items: stretch;
+      width: 100%;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #1a3b5011, 0 1.5px 8px #c5d6dbcc;
+      min-width: 0;
+      max-width: 100%;
+      padding: 24px 18px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s, transform 0.18s;
+      border: 1.5px solid #8c969a;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .card:hover, .card:focus {
+      box-shadow: 0 8px 32px #2e8ca333, 0 2px 12px #c5d6dbcc;
+      transform: translateY(-6px) scale(1.03);
+      border-color: #2e8ca3;
+    }
+    .card-icon {
+      font-size: 2.4rem;
+      margin-bottom: 14px;
+      color: #2e8ca3;
+      background: #c5d6db;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px #2e8ca322;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #1a3b50;
+      margin-bottom: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .card-desc {
+      color: #666;
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 0;
+      opacity: 0.85;
+    }
+    .footer {
+      text-align: center;
+      color: #2e8ca3;
+      font-size: 1.1rem;
+      margin-top: 60px;
+      padding-bottom: 18px;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      font-weight: 500;
+      text-shadow: 0 1px 8px #2e8ca311;
+    }
+    .navbar-taskon {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 2px;
+      background: transparent;
+      padding: 2px 14px 2px 10px;
+      border-radius: 10px;
+      box-shadow: none;
+      border: none;
+      z-index: 10;
+      user-select: none;
+    }
+    /* 3 كروت في الصف للشاشات المتوسطة */
+    @media (max-width: 1500px) {
+      .dashboard {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 1200px) {
+      .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+    }
+    /* 2 كارت في الصف للشاشات الصغيرة */
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        max-width: 98vw;
+      }
+      .card {
+        min-width: 0;
+        max-width: 100%;
+      }
+    }
+    /* كارت واحد في الصف للموبايل */
+    @media (max-width: 600px) {
+      .navbar { font-size: 1rem; padding: 3px 0 2px 0; border-radius: 0 0 14px 14px; min-height: 22px; }
+      .navbar .user-info { left: 4px; font-size: 0.92rem; padding: 2px 6px; height: 22px; }
+      .dashboard {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 18px 0 0 0;
+      }
+      .card {
+        width: 98vw;
+        min-width: unset;
+        max-width: 98vw;
+        padding: 18px 8px 18px 8px;
+        flex: 1 1 98vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="mainNavbarContainer"></div>
+  <script>
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('mainNavbarContainer').innerHTML = html;
+        // تنفيذ جميع السكربتات داخل الشريط العلوي بعد تحميله ديناميكياً
+        Array.from(document.getElementById('mainNavbarContainer').querySelectorAll('script')).forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+
+        // حماية الصفحة
+        if (!localStorage.getItem('user')) {
+          window.location.href = 'login.html';
+        }
+        // عرض اسم المستخدم وصورة افتراضية
+        const user = localStorage.getItem('user');
+        if (user) {
+          try {
+            const username = JSON.parse(user).username || '';
+            document.getElementById('userName').textContent = username;
+          } catch {}
+        }
+        // إظهار زر تسجيل الخروج عند الضغط على الصورة
+        const userAvatar = document.getElementById('userAvatar');
+        const userInfo = document.getElementById('userInfo');
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (userAvatar && userInfo && logoutBtn) {
+          userAvatar.onclick = function(e) {
+            e.stopPropagation();
+            userInfo.classList.toggle('show-logout');
+          };
+          document.addEventListener('click', function(e) {
+            if (!userInfo.contains(e.target)) {
+              userInfo.classList.remove('show-logout');
+            }
+          });
+          logoutBtn.onclick = function() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+          };
+        }
+      });
+  </script>
+  <div class="dashboard" id="dashboard">
+    <div class="card" data-permission="dashboard-card-project-info" onclick="location.href='project.html'">
+      <div class="card-icon">📁</div>
+      <div class="card-title">المشروع</div>
+      <div class="card-desc">إدارة بيانات المشروع الرئيسي</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-drawings" onclick="location.href='drawings.html'">
+      <div class="card-icon">🗂️</div>
+      <div class="card-title">المخططات</div>
+      <div class="card-desc">عرض وإدارة المخططات الهندسية</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-suppliers" onclick="location.href='add-contractor.html'">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">تعاملات خارجية</div>
+      <div class="card-desc">إدارة الموردين والخدمات المساندة</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-contractors" onclick="location.href='list-contractors.html'">
+      <div class="card-icon">📋</div>
+      <div class="card-title">عرض المقاولين</div>
+      <div class="card-desc">استعراض وتعديل بيانات جميع المقاولين</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-extracts" onclick="location.href='add-extract.html'">
+      <div class="card-icon">➕</div>
+      <div class="card-title">إضافة مستخلص</div>
+      <div class="card-desc">إدخال مستخلص جديد وربطه بالمقاول</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-extracts" onclick="location.href='list-extracts.html'">
+      <div class="card-icon">📑</div>
+      <div class="card-title">قائمة المستخلصات</div>
+      <div class="card-desc">عرض جميع المستخلصات المسجلة</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-store" onclick="location.href='store.html'">
+      <div class="card-icon">🏬</div>
+      <div class="card-title">المخزن</div>
+      <div class="card-desc">إدارة بيانات المخزن</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-suppliers" onclick="location.href='supplies.html'">
+      <div class="card-icon">🚚</div>
+      <div class="card-title">التوريدات</div>
+      <div class="card-desc">إدارة عمليات التوريد</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-purchases" onclick="location.href='purchases.html'">
+      <div class="card-icon">🛒</div>
+      <div class="card-title">المشتريات</div>
+      <div class="card-desc">إدارة عمليات الشراء</div>
+    </div>
+    <!-- كارد العمال قبل المستخدمين -->
+    <div class="card" data-permission="dashboard-card-workers" onclick="location.href='workers.html'">
+      <div class="card-icon">🧑‍🔧</div>
+      <div class="card-title">العمال</div>
+      <div class="card-desc">إدارة بيانات العمال ومتابعتهم</div>
+    </div>
+    <!-- كارد المعدات -->
+    <div class="card" data-permission="dashboard-card-equipments" onclick="location.href='equipments.html'">
+      <div class="card-icon">🚜</div>
+      <div class="card-title">المعدات</div>
+      <div class="card-desc">إدارة بيانات المعدات</div>
+    </div>
+    <!-- كارد سندات الاستلام -->
+    <div class="card" data-permission="dashboard-card-receipts" onclick="location.href='receipts.html'">
+      <div class="card-icon">📝</div>
+      <div class="card-title">سندات الاستلام</div>
+      <div class="card-desc">إدارة سندات استلام المواد والخدمات</div>
+    </div>
+    <div class="card" data-permission="dashboard-card-users" onclick="location.href='users.html'">
+      <div class="card-icon">👤</div>
+      <div class="card-title">المستخدمين</div>
+      <div class="card-desc">إدارة مستخدمي المنصة وصلاحياتهم</div>
+    </div>
+  </div>
+  
+  <script>
+    // فحص وإخفاء الكاردات بناءً على الصلاحيات
+    document.addEventListener('DOMContentLoaded', function() {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const permissions = user.permissions || [];
+      
+      // جلب جميع الكاردات
+      const cards = document.querySelectorAll('.card[data-permission]');
+      
+      cards.forEach(card => {
+        const requiredPermission = card.getAttribute('data-permission');
+        
+        // إذا لم يكن لدى المستخدم الصلاحية، أخفِ الكارد
+        if (!permissions.includes(requiredPermission)) {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+  
+  <div class="footer">
+    جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
+  </div>
+</body>
+</html>

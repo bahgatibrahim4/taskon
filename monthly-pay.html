@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>القبض الشهري | صفحة العمال</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { direction: rtl; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      min-height: 100vh;
+      /* direction: rtl; */ /* تم نقلها إلى :root */
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #1a3b5011, 0 1.5px 8px #c5d6dbcc;
+      padding: 32px 18px 24px 18px;
+      margin-top: 18px;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .header-row h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #1a3b50;
+      letter-spacing: 1px;
+      text-align: right;
+      flex: 1 1 auto;
+    }
+    .back-btn {
+      border: 2px solid #2e8ca3;
+      background: #fff;
+      color: #1a3b50;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 8px 22px;
+      border-radius: 0;
+      cursor: pointer;
+      margin-bottom: 0;
+      transition: background 0.15s, color 0.15s, border 0.15s;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #2e8ca311;
+      outline: none;
+      display: inline-block;
+    }
+    .back-btn:hover, .back-btn:focus {
+      background: #2e8ca3;
+      color: #fff;
+      border-color: #1a3b50;
+    }
+    
+    /* تأثيرات أزرار التصفية */
+    #filterBtn:hover {
+      background: #28a745 !important;
+      color: #fff !important;
+    }
+    
+    #addMonthBtn:hover {
+      background: #2e8ca3 !important;
+      color: #fff !important;
+    }
+    
+    #clearFilterBtn:hover {
+      background: #c82333 !important;
+    }
+    .footer {
+      text-align: center;
+      color: #2e8ca3;
+      font-size: 1.1rem;
+      margin-top: 60px;
+      padding-bottom: 18px;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      font-weight: 500;
+      text-shadow: 0 1px 8px #2e8ca311;
+    }
+    @media (max-width: 900px) {
+      .container { max-width: 99vw; }
+      .header-row h1 { font-size: 1.2rem; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px 2px; }
+      .header-row { flex-direction: column-reverse; align-items: stretch; gap: 6px; }
+      .header-row h1 { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container">
+    <div class="header-row">
+      <h1>القبض الشهري</h1>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <!-- زر التصفية -->
+        <button id="filterBtn" type="button" style="border:1.5px solid #28a745; border-radius:0; background:#fff; color:#28a745; font-family:'Cairo',Arial,sans-serif; font-size:0.8rem; font-weight:700; padding:3px 10px; letter-spacing:0.5px; box-shadow:0 1px 4px #28a74533; outline:none; cursor:pointer; transition:background 0.15s, color 0.15s, border 0.15s;">
+          🔍
+        </button>
+        <button class="add-month-btn" id="addMonthBtn" type="button" style="border:1.5px solid #2e8ca3; border-radius:0; background:#fff; color:#1a3b50; font-family:'Cairo',Arial,sans-serif; font-size:0.85rem; font-weight:700; padding:4px 12px; letter-spacing:0.5px; box-shadow:0 1px 4px #2e8ca311; outline:none; cursor:pointer; transition:background 0.15s, color 0.15s, border 0.15s;">إضافة</button>
+        <button class="back-btn" id="backBtn" style="border:1.5px solid #2e8ca3; background:#fff; color:#1a3b50; font-family:'Cairo',Arial,sans-serif; font-size:0.85rem; font-weight:700; padding:4px 12px; border-radius:0; cursor:pointer; margin-bottom:0; transition:background 0.15s, color 0.15s, border 0.15s; letter-spacing:0.5px; box-shadow:0 1px 4px #2e8ca311; outline:none; display:inline-block;">رجوع</button>
+      </div>
+    </div>
+    
+    <!-- شريط التصفية -->
+    <div id="filterBar" style="display:none; background:#f8fafb; border:1px solid #2e8ca3; border-radius:6px; padding:12px 16px; margin-bottom:16px;">
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:0.9rem;">السنة:</label>
+          <select id="yearFilter" style="padding:4px 8px; border:1px solid #c5d6db; border-radius:4px; font-size:0.9rem;">
+            <option value="">جميع السنوات</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <label style="font-weight:700; color:#1a3b50; font-size:0.9rem;">الشهر:</label>
+          <select id="monthFilter" style="padding:4px 8px; border:1px solid #c5d6db; border-radius:4px; font-size:0.9rem;">
+            <option value="">جميع الشهور</option>
+            <option value="01">يناير</option>
+            <option value="02">فبراير</option>
+            <option value="03">مارس</option>
+            <option value="04">أبريل</option>
+            <option value="05">مايو</option>
+            <option value="06">يونيو</option>
+            <option value="07">يوليو</option>
+            <option value="08">أغسطس</option>
+            <option value="09">سبتمبر</option>
+            <option value="10">أكتوبر</option>
+            <option value="11">نوفمبر</option>
+            <option value="12">ديسمبر</option>
+          </select>
+        </div>
+        <button id="clearFilterBtn" style="background:#e74c3c; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:0.75rem; cursor:pointer; font-weight:700;">مسح</button>
+      </div>
+    </div>
+    <div id="monthsCards" style="display:flex; flex-wrap:wrap; gap:18px; margin-top:32px;"></div>
+    
+    <!-- شريط الإجمالي العام -->
+    <div id="totalBar" style="margin-top:20px; padding:8px 14px; background:#1a3b50; border-radius:4px; text-align:center; display:none;">
+      <div style="font-size:0.9rem; font-weight:700; color:#fff; margin-bottom:1px;">إجمالي جميع الشهور</div>
+      <div id="grandTotal" style="font-size:1.2rem; font-weight:900; color:#28a745;">0</div>
+    </div>
+  </div>
+  <div class="footer">
+    جميع الحقوق محفوظة &copy; 2025 سعيد أحمد بالبيد
+  </div>
+  <!-- مودال إضافة شهر -->
+  <div id="monthModalOverlay" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:#0006; z-index:2000; align-items:center; justify-content:center;">
+    <form id="monthModal" style="background:#fff; border-radius:12px; box-shadow:0 8px 32px #1a3b5044; padding:28px 18px 18px 18px; min-width:320px; max-width:95vw; width:340px; display:flex; flex-direction:column; gap:14px; font-family:'Cairo',Arial,sans-serif;">
+      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">اسم الشهر</label>
+      <input type="text" id="monthNameInput" required style="padding:6px 10px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; margin-bottom:8px;">
+      <label style="font-weight:700; color:#1a3b50; font-size:1.1rem;">التاريخ</label>
+      <input type="date" id="monthDateInput" required style="padding:6px 10px; border:1.5px solid #c5d6db; border-radius:6px; font-size:1rem; margin-bottom:8px;">
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button type="button" id="cancelMonthModalBtn" style="border:none; background:#c5d6db; color:#1a3b50; font-weight:700; font-size:0.85rem; padding:5px 14px; border-radius:4px; cursor:pointer;">إلغاء</button>
+        <button type="submit" style="border:none; background:#2e8ca3; color:#fff; font-weight:700; font-size:0.85rem; padding:5px 14px; border-radius:4px; cursor:pointer;">إضافة</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    // حماية الصفحة
+    if (!localStorage.getItem('user')) {
+      window.location.href = 'login.html';
+    }
+    // زر الرجوع
+    document.getElementById('backBtn').onclick = function() {
+      window.location.href = 'workers.html';
+    };
+
+    // --- إضافة شهر ---
+    const addMonthBtn = document.getElementById('addMonthBtn');
+    const monthModalOverlay = document.getElementById('monthModalOverlay');
+    const monthModal = document.getElementById('monthModal');
+    const cancelMonthModalBtn = document.getElementById('cancelMonthModalBtn');
+    const monthsCards = document.getElementById('monthsCards');
+    let monthsList = [];
+    let filteredMonthsList = [];
+
+    // --- التصفية ---
+    const filterBtn = document.getElementById('filterBtn');
+    const filterBar = document.getElementById('filterBar');
+    const yearFilter = document.getElementById('yearFilter');
+    const monthFilter = document.getElementById('monthFilter');
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+    // إظهار/إخفاء شريط التصفية
+    filterBtn.onclick = function() {
+      if (filterBar.style.display === 'none') {
+        filterBar.style.display = 'block';
+        populateYearFilter();
+      } else {
+        filterBar.style.display = 'none';
+      }
+    };
+
+    // ملء قائمة السنوات
+    function populateYearFilter() {
+      const years = new Set();
+      monthsList.forEach(m => {
+        if (m.date) {
+          const year = m.date.split('-')[0];
+          years.add(year);
+        }
+      });
+      
+      yearFilter.innerHTML = '<option value="">جميع السنوات</option>';
+      Array.from(years).sort().forEach(year => {
+        yearFilter.innerHTML += `<option value="${year}">${year}</option>`;
+      });
+    }
+
+    // تطبيق التصفية
+    function applyFilter() {
+      const selectedYear = yearFilter.value;
+      const selectedMonth = monthFilter.value;
+
+      filteredMonthsList = monthsList.filter(m => {
+        if (!m.date) return false;
+        
+        const dateParts = m.date.split('-');
+        const year = dateParts[0];
+        const month = dateParts[1];
+
+        let matchYear = true;
+        let matchMonth = true;
+
+        if (selectedYear && year !== selectedYear) {
+          matchYear = false;
+        }
+
+        if (selectedMonth && month !== selectedMonth) {
+          matchMonth = false;
+        }
+
+        return matchYear && matchMonth;
+      });
+
+      renderFilteredMonthsCards();
+    }
+
+    // مسح التصفية
+    clearFilterBtn.onclick = function() {
+      yearFilter.value = '';
+      monthFilter.value = '';
+      filteredMonthsList = [...monthsList];
+      renderFilteredMonthsCards();
+    };
+
+    // أحداث التصفية
+    yearFilter.onchange = applyFilter;
+    monthFilter.onchange = applyFilter;
+
+    if (addMonthBtn) {
+      addMonthBtn.onclick = function(e) {
+        e.preventDefault();
+        console.log('زر إضافة شهر تم الضغط عليه');
+        monthModalOverlay.style.display = 'flex';
+        if (monthModal) monthModal.reset();
+        setTimeout(() => {
+          const input = document.getElementById('monthNameInput');
+          if (input) input.focus();
+        }, 100);
+      };
+    }
+
+    if (cancelMonthModalBtn) {
+      cancelMonthModalBtn.onclick = function() {
+        monthModalOverlay.style.display = 'none';
+      };
+    }
+    if (monthModalOverlay) {
+      monthModalOverlay.onclick = function(e) {
+        if (e.target === this) this.style.display = 'none';
+      };
+    }
+
+    // جلب الشهور من السيرفر
+    async function fetchMonths() {
+      try {
+        // عرض رسالة تحميل
+        monthsCards.innerHTML = '<div style="text-align:center; font-size:1.1rem; color:#2e8ca3; padding:20px;">جاري تحميل الشهور وحساب الإجماليات...</div>';
+        
+        const res = await fetch('/monthly-pays');
+        if (!res.ok) throw new Error('تعذر جلب بيانات الشهور');
+        const data = await res.json();
+        monthsList = data;
+        
+        // عرض الشهور أولاً بدون إجماليات
+        renderMonthsCards();
+        
+        // جلب إجماليات كل شهر تدريجياً
+        for (let i = 0; i < monthsList.length; i++) {
+          monthsList[i].total = await getMonthTotal(monthsList[i].date);
+          // تحديث العرض بعد كل إجمالي
+          renderMonthsCards();
+        }
+        
+      } catch (err) {
+        monthsList = [];
+        renderMonthsCards();
+        alert('حدث خطأ أثناء جلب الشهور: ' + err.message);
+      }
+    }
+
+    // دالة لحساب إجمالي شهر معين
+    async function getMonthTotal(monthDate) {
+      try {
+        const res = await fetch(`/pays?month=${encodeURIComponent(monthDate)}`);
+        if (!res.ok) return 0;
+        const pays = await res.json();
+        
+        // حساب الإجمالي (فقط الصفوف العادية، ليس الفواصل)
+        let total = 0;
+        pays.forEach(pay => {
+          if (!pay.isSeparator) {
+            // حساب الإضافي
+            const extraTotal = Array.isArray(pay.extra) ? pay.extra.reduce((sum, r) => {
+              const c = parseFloat(r.count) || 0;
+              const v = parseFloat(r.value) || 0;
+              return sum + (c * v);
+            }, 0) : 0;
+            
+            total += (Number(pay.value) || 0) + extraTotal;
+          }
+        });
+        
+        return total;
+      } catch (err) {
+        console.error('خطأ في حساب إجمالي الشهر:', err);
+        return 0;
+      }
+    }
+
+    // إضافة شهر جديد
+    monthModal.onsubmit = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('monthNameInput').value.trim();
+      const date = document.getElementById('monthDateInput').value;
+      if (!name || !date) return;
+      
+      const response = await fetch('/monthly-pays', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, date })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        // إرسال إشعار
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          await window.sendNotification(
+            'month-add',
+            `تم إضافة شهر قبض جديد: ${name}`,
+            'monthly-pay',
+            result.monthId || ''
+          );
+        }
+      }
+      
+      monthModalOverlay.style.display = 'none';
+      await fetchMonths();
+    };
+
+    // حذف شهر
+    async function deleteMonth(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا الشهر؟')) return;
+      
+      // الحصول على معلومات الشهر قبل الحذف
+      const month = monthsList.find(m => m._id === id);
+      const monthName = month ? month.name : 'شهر';
+      
+      const response = await fetch('/monthly-pays/' + id, { method: 'DELETE' });
+      
+      if (response.ok) {
+        // إرسال إشعار
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          await window.sendNotification(
+            'month-delete',
+            `تم حذف شهر القبض: ${monthName}`,
+            'monthly-pay',
+            id
+          );
+        }
+      }
+      
+      await fetchMonths();
+    }
+
+    function renderMonthsCards() {
+      filteredMonthsList = [...monthsList]; // إعادة تعيين القائمة المصفاة
+      renderFilteredMonthsCards();
+    }
+
+    // دالة عرض الشهور المصفاة
+    function renderFilteredMonthsCards() {
+      monthsCards.innerHTML = '';
+      
+      // حساب الإجمالي العام للشهور المصفاة
+      let grandTotal = 0;
+      
+      filteredMonthsList.forEach(m => {
+        const card = document.createElement('div');
+        card.style.cssText = `
+          background: #f8fafb;
+          border: 2px solid #2e8ca3;
+          border-radius: 0;
+          padding: 12px 16px 10px 16px;
+          min-width: 150px;
+          min-height: 70px;
+          box-shadow: 0 2px 8px #2e8ca311;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          font-family: 'Cairo', Arial, sans-serif;
+          margin-bottom: 0;
+          cursor: pointer;
+          transition: box-shadow 0.15s, border-color 0.15s;
+          position: relative;
+        `;
+        
+        // تنسيق الإجمالي
+        const totalFormatted = (m.total || 0).toLocaleString();
+        grandTotal += (m.total || 0);
+        
+        card.innerHTML = `
+          <div style="font-size:1rem; font-weight:900; color:#1a3b50; margin-bottom:4px;">${m.name}</div>
+          <div style="font-size:0.85rem; color:#2e8ca3; margin-bottom:6px;">${m.date}</div>
+          <div style="font-size:0.9rem; font-weight:700; color:#28a745; background:#e8f5e8; padding:2px 6px; border-radius:3px; border:1px solid #28a745;">
+            ${totalFormatted}
+          </div>
+          <button style="position:absolute; left:4px; top:4px; background:#e74c3c; color:#fff; border:none; border-radius:2px; padding:1px 4px; font-size:0.7rem; cursor:pointer;" onclick="event.stopPropagation(); deleteMonth('${m._id}')">×</button>
+        `;
+        card.onclick = function() {
+          window.location.href = `month-details.html?name=${encodeURIComponent(m.name)}&date=${encodeURIComponent(m.date)}`;
+        };
+        card.onmouseover = function() {
+          card.style.boxShadow = "0 4px 16px #2e8ca344";
+          card.style.borderColor = "#1a3b50";
+        };
+        card.onmouseout = function() {
+          card.style.boxShadow = "0 2px 8px #2e8ca311";
+          card.style.borderColor = "#2e8ca3";
+        };
+        monthsCards.appendChild(card);
+      });
+      
+      // تحديث شريط الإجمالي العام للشهور المصفاة
+      updateGrandTotal(grandTotal, filteredMonthsList.length);
+    }
+
+    // دالة تحديث الإجمالي العام
+    function updateGrandTotal(total, filteredCount) {
+      const totalBar = document.getElementById('totalBar');
+      const grandTotalElement = document.getElementById('grandTotal');
+      
+      if (monthsList.length > 0) {
+        totalBar.style.display = 'block';
+        grandTotalElement.textContent = total.toLocaleString();
+        
+        // تحديث النص ليوضح عدد الشهور المصفاة مع السنة
+        const titleElement = totalBar.querySelector('div:first-child');
+        const selectedYear = yearFilter.value;
+        const selectedMonth = monthFilter.value;
+        
+        let titleText = '';
+        
+        // التحقق من وجود تصفية
+        if (selectedYear || selectedMonth) {
+          if (selectedYear && selectedMonth) {
+            // تحديد سنة وشهر محددين
+            const monthNames = {
+              '01': 'يناير', '02': 'فبراير', '03': 'مارس', '04': 'أبريل',
+              '05': 'مايو', '06': 'يونيو', '07': 'يوليو', '08': 'أغسطس',
+              '09': 'سبتمبر', '10': 'أكتوبر', '11': 'نوفمبر', '12': 'ديسمبر'
+            };
+            titleText = `إجمالي ${monthNames[selectedMonth]} ${selectedYear}`;
+          } else if (selectedYear && !selectedMonth) {
+            // تحديد سنة فقط مع جميع الشهور
+            titleText = `إجمالي جميع شهور سنة ${selectedYear} (${filteredCount} شهر)`;
+          } else if (selectedMonth && !selectedYear) {
+            // تحديد شهر فقط
+            const monthNames = {
+              '01': 'يناير', '02': 'فبراير', '03': 'مارس', '04': 'أبريل',
+              '05': 'مايو', '06': 'يونيو', '07': 'يوليو', '08': 'أغسطس',
+              '09': 'سبتمبر', '10': 'أكتوبر', '11': 'نوفمبر', '12': 'ديسمبر'
+            };
+            titleText = `إجمالي شهر ${monthNames[selectedMonth]} (${filteredCount} من ${monthsList.length})`;
+          }
+        } else {
+          // لا توجد تصفية
+          titleText = 'إجمالي جميع الشهور';
+        }
+        
+        titleElement.textContent = titleText;
+      } else {
+        totalBar.style.display = 'none';
+      }
+    }
+
+    // عند تحميل الصفحة
+    fetchMonths();
+  </script>
+  <script>
+    // دالة مساعدة للانتظار حتى يتم تحميل sendNotification
+    window.waitForNotificationSystem = function() {
+      return new Promise((resolve) => {
+        if (window.sendNotification) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.sendNotification) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
+
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>

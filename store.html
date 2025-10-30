@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>المخزن | سعيد أحمد بالبيد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', Arial, sans-serif !important;
+    }
+    
+    /* جعل كل الأزرار والعناصر حادة */
+    button, .btn, input, select, textarea, .modal-content, .panel, .operation-item, .low-stock-item {
+      border-radius: 0 !important;
+    }
+    
+    :root { 
+      direction: rtl;
+      --primary-color: #2e8ca3;
+      --success-color: #388e3c;
+      --warning-color: #ff9800;
+      --danger-color: #e53935;
+      --border-color: #c5d6db;
+      --bg-light: #f7fafd;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
+      --transition: all 0.2s ease;
+    }
+    
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #c5d6db;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      font-size: 14px;
+    }
+    
+    .container {
+      max-width: 100%;
+      margin: 0;
+      background: #f7fafd;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 5px 0 5px 5px;
+      border: none;
+      position: fixed;
+      display: flex;
+      gap: 6px;
+      height: calc(100vh - 50px);
+      overflow: hidden;
+      top: 50px;
+      left: 0;
+      right: 0;
+    }
+    
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      height: 100%;
+      padding-left: 6px;
+      order: 1;
+    }
+    
+    /* سجل العمليات */
+    .operations-sidebar {
+      width: 280px;
+      background: #f7fafd;
+      border: 2px solid #8c969a;
+      border-radius: 0;
+      padding: 8px;
+      height: 100%;
+      overflow-y: auto;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+      order: 2;
+      flex-shrink: 0;
+      position: relative;
+      margin-right: 0;
+    }
+    
+    .operations-sidebar h3 {
+      margin: 0 0 8px 0;
+      color: #7a5230;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      background: #c5d6db;
+      padding: 6px;
+      border-radius: 0;
+    }
+    
+    .operation-item {
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 0;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 0.75rem;
+      line-height: 1.3;
+      transition: all 0.2s ease;
+    }
+    
+    .operation-item:hover {
+      background: #f0f8ff;
+      border-color: #22799b;
+    }
+    
+    .operation-time {
+      color: #666;
+      font-size: 0.7rem;
+      margin-bottom: 5px;
+    }
+    
+    .operation-type {
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: block;
+      padding: 5px 8px;
+      border-radius: 0;
+      font-size: 0.75rem;
+      text-align: center;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .operation-details {
+      color: #333;
+      font-size: 0.75rem;
+      margin-top: 0;
+      line-height: 1.5;
+    }
+    
+    .operations-sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .operations-sidebar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 6px;
+    }
+    
+    .operations-sidebar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 6px;
+    }
+    
+    .operations-sidebar::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    .panel {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      background: var(--primary-color);
+      color: #fff;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    
+    /* Alert Box */
+    #lowStockAlert {
+      display: none;
+      background: #fff3e0;
+      border: 1px solid var(--danger-color);
+      border-right: 4px solid var(--danger-color);
+      color: #7a5230;
+      padding: 6px 10px;
+      border-radius: 0;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.8em;
+      line-height: 1.3;
+    }
+    
+    /* Top Controls */
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      background: #fff;
+      padding: 10px;
+      border-radius: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    /* Low Stock Alert */
+    .low-stock-alert {
+      background: linear-gradient(135deg, #fff3cd 0%, #fff9e6 100%);
+      border: 2px solid #ffc107;
+      border-radius: 0;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      display: none;
+      animation: slideDown 0.3s ease-out;
+      box-shadow: 0 3px 10px rgba(255, 193, 7, 0.2);
+    }
+    
+    .low-stock-alert.show {
+      display: block;
+    }
+    
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #856404;
+      font-size: 0.95rem;
+    }
+    
+    .alert-icon {
+      font-size: 1.3rem;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .low-stock-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .low-stock-item {
+      background: white;
+      padding: 8px 10px;
+      border-radius: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid #ff9800;
+      font-size: 0.85rem;
+    }
+    
+    .low-stock-item.critical {
+      border-left-color: #dc3545;
+      background: #fff5f5;
+    }
+    
+    .item-name {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .item-qty {
+      color: #dc3545;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .qty-badge {
+      background: #dc3545;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 0;
+      font-size: 0.75rem;
+    }
+    
+    /* Highlight low stock rows in table */
+    .low-stock-row {
+      background: #fff3cd !important;
+      border-left: 3px solid #ffc107 !important;
+    }
+    
+    .critical-stock-row {
+      background: #ffebee !important;
+      border-left: 3px solid #dc3545 !important;
+      animation: blink 2s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      border: 1.5px solid;
+      border-radius: 0;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    
+    .btn-success {
+      background: var(--success-color);
+      color: #fff;
+      border-color: var(--success-color);
+    }
+    
+    .btn-success:hover {
+      background: #2e7d32;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-outline {
+      background: #fff;
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-outline:hover {
+      background: var(--primary-color);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    
+    .btn-warning {
+      background: #fff;
+      color: var(--warning-color);
+      border-color: var(--warning-color);
+    }
+    
+    .btn-warning:hover {
+      background: var(--warning-color);
+      color: #fff;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-align: center;
+      margin: 0;
+      flex: 1;
+    }
+    
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    
+    #searchInput {
+      border: 1.5px solid var(--primary-color);
+      border-radius: 0;
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      outline: none;
+      min-width: 120px;
+      font-family: 'Cairo', Arial, sans-serif;
+      transition: var(--transition);
+    }
+    
+    #searchInput:focus {
+      box-shadow: 0 0 0 2px rgba(46, 140, 163, 0.2);
+    }
+    
+    #openFilterModalBtn {
+      background: #fff;
+      border: 1.5px solid var(--primary-color);
+      border-left: none;
+      border-radius: 0;
+      padding: 5px 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    
+    #openFilterModalBtn:hover {
+      background: var(--primary-color);
+    }
+    
+    #openFilterModalBtn:hover svg {
+      fill: #fff;
+    }
+    
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-bottom: 6px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      font-size: 0.75rem;
+    }
+    
+    th, td {
+      padding: 5px 6px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      font-size: 0.75rem;
+    }
+    
+    th {
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .operation-badge {
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .badge-purchase {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .badge-supply {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .badge-issue {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+    
+    .badge-return {
+      background: #ffebee;
+      color: #c62828;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tbody tr:hover {
+      background: #e3f2fd;
+      transition: var(--transition);
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    
+    .modal-content {
+      background: #fff;
+      border-radius: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      padding: 16px 14px 14px 14px;
+      min-width: 280px;
+      max-width: 95vw;
+      width: 400px;
+      margin: auto;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-close {
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--danger-color);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: var(--transition);
+    }
+    
+    .modal-close:hover {
+      background: rgba(229, 57, 53, 0.1);
+    }
+    
+    .modal-title {
+      color: var(--primary-color);
+      margin: 0 0 12px 0;
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 10px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 0;
+      border: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      font-family: 'Cairo', Arial, sans-serif;
+      outline: none;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(46, 140, 163, 0.1);
+    }
+    
+    .price-input-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    
+    .price-input-group input {
+      flex: 1;
+      background: #f9f9f9;
+    }
+    
+    #resetPriceBtn {
+      display: none;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    
+    #resetPriceBtn:hover {
+      background: #267a8f;
+    }
+    
+    .available-qty {
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      background: var(--success-color);
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 8px 0;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .btn-submit:hover {
+      background: #2e7d32;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin: 4px;
+        padding: 6px 8px;
+        border-radius: 0;
+        flex-direction: column;
+        height: auto;
+        position: relative;
+      }
+      
+      .main-content {
+        order: 2;
+        padding: 0;
+      }
+      
+      .operations-sidebar {
+        order: 1;
+        width: 100%;
+        max-height: 300px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        margin-right: 0;
+      }
+      
+      .panel-header {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+      }
+      
+      .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      h2 {
+        font-size: 0.9rem;
+        text-align: center;
+        order: -1;
+        margin-bottom: 6px;
+      }
+      
+      .button-group {
+        justify-content: center;
+      }
+      
+      .search-container {
+        justify-content: center;
+      }
+      
+      table {
+        font-size: 0.65rem;
+      }
+      
+      th, td {
+        padding: 2px 3px;
+        font-size: 0.65rem;
+      }
+      
+      .operation-item {
+        font-size: 0.7rem;
+        padding: 6px;
+      }
+      
+      .operation-time {
+        font-size: 0.65rem;
+      }
+      
+      .operation-type {
+        font-size: 0.65rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        margin: 2px;
+        padding: 4px 6px;
+      }
+      
+      table {
+        font-size: 0.65rem;
+      }
+      
+      th, td {
+        padding: 2px 3px;
+      }
+      
+      .modal-content {
+        padding: 12px 10px;
+        width: 95vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <div class="container">
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Low Stock Alert -->
+      <div id="lowStockAlert" class="low-stock-alert">
+        <div class="alert-header">
+          <span class="alert-icon">⚠️</span>
+          <span>تنبيه: مواد قريبة من النفاد</span>
+        </div>
+        <div class="low-stock-items" id="lowStockItems"></div>
+      </div>
+      
+      <div class="top-controls">
+        <div class="button-group">
+          <button id="openIssueModalBtn" class="btn btn-success">
+            صرف مواد
+          </button>
+          <button id="storeReportBtn" class="btn btn-outline">
+            تقارير المخزن
+          </button>
+          <button id="exportExcelBtn" class="btn btn-outline">
+            تصدير Excel
+          </button>
+          <button id="updateDataBtn" class="btn btn-warning">
+            تحديث البيانات
+          </button>
+        </div>
+        
+        <h2>جدول المخزون</h2>
+        
+        <div class="search-container">
+          <input id="searchInput" type="text" placeholder="بحث..." class="form-control">
+          <button id="openFilterModalBtn" title="فلترة متقدمة">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#2e8ca3" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 5a1 1 0 0 1 1-1h12a1 1 0 0 1 .8 1.6l-4.6 6.4V16a1 1 0 0 1-1.447.894l-2-1A1 1 0 0 1 8 15v-3.01L3.2 6.6A1 1 0 0 1 3 5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- جدول المخزون -->
+      <div class="panel">
+        <table id="storeTable">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>اسم المادة</th>
+              <th>الكمية</th>
+              <th>الوحدة</th>
+              <th>السعر</th>
+              <th>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- الصفوف تضاف ديناميكياً -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Operations Sidebar -->
+    <div class="operations-sidebar">
+      <h3>سجل العمليات</h3>
+      <div id="operationsList">
+        <div class="operation-item" style="text-align:center; color:#666; font-style:italic;">
+          لا توجد عمليات بعد
+        </div>
+      </div>
+    </div>
+    
+    <!-- نافذة صرف مواد -->
+    <div id="issueModal" class="modal-overlay">
+      <div class="modal-content">
+        <button id="closeIssueModalBtn" class="modal-close">&times;</button>
+        <h3 class="modal-title">صرف مواد</h3>
+        <form id="issueForm">
+          <div class="form-group">
+            <label class="form-label">اسم المقاول *</label>
+            <select name="contractor" id="contractorSelect" required class="form-control">
+              <option value="">اختر المقاول</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">التاريخ *</label>
+            <input type="date" name="date" required class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">المادة *</label>
+            <select name="item" id="itemSelect" required class="form-control">
+              <option value="">اختر المادة</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">الكمية المتاحة: <span id="availableQty" class="available-qty">-</span></label>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">الكمية المصروفة *</label>
+            <input type="number" name="quantity" id="issueQtyInput" min="1" required class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">الفئة (سعر الوحدة) *</label>
+            <div class="price-input-group">
+              <input type="number" name="unitPrice" id="unitPriceInput" min="0" step="any" required class="form-control" placeholder="أدخل سعر الوحدة">
+              <button type="button" id="resetPriceBtn" title="إعادة السعر الافتراضي">↻</button>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-submit">صرف</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- نافذة الفلترة المتقدمة -->
+    <div id="filterModal" class="modal-overlay">
+      <div class="modal-content">
+        <button id="closeFilterModalBtn" class="modal-close">&times;</button>
+        <h3 class="modal-title">فلترة المخزون</h3>
+        <form id="filterForm">
+          <div class="form-group">
+            <label class="form-label">اسم المادة</label>
+            <select id="filterItemSelect" class="form-control">
+              <option value="">كل المواد</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-submit">تطبيق الفلتر</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- أضف مكتبة SheetJS قبل السكريبتات -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script>
+    const tableBody = document.querySelector('#storeTable tbody');
+    const operationsList = document.getElementById('operationsList');
+
+    // جلب بيانات المخزون من السيرفر مباشرة (ملخص الكميات المتاحة)
+    async function fetchStore() {
+      const res = await fetch('/store/summary');
+      return await res.json();
+    }
+    
+    // جلب سجل العمليات
+    async function fetchOperations() {
+      const res = await fetch('/store');
+      return await res.json();
+    }
+
+    // جلب المقاولين
+    async function fetchContractors() {
+      const res = await fetch('/contractors');
+      return await res.json();
+    }
+    
+    // جلب الموردين
+    async function fetchSuppliers() {
+      const res = await fetch('/suppliers');
+      return await res.json();
+    }
+
+    // تعبئة قائمة المقاولين
+    async function fillContractorsSelect() {
+      const contractors = await fetchContractors();
+      const select = document.getElementById('contractorSelect');
+      select.innerHTML = '<option value="">اختر المقاول</option>';
+      contractors.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c._id;
+        opt.textContent = c.name || c.contractorName || '';
+        select.appendChild(opt);
+      });
+    }
+
+    // تعبئة قائمة المواد من بيانات المخزون
+    let storeCache = [];
+    let isItemsSelectInitialized = false; // علامة لمنع إعادة التحميل غير المرغوب فيها
+    
+    async function fillItemsSelect() {
+      // فقط إعادة تحميل إذا لم يتم التحميل من قبل أو إذا كان الكاش فارغ
+      if (isItemsSelectInitialized && storeCache.length > 0) return;
+      
+      if (!storeCache.length) storeCache = await fetchStore();
+      const select = document.getElementById('itemSelect');
+      const currentValue = select.value; // احفظ الاختيار الحالي
+      
+      select.innerHTML = '<option value="">اختر المادة</option>';
+      // استخراج المواد الفريدة
+      const items = [...new Set(storeCache.map(s => s.item).filter(Boolean))];
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+      
+      // أعد تعيين الاختيار السابق إن وجد
+      if (currentValue && items.includes(currentValue)) {
+        select.value = currentValue;
+      }
+      
+      isItemsSelectInitialized = true;
+    }
+
+    // إظهار الكمية المتاحة لمادة معينة من بيانات المخزون
+    function getAvailableQty(itemName) {
+      if (!storeCache.length) return '-';
+      const item = storeCache.find(s => s.item === itemName);
+      return item ? item.quantity : 0;
+    }
+
+    // نافذة صرف مواد
+    const openIssueModalBtn = document.getElementById('openIssueModalBtn');
+    const issueModal = document.getElementById('issueModal');
+    const closeIssueModalBtn = document.getElementById('closeIssueModalBtn');
+    const issueForm = document.getElementById('issueForm');
+    const itemSelect = document.getElementById('itemSelect');
+    const availableQtySpan = document.getElementById('availableQty');
+    const issueQtyInput = document.getElementById('issueQtyInput');
+
+    openIssueModalBtn.onclick = async function() {
+      await fillContractorsSelect();
+      // تحديث الكاش فقط، دون إعادة ملء القائمة إذا كانت مملوءة بالفعل
+      const newStoreCache = await fetchStore();
+      if (JSON.stringify(storeCache) !== JSON.stringify(newStoreCache)) {
+        storeCache = newStoreCache;
+        isItemsSelectInitialized = false; // أعد التحميل إذا تغيرت البيانات
+      }
+      await fillItemsSelect();
+      
+      // إعادة تعيين القيم فقط إذا لم يكن هناك اختيار مسبق
+      const itemSelect = document.getElementById('itemSelect');
+      if (!itemSelect.value) {
+        availableQtySpan.textContent = '-';
+        issueQtyInput.value = '';
+        issueQtyInput.max = '';
+        const unitPriceInput = document.getElementById('unitPriceInput');
+        unitPriceInput.value = '';
+        unitPriceInput.placeholder = 'أدخل سعر الوحدة';
+        unitPriceInput.style.background = '#f9f9f9';
+        unitPriceInput.dataset.defaultPrice = '';
+        document.getElementById('resetPriceBtn').style.display = 'none';
+      }
+      
+      issueModal.style.display = 'flex';
+    };
+    closeIssueModalBtn.onclick = function() {
+      issueModal.style.display = 'none';
+    };
+    issueModal.onclick = function(e) {
+      if (e.target === issueModal) issueModal.style.display = 'none';
+    };
+    document.addEventListener('keydown', function(e) {
+      if (issueModal.style.display === 'flex' && e.key === 'Escape') issueModal.style.display = 'none';
+    });
+
+    // عند اختيار مادة، أظهر الكمية المتاحة وحدد الحد الأقصى وأظهر الفئة
+    itemSelect.onchange = function() {
+      const item = itemSelect.value;
+      const unitPriceInput = document.getElementById('unitPriceInput');
+      
+      if (!item) {
+        availableQtySpan.textContent = '-';
+        issueQtyInput.max = '';
+        unitPriceInput.value = '';
+        unitPriceInput.placeholder = 'أدخل سعر الوحدة';
+        unitPriceInput.style.background = '#f9f9f9';
+        unitPriceInput.dataset.defaultPrice = '';
+        document.getElementById('resetPriceBtn').style.display = 'none';
+        return;
+      }
+      
+      const itemObj = storeCache.find(s => s.item === item);
+      if (!itemObj) {
+        availableQtySpan.textContent = '-';
+        unitPriceInput.value = '';
+        unitPriceInput.placeholder = 'أدخل سعر الوحدة';
+        unitPriceInput.style.background = '#f9f9f9';
+        unitPriceInput.dataset.defaultPrice = '';
+        document.getElementById('resetPriceBtn').style.display = 'none';
+        return;
+      }
+      
+      availableQtySpan.textContent = itemObj.quantity;
+      issueQtyInput.max = itemObj.quantity;
+      if (Number(issueQtyInput.value) > itemObj.quantity) issueQtyInput.value = itemObj.quantity;
+      
+      // تعبئة الفئة تلقائياً وإضافة placeholder
+      const defaultPrice = itemObj.unitPrice || itemObj.category || '';
+      unitPriceInput.value = defaultPrice;
+      unitPriceInput.placeholder = defaultPrice ? `السعر الافتراضي: ${defaultPrice}` : 'أدخل سعر الوحدة';
+      unitPriceInput.style.background = '#f9f9f9'; // لون افتراضي
+      unitPriceInput.dataset.defaultPrice = defaultPrice; // حفظ السعر الافتراضي
+      document.getElementById('resetPriceBtn').style.display = 'none'; // إخفاء زر الإعادة
+    };
+
+    // إضافة مستمع للتغيير في حقل سعر الوحدة
+    document.getElementById('unitPriceInput').oninput = function() {
+      const defaultPrice = this.dataset.defaultPrice || '';
+      const resetBtn = document.getElementById('resetPriceBtn');
+      
+      if (this.value !== defaultPrice && this.value !== '') {
+        this.style.background = '#fff3e0'; // لون يوضح التعديل
+        resetBtn.style.display = 'block'; // إظهار زر الإعادة
+      } else {
+        this.style.background = '#f9f9f9'; // لون افتراضي
+        resetBtn.style.display = 'none'; // إخفاء زر الإعادة
+      }
+    };
+
+    // زر إعادة السعر الافتراضي
+    document.getElementById('resetPriceBtn').onclick = function() {
+      const unitPriceInput = document.getElementById('unitPriceInput');
+      const defaultPrice = unitPriceInput.dataset.defaultPrice || '';
+      unitPriceInput.value = defaultPrice;
+      unitPriceInput.style.background = '#f9f9f9';
+      this.style.display = 'none';
+    };
+
+    // منع تجاوز الكمية المتاحة
+    issueQtyInput.oninput = function() {
+      const max = Number(issueQtyInput.max);
+      if (max && Number(issueQtyInput.value) > max) {
+        issueQtyInput.value = max;
+      }
+      if (Number(issueQtyInput.value) < 1) {
+        issueQtyInput.value = 1;
+      }
+    };
+
+    // احصل على اسم المستخدم الحالي من localStorage
+    let currentUserName = '';
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      currentUserName = user.name || user.username || localStorage.getItem('username') || '';
+    } catch {
+      currentUserName = localStorage.getItem('username') || '';
+    }
+
+    // حفظ عملية الصرف (ترسل للسيرفر فقط)
+    issueForm.onsubmit = async function(e) {
+      e.preventDefault();
+      const data = {
+        contractor: issueForm.contractor.value,
+        date: issueForm.date.value,
+        item: issueForm.item.value,
+        quantity: issueForm.quantity.value,
+        unitPrice: issueForm.unitPrice.value
+      };
+      
+      console.log('بيانات الصرف:', data);
+      
+      // تحقق من القيم المطلوبة
+      if (!data.contractor || !data.item || !data.quantity || !data.date) {
+        alert('يجب تعبئة جميع الحقول المطلوبة');
+        return;
+      }
+      
+      // إذا اخترت مقاول، أرسل contractor/item/quantity/date/unitPrice
+      const reqBody = {
+        contractor: data.contractor,
+        item: data.item,
+        quantity: data.quantity,
+        date: data.date,
+        unitPrice: data.unitPrice, // أضف unitPrice
+        userName: currentUserName // أضف اسم المستخدم هنا
+      };
+      
+      console.log('البيانات المرسلة للسيرفر:', reqBody);
+      
+      try {
+        const res = await fetch('/store/issue', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reqBody)
+        });
+        
+        console.log('استجابة السيرفر:', res.status);
+        
+        if (res.ok) {
+          alert('تم صرف المواد بنجاح');
+          issueModal.style.display = 'none';
+          issueForm.reset();
+          await renderTable();
+        } else {
+          let errMsg = 'حدث خطأ أثناء الصرف';
+          try {
+            const err = await res.json();
+            console.log('خطأ من السيرفر:', err);
+            errMsg = err.error || errMsg;
+          } catch {
+            const text = await res.text();
+            console.log('نص الخطأ:', text);
+            errMsg = text || 'حدث خطأ غير متوقع من السيرفر';
+          }
+          alert(errMsg);
+        }
+      } catch (networkError) {
+        console.error('خطأ في الشبكة:', networkError);
+        alert('خطأ في الاتصال بالسيرفر: ' + networkError.message);
+      }
+    }
+
+    // عرض جدول المخزون (ملخص الكميات المتاحة)
+    async function renderTable() {
+      const store = await fetchStore();
+      
+      // تحديث الكاش وإعادة تعيين علامة التحميل إذا تغيرت البيانات
+      if (JSON.stringify(storeCache) !== JSON.stringify(store)) {
+        storeCache = store;
+        isItemsSelectInitialized = false; // أعد التحميل في المرة القادمة
+      }
+      
+      let filtered = store;
+
+      // تنبيه المواد القريبة من النفاد
+      const lowStock = store.filter(s => Number(s.quantity) <= 5);
+      const alertDiv = document.getElementById('lowStockAlert');
+      if (lowStock.length > 0) {
+        alertDiv.style.display = '';
+        alertDiv.innerHTML = 'تنبيه: المواد التالية اقتربت من النفاد:<br>' +
+          lowStock.map(s => `<span style="color:#c00;">${s.item}</span> (الكمية المتاحة: <b>${s.quantity}</b>)`).join('، ');
+      } else {
+        alertDiv.style.display = 'none';
+        alertDiv.innerHTML = '';
+      }
+
+      // بحث نصي
+      if (lastSearch) {
+        const s = lastSearch.toLowerCase();
+        filtered = filtered.filter(row =>
+          (row.item && row.item.toLowerCase().includes(s))
+        );
+      }
+
+      // فلترة متقدمة
+      if (lastFilter) {
+        if (lastFilter.item) {
+          filtered = filtered.filter(row => row.item === lastFilter.item);
+        }
+      }
+
+      tableBody.innerHTML = '';
+      
+      // فحص المخزون المنخفض
+      const lowStockItems = [];
+      const criticalStockItems = [];
+      
+      filtered.forEach((s, idx) => {
+        const qty = Number(s.quantity) || 0;
+        const qtyStyle = qty === 0 ? 'color:#c00;font-weight:bold;' : 
+                        qty <= 5 ? 'color:#ff9800;font-weight:bold;' : '';
+        
+        // إضافة للقائمة التنبيهية
+        if (qty === 0) {
+          criticalStockItems.push({ name: s.item, quantity: qty, unit: s.unit });
+        } else if (qty <= 10) {
+          lowStockItems.push({ name: s.item, quantity: qty, unit: s.unit });
+        }
+        
+        const tr = document.createElement('tr');
+        
+        // إضافة class للصفوف المنخفضة
+        if (qty === 0) {
+          tr.className = 'critical-stock-row';
+        } else if (qty <= 10) {
+          tr.className = 'low-stock-row';
+        }
+        
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${s.item || ''}</td>
+          <td style="${qtyStyle}">${s.quantity || 0}</td>
+          <td>${s.unit || ''}</td>
+          <td>${s.unitPrice || ''}</td>
+          <td>${s.total || ''}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+      
+      // عرض التنبيهات
+      updateLowStockAlert([...criticalStockItems, ...lowStockItems]);
+    }
+    
+    // تحديث تنبيه المخزون المنخفض
+    function updateLowStockAlert(items) {
+      const alertDiv = document.getElementById('lowStockAlert');
+      const itemsContainer = document.getElementById('lowStockItems');
+      
+      // التحقق من وجود العناصر
+      if (!alertDiv || !itemsContainer) {
+        console.warn('عناصر التنبيه غير موجودة');
+        return;
+      }
+      
+      if (!items || items.length === 0) {
+        alertDiv.classList.remove('show');
+        return;
+      }
+      
+      itemsContainer.innerHTML = '';
+      items.forEach(item => {
+        const isCritical = item.quantity === 0;
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'low-stock-item' + (isCritical ? ' critical' : '');
+        itemDiv.innerHTML = `
+          <span class="item-name">${item.name}</span>
+          <span class="item-qty">
+            ${isCritical ? '<span class="qty-badge">نفذت</span>' : `<span class="qty-badge">${item.quantity} ${item.unit || ''}</span>`}
+          </span>
+        `;
+        itemsContainer.appendChild(itemDiv);
+      });
+      
+      alertDiv.classList.add('show');
+    }
+    
+    // عرض سجل العمليات
+    async function renderOperations() {
+      const operations = await fetchOperations();
+      const contractors = await fetchContractors();
+      const suppliers = await fetchSuppliers();
+      
+      console.log('المقاولين:', contractors);
+      
+      operationsList.innerHTML = '';
+      
+      if (operations.length === 0) {
+        operationsList.innerHTML = `
+          <div class="operation-item" style="text-align:center; color:#666; font-style:italic;">
+            لا توجد عمليات بعد
+          </div>
+        `;
+        return;
+      }
+      
+      // ترتيب العمليات من الأحدث للأقدم
+      const sortedOperations = operations.sort((a, b) => {
+        const dateA = new Date(a.date || a.createdAt);
+        const dateB = new Date(b.date || b.createdAt);
+        return dateB - dateA;
+      }).slice(0, 50); // أخذ آخر 50 عملية فقط
+      
+      sortedOperations.forEach((op) => {
+        const date = op.date ? new Date(op.date).toLocaleDateString('ar-EG', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : '';
+        
+        // تحديد نوع العملية
+        let operationType = '';
+        let typeColor = '';
+        let entity = '';
+        let detailsHTML = '';
+        
+        // التحقق من نوع العملية بناءً على operationType أو supplier
+        const isIssue = op.operationType === 'صرف للمقاول' || op.supplier === 'صرف للمقاول' || op.quantity < 0;
+        const isPurchase = op.operationType === 'شراء' || (op.quantity > 0 && op.supplier && op.supplier !== 'صرف للمقاول');
+        
+        if (isIssue) {
+          // عملية صرف مواد
+          operationType = '� صرف مواد';
+          typeColor = 'background: #fff3e0; color: #f57c00; font-weight: bold;';
+          const contractor = contractors.find(c => c._id === op.contractorId);
+          
+          // البحث عن المقاول بطرق متعددة
+          let contractorName = 'غير محدد';
+          if (op.contractorId) {
+            const contractor = contractors.find(c => c._id === op.contractorId);
+            contractorName = contractor ? (contractor.name || contractor.contractorName) : 'غير محدد';
+          } else if (op.contractor) {
+            const contractor = contractors.find(c => c._id === op.contractor);
+            contractorName = contractor ? (contractor.name || contractor.contractorName) : 'غير محدد';
+          } else if (op.contractorName) {
+            contractorName = op.contractorName;
+          }
+          
+          entity = contractorName;
+          detailsHTML = `
+            <div style="margin-top: 4px;">
+              <strong style="color: #f57c00;">📦 ${op.item || '-'}</strong>
+            </div>
+            <div style="font-size: 0.72rem; color: #555; margin-top: 2px;">
+              الكمية: <span style="font-weight: bold; color: #f57c00;">${Math.abs(op.quantity) || 0} ${op.unit || ''}</span>
+            </div>
+            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">
+              اسم المقاول: <span style="font-weight: 600; color: #f57c00;">${entity}</span>
+            </div>
+          `;
+        } else if (isPurchase) {
+          // عملية مشتريات أو توريدات
+          operationType = '� مشتريات';
+          typeColor = 'background: #e3f2fd; color: #1976d2; font-weight: bold;';
+          entity = op.supplier || '-';
+          detailsHTML = `
+            <div style="margin-top: 4px;">
+              <strong style="color: #1976d2;">📦 ${op.item || '-'}</strong>
+            </div>
+            <div style="font-size: 0.72rem; color: #555; margin-top: 2px;">
+              الكمية: <span style="font-weight: bold; color: #1976d2;">${op.quantity || 0} ${op.unit || ''}</span>
+            </div>
+            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">
+              المورد: <span style="font-weight: 600;">${entity}</span>
+            </div>
+          `;
+        } else if (op.source === 'supply' || op.type === 'supply') {
+          operationType = '� توريدات';
+          typeColor = 'background: #f3e5f5; color: #7b1fa2; font-weight: bold;';
+          const supplier = suppliers.find(s => s._id === op.supplierId);
+          entity = supplier ? supplier.name : (op.supplier || '-');
+          detailsHTML = `
+            <div style="margin-top: 4px;">
+              <strong style="color: #7b1fa2;">📦 ${op.item || '-'}</strong>
+            </div>
+            <div style="font-size: 0.72rem; color: #555; margin-top: 2px;">
+              الكمية: <span style="font-weight: bold; color: #7b1fa2;">${op.quantity || 0} ${op.unit || ''}</span>
+            </div>
+            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">
+              المورد: <span style="font-weight: 600;">${entity}</span>
+            </div>
+          `;
+        } else if (op.type === 'return') {
+          operationType = '↩️ مرتجع';
+          typeColor = 'background: #ffebee; color: #c62828; font-weight: bold;';
+          entity = op.supplier || '-';
+          detailsHTML = `
+            <div style="margin-top: 4px;">
+              <strong style="color: #c62828;">📦 ${op.item || '-'}</strong>
+            </div>
+            <div style="font-size: 0.72rem; color: #555; margin-top: 2px;">
+              الكمية: <span style="font-weight: bold; color: #c62828;">${op.quantity || 0} ${op.unit || ''}</span>
+            </div>
+            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">
+              المورد: <span style="font-weight: 600;">${entity}</span>
+            </div>
+          `;
+        } else {
+          // حالة افتراضية
+          operationType = '� عملية أخرى';
+          typeColor = 'background: #e0e0e0; color: #424242; font-weight: bold;';
+          entity = op.supplier || op.contractorName || '-';
+          detailsHTML = `
+            <div style="margin-top: 4px;">
+              <strong style="color: #424242;">📦 ${op.item || '-'}</strong>
+            </div>
+            <div style="font-size: 0.72rem; color: #555; margin-top: 2px;">
+              الكمية: <span style="font-weight: bold; color: #424242;">${op.quantity || 0} ${op.unit || ''}</span>
+            </div>
+            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">
+              الجهة: <span style="font-weight: 600;">${entity}</span>
+            </div>
+          `;
+        }
+        
+        const operationItem = document.createElement('div');
+        operationItem.className = 'operation-item';
+        operationItem.innerHTML = `
+          <div class="operation-time" style="font-size: 0.68rem; color: #888; margin-bottom: 4px;">${date}</div>
+          <div class="operation-type" style="${typeColor} padding: 4px 8px; margin-bottom: 6px; text-align: center;">${operationType}</div>
+          <div class="operation-details">${detailsHTML}</div>
+        `;
+        operationsList.appendChild(operationItem);
+      });
+    }
+    
+    // عند تحميل الصفحة
+    window.onload = async function() {
+      await renderTable();
+      await renderOperations();
+    };
+
+    // زر تقارير المخزن
+    document.addEventListener('DOMContentLoaded', function() {
+      const storeReportBtn = document.getElementById('storeReportBtn');
+      if (storeReportBtn) {
+        storeReportBtn.onclick = function() {
+          window.location.href = 'store-report.html';
+        };
+      }
+    });
+
+    // تعبئة قائمة المواد في نافذة الفلترة
+    async function fillFilterItemSelect() {
+      if (!storeCache.length) storeCache = await fetchStore();
+      const select = document.getElementById('filterItemSelect');
+      select.innerHTML = '<option value="">كل المواد</option>';
+      const items = [...new Set(storeCache.map(s => s.item).filter(Boolean))];
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+    }
+
+    // منطق نافذة الفلترة
+    const openFilterModalBtn = document.getElementById('openFilterModalBtn');
+    const filterModal = document.getElementById('filterModal');
+    const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
+    const filterForm = document.getElementById('filterForm');
+    openFilterModalBtn.onclick = async function() {
+      await fillFilterItemSelect();
+      filterModal.style.display = 'flex';
+    };
+    closeFilterModalBtn.onclick = function() {
+      filterModal.style.display = 'none';
+    };
+    filterModal.onclick = function(e) {
+      if (e.target === filterModal) filterModal.style.display = 'none';
+    };
+    document.addEventListener('keydown', function(e) {
+      if (filterModal.style.display === 'flex' && e.key === 'Escape') filterModal.style.display = 'none';
+    });
+
+    // منطق البحث والفلترة
+    let lastSearch = '';
+    let lastFilter = {};
+
+    document.getElementById('searchInput').oninput = function() {
+      lastSearch = this.value.trim();
+      renderTable();
+    };
+
+    filterForm.onsubmit = function(e) {
+      e.preventDefault();
+      lastFilter = {
+        item: document.getElementById('filterItemSelect').value
+      };
+      filterModal.style.display = 'none';
+      renderTable();
+    };
+
+    // زر تصدير المخزون إلى Excel
+    document.getElementById('exportExcelBtn').onclick = function() {
+      // استخدم الفلترة الحالية
+      let filtered = storeCache;
+      if (lastSearch) {
+        const s = lastSearch.toLowerCase();
+        filtered = filtered.filter(row =>
+          (row.item && row.item.toLowerCase().includes(s))
+        );
+      }
+      if (lastFilter) {
+        if (lastFilter.item) {
+          filtered = filtered.filter(row => row.item === lastFilter.item);
+        }
+      }
+      const data = [
+        ["م", "اسم المادة", "الكمية المتاحة", "الوحدة", "سعر الوحدة", "إجمالي القيمة", "تاريخ آخر تحديث"]
+      ];
+      filtered.forEach((s, idx) => {
+        data.push([
+          idx + 1,
+          s.item || '',
+          s.quantity || 0,
+          s.unit || '',
+          s.unitPrice || '',
+          s.total || '',
+          s.lastOperationDate || s.date || ''
+        ]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "المخزون");
+      XLSX.writeFile(wb, "store_summary.xlsx");
+    };
+
+    // زر تحديث البيانات
+    document.getElementById('updateDataBtn').onclick = async function() {
+      if (confirm('هل تريد تحديث البيانات الموجودة لدعم النظام الجديد؟')) {
+        try {
+          // تحديث التوريدات
+          const suppliesRes = await fetch('/update-existing-supplies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const suppliesResult = await suppliesRes.json();
+          
+          // تحديث المشتريات
+          const purchasesRes = await fetch('/update-existing-purchases', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const purchasesResult = await purchasesRes.json();
+          
+          alert(`تم تحديث ${suppliesResult.updated} توريدات و ${purchasesResult.updated} مشتريات`);
+          await renderTable();
+          await renderOperations();
+        } catch (error) {
+          alert('حدث خطأ أثناء تحديث البيانات: ' + error.message);
+        }
+      }
+    };
+  </script>
+  <script>
+    // ربط الصفحة بالشريط العلوي وتنفيذ السكريبتات بداخله
+    fetch('components/main-navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const scripts = tempDiv.querySelectorAll('script');
+        scripts.forEach(s => s.parentNode.removeChild(s));
+        document.getElementById('navbar-container').innerHTML = tempDiv.innerHTML;
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+</body>
+</html>
