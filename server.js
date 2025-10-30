@@ -140,106 +140,6 @@ connectDB().catch((error) => {
   process.exit(1);
 });
 
-// ========= CRITICAL DRAWINGS API - MUST BE AFTER DB CONNECTION =========
-// Get all drawings - PRIORITY ENDPOINT
-app.get('/drawings', async (req, res) => {
-  try {
-    console.log('🔍 GET /drawings called at:', new Date().toISOString());
-    console.log('📊 Database status:', {
-      drawingsCollection: !!drawingsCollection,
-      connected: !!drawingsCollection
-    });
-    
-    if (!drawingsCollection) {
-      console.error('❌ drawingsCollection not initialized');
-      return res.status(500).json({ 
-        success: false,
-        error: 'Database not connected',
-        debug: 'drawingsCollection is null/undefined'
-      });
-    }
-    
-    const drawings = await drawingsCollection.find({}).sort({ drawingDate: -1 }).toArray();
-    console.log('✅ Found drawings:', drawings.length);
-    
-    res.json({
-      success: true,
-      data: drawings,
-      count: drawings.length,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    console.error('❌ Error fetching drawings:', err);
-    res.status(500).json({ 
-      success: false,
-      error: 'خطأ في جلب الرسومات',
-      details: err.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-});
-
-// Create new drawing - PRIORITY ENDPOINT
-app.post('/drawings', upload.fields([
-  { name: 'attachment', maxCount: 1 },
-  { name: 'pdfAttachment', maxCount: 1 }
-]), async (req, res) => {
-  try {
-    console.log('📝 POST /drawings called at:', new Date().toISOString());
-    console.log('📄 Request body:', req.body);
-    console.log('📎 Files:', req.files);
-    
-    if (!drawingsCollection) {
-      console.error('❌ drawingsCollection not initialized');
-      return res.status(500).json({ 
-        success: false,
-        error: 'Database not connected' 
-      });
-    }
-
-    // Process the drawing creation logic here
-    const drawing = {
-      drawingNumber: req.body.drawingNumber,
-      drawingName: req.body.drawingName,
-      drawingDate: new Date(req.body.drawingDate || Date.now()),
-      contractorName: req.body.contractorName,
-      drawingType: req.body.drawingType,
-      drawingItem: req.body.drawingItem,
-      notes: req.body.notes || '',
-      createdAt: new Date(),
-      lastUpdated: new Date()
-    };
-
-    // Add file paths if files uploaded
-    if (req.files) {
-      if (req.files.attachment) {
-        drawing.attachmentPath = `/uploads/${req.files.attachment[0].filename}`;
-      }
-      if (req.files.pdfAttachment) {
-        drawing.pdfAttachmentPath = `/uploads/${req.files.pdfAttachment[0].filename}`;
-      }
-    }
-
-    const result = await drawingsCollection.insertOne(drawing);
-    console.log('✅ Drawing created with ID:', result.insertedId);
-
-    res.json({
-      success: true,
-      message: 'تم إنشاء المخطط بنجاح',
-      id: result.insertedId,
-      drawing: { ...drawing, _id: result.insertedId }
-    });
-
-  } catch (err) {
-    console.error('❌ Error creating drawing:', err);
-    res.status(500).json({
-      success: false,
-      error: 'فشل في إنشاء المخطط',
-      details: err.message
-    });
-  }
-});
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -468,6 +368,108 @@ app.post('/test/upload', upload.single('testFile'), (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Upload failed',
+      details: err.message
+    });
+  }
+});
+
+// ========= DRAWINGS API - AFTER UPLOAD DEFINITION =========
+// Get all drawings
+app.get('/drawings', async (req, res) => {
+  try {
+    console.log('🔍 GET /drawings called at:', new Date().toISOString());
+    console.log('📊 Database status:', {
+      drawingsCollection: !!drawingsCollection,
+      connected: !!drawingsCollection
+    });
+    
+    if (!drawingsCollection) {
+      console.error('❌ drawingsCollection not initialized');
+      return res.status(500).json({ 
+        success: false,
+        error: 'Database not connected',
+        debug: 'drawingsCollection is null/undefined'
+      });
+    }
+    
+    const drawings = await drawingsCollection.find({}).sort({ drawingDate: -1 }).toArray();
+    console.log('✅ Found drawings:', drawings.length);
+    
+    res.json({
+      success: true,
+      data: drawings,
+      count: drawings.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('❌ Error fetching drawings:', err);
+    res.status(500).json({ 
+      success: false,
+      error: 'خطأ في جلب الرسومات',
+      details: err.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Create new drawing
+app.post('/drawings', upload.fields([
+  { name: 'attachment', maxCount: 1 },
+  { name: 'pdfAttachment', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    console.log('📝 POST /drawings called at:', new Date().toISOString());
+    console.log('📄 Request body:', req.body);
+    console.log('📎 Files:', req.files);
+    
+    if (!drawingsCollection) {
+      console.error('❌ drawingsCollection not initialized');
+      return res.status(500).json({ 
+        success: false,
+        error: 'Database not connected' 
+      });
+    }
+
+    // Process the drawing creation logic here
+    const drawing = {
+      drawingNumber: req.body.drawingNumber,
+      drawingName: req.body.drawingName,
+      drawingDate: new Date(req.body.drawingDate || Date.now()),
+      contractorName: req.body.contractorName,
+      drawingType: req.body.drawingType,
+      drawingItem: req.body.drawingItem,
+      notes: req.body.notes || '',
+      createdAt: new Date(),
+      lastUpdated: new Date()
+    };
+
+    // Add file paths if files uploaded
+    if (req.files) {
+      if (req.files.attachment) {
+        drawing.attachmentPath = `/uploads/${req.files.attachment[0].filename}`;
+        drawing.attachmentOriginalName = req.files.attachment[0].originalname;
+      }
+      if (req.files.pdfAttachment) {
+        drawing.pdfAttachmentPath = `/uploads/${req.files.pdfAttachment[0].filename}`;
+        drawing.pdfAttachmentOriginalName = req.files.pdfAttachment[0].originalname;
+      }
+    }
+
+    const result = await drawingsCollection.insertOne(drawing);
+    console.log('✅ Drawing created with ID:', result.insertedId);
+
+    res.json({
+      success: true,
+      message: 'تم إنشاء المخطط بنجاح',
+      id: result.insertedId,
+      drawing: { ...drawing, _id: result.insertedId }
+    });
+
+  } catch (err) {
+    console.error('❌ Error creating drawing:', err);
+    res.status(500).json({
+      success: false,
+      error: 'فشل في إنشاء المخطط',
       details: err.message
     });
   }
