@@ -12,6 +12,27 @@ const fs = require('fs');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Basic multer setup for early endpoints
+const basicUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadsDir = path.join(__dirname, 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      const timestamp = Date.now();
+      const ext = path.extname(file.originalname);
+      const baseName = path.basename(file.originalname, ext);
+      cb(null, `${timestamp}_${baseName}${ext}`);
+    }
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 }
+});
 
 // ========= IMMEDIATE TEST ENDPOINTS - NO DEPENDENCIES ==========
 app.get('/api/test', (req, res) => {
@@ -58,10 +79,14 @@ app.get('/drawings', async (req, res) => {
 });
 
 // POST drawings endpoint with proper handling
-app.post('/drawings', async (req, res) => {
+app.post('/drawings', basicUpload.fields([
+  { name: 'attachment', maxCount: 1 },
+  { name: 'pdfAttachment', maxCount: 1 }
+]), async (req, res) => {
   try {
     console.log('📝 POST /drawings called at:', new Date().toISOString());
     console.log('📄 Request body:', req.body);
+    console.log('📎 Files:', req.files);
     
     if (!drawingsCollection) {
       return res.status(500).json({
@@ -70,17 +95,37 @@ app.post('/drawings', async (req, res) => {
       });
     }
 
+    // التحقق من البيانات المطلوبة
+    if (!req.body.drawingNumber || !req.body.drawingName) {
+      return res.status(400).json({
+        success: false,
+        error: 'بيانات ناقصة - رقم المخطط واسم المخطط مطلوبان'
+      });
+    }
+
     const drawing = {
       drawingNumber: req.body.drawingNumber,
       drawingName: req.body.drawingName,
       drawingDate: new Date(req.body.drawingDate || Date.now()),
-      contractorName: req.body.contractorName,
-      drawingType: req.body.drawingType,
+      contractorName: req.body.contractorName || '',
+      drawingType: req.body.drawingType || '',
       drawingItem: req.body.drawingItem || '',
       notes: req.body.notes || '',
       createdAt: new Date(),
       lastUpdated: new Date()
     };
+
+    // إضافة مسارات الملفات إذا تم رفعها
+    if (req.files) {
+      if (req.files.attachment && req.files.attachment[0]) {
+        drawing.attachmentPath = `/uploads/${req.files.attachment[0].filename}`;
+        drawing.attachmentOriginalName = req.files.attachment[0].originalname;
+      }
+      if (req.files.pdfAttachment && req.files.pdfAttachment[0]) {
+        drawing.pdfAttachmentPath = `/uploads/${req.files.pdfAttachment[0].filename}`;
+        drawing.pdfAttachmentOriginalName = req.files.pdfAttachment[0].originalname;
+      }
+    }
 
     const result = await drawingsCollection.insertOne(drawing);
     console.log('✅ Drawing created with ID:', result.insertedId);
