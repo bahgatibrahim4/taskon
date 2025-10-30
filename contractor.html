@@ -914,6 +914,9 @@
   </style>
 
   <script>
+    // Check permissions before loading page
+    window.checkPagePermission('contractors');
+    
     // ==================== كود المودال الجديد - بسيط ومباشر ====================
     document.addEventListener('DOMContentLoaded', function() {
       console.log('✅ تحميل نظام العقود الجديد...');
@@ -1040,17 +1043,30 @@
 
     // جلب بيانات المقاول (مع المواد)
     async function fetchContractor() {
-      const res = await fetch(`/contractors/${contractorId}`);
-      if (!res.ok) {
+      try {
+        const res = await fetch(`/contractors/${contractorId}`);
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Response is not JSON:', text);
+          throw new Error('Response is not JSON');
+        }
+        
+        const c = await res.json();
+        document.getElementById('name').textContent = c.name || '';
+        document.getElementById('phone').textContent = c.phone || '';
+        document.getElementById('workItem').textContent = c.workItem || '';
+        // اعتمد فقط على c.materials (مصفوفة)
+        renderMaterialsTable(Array.isArray(c.materials) ? c.materials : []);
+      } catch (error) {
+        console.error('Error fetching contractor:', error);
         document.body.innerHTML = '<div style="text-align:center;margin-top:60px;color:#c00;font-size:1.2rem;">تعذر تحميل بيانات المقاول.</div>';
-        return;
       }
-      const c = await res.json();
-      document.getElementById('name').textContent = c.name || '';
-      document.getElementById('phone').textContent = c.phone || '';
-      document.getElementById('workItem').textContent = c.workItem || '';
-      // اعتمد فقط على c.materials (مصفوفة)
-      renderMaterialsTable(Array.isArray(c.materials) ? c.materials : []);
     }
 
     // عرض جدول المواد

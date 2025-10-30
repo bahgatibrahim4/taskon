@@ -706,6 +706,27 @@ app.get('/contractors/work-items/unique', async (req, res) => {
   }
 });
 
+// Get single contractor by ID
+app.get('/contractors/:id', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    res.json(contractor);
+  } catch (err) {
+    console.error('Error fetching contractor:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Add new contractor
 app.post('/contractors', async (req, res) => {
   try {
