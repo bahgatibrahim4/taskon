@@ -1438,6 +1438,17 @@
           url += '?workItem=' + encodeURIComponent(workItem);
         }
         const res = await fetch(url);
+        
+        // التحقق من نجاح الطلب والمحتوى
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        
         const contractors = await res.json();
         contractors.forEach(c => {
           const option = document.createElement('option');
@@ -1448,6 +1459,7 @@
         // إعادة اختيار المقاول الحالي إذا كان موجود
         if (current) select.value = current;
       } catch (err) {
+        console.error('Error loading contractors:', err);
         alert('تعذر تحميل قائمة المقاولين. تأكد من تشغيل السيرفر.');
       }
     }
@@ -1491,6 +1503,17 @@
       select.innerHTML = '<option value="">اختر بند الأعمال</option>';
       try {
         const res = await fetch('/contractors');
+        
+        // التحقق من نجاح الطلب والمحتوى
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        
         const contractors = await res.json();
         // استخرج جميع البنود الفريدة فقط
         const workItemsSet = new Set();
@@ -1506,12 +1529,21 @@
           select.appendChild(option);
         });
       } catch (err) {
+        console.error('Error loading work items:', err);
         // في حال الخطأ، أبقِ الخيار الافتراضي فقط
       }
     }
 
     // عند تحميل الصفحة، جلب جميع البنود الفريدة من السيرفر
     document.addEventListener('DOMContentLoaded', async function() {
+      // التحقق من صلاحيات الصفحة
+      if (typeof checkPagePermission === 'function') {
+        const hasPermission = await checkPagePermission('add-extract');
+        if (!hasPermission) {
+          return; // checkPagePermission ستقوم بالتوجيه تلقائياً
+        }
+      }
+      
       await loadWorkItemsOptions();
       const workItem = document.getElementById('workItemFilterSelect').value;
       loadContractors(workItem);
@@ -1571,17 +1603,38 @@
       if (contractorId) {
         try {
           const contractorRes = await fetch(`/contractors`);
+          
+          if (!contractorRes.ok) {
+            throw new Error(`HTTP error! status: ${contractorRes.status}`);
+          }
+          
+          const contentType = contractorRes.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON');
+          }
+          
           const contractors = await contractorRes.json();
           const contractor = contractors.find(c => c._id === contractorId);
           // جلب maxTotalPercentPerItem
           window.maxTotalPercentPerItem = contractor?.maxTotalPercentPerItem || {};
           document.getElementById('maxTotalPercentInput').value = contractor.maxTotalPercent || 100;
-        } catch {
+        } catch (err) {
+          console.error('Error loading contractor data:', err);
           window.maxTotalPercentPerItem = {};
           document.getElementById('maxTotalPercentInput').value = 100;
         }
         try {
           const res = await fetch(`/extracts?contractor=${contractorId}`);
+          
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          
+          const contentType = res.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON');
+          }
+          
           const extracts = await res.json();
           const filteredExtracts = extracts.filter(e => e.contractor == contractorId);
           input.value = filteredExtracts.length + 1;
@@ -3047,94 +3100,77 @@ function calculateSummary() {
           body: JSON.stringify(data)
         });
         
-        if (res.ok) {
-          const result = await res.json();
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        
+        const result = await res.json();
+        
+        // إرسال إشعار بإضافة مستخلص جديد
+        await window.waitForNotificationSystem();
+        if (window.sendNotification) {
+          const contractorSelect = form.contractor;
+          let contractorName = 'غير محدد';
           
-          // إرسال إشعار بإضافة مستخلص جديد
-          await window.waitForNotificationSystem();
-          if (window.sendNotification) {
-            const contractorSelect = form.contractor;
-            let contractorName = 'غير محدد';
-            
-            // التأكد من وجود مقاول محدد
-            if (contractorSelect.selectedIndex > 0 && contractorSelect.options[contractorSelect.selectedIndex]) {
-              contractorName = contractorSelect.options[contractorSelect.selectedIndex].text;
-            }
-            
-            await window.sendNotification(
-              'extract-add',
-              `تم إضافة مستخلص رقم ${form.number.value} للمقاول: ${contractorName}`,
-              'extracts',
-              result._id || ''
-            );
+          // التأكد من وجود مقاول محدد
+          if (contractorSelect.selectedIndex > 0 && contractorSelect.options[contractorSelect.selectedIndex]) {
+            contractorName = contractorSelect.options[contractorSelect.selectedIndex].text;
           }
           
-          // خصم المواد فقط بعد نجاح حفظ المستخلص
-          const extractNumber = form.number.value;
-          const contractorId = form.contractor.value;
+          await window.sendNotification(
+            'extract-add',
+            `تم إضافة مستخلص رقم ${form.number.value} للمقاول: ${contractorName}`,
+            'extracts',
+            result._id || ''
+          );
+        }
+        
+        // خصم المواد فقط بعد نجاح حفظ المستخلص
+        const extractNumber = form.number.value;
+        const contractorId = form.contractor.value;
+        
+        // جمع المواد المستخدمة في الخصومات
+        const materialsToDeduct = [];
+        document.querySelectorAll('#deductionsBody tr').forEach(tr => {
+          const materialName = tr.dataset.materialName;
+          const materialDate = tr.querySelector('input[name="deductionDate"]')?.value || '';
+          const statementText = tr.querySelector('input[name="deductionStatement"]')?.value || '';
           
-          // جمع المواد المستخدمة في الخصومات
-          const materialsToDeduct = [];
-          document.querySelectorAll('#deductionsBody tr').forEach(tr => {
-            const materialName = tr.dataset.materialName;
-            const materialDate = tr.querySelector('input[name="deductionDate"]')?.value || '';
-            const statementText = tr.querySelector('input[name="deductionStatement"]')?.value || '';
-            
-            // إذا كانت المادة مأخوذة من قائمة المواد (لها dataset.materialName)
-            if (materialName && statementText.includes(materialName)) {
-              materialsToDeduct.push({
-                name: materialName,
-                date: materialDate
-              });
-            }
-          });
-          
-          // خصم المواد من السيرفر
-          for (const material of materialsToDeduct) {
-            try {
-              await fetch(`/contractors/${contractorId}/materials/deduct`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  name: material.name,
-                  deductedInExtractNumber: extractNumber,
-                  deductedDate: material.date
-                })
-              });
-            } catch (err) {
-              console.error('تعذر خصم المادة:', material.name, err);
-            }
+          // إذا كانت المادة مأخوذة من قائمة المواد (لها dataset.materialName)
+          if (materialName && statementText.includes(materialName)) {
+            materialsToDeduct.push({
+              name: materialName,
+              date: materialDate
+            });
           }
-          
-          // إبقاء الـ loading spinner لمدة ثانيتين إضافيتين
-          setTimeout(() => {
-            // إخفاء الـ loading overlay بعد التأخير
-            if (loadingOverlay) {
-              loadingOverlay.style.display = 'none';
-            }
-            
-            // إعادة تفعيل الأزرار
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = '✅ حفظ المستخلص';
-            }
-            if (saveDraftBtn) {
-              saveDraftBtn.disabled = false;
-            }
-            
-            // إظهار رسالة النجاح مخصصة
-            setTimeout(() => {
-              showSuccessNotification('✅ تم حفظ المستخلص بنجاح وخصم المواد المستخدمة');
-              
-              // التحويل إلى صفحة قائمة المستخلصات
-              setTimeout(() => {
-                window.location.href = 'list-extracts.html';
-              }, 2000);
-            }, 100);
-          }, 2000); // تأخير لمدة ثانيتين
-          
-        } else {
-          // إخفاء الـ loading overlay في حالة الخطأ
+        });
+        
+        // خصم المواد من السيرفر
+        for (const material of materialsToDeduct) {
+          try {
+            await fetch(`/contractors/${contractorId}/materials/deduct`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: material.name,
+                deductedInExtractNumber: extractNumber,
+                deductedDate: material.date
+              })
+            });
+          } catch (err) {
+            console.error('تعذر خصم المادة:', material.name, err);
+          }
+        }
+        
+        // إبقاء الـ loading spinner لمدة ثانيتين إضافيتين
+        setTimeout(() => {
+          // إخفاء الـ loading overlay بعد التأخير
           if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
           }
@@ -3148,8 +3184,16 @@ function calculateSummary() {
             saveDraftBtn.disabled = false;
           }
           
-          alert('حدث خطأ أثناء الحفظ');
-        }
+          // إظهار رسالة النجاح مخصصة
+          setTimeout(() => {
+            showSuccessNotification('✅ تم حفظ المستخلص بنجاح وخصم المواد المستخدمة');
+            
+            // التحويل إلى صفحة قائمة المستخلصات
+            setTimeout(() => {
+              window.location.href = 'list-extracts.html';
+            }, 2000);
+          }, 100);
+        }, 2000); // تأخير لمدة ثانيتين
       } catch (err) {
         // إخفاء الـ loading overlay في حالة الخطأ
         if (loadingOverlay) {
