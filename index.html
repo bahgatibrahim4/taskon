@@ -305,7 +305,7 @@
       <div class="card-title">المخططات</div>
       <div class="card-desc">عرض وإدارة المخططات الهندسية</div>
     </div>
-    <div class="card" onclick="location.href='daily-reports.html'">
+    <div class="card" data-permission="dashboard-card-daily-reports" onclick="location.href='daily-reports.html'">
       <div class="card-icon">📋</div>
       <div class="card-title">التقارير اليومية</div>
       <div class="card-desc">إدارة وتتبع التقارير اليومية للمعدات والأعمال</div>
@@ -371,22 +371,12 @@
   </div>
   
   <script>
-    // فحص وإخفاء الكاردات بناءً على الصلاحيات
-    document.addEventListener('DOMContentLoaded', function() {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const permissions = user.permissions || [];
-      
-      // جلب جميع الكاردات
-      const cards = document.querySelectorAll('.card[data-permission]');
-      
-      cards.forEach(card => {
-        const requiredPermission = card.getAttribute('data-permission');
-        
-        // إذا لم يكن لدى المستخدم الصلاحية، أخفِ الكارد
-        if (!permissions.includes(requiredPermission)) {
-          card.style.display = 'none';
-        }
-      });
+    // Apply permissions to dashboard cards when page loads
+    window.addEventListener('load', function() {
+      // Wait for permissions-check.js to be loaded
+      if (typeof applyPermissions === 'function') {
+        applyPermissions();
+      }
     });
   </script>
   
