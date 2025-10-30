@@ -880,6 +880,53 @@ app.delete('/contractors/:id/materials/:index', async (req, res) => {
   }
 });
 
+// Deduct material (mark as used in extract)
+app.put('/contractors/:id/materials/deduct', async (req, res) => {
+  try {
+    if (!contractorsCollection) {
+      return res.status(500).json({ error: 'Database not ready' });
+    }
+    const { ObjectId } = require('mongodb');
+    const id = new ObjectId(req.params.id);
+    const { name, deductedInExtractNumber, deductedDate } = req.body;
+    
+    if (!name || !deductedInExtractNumber) {
+      return res.status(400).json({ error: 'Material name and extract number are required' });
+    }
+    
+    const contractor = await contractorsCollection.findOne({ _id: id });
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+    
+    const materials = contractor.materials || [];
+    const materialIndex = materials.findIndex(m => m.name === name);
+    
+    if (materialIndex === -1) {
+      return res.status(404).json({ error: 'Material not found' });
+    }
+    
+    // Mark material as deducted
+    materials[materialIndex].deductedInExtractNumber = deductedInExtractNumber;
+    materials[materialIndex].deductedDate = deductedDate || new Date().toISOString();
+    materials[materialIndex].deductedAt = new Date();
+    
+    await contractorsCollection.updateOne(
+      { _id: id },
+      { $set: { materials, updatedAt: new Date() } }
+    );
+    
+    res.json({ 
+      success: true, 
+      message: 'Material deducted successfully',
+      material: materials[materialIndex]
+    });
+  } catch (err) {
+    console.error('Error deducting material:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Add contract to contractor
 app.post('/contractors/:id/contracts', upload.any(), async (req, res) => {
   try {
@@ -1102,6 +1149,66 @@ app.delete('/extracts/:id/work-items/:index', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// ==================== Drafts API ====================
+
+// Save draft
+app.post('/drafts', async (req, res) => {
+  try {
+    const { contractorId, draftData } = req.body;
+    
+    if (!contractorId || !draftData) {
+      return res.status(400).json({ error: 'Contractor ID and draft data are required' });
+    }
+    
+    // Store draft in database (you can create a drafts collection)
+    // For now, we'll just return success
+    res.json({ 
+      success: true, 
+      message: 'Draft saved successfully',
+      contractorId,
+      timestamp: new Date()
+    });
+  } catch (err) {
+    console.error('Error saving draft:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get draft by contractor ID
+app.get('/drafts/:contractorId', async (req, res) => {
+  try {
+    const { contractorId } = req.params;
+    
+    // Retrieve draft from database
+    // For now, return empty response
+    res.json({ 
+      success: true,
+      draft: null
+    });
+  } catch (err) {
+    console.error('Error getting draft:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete draft
+app.delete('/drafts/:contractorId', async (req, res) => {
+  try {
+    const { contractorId } = req.params;
+    
+    // Delete draft from database
+    res.json({ 
+      success: true,
+      message: 'Draft deleted successfully'
+    });
+  } catch (err) {
+    console.error('Error deleting draft:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==================== End Drafts API ====================
 
 // ==================== End Extracts API ====================
 

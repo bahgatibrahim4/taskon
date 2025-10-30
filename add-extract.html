@@ -2282,6 +2282,16 @@
         }
         try {
           const res = await fetch(`/contractors/${contractorId}`);
+          
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          
+          const contentType = res.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON');
+          }
+          
           const contractor = await res.json();
           // فقط المواد التي لم تخصم بعد (لا يوجد لها deductedInExtractNumber)
           const availableMaterials = (contractor.materials || []).filter(mat => !mat.deductedInExtractNumber);
@@ -3244,10 +3254,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!contractorId) return;
     try {
       const res = await fetch(`/contractors/${contractorId}`);
-      if (!res.ok) return;
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Response is not JSON');
+      }
+      
       const contractor = await res.json();
       document.getElementById('maxTotalPercentInput').value = contractor.maxTotalPercent || 100;
-    } catch {
+    } catch (err) {
+      console.error('Error loading contractor max percent:', err);
       document.getElementById('maxTotalPercentInput').value = 100;
     }
   });
