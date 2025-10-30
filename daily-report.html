@@ -39,7 +39,26 @@
     .navbar{margin-bottom:0}
     label{font-family:'Cairo',sans-serif}
     h1,h2,h3,h4,h5,h6{font-family:'Cairo',sans-serif}
-    #addWorkBtn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 25px rgba(25,124,145,0.4)}
+    #addWorkBtn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 6px 20px rgba(25,124,145,0.4)}
+    
+    /* Responsive design for add work form */
+    @media (max-width: 1000px) {
+      .add-work-form {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .add-work-form button {
+        grid-column: span 2 !important;
+        justify-self: center !important;
+      }
+    }
+    @media (max-width: 600px) {
+      .add-work-form {
+        grid-template-columns: 1fr !important;
+      }
+      .add-work-form button {
+        grid-column: 1 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -100,44 +119,37 @@
         <tbody></tbody>
       </table>
 
-      <div style="margin-top:1.5rem;background:linear-gradient(135deg, #f8fbfc 0%, #e8f4f8 100%);padding:2rem;border-radius:15px;border:2px solid #e1ecf4;box-shadow:0 4px 20px rgba(0,0,0,0.08)">
-        <div style="display:flex;align-items:center;margin-bottom:1.5rem">
-          <div style="background:#197c91;color:#fff;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin-left:12px;font-size:1.2rem">➕</div>
-          <h5 style="margin:0;color:#1a3b50;font-weight:800;font-size:1.1rem;font-family:'Cairo',sans-serif">إضافة بند عمل جديد</h5>
+      <div style="margin-top:1.5rem;background:linear-gradient(135deg, #f8fbfc 0%, #e8f4f8 100%);padding:1.2rem;border-radius:12px;border:2px solid #e1ecf4;box-shadow:0 4px 15px rgba(0,0,0,0.06)">
+        <div style="display:flex;align-items:center;margin-bottom:1rem">
+          <div style="background:#197c91;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin-left:10px;font-size:1rem">➕</div>
+          <h5 style="margin:0;color:#1a3b50;font-weight:700;font-size:1rem;font-family:'Cairo',sans-serif">إضافة بند عمل جديد</h5>
         </div>
         
-        <div style="display:grid;grid-template-columns:1fr 2fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div class="add-work-form" style="display:grid;grid-template-columns:1fr 2fr 1fr auto;gap:1rem;align-items:end">
           <div>
-            <label style="display:block;margin-bottom:0.5rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.9rem">رقم المبني / الدور</label>
+            <label style="display:block;margin-bottom:0.3rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.85rem">رقم المبني</label>
             <input id="newBuilding" 
-                   placeholder="مثال: مبني A - الدور الثاني" 
-                   style="width:100%;padding:0.8rem;border:2px solid #e1ecf4;border-radius:10px;font-family:'Cairo',sans-serif;transition:all 0.3s;background:#fff" />
+                   placeholder="مثال: A-2" 
+                   style="width:100%;padding:0.6rem;border:2px solid #e1ecf4;border-radius:8px;font-family:'Cairo',sans-serif;transition:all 0.3s;background:#fff;font-size:0.9rem" />
           </div>
           <div>
-            <label style="display:block;margin-bottom:0.5rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.9rem">بيان الأعمال *</label>
+            <label style="display:block;margin-bottom:0.3rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.85rem">بيان الأعمال *</label>
             <input id="newDesc" 
-                   placeholder="اكتب وصف مفصل للعمل المنجز..." 
-                   style="width:100%;padding:0.8rem;border:2px solid #e1ecf4;border-radius:10px;font-family:'Cairo',sans-serif;transition:all 0.3s;background:#fff" />
+                   placeholder="وصف العمل المنجز..." 
+                   style="width:100%;padding:0.6rem;border:2px solid #e1ecf4;border-radius:8px;font-family:'Cairo',sans-serif;transition:all 0.3s;background:#fff;font-size:0.9rem" />
           </div>
-        </div>
-        
-        <div style="margin-bottom:1.5rem">
-          <label style="display:block;margin-bottom:0.5rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.9rem">إرفاق صور (اختياري)</label>
-          <div style="position:relative">
+          <div>
+            <label style="display:block;margin-bottom:0.3rem;color:#1a3b50;font-weight:600;font-family:'Cairo',sans-serif;font-size:0.85rem">الصور</label>
             <input id="newPhotos" 
                    type="file" 
                    accept="image/*" 
                    multiple 
-                   style="width:100%;padding:0.8rem;border:2px dashed #197c91;border-radius:10px;font-family:'Cairo',sans-serif;background:#fff;cursor:pointer" />
-            <div style="position:absolute;top:50%;right:15px;transform:translateY(-50%);color:#197c91;pointer-events:none;font-family:'Cairo',sans-serif">📁 اختر الصور</div>
+                   style="width:100%;padding:0.6rem;border:2px dashed #197c91;border-radius:8px;font-family:'Cairo',sans-serif;background:#fff;cursor:pointer;font-size:0.85rem" />
           </div>
-        </div>
-        
-        <div style="display:flex;justify-content:center">
           <button id="addWorkBtn" 
                   class="btn btn-primary" 
-                  style="padding:0.8rem 2rem;font-size:1rem;font-weight:700;border-radius:12px;background:linear-gradient(135deg, #197c91 0%, #1565c0 100%);color:#fff;border:none;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 6px 20px rgba(25,124,145,0.3);transition:all 0.3s">
-            <span style="margin-left:8px">✓</span> إضافة البند
+                  style="padding:0.6rem 1.2rem;font-size:0.9rem;font-weight:700;border-radius:8px;background:linear-gradient(135deg, #197c91 0%, #1565c0 100%);color:#fff;border:none;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 4px 12px rgba(25,124,145,0.3);transition:all 0.3s;white-space:nowrap">
+            ✓ إضافة
           </button>
         </div>
       </div>
