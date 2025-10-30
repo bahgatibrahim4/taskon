@@ -21,9 +21,9 @@
     .icon-btn{padding:0.4rem 0.8rem;border-radius:8px;border:none;cursor:pointer;font-size:0.85rem;transition:all 0.2s;font-family:'Cairo',sans-serif}
     .icon-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
     .equipment-table td{vertical-align:middle;border-bottom:1px solid #f0f7fa;font-family:'Cairo',sans-serif}
-    .equipment-table td:nth-child(1){text-align:right;font-weight:600;background:#fafcfd;padding:0.6rem}
-    .equipment-table td:nth-child(2){text-align:center;background:#fff;padding:0.4rem}
-    .equipment-table input[type="number"]{width:80px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;transition:border-color 0.2s;font-family:'Cairo',sans-serif}
+    .equipment-table td:nth-child(1), .equipment-table td:nth-child(3){text-align:right;font-weight:600;background:#fafcfd;padding:0.6rem 0.8rem}
+    .equipment-table td:nth-child(2), .equipment-table td:nth-child(4){text-align:center;background:#fff;padding:0.4rem}
+    .equipment-table input[type="number"]{width:70px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;transition:border-color 0.2s;font-family:'Cairo',sans-serif}
     .equipment-table input[type="number"]:focus{border-color:#197c91;outline:none;box-shadow:0 0 0 3px rgba(25,124,145,0.1)}
     .work-items-table th, .work-items-table td{text-align:center;font-family:'Cairo',sans-serif;font-size:0.85rem;padding:0.5rem}
     .work-items-table td:nth-child(3){text-align:right}
@@ -89,8 +89,10 @@
           <table class="equipment-table" id="equipmentTable" style="table-layout:auto">
             <thead>
               <tr>
-                <th style="text-align:right">المعدة</th>
-                <th style="text-align:center">العدد</th>
+                <th style="text-align:right;width:25%">المعدة</th>
+                <th style="text-align:center;width:25%">العدد</th>
+                <th style="text-align:right;width:25%">المعدة</th>
+                <th style="text-align:center;width:25%">العدد</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -177,19 +179,44 @@
 
     function renderEquipment(){
       const equipmentData = report?.equipment || {};
+      const equipmentRows = [];
       
-      // عرض المعدات في صفوف عادية (صفين)
-      equipmentTable.querySelector('tbody').innerHTML = equipmentList.map(e => `<tr>
-        <td style="padding:0.6rem 0.8rem;text-align:right;font-weight:600">${e}</td>
-        <td style="text-align:center;padding:0.4rem">
-          <input type="number" 
-                 min="0" 
-                 value="${equipmentData[e] || ''}" 
-                 style="width:80px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;font-family:'Cairo',sans-serif"
-                 onchange="updateEquipmentCount('${e}', this.value)"
-                 placeholder="0"/>
-        </td>
-      </tr>`).join('');
+      // تقسيم المعدات إلى صفوف، كل صف يحتوي على معدتين
+      for (let i = 0; i < equipmentList.length; i += 2) {
+        const equipment1 = equipmentList[i];
+        const equipment2 = equipmentList[i + 1];
+        
+        let row = `<tr>
+          <td style="padding:0.6rem 0.8rem;text-align:right;font-weight:600;width:25%">${equipment1}</td>
+          <td style="text-align:center;padding:0.4rem;width:25%">
+            <input type="number" 
+                   min="0" 
+                   value="${equipmentData[equipment1] || ''}" 
+                   style="width:70px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;font-family:'Cairo',sans-serif"
+                   onchange="updateEquipmentCount('${equipment1}', this.value)"
+                   placeholder="0"/>
+          </td>`;
+        
+        if (equipment2) {
+          row += `
+          <td style="padding:0.6rem 0.8rem;text-align:right;font-weight:600;width:25%">${equipment2}</td>
+          <td style="text-align:center;padding:0.4rem;width:25%">
+            <input type="number" 
+                   min="0" 
+                   value="${equipmentData[equipment2] || ''}" 
+                   style="width:70px;text-align:center;border:2px solid #e1ecf4;border-radius:6px;padding:0.4rem;font-family:'Cairo',sans-serif"
+                   onchange="updateEquipmentCount('${equipment2}', this.value)"
+                   placeholder="0"/>
+          </td>`;
+        } else {
+          row += `<td colspan="2"></td>`;
+        }
+        
+        row += `</tr>`;
+        equipmentRows.push(row);
+      }
+      
+      equipmentTable.querySelector('tbody').innerHTML = equipmentRows.join('');
     }
 
     function updateEquipmentCount(equipmentName, count) {
